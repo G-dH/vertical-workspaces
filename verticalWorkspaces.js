@@ -1105,7 +1105,7 @@ var ControlsManagerLayoutOverride = {
 
         // Search
         let searchWidth = searchCentered ? width : width - 2 * spacing - thumbnailsWidth;
-        childBox.set_origin(searchXoffset, startY + dashHeight + spacing + searchHeight + spacing);
+        childBox.set_origin(searchXoffset, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight + spacing);
         childBox.set_size(searchWidth, availableHeight);
 
         this._searchController.allocate(childBox);
