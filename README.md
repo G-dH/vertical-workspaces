@@ -4,4 +4,5 @@ GNOME Shell extension that changes horizontal layout of workspaces to vertical a
 
 ![Settings window](screenshots/screenshot.png)
 ![Default Overview Layout](screenshots/screenshot0.png)
-![Custom Overview Layout](screenshots/screenshot0.png)
+
+![Custom Overview Layout](screenshots/screenshot1.png)
