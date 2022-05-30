@@ -1,4 +1,6 @@
 const Gi = imports._gi;
+const Config = imports.misc.config;
+const shellVersion = parseFloat(Config.PACKAGE_VERSION);
 
 function hookVfunc(proto, symbol, func) {
     proto[Gi.hook_up_vfunc_symbol](symbol, func);
@@ -23,7 +25,11 @@ function overrideProto(proto, overrides) {
         else {
             backup[symbol] = proto[symbol];
             if (symbol.startsWith('vfunc')) {
-                hookVfunc(proto[Gi.gobject_prototype_symbol], symbol.slice(6), overrides[symbol]);
+                if (shellVersion < 42) {
+                    hookVfunc(proto, symbol.slice(6), overrides[symbol]);
+	            } else {
+                    hookVfunc(proto[Gi.gobject_prototype_symbol], symbol.slice(6), overrides[symbol]);
+                }
             }
             else {
                 proto[symbol] = overrides[symbol];

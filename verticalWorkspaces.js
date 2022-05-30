@@ -36,7 +36,7 @@ var WORKSPACE_CUT_SIZE = 10;
 
 // keep adjacent workspaces out of the screen
 const WORKSPACE_MAX_SPACING = 200;
-const WORKSPACE_MIN_SPACING = 24;
+const WORKSPACE_MIN_SPACING = 200;
 
 var DASH_MAX_HEIGHT_RATIO = 0.15;
 var DASH_ITEM_LABEL_SHOW_TIME = 150;
@@ -850,12 +850,6 @@ var ControlsManagerOverride = {
 
 var ControlsManagerLayoutOverride = {
     _computeWorkspacesBoxForState: function(state, box, workAreaBox, searchHeight, dashHeight, thumbnailsWidth) {
-        if (shellVersion < 42) {
-            thumbnailsWidth = dashHeight;
-            dashHeight = thumbnailsWidth;
-            searchHeight = dashHeight;
-            workAreaBox = box;
-        }
         const workspaceBox = box.copy();
         const [width, height] = workspaceBox.get_size();
         const { y1: startY } = workAreaBox;
