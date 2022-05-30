@@ -14,9 +14,19 @@ function init() {
 }
 
 function enable() {
-    VerticalWorkspaces.activate();
+    enableTimeoutId = GLib.timeout_add(
+        GLib.PRIORITY_DEFAULT,
+        700,
+        () => {
+            VerticalWorkspaces.activate();
+        }
+    );
 }
 
 function disable() {
     VerticalWorkspaces.reset();
+    if (enableTimeoutId) {
+        GLib.source_remove(enableTimeoutId);
+        enableTimeoutId = 0;
+    }
 }
