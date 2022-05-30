@@ -26,8 +26,9 @@ const shellVersion = Settings.shellVersion;
 const _Util = Me.imports.util;
 
 
-// for some reason touching the SecondaryMonitorDisplay for the first time returns undefined in GS 42, so we touch it bere we use it
+// for some reason touching these for the first time returns undefined in GS 42, so we touch it here before we use it
 WorkspacesView.SecondaryMonitorDisplay;
+WorkspacesView.SECONDARY_WORKSPACE_SCALE
 
 let gOptions = null;
 let original_MAX_THUMBNAIL_SCALE;
@@ -62,7 +63,6 @@ let _baseAppViewInjections = {};
 let _wsDisplayVisibleSignalId;
 let _stateAdjustmentValueSignalId;
 
-let _appButtonSigHandlerId;
 let _shownOverviewSigId;
 let _hidingOverviewSigId;
 let _searchControllerSignalId;
@@ -83,6 +83,7 @@ function activate() {
 
     // move titles into window previews
     _injectWindowPreview();
+
     //_injectAppDisplay();
     
     // re-layout overview to better serve for vertical orientation
@@ -109,7 +110,6 @@ function activate() {
         if (dash !== _prevDash) {
             reset();
             activate(_verticalOverview);
-            //_connectAppButton();
             _prevDash = dash;
             dash._background.opacity = 0;
             return true;
@@ -172,11 +172,6 @@ function reset() {
     if (_searchControllerSignalId) {
         Main.overview._overview.controls._searchController.disconnect(_searchControllerSignalId);
         _searchControllerSignalId = 0;
-    }
-
-    if (_appButtonSigHandlerId) {
-        Main.overview.dash.showAppsButton.disconnect(_appButtonSigHandlerId);
-        _appButtonSigHandlerId = 0;
     }
 
     for (let name in _windowPreviewInjections) {
@@ -263,18 +258,6 @@ function _moveDashAppGridIcon(reset = false) {
         container.remove_actor(target);
         container.add_actor(target);
     }
-}
-
-function _connectAppButton() {
-    if (_appButtonSigHandlerId)
-        Main,overview.dash.showAppsButton.disconnect(_appButtonSigHandlerId);
-    _appButtonSigHandlerId = Main.overview.dash.showAppsButton.connect('notify::checked', (w) => {
-        if (w.checked) {
-            global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, 1, -1);
-        } else {
-            global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
-        }
-    });
 }
 
 // ---- workspacesView ----------------------------------------
@@ -424,6 +407,7 @@ var SecondaryMonitorDisplayOverride = {
 
         const thumbnailsWidth = this._getThumbnailsWidth(contentBox);
         let [, thumbnailsHeight] = this._thumbnails.get_preferred_height(thumbnailsWidth);
+
         thumbnailsHeight = Math.min(thumbnailsHeight, height - 2 * spacing);
 
         if (this._thumbnails.visible) {
