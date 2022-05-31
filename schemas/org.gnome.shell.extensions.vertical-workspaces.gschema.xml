@@ -13,5 +13,11 @@
     <key type="i" name="show-app-icon-position">
       <default>0</default>
     </key>
+    <key type="i" name="ws-thumbnail-scale">
+      <default>13</default>
+    </key>
+    <key type="i" name="dash-max-scale">
+      <default>15</default>
+    </key>
   </schema>
 </schemalist>

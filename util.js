@@ -1,3 +1,4 @@
+// Modified monul od Vertical Overview extension
 const Gi = imports._gi;
 const Config = imports.misc.config;
 const shellVersion = parseFloat(Config.PACKAGE_VERSION);

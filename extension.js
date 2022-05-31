@@ -1,4 +1,4 @@
-// Workspace Switcher Manager
+// Vertical Workpaces
 // GPL v3 ©G-dH@Github.com
 'use strict';
 

@@ -1,4 +1,4 @@
-// Workspace Switcher Manager
+// Vertical Workspaces
 // GPL v3 ©G-dH@Github.com
 'use strict';
 
@@ -20,7 +20,6 @@ try { Adw = imports.gi.Adw; } catch (e) {}
 let gOptions;
 let stackSwitcher;
 let stack;
-let windowWidget;
 
 // conversion of Gtk3 / Gtk4 widgets add methods
 const append = shellVersion < 40 ? 'add' : 'append';
@@ -48,11 +47,7 @@ function fillPreferencesWindow(window) {
     });
 
     window.add(generalOptionsPage);
-
     window.set_search_enabled(true);
-
-    windowWidget = window;
-
     window.connect('close-request', _onDestroy);
 
     /*const width = 600;
@@ -65,7 +60,6 @@ function fillPreferencesWindow(window) {
 function _onDestroy() {
     gOptions.destroy();
     gOptions = null;
-    windowWidget = null;
 }
 
 
@@ -128,7 +122,6 @@ function buildPrefsWidget() {
         /*const width = 600;
         const height = 800;
         window.set_default_size(width, height);*/
-
         
         const headerbar = window.get_titlebar();
         if (shellVersion >= 40) {
@@ -145,9 +138,7 @@ function buildPrefsWidget() {
 }
 
 ///////////////////////////////////////////////////
-function getAdwPage(optionList, pageProperties = {}) {
-    /*const groupWidth = 800;
-    pageProperties.width_request = groupWidth + 100;*/
+function getAdwPage(optionList, pageProperties = {width_request: 800}) {
     const page = new Adw.PreferencesPage(pageProperties);
     let group;
     for (let item of optionList) {
@@ -172,7 +163,7 @@ function getAdwPage(optionList, pageProperties = {}) {
         });
 
         const grid = new Gtk.Grid({
-            column_homogeneous: false,
+            column_homogeneous: true,
             column_spacing: 10,
             margin_start: 8,
             margin_end: 8,
@@ -567,6 +558,48 @@ function _getGeneralOptionList() {
                 [_('Right'), 1],
                 [_('Default'), 2],
             ]
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Scale'),
+        )
+    );
+
+    const wsThumbnailScaleAdjustment = new Gtk.Adjustment({
+        upper: 30,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const wsThumbnailScale = _newScale(wsThumbnailScaleAdjustment);
+    wsThumbnailScale.add_mark(13, Gtk.PositionType.TOP, null);
+    optionList.push(
+        _optionsItem(
+            _('Workspace Thumbnails Max Scale'),
+            _('Adjusts size of the workspace switcher.'),
+            wsThumbnailScale,
+            'wsThumbnailScale'
+        )
+    );
+
+    const dashScaleAdjustment = new Gtk.Adjustment({
+        upper: 15,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const dashMaxScale = _newScale(dashScaleAdjustment);
+    dashMaxScale.add_mark(15, Gtk.PositionType.TOP, null);
+    optionList.push(
+        _optionsItem(
+            _('Dash Height Max Scale'),
+            _('Adjusts maximum size of the Dash. Size of Dash icons change its size in steps 64 > 48 > 32 > 24'),
+            dashMaxScale,
+            'dashMaxScale'
         )
     );
 

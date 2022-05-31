@@ -1,4 +1,4 @@
-// Workspace Switcher Manager
+// Vertical Vorkspaces
 // GPL v3 ©G-dH@Github.com
 'use strict';
 
@@ -19,11 +19,29 @@ var Options = class Options {
     constructor() {
         this._gsettings = ExtensionUtils.getSettings(_schema);
         this._connectionIds = [];
+        this._writeTimeoutId = 0;
+        this._gsettings.delay();
+        this._gsettings.connect('changed', () => {
+            if (this._writeTimeoutId)
+                GLib.Source.remove(this._writeTimeoutId);
+
+            this._writeTimeoutId = GLib.timeout_add(
+                GLib.PRIORITY_DEFAULT,
+                300,
+                () => {
+                    this._gsettings.apply();
+                    this._writeTimeoutId = 0;
+                    return GLib.SOURCE_REMOVE;
+                }
+            );
+        });
         this.options = {
             workspaceThumbnailsPosition: ['int', 'ws-thumbnails-position'],
             secondaryWsThumbnailsPosition: ['int', 'secondary-ws-thumbnails-position'],
             dashPosition: ['int', 'dash-position'],
             showAppsIconPosition: ['int', 'show-app-icon-position'],
+            wsThumbnailScale: ['int', 'ws-thumbnail-scale'],
+            dashMaxScale: ['int', 'dash-max-scale']
         }
         this.cachedOptions = {};
 

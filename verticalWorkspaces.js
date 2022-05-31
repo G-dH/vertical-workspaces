@@ -1,4 +1,4 @@
-// Vertical Overvew Alternative
+// Vertical Workspaces
 // GPL v3 ©G-dH@Github.com
 'use strict';
 
@@ -71,6 +71,7 @@ let _prevDash;
 
 function activate() {
     gOptions = new Settings.Options();
+    gOptions.connect('changed', _updateSettings);
     if (Object.keys(verticalOverrides).length != 0)
         reset();
 
@@ -94,7 +95,7 @@ function activate() {
     verticalOverrides['DashItemContainer'] = _Util.overrideProto(Dash.DashItemContainer.prototype, DashItemContainerOverride);
 
     original_MAX_THUMBNAIL_SCALE = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
-    WorkspaceThumbnail.MAX_THUMBNAIL_SCALE *= 2;
+    WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale') / 100;
 
     const controlsManager = Main.overview._overview._controls;
 
@@ -195,6 +196,11 @@ function reset() {
     _prevDash = null;
     gOptions.destroy();
     gOptions = null;
+}
+
+function _updateSettings(settings, key) {
+    WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale') / 100;
+    DASH_MAX_HEIGHT_RATIO = gOptions.get('dashMaxScale') / 100;
 }
 
 //----- WindowPreview ------------------------------------------------------------------
@@ -852,18 +858,21 @@ var ControlsManagerLayoutOverride = {
         const [width, height] = workspaceBox.get_size();
         const { y1: startY } = workAreaBox;
         const { spacing } = this;
-        const { expandFraction } = this._workspacesThumbnails;
+        //const { expandFraction } = this._workspacesThumbnails;
 
         const dash = Main.overview.dash;
-        // DtD property only
+        // including Dash to Dock and clones properties for compatibility
+        const dashToDock = dash._isHorizontal !== undefined;
+        if (dashToDock)
+            dashHeight = dash.height;
         const dashVertical = dash._isHorizontal === false;
 
+        const dashTop = dashToDock ? dash._position === 0 : this._dash._positionTop; // 0 for bottom position in DtD
+
         const wsTmbLeft = this._workspacesThumbnails._positionLeft;
-        const dashTop = this._dash._positionTop;
 
         let wWidth;
         let wHeight;
-        let scale = 1;
 
         switch (state) {
         case OverviewControls.ControlsState.HIDDEN:
@@ -872,28 +881,38 @@ var ControlsManagerLayoutOverride = {
             break;
         case OverviewControls.ControlsState.WINDOW_PICKER:
         case OverviewControls.ControlsState.APP_GRID:
-            dashHeight = this._dash.visible ? dashHeight : 0;
+            dashHeight = dash.visible ? dashHeight : 0;
             wWidth = width
-                         - (dashVertical ? dash.width + spacing : spacing)
-                         - thumbnailsWidth - spacing;
-            wHeight = height -
-                          (dashVertical ? spacing : dashHeight + 2 * spacing);
+                        - spacing
+                        - (dashVertical ? dash.width + spacing : spacing)
+                        - (thumbnailsWidth ? thumbnailsWidth + spacing : 0)
+                        - 2 * spacing;
+            wHeight = height
+                        - (dashVertical ? 4 * spacing : (dashHeight ? dashHeight + spacing : 4 * spacing))
+                        - 3 * spacing;
+
+            if(dash._position === 2) {
+                wWidth *= 1 - (dashHeight / (height + dashHeight));
+            }
             const ratio = width / height;
-            scale = wWidth / (ratio * wHeight) * 0.94;
+            let wRatio = wWidth / wHeight;
+            let scale = ratio / wRatio;
+
+            if (scale > 1) {
+                wHeight = Math.round(wHeight / scale);
+                wWidth = Math.round(wHeight * ratio);
+            } else {
+                wWidth = Math.round(wWidth * scale);
+                wHeight = Math.round(wWidth / ratio);
+            }
 
             let xOffset = 0;
             let yOffset = 0;
 
-            yOffset = dashHeight ? spacing : ((wHeight - (wHeight * scale)) / 4) + (((height - wHeight - dashHeight - searchHeight) / 3));
-
-            if (scale < 1) {
-                wHeight *= scale;
-            }
-
-            wWidth = Math.round(wHeight * ratio);
+            yOffset = dashTop ? spacing : (((height - wHeight - (!dashVertical ? dashHeight : 0)) / 3));
 
             // move the workspace box to the middle of the screen, if possible
-            const centeredBoxX = (width - wWidth) / 2 + (dashVertical ? dash.width + spacing : 0) + (wsTmbLeft ? thumbnailsWidth + spacing : 0);
+            const centeredBoxX = (width - wWidth) / 2 + (dashVertical ? dash.width + spacing : 0) + (thumbnailsWidth && wsTmbLeft ? thumbnailsWidth + spacing : 0);
             xOffset = Math.min(centeredBoxX, width - wWidth - thumbnailsWidth - spacing);
 
             if (xOffset !== centeredBoxX) { // in this case xOffset holds max possible wsBoxX coordinance
@@ -904,7 +923,7 @@ var ControlsManagerLayoutOverride = {
             }
 
             const wsBoxX = Math.round(xOffset + ((thumbnailsWidth && wsTmbLeft) ? thumbnailsWidth : 0));
-            const wsBoxY = Math.round(startY + yOffset + ((dashHeight && dashTop) ? dashHeight : 3 * spacing) + (searchHeight ? searchHeight + spacing : 0));
+            const wsBoxY = Math.round(startY + yOffset + ((dashHeight && dashTop) ? dashHeight : spacing)/* + (searchHeight ? searchHeight + spacing : 0)*/);
             workspaceBox.set_origin(wsBoxX, wsBoxY);
             workspaceBox.set_size(wWidth, wHeight);
 
@@ -1010,7 +1029,6 @@ var ControlsManagerLayoutOverride = {
         thumbnailsWidth = Math.round(Math.min(
             thumbnailsWidth * expandFraction,
             width * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE));
-            let dockOffset = 0;
 
         const dash = Main.overview.dash;
         // Ubuntu Dash / Dash to Dock property only - is_horizontal
@@ -1029,7 +1047,7 @@ var ControlsManagerLayoutOverride = {
             this._workspacesThumbnails._positionLeft = true;
         }
         
-        childBox.set_origin(wstX, startY + ((dashHeight && DASH_TOP) ? dashHeight : (3 * spacing)));
+        childBox.set_origin(wstX, startY + ((dashHeight && DASH_TOP) ? dashHeight + spacing : (3 * spacing)));
 
         childBox.set_size(thumbnailsWidth, thumbnailsHeight);
         this._workspacesThumbnails.allocate(childBox);
