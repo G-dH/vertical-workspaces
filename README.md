@@ -5,7 +5,7 @@ GNOME Shell extension that changes horizontal layout of workspaces to vertical a
 Supported GNOME versions: 41, 42.
 
 ![Settings window](screenshots/screenshot.png)
-![Various Overview Layouts](screenshots/vertical-workspaces.png)
+![Various Overview Layouts](screenshots/vertical-workspaces.gif)
 
 
 ## Installing from GitHub repository
