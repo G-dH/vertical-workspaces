@@ -2,14 +2,16 @@
 
 GNOME Shell extension that changes horizontal layout of workspaces to vertical and adds customization of Activities Overview.
 
+Supported GNOME versions: 41, 42.
+
 ![Settings window](screenshots/screenshot.png)
-![Default Overview Layout](screenshots/screenshot0.png)
-![Custom Overview Layout](screenshots/screenshot1.png)
+![Various Overview Layouts](screenshots/vertical-workspaces.png)
 
 
-## Install from GitHub repository
-The most recent version in the repository is the one I'm currently running on my own systems, problems may occure, but usually nothing serious.
-Run following commands in the terminal (`git` needs to be installed, navigate to the directory you want to download the source):
+## Installing from GitHub repository
+The most recent version in the repository is the one I'm currently using on my own systems, problems may occure, but usually nothing serious.
+You may need to install `gettext` for successful installation.
+Navigate to the directory you want to download the source code and execute following commands in the terminal:
 
     git clone https://github.com/G-dH/vertical-workspaces.git
     cd workspace-switcher-manager/vertical-workspaces@G-dH.github.com/
