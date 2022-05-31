@@ -59,9 +59,9 @@ var DashPosition = {
 
 let verticalOverrides = {};
 let _windowPreviewInjections = {};
-let _baseAppViewInjections = {};
 let _wsDisplayVisibleSignalId;
 let _stateAdjustmentValueSignalId;
+let _appDisplayScrollConId;
 
 let _shownOverviewSigId;
 let _hidingOverviewSigId;
@@ -84,8 +84,6 @@ function activate() {
     // move titles into window previews
     _injectWindowPreview();
 
-    //_injectAppDisplay();
-    
     // re-layout overview to better serve for vertical orientation
     verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxOverride);
     verticalOverrides['WorkspaceThumbnail'] = _Util.overrideProto(WorkspaceThumbnail.WorkspaceThumbnail.prototype, WorkspaceThumbnailOverride);
@@ -118,7 +116,7 @@ function activate() {
          // Move dash above workspaces
         dash.get_parent().set_child_above_sibling(dash, null);
     });
-    
+
     _hidingOverviewSigId = Main.overview.connect('hiding', () => {
         // Move dash below workspaces before hiding the overview
         const appDisplay = Main.overview._overview.controls._workspacesDisplay;
@@ -134,12 +132,7 @@ function activate() {
         Main.overview.searchEntry.visible = Main.overview._overview.controls._searchController._searchActive;
     });
 
-    // app display to vertical, has issues - page indicator not working
-    /*let appDisplay = Main.overview._overview._controls._appDisplay;
-    appDisplay._orientation = Clutter.Orientation.VERTICAL;
-    appDisplay._grid.layoutManager._orientation = Clutter.Orientation.VERTICAL;
-    appDisplay._scrollView.set_policy(St.PolicyType.NEVER, St.PolicyType.EXTERNAL);
-    appDisplay._pageIndicators.vertical = true;*/
+    _setAppDisplayOrientation(true);
 }
 
 function reset() {
@@ -179,11 +172,6 @@ function reset() {
     }
     _windowPreviewInjections = {};
 
-    for (let name in _baseAppViewInjections) {
-        _Util.removeInjection(WindowPreview.WindowPreview.prototype, _baseAppViewInjections, name);
-    }
-    _baseAppViewInjections = {};
-
     _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, verticalOverrides['WorkspacesView']);
     _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, verticalOverrides['SecondaryMonitorDisplay']);
 
@@ -196,6 +184,8 @@ function reset() {
     _Util.overrideProto(Dash.DashItemContainer.prototype, verticalOverrides['DashItemContainer']);
     
     verticalOverrides = {}
+
+    _setAppDisplayOrientation(false);
 
     Main.overview.searchEntry.visible = true;
 
@@ -216,32 +206,56 @@ function _injectWindowPreview() {
         }
     );
 }
-// doesn't work, need more investigation
-function _injectAppDisplay() {
-    _baseAppViewInjections['_init'] = _Util.injectToFunction(
-        AppDisplay.BaseAppView.prototype, '_init', function() {
-            this._adjustment = this._scrollView.vscroll.adjustment;
-            this._adjustment.connect('notify::value', adj => {
-                this._updateFade();
-                const value = adj.value / adj.page_size;
-                this._pageIndicators.setCurrentPosition(value);
-        
-                const distanceToPage = Math.abs(Math.round(value) - value);
-                if (distanceToPage < 0.001) {
-                    this._hintContainer.opacity = 255;
-                    this._hintContainer.translationX = 0;
-                } else {
-                    this._hintContainer.remove_transition('opacity');
-                    let opacity = Math.clamp(
-                        255 * (1 - (distanceToPage * 2)),
-                        0, 255);
-        
-                    this._hintContainer.translationX = (Math.round(value) - value) * adj.page_size;
-                    this._hintContainer.opacity = opacity;
-                }
-            });
+
+//----- AppDisplay -------------------------------------------------------------------
+function _setAppDisplayOrientation(vertical = false) {
+    const CLUTTER_ORIENTATION = vertical ? Clutter.Orientation.VERTICAL : Clutter.Orientation.HORIZONTAL;
+    const scroll = vertical ? 'vscroll' : 'hscroll';
+    // app display to vertical, has issues - page indicator not working
+    // global appDisplay orientation switch is not built-in
+    let appDisplay = Main.overview._overview._controls._appDisplay;
+    // following line itself only changes in which axis will operate overshoot detection which switches appDisplay pages while dragging app icon to vertical
+    appDisplay._orientation = CLUTTER_ORIENTATION;
+    appDisplay._grid.layoutManager._orientation = CLUTTER_ORIENTATION;
+    if (vertical) {
+        appDisplay._scrollView.set_policy(St.PolicyType.NEVER, St.PolicyType.EXTERNAL);
+    } else {
+        appDisplay._scrollView.set_policy(St.PolicyType.EXTERNAL, St.PolicyType.NEVER);
+        if (_appDisplayScrollConId) {
+            appDisplay.disconnect(_appDisplayScrollConId);
+            _appDisplayScrollConId = 0;
         }
-    );
+    }
+
+    // vertical page indicator is not practical in given configuration...
+    //appDisplay._pageIndicators.vertical = true;
+
+    // value for page indicator is calculated from scroll adjustment, horizontal needs to be replaced by vertical
+    appDisplay._adjustment = appDisplay._scrollView[scroll].adjustment;
+
+    // no need to connect already connected signal (wasn't removed the original one before)
+    if (!vertical)
+        return;
+
+    _appDisplayScrollConId = appDisplay._adjustment.connect('notify::value', adj => {
+        appDisplay._updateFade();
+        const value = adj.value / adj.page_size;
+        appDisplay._pageIndicators.setCurrentPosition(value);
+
+        const distanceToPage = Math.abs(Math.round(value) - value);
+        if (distanceToPage < 0.001) {
+            appDisplay._hintContainer.opacity = 255;
+            appDisplay._hintContainer.translationX = 0;
+        } else {
+            appDisplay._hintContainer.remove_transition('opacity');
+            let opacity = Math.clamp(
+                255 * (1 - (distanceToPage * 2)),
+                0, 255);
+
+            appDisplay._hintContainer.translationX = (Math.round(value) - value) * adj.page_size;
+            appDisplay._hintContainer.opacity = opacity;
+        }
+    });
 }
 
 function _moveDashAppGridIcon(reset = false) {
@@ -1256,10 +1270,6 @@ function _updateWorkspacesDisplay() {
             this._workspacesDisplay.scale_y = (progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
             this._workspacesDisplay.reactive = workspacesDisplayVisible;
             this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
-            // following changes in which axis will operate overshoot detection which switches appDisplay pages while dragging app icon to vertical
-            // overall orientation of the grid and its pages stays horizontal, global orientation switch is not built-in
-            if (finalState === ControlsState.APP_GRID)
-                Main.overview._overview.controls._appDisplay._orientation = Clutter.Orientation.VERTICAL;
         }
     }
 
