@@ -26,9 +26,10 @@ const shellVersion = Settings.shellVersion;
 const _Util = Me.imports.util;
 
 
-// for some reason touching these for the first time returns undefined in GS 42, so we touch it here before we use it
+// touching modul properties defined by const/let for the first time returns undefined in GS 42, so we touch it here before we use it
 WorkspacesView.SecondaryMonitorDisplay;
-WorkspacesView.SECONDARY_WORKSPACE_SCALE
+WorkspacesView.SECONDARY_WORKSPACE_SCALE;
+WindowPreview.ICON_SIZE;
 
 let gOptions = null;
 let original_MAX_THUMBNAIL_SCALE;
@@ -59,13 +60,12 @@ var DashPosition = {
 
 let verticalOverrides = {};
 let _windowPreviewInjections = {};
-let _wsDisplayVisibleSignalId;
-let _stateAdjustmentValueSignalId;
+let _stateAdjustmentValueSigId;
 let _appDisplayScrollConId;
 
 let _shownOverviewSigId;
 let _hidingOverviewSigId;
-let _searchControllerSignalId;
+let _searchControllerSigId;
 let _verticalOverview;
 let _prevDash;
 
@@ -99,8 +99,7 @@ function activate() {
 
     const controlsManager = Main.overview._overview._controls;
 
-    _stateAdjustmentValueSignalId = controlsManager._stateAdjustment.connect("notify::value", _updateWorkspacesDisplay.bind(controlsManager));
-    //_wsDisplayVisibleSignalId = controlsManager._workspacesDisplay.connect("notify::visible", controlsManager._workspacesDisplay._updateWorkspacesViews.bind(controlsManager._workspacesDisplay));
+    _stateAdjustmentValueSigId = controlsManager._stateAdjustment.connect("notify::value", _updateWorkspacesDisplay.bind(controlsManager));
     
     _prevDash = Main.overview.dash;
     _shownOverviewSigId = Main.overview.connect('shown', () => {
@@ -129,7 +128,8 @@ function activate() {
     Main.overview.searchEntry.visible = false;
     _moveDashAppGridIcon();
 
-    _searchControllerSignalId =  Main.overview._overview.controls._searchController.connect('notify::search-active', (w) => {
+    _searchControllerSigId =  Main.overview._overview.controls._searchController.connect('notify::search-active', (w) => {
+        // show search entry only if the user starts typing, and hide it when leaving the search mode
         Main.overview.searchEntry.visible = Main.overview._overview.controls._searchController._searchActive;
     });
 
@@ -144,13 +144,9 @@ function reset() {
         WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = original_MAX_THUMBNAIL_SCALE;
 
     const controlsManager = Main.overview._overview._controls;
-    if (_stateAdjustmentValueSignalId) {
-        controlsManager._stateAdjustment.disconnect(_stateAdjustmentValueSignalId);
-        _stateAdjustmentValueSignalId = 0;
-    }
-    if (_wsDisplayVisibleSignalId) {
-        controlsManager._workspacesDisplay.disconnect(_wsDisplayVisibleSignalId);
-        _wsDisplayVisibleSignalId = 0;
+    if (_stateAdjustmentValueSigId) {
+        controlsManager._stateAdjustment.disconnect(_stateAdjustmentValueSigId);
+        _stateAdjustmentValueSigId = 0;
     }
 
     if (_shownOverviewSigId) {
@@ -163,9 +159,9 @@ function reset() {
         _hidingOverviewSigId = 0;
     }
 
-    if (_searchControllerSignalId) {
-        Main.overview._overview.controls._searchController.disconnect(_searchControllerSignalId);
-        _searchControllerSignalId = 0;
+    if (_searchControllerSigId) {
+        Main.overview._overview.controls._searchController.disconnect(_searchControllerSigId);
+        _searchControllerSigId = 0;
     }
 
     for (let name in _windowPreviewInjections) {

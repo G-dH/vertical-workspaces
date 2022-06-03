@@ -1,4 +1,4 @@
-// Modified monul od Vertical Overview extension
+// Credits - https://github.com/RensAlthuis/vertical-overview
 const Gi = imports._gi;
 const Config = imports.misc.config;
 const shellVersion = parseFloat(Config.PACKAGE_VERSION);

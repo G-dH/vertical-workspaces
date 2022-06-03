@@ -21,7 +21,7 @@ var Options = class Options {
         this._connectionIds = [];
         this._writeTimeoutId = 0;
         this._gsettings.delay();
-        this._gsettings.connect('changed', () => {
+        this.connect('changed', () => {
             if (this._writeTimeoutId)
                 GLib.Source.remove(this._writeTimeoutId);
 

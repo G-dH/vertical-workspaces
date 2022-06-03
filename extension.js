@@ -7,26 +7,28 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const VerticalWorkspaces = Me.imports.verticalWorkspaces;
 
-let enableTimeoutId = 0;
+let _enableTimeoutId = 0;
 
 function init() {
     ExtensionUtils.initTranslations();
 }
 
 function enable() {
-    enableTimeoutId = GLib.timeout_add(
+    _enableTimeoutId = GLib.timeout_add(
         GLib.PRIORITY_DEFAULT,
         700,
         () => {
             VerticalWorkspaces.activate();
+            _enableTimeoutId = 0;
+            return GLib.SOURCE_REMOVE;
         }
     );
 }
 
 function disable() {
     VerticalWorkspaces.reset();
-    if (enableTimeoutId) {
-        GLib.source_remove(enableTimeoutId);
-        enableTimeoutId = 0;
+    if (_enableTimeoutId) {
+        GLib.source_remove(_enableTimeoutId);
+        _enableTimeoutId = 0;
     }
 }

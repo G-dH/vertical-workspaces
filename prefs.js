@@ -597,7 +597,7 @@ function _getGeneralOptionList() {
     optionList.push(
         _optionsItem(
             _('Dash Height Max Scale'),
-            _('Adjusts maximum size of the Dash. Size of Dash icons change its size in steps 64 > 48 > 32 > 24'),
+            _('Adjusts maximum height of the Dash, app icons resize in steps: 64 - 48 - 32 - 24 - 16 px.'),
             dashMaxScale,
             'dashMaxScale'
         )
