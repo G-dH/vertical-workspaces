@@ -39,9 +39,12 @@ var Options = class Options {
             workspaceThumbnailsPosition: ['int', 'ws-thumbnails-position'],
             secondaryWsThumbnailsPosition: ['int', 'secondary-ws-thumbnails-position'],
             dashPosition: ['int', 'dash-position'],
+            centerDashToWs: ['boolean', 'center-dash-to-ws'],
             showAppsIconPosition: ['int', 'show-app-icon-position'],
             wsThumbnailScale: ['int', 'ws-thumbnail-scale'],
-            dashMaxScale: ['int', 'dash-max-scale']
+            dashMaxScale: ['int', 'dash-max-scale'],
+            centerSearch: ['boolean', 'center-search'],
+            centerAppGrid: ['boolean', 'center-app-grid'],
         }
         this.cachedOptions = {};
 

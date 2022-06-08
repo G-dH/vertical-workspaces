@@ -325,71 +325,8 @@ function _newScale(adjustment) {
     return scale;
 }
 
-function _newColorButton() {
-    const colorBtn = new Gtk.ColorButton({
-        hexpand: true,
-    });
-    colorBtn.set_use_alpha(true);
-    colorBtn.is_color_btn = true;
-
-    return colorBtn;
-}
-
-function _newColorResetBtn(colIndex, colorBtn) {
-    const colorReset = new Gtk.Button({
-        hexpand: false,
-        halign: Gtk.Align.END,
-    });
-    colorReset.set_tooltip_text(_('Reset color to default value'));
-
-    if (colorReset.set_icon_name) {
-        colorReset.set_icon_name('edit-clear-symbolic');
-    } else {
-        colorReset.add(Gtk.Image.new_from_icon_name('edit-clear-symbolic', Gtk.IconSize.BUTTON));
-    }
-    colorReset.connect('clicked', () =>{
-        const color = gOptions.get('defaultColors')[colIndex];
-        if (!color) return;
-        const rgba = colorBtn.get_rgba();
-        const success = rgba.parse(color);
-        if (success)
-            colorBtn.set_rgba(rgba);
-        gOptions.set(colorBtn._gsettingsVar, rgba.to_string());
-    });
-
-    return colorReset;
-}
-
-function _newColorButtonBox() {
-    const box = new Gtk.Box({
-        hexpand: true,
-        spacing: 4,
-    });
-
-    box.is_color_box = true;
-    return box;
-}
-
-function _newButton() {
-    const button = new Gtk.Button({
-        label: 'Apply',
-        hexpand: false,
-        vexpand: false,
-        halign: Gtk.Align.END,
-        valign: Gtk.Align.CENTER
-    });
-    button.is_button = true;
-
-    return button;
-}
-
-function _optionsItem(text, tooltip, widget, variable, options = []) {
-    /*if (widget && gOptions.get(variable) === undefined && variable != 'preset') {
-        throw new Error(
-            `Settings variable ${variable} doesn't exist, check your code dude!`
-        );
-    }*/
-    // item structure: [option(label/caption), widget]
+/*--------------------------------------------------------------------------------------- */
+function _optionsItem(text, caption, widget, variable, options = []) {
     let item = [];
     let label;
     if (widget) {
@@ -408,17 +345,17 @@ function _optionsItem(text, tooltip, widget, variable, options = []) {
 
         label[append](option);
 
-        if (tooltip) {
-            const caption = new Gtk.Label({
+        if (caption) {
+            const captionLbl = new Gtk.Label({
                 halign: Gtk.Align.START,
                 wrap: true,
                 xalign: 0
             })
-            const context = caption.get_style_context();
+            const context = captionLbl.get_style_context();
             context.add_class('dim-label');
             context.add_class('caption');
-            caption.set_text(tooltip);
-            label[append](caption);
+            captionLbl.set_text(caption);
+            label[append](captionLbl);
         }
 
     } else {
@@ -468,28 +405,6 @@ function _optionsItem(text, tooltip, widget, variable, options = []) {
 
     } else if (widget && widget.is_scale) {
         settings.bind(key, widget.adjustment, 'value', Gio.SettingsBindFlags.DEFAULT);
-
-    } else if (widget && (widget.is_color_btn || widget.is_color_box)) {
-        let colorBtn;
-        if (widget.is_color_box) {
-            colorBtn = widget.colorBtn;
-        } else {
-            colorBtn = widget;
-        }
-        const rgba = colorBtn.get_rgba();
-        rgba.parse(gOptions.get(variable));
-        colorBtn.set_rgba(rgba);
-
-        colorBtn.connect('color_set', () => {
-            gOptions.set(variable, `${colorBtn.get_rgba().to_string()}`);
-        });
-
-        settings.connect(`changed::${key}`,() => {
-            const rgba = colorBtn.get_rgba();
-            rgba.parse(gOptions.get(variable));
-            colorBtn.set_rgba(rgba);
-        });
-
     }
 
     return item;
@@ -500,7 +415,7 @@ function _optionsItem(text, tooltip, widget, variable, options = []) {
 function _getGeneralOptionList() {
     const optionList = [];
     // options item format:
-    // [text, tooltip, widget, settings-variable, options for combo]
+    // [text, caption, widget, settings-variable, options for combo]
 
     optionList.push(
         _optionsItem(
@@ -530,8 +445,8 @@ function _getGeneralOptionList() {
             _('The Apps icon in Dash'),
             _newComboBox(),
             'showAppsIconPosition',
-            [   [_('Left'), 0],
-                [_('Right'), 1],
+            [   [_('Start'), 0],
+                [_('End'), 1],
             ]
         )
     );
@@ -561,6 +476,34 @@ function _getGeneralOptionList() {
         )
     );
 
+    optionList.push(
+        _optionsItem(
+            _('Center Dash to Workspace'),
+            _('Dash will be centered to the workspace preview instead of the screen, if centered position is seleceted in the above option.'),
+            _newSwitch(),
+            'centerDashToWs',
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Center Search View'),
+            _('Search view will be centered to the display instead of the available space. If needed workspace thumbnails will be temporarilly scaled down to fit the search box. This option has bigger impact for narrower and small resolution displays.'),
+            _newSwitch(),
+            'centerSearch',
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Center App Grid'),
+            _('App grid in app view page will be centered to the display instead of the available space. This option may have impact on the size of the grid, more for narrower and small resolution displays, especially if workspace thumbnails are bigger.'),
+            _newSwitch(),
+            'centerAppGrid',
+        )
+    );
+
+    // ---------------------------------------------------------------
     optionList.push(
         _optionsItem(
             _('Scale'),

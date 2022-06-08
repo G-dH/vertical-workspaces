@@ -128,35 +128,7 @@ function activate() {
     Main.overview.searchEntry.visible = false;
     _moveDashAppGridIcon();
 
-    _searchControllerSigId =  Main.overview._overview.controls._searchController.connect('notify::search-active', (w) => {
-        // show search entry only if the user starts typing, and hide it when leaving the search mode
-        Main.overview.searchEntry.visible = Main.overview._overview.controls._searchController._searchActive;
-
-        // adjust size of workspace thumbnails if needed
-        const searchController = Main.overview._overview._controls._searchController;
-        const searchActive = searchController._searchActive;
-        let timeout = 0;
-        // before first search activation the search container is not yet allocated, we must wait until the transition animation ends
-        if (searchController._searchResults._content.allocation.x2 === -Infinity)
-            timeout = 300;
-        GLib.timeout_add(GLib.PRIORITY_DEFAULT, timeout, () => {
-            // the real width needs to be calculated from allocation coordinates
-            const searchAllocation = searchController._searchResults._content.allocation;
-            const searchWidth = searchAllocation.x2 - searchAllocation.x1;
-            const tmbBox = Main.overview._overview._controls._thumbnailsBox;
-            const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
-            const tmbBoxMaxWidth = (geometry.width - searchWidth - 50) / 2;
-            tmbBox.width = geometry.width * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
-            if (searchActive && tmbBox.width > tmbBoxMaxWidth) {
-                //tmbBox._originalWidth = tmbBox.width;
-                tmbBox.width = Math.round(tmbBoxMaxWidth);
-            } else {
-                if (tmbBox._originalWidth)
-                    tmbBox.width = geometry.width * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
-            }
-
-        });
-    });
+    _searchControllerSigId =  Main.overview._overview.controls._searchController.connect('notify::search-active', _updateSearchControlerView);
 
     _setAppDisplayOrientation(true);
     _updateSettings();
@@ -223,8 +195,49 @@ function reset() {
 //*************************************************************************************************
 
 function _updateSettings(settings, key) {
-    WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale') / 100;
-    DASH_MAX_HEIGHT_RATIO = gOptions.get('dashMaxScale') / 100;
+    switch (key) {
+        case 'ws-thumbnail-scale':
+            WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale') / 100;
+            // in case we adjusted actual thumbnail scale before, we need to update the value,
+            // otherwise the new scale constant can limit the size to smaller values but not above them
+            const width = global.display.get_monitor_geometry(global.display.get_primary_monitor()).width;
+            Main.overview._overview._controls._thumbnailsBox.width = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE * width;
+            break;
+        case 'dash-max-scale':
+            DASH_MAX_HEIGHT_RATIO = gOptions.get('dashMaxScale') / 100;
+    }
+}
+
+function _updateSearchControlerView() {
+    // show search entry only if the user starts typing, and hide it when leaving the search mode
+    Main.overview.searchEntry.visible = Main.overview._overview.controls._searchController._searchActive;
+
+    // adjust size of workspace thumbnails if needed
+    if (!gOptions.get('centerSearch'))
+        return;
+
+    const searchController = Main.overview._overview._controls._searchController;
+    const searchActive = searchController._searchActive;
+    let timeout = 0;
+    // before first search activation the search container is not yet allocated, we must wait until the transition animation ends
+    if (searchController._searchResults._content.allocation.x2 === -Infinity)
+        timeout = 300;
+    GLib.timeout_add(GLib.PRIORITY_DEFAULT, timeout, () => {
+        // the real width needs to be calculated from allocation coordinates
+        const searchAllocation = searchController._searchResults._content.allocation;
+        const searchWidth = searchAllocation.x2 - searchAllocation.x1;
+        const tmbBox = Main.overview._overview._controls._thumbnailsBox;
+        const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
+        const tmbBoxMaxWidth = (geometry.width - searchWidth - 50) / 2;
+        if (searchActive && tmbBox.width > tmbBoxMaxWidth) {
+            tmbBox._originalWidth = tmbBox.width;
+            tmbBox.width = Math.round(tmbBoxMaxWidth);
+        } else {
+            if (tmbBox._originalWidth)
+                tmbBox.width = tmbBox._originalWidth;
+        }
+
+    });
 }
 
 //----- WindowPreview ------------------------------------------------------------------
@@ -964,17 +977,18 @@ var ControlsManagerLayoutOverride = {
 
         const wsTmbLeft = this._workspacesThumbnails._positionLeft;
         const dashPosition = this._dash._position;
+        const centerAppGrid = gOptions.get('centerAppGrid');
         switch (state) {
         case ControlsState.HIDDEN:
         case ControlsState.WINDOW_PICKER:
-            appDisplayBox.set_origin(spacing + (wsTmbLeft ? thumbnailsWidth : 0), box.y2);
+            appDisplayBox.set_origin(centerAppGrid ? spacing + thumbnailsWidth : spacing + (wsTmbLeft ? thumbnailsWidth : 0), box.y2);
             break;
         case ControlsState.APP_GRID:
-            appDisplayBox.set_origin(spacing + (wsTmbLeft ? thumbnailsWidth : 0), startY + (dashPosition === 0 ? dashHeight : spacing));
+            appDisplayBox.set_origin(centerAppGrid ? spacing + thumbnailsWidth : spacing + (wsTmbLeft ? thumbnailsWidth : 0), startY + (dashPosition === 0 ? dashHeight : spacing));
             break;
         }
 
-        appDisplayBox.set_size(width - spacing - thumbnailsWidth, height - dashHeight - 2 * spacing);
+        appDisplayBox.set_size(centerAppGrid ? width - 2 * (thumbnailsWidth + spacing) : width - spacing - thumbnailsWidth, height - dashHeight - 2 * spacing);
         return appDisplayBox;
     },
 
@@ -1007,6 +1021,7 @@ var ControlsManagerLayoutOverride = {
 
         let dashPosition = gOptions.get('dashPosition');
         const DASH_CENTERED = (dashPosition === DashPosition.TOP_CENTER) || (dashPosition === DashPosition.BOTTOM_CENTER);
+        const DASH_CENTERED_WS = DASH_CENTERED && gOptions.get('centerDashToWs');
         const DASH_LEFT = dashPosition === DashPosition.TOP_LEFT || dashPosition === DashPosition.BOTTOM_LEFT;
         // convert position of the dock to Ubuntu Dock / Dash to Dock language
         dashPosition = dashPosition < DashPosition.BOTTOM_LEFT ? 0 : 2; // 0 - top, 2 - bottom
@@ -1015,10 +1030,12 @@ var ControlsManagerLayoutOverride = {
 
         let dashX, dashY;
         if (DASH_CENTERED) {
-            dashX = startX;//Math.max(spacing, (width - dashWidth) / 2);
-            dashWidth = width;
+            dashX = 0;//Math.max(spacing, (width - dashWidth) / 2);
+            if (!DASH_CENTERED_WS) {
+                dashWidth = width;
+            }
         } else if (DASH_LEFT) {
-            dashX = startX + spacing;
+            dashX = spacing;
         } else {
             dashX = width - spacing - dashWidth;
         }
@@ -1029,10 +1046,10 @@ var ControlsManagerLayoutOverride = {
             dashY = startY + height - dashHeight;
         }
 
-        childBox.set_origin(dashX, dashY);
+        /*childBox.set_origin(dashX, dashY);
         childBox.set_size(dashWidth, dashHeight);
 
-        this._dash.allocate(childBox);
+        this._dash.allocate(childBox);*/
         // dash cloud be other than the default, could be Dash to Dock
         // Dash to Dock has property _isHorizontal
         const dash = Main.overview.dash;
@@ -1078,6 +1095,23 @@ var ControlsManagerLayoutOverride = {
         childBox.set_size(thumbnailsWidth, thumbnailsHeight);
         this._workspacesThumbnails.allocate(childBox);
 
+        // Dash center to ws
+        if (DASH_CENTERED_WS) {
+            const wWidth = width - spacing - thumbnailsWidth - spacing - (dashVertical ? dashWidth + spacing : 0);
+            const offSet = Math.floor((wWidth - dashWidth) / 2);
+            if (offSet < 0) {
+                dashWidth = width;
+                dashX = 0;
+            } else {
+                dashX = (wsThumbnailsPosition ? 0 : thumbnailsWidth + spacing) + offSet;
+            }
+        }
+
+        childBox.set_origin(dashX, dashY);
+        childBox.set_size(dashWidth, dashHeight);
+
+        this._dash.allocate(childBox);
+
         // Workspaces
         let params = [box, workAreaBox, dashHeight, thumbnailsWidth];
         const transitionParams = this._stateAdjustment.getStateTransitionParams();
@@ -1114,7 +1148,7 @@ var ControlsManagerLayoutOverride = {
         searchEntryX = startX + searchXoffset;
         const searchEntryWidth = this._xAlignCenter ? width : width - 2 * spacing - thumbnailsWidth; // xAlignCenter is given by wsBox
 
-        let centerSearchView = true;
+        let centerSearchView = gOptions.get('centerSearch');
         if (centerSearchView) {
             childBox.set_origin(0, searchEntryY);
             childBox.set_size(width, searchHeight);
