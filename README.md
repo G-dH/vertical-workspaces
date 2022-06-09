@@ -14,7 +14,7 @@ You may need to install `gettext` for successful installation.
 Navigate to the directory you want to download the source code and execute following commands in the terminal:
 
     git clone https://github.com/G-dH/vertical-workspaces.git
-    cd workspace-switcher-manager/vertical-workspaces@G-dH.github.com/
+    cd vertical-workspaces/
     make install
 
 
