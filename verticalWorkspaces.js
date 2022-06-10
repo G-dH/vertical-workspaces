@@ -1025,7 +1025,7 @@ var ControlsManagerLayoutOverride = {
         const DASH_LEFT = dashPosition === DashPosition.TOP_LEFT || dashPosition === DashPosition.BOTTOM_LEFT;
         // convert position of the dock to Ubuntu Dock / Dash to Dock language
         dashPosition = dashPosition < DashPosition.BOTTOM_LEFT ? 0 : 2; // 0 - top, 2 - bottom
-        const DASH_TOP = dashPosition === 0;
+        let DASH_TOP = dashPosition === 0;
         this._dash._position = dashPosition;
 
         let dashX, dashY;
@@ -1059,6 +1059,7 @@ var ControlsManagerLayoutOverride = {
             dashHeight = dash.height;
             dashWidth = dash.width;
             dashPosition = dash._position;
+            DASH_TOP = dash._position === 0;
         }
         const dashVertical = [1, 3].includes(dashPosition);
 
