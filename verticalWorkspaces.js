@@ -891,7 +891,7 @@ var ControlsManagerOverride = {
 var ControlsManagerLayoutOverride = {
     _computeWorkspacesBoxForState: function(state, box, workAreaBox, dashHeight, thumbnailsWidth) {
         const workspaceBox = box.copy();
-        const [width, height] = workspaceBox.get_size();
+        let [width, height] = workspaceBox.get_size();
         const { y1: startY } = workAreaBox;
         const { spacing } = this;
         //const { expandFraction } = this._workspacesThumbnails;
@@ -899,8 +899,14 @@ var ControlsManagerLayoutOverride = {
         const dash = Main.overview.dash;
         // including Dash to Dock and clones properties for compatibility
         const dashToDock = dash._isHorizontal !== undefined;
-        if (dashToDock)
+        if (dashToDock) {
             dashHeight = dash.height;
+            // this is compensation for a bug relative to DtD bottom non-inteli hide position
+            // when workspace box width is caluculated well, but output width is bigger, although if you read the width, you get the originally calculated value
+            if (dash._isHorizontal && dash._position === 2) {
+                height -= dash.height
+            }
+        }
 
         const dashPosition = dash._position;
         const dashVertical = [1, 3].includes(dash._position);
@@ -927,7 +933,6 @@ var ControlsManagerLayoutOverride = {
             wHeight = height
                         - (dashVertical ? 4 * spacing : (dashHeight ? dashHeight + spacing : 4 * spacing))
                         - 3 * spacing;
-
             const ratio = width / height;
             let wRatio = wWidth / wHeight;
             let scale = ratio / wRatio;
@@ -976,19 +981,23 @@ var ControlsManagerLayoutOverride = {
         const { spacing } = this;
 
         const wsTmbLeft = this._workspacesThumbnails._positionLeft;
-        const dashPosition = this._dash._position;
+        const dash = Main.overview.dash;
+        const dashPosition = dash._position;
         const centerAppGrid = gOptions.get('centerAppGrid');
+
+        const appDisplayX = centerAppGrid ? spacing + thumbnailsWidth : 0 + (dashPosition === 3 ? dash.width + spacing : 0) + (wsTmbLeft ? thumbnailsWidth : 0);
         switch (state) {
         case ControlsState.HIDDEN:
         case ControlsState.WINDOW_PICKER:
-            appDisplayBox.set_origin(centerAppGrid ? spacing + thumbnailsWidth : spacing + (wsTmbLeft ? thumbnailsWidth : 0), box.y2);
+            appDisplayBox.set_origin(appDisplayX, box.y2);
             break;
         case ControlsState.APP_GRID:
-            appDisplayBox.set_origin(centerAppGrid ? spacing + thumbnailsWidth : spacing + (wsTmbLeft ? thumbnailsWidth : 0), startY + (dashPosition === 0 ? dashHeight : spacing));
+            appDisplayBox.set_origin(appDisplayX, startY + (dashPosition === 0 ? dashHeight : spacing));
             break;
         }
 
-        appDisplayBox.set_size(centerAppGrid ? width - 2 * (thumbnailsWidth + spacing) : width - spacing - thumbnailsWidth, height - dashHeight - 2 * spacing);
+        appDisplayBox.set_size(centerAppGrid ? width - 2 * (thumbnailsWidth + spacing) : width - spacing - thumbnailsWidth,
+                               height - ([0, 2].includes(dashPosition) ? dashHeight - 2 * spacing : 0));
         return appDisplayBox;
     },
 
