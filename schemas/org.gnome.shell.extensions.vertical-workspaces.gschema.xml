@@ -28,5 +28,8 @@
     <key type="i" name="dash-max-scale">
       <default>15</default>
     </key>
+    <key type="i" name="dash-bg-opacity">
+      <default>0</default>
+    </key>
   </schema>
 </schemalist>

@@ -124,7 +124,7 @@ function activate() {
         parent.set_child_above_sibling(appDisplay, null);
     });
 
-    Main.overview.dash._background.opacity = 0;
+    Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity') * 2.5);
     Main.overview.searchEntry.visible = false;
     _moveDashAppGridIcon();
 
@@ -205,6 +205,9 @@ function _updateSettings(settings, key) {
             break;
         case 'dash-max-scale':
             DASH_MAX_HEIGHT_RATIO = gOptions.get('dashMaxScale') / 100;
+            break;
+        case 'dash-bg-opacity':
+            Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity') * 2.5);
     }
 }
 
@@ -997,7 +1000,7 @@ var ControlsManagerLayoutOverride = {
         }
 
         appDisplayBox.set_size(centerAppGrid ? width - 2 * (thumbnailsWidth + spacing) : width - spacing - thumbnailsWidth,
-                               height - ([0, 2].includes(dashPosition) ? dashHeight - 2 * spacing : 0));
+                               height - ([0, 2].includes(dashPosition) ? dashHeight + 2 * spacing : 0));
         return appDisplayBox;
     },
 

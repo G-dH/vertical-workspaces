@@ -45,6 +45,7 @@ var Options = class Options {
             dashMaxScale: ['int', 'dash-max-scale'],
             centerSearch: ['boolean', 'center-search'],
             centerAppGrid: ['boolean', 'center-app-grid'],
+            dashBgOpacity: ['int', 'dash-bg-opacity']
         }
         this.cachedOptions = {};
 

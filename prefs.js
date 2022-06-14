@@ -465,8 +465,8 @@ function _getGeneralOptionList() {
 
     optionList.push(
         _optionsItem(
-            _('Workspace Switcher Position on Sondary Monitor'),
-            _('Allows you to place workspace switcher of the secondary monitor closer to the one on the primary monitor. Default option follows position of the primary workspace switcher.'),
+            _('Workspace Switcher Position on Secondary Monitor'),
+            _('Allows you to place workspace switcher of the secondary monitor closer to the one on the primary monitor. "Default" option follows position of the primary workspace switcher.'),
             _newComboBox(),
             'secondaryWsThumbnailsPosition',
             [   [_('Left'), 0],
@@ -506,7 +506,7 @@ function _getGeneralOptionList() {
     // ---------------------------------------------------------------
     optionList.push(
         _optionsItem(
-            _('Scale'),
+            _('Adjustments'),
         )
     );
 
@@ -522,7 +522,7 @@ function _getGeneralOptionList() {
     optionList.push(
         _optionsItem(
             _('Workspace Thumbnails Max Scale'),
-            _('Adjusts size of the workspace switcher.'),
+            _('Adjusts maximum size of the workspace switcher (% relative to display width).'),
             wsThumbnailScale,
             'wsThumbnailScale'
         )
@@ -540,12 +540,28 @@ function _getGeneralOptionList() {
     optionList.push(
         _optionsItem(
             _('Dash Height Max Scale'),
-            _('Adjusts maximum height of the Dash, app icons resize in steps: 64 - 48 - 32 - 24 - 16 px.'),
+            _('Adjusts maximum height of the default Dash (% relative to display height). App icons resize in steps: 64 - 48 - 32 - 24 - 16 px.'),
             dashMaxScale,
             'dashMaxScale'
         )
     );
 
+    const dashBgAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: 0,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const dashBgOpacityScale = _newScale(dashBgAdjustment);
+    optionList.push(
+        _optionsItem(
+            _('Dash Background Opacity'),
+            _('Adjusts opacity of the default background (%).'),
+            dashBgOpacityScale,
+            'dashBgOpacity'
+        )
+    );
     return optionList;
 }
 
