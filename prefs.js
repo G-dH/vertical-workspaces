@@ -25,8 +25,10 @@ let stack;
 const append = shellVersion < 40 ? 'add' : 'append';
 const set_child = shellVersion < 40 ? 'add' : 'set_child';
 
-const GENERAL_TITLE = _('General');
-const GENERAL_ICON = 'preferences-system-symbolic';
+const LAYOUT_TITLE = _('Layout');
+const LAYOUT_ICON = 'view-grid-symbolic';
+const ADJUSTMENTS_TITLE = _('Adjustments');
+const ADJUSTMENTS_ICON = 'preferences-other-symbolic';
 
 function _newImageFromIconName(name, size = null) {
     const args = shellVersion >= 40 ? [name] : [name, size];
@@ -41,12 +43,18 @@ function init() {
 
 // this function is called by GS42 if available and returns libadwaita prefes window
 function fillPreferencesWindow(window) {
-    const generalOptionsPage   = getAdwPage(_getGeneralOptionList(), {
-        title: GENERAL_TITLE,
-        icon_name: GENERAL_ICON,
+    const layoutOptionsPage = getAdwPage(_getLayoutOptionList(), {
+        title: LAYOUT_TITLE,
+        icon_name: LAYOUT_ICON
+    });
+    const adjustmentOptionsPage = getAdwPage(_getAdjustmentsOptionList(), {
+        title: ADJUSTMENTS_TITLE,
+        icon_name: ADJUSTMENTS_ICON
     });
 
-    window.add(generalOptionsPage);
+    window.add(layoutOptionsPage);
+    window.add(adjustmentOptionsPage);
+
     window.set_search_enabled(true);
     window.connect('close-request', _onDestroy);
 
@@ -87,10 +95,12 @@ function buildPrefsWidget() {
     stack.set_transition_duration(300);
     stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT);
 
-    stack.add_named(getLegacyPage(_getGeneralOptionList()), 'general');
+    stack.add_named(getLegacyPage(_getLayoutOptionList()), 'layout');
+    stack.add_named(getLegacyPage(_getAdjustmentsOptionList()), 'adjustments');
 
     const pagesBtns = [
-        [new Gtk.Label({ label: GENERAL_TITLE}), _newImageFromIconName(GENERAL_ICON, Gtk.IconSize.BUTTON)],
+        [new Gtk.Label({ label: LAYOUT_TITLE}), _newImageFromIconName(LAYOUT_ICON, Gtk.IconSize.BUTTON)],
+        [new Gtk.Label({ label: ADJUSTMENTS_TITLE}), _newImageFromIconName(ADJUSTMENTS_ICON, Gtk.IconSize.BUTTON)]
     ];
 
     let stBtn = stackSwitcher.get_first_child ? stackSwitcher.get_first_child() : null;
@@ -219,6 +229,8 @@ function getLegacyPage(optionList) {
                 margin_bottom: 2
             });
             lbl.set_markup(option); // option is plain text if item is section title
+            const context = lbl.get_style_context();
+            context.add_class('heading');
             mainBox[append](lbl);
             frame = new Gtk.Frame({
                 margin_bottom: 10,
@@ -412,7 +424,7 @@ function _optionsItem(text, caption, widget, variable, options = []) {
 
 //////////////////////////////////////////////////////////////////////
 
-function _getGeneralOptionList() {
+function _getLayoutOptionList() {
     const optionList = [];
     // options item format:
     // [text, caption, widget, settings-variable, options for combo]
@@ -503,7 +515,14 @@ function _getGeneralOptionList() {
         )
     );
 
-    // ---------------------------------------------------------------
+    return optionList;
+}
+
+function _getAdjustmentsOptionList() {
+    const optionList = [];
+    // options item format:
+    // [text, caption, widget, settings-variable, options for combo]
+
     optionList.push(
         _optionsItem(
             _('Adjustments'),
@@ -564,5 +583,3 @@ function _getGeneralOptionList() {
     );
     return optionList;
 }
-
-///////////////////////////////////////////////////
