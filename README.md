@@ -5,9 +5,9 @@ This extension does not offer vertical Dash but is compatible with Dash to Dock,
 
 Supported GNOME versions: 40, 41, 42.
 
+![Various Overview Layouts](screenshots/vertical-workspaces.gif)
 ![Settings window](screenshots/screenshot.png)
 ![Settings window](screenshots/screenshot1.png)
-![Various Overview Layouts](screenshots/vertical-workspaces.gif)
 
 
 ## Installing from GitHub repository
