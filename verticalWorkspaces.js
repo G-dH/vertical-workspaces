@@ -1,5 +1,6 @@
 // Vertical Workspaces
 // GPL v3 ©G-dH@Github.com
+// used parts of https://github.com/RensAlthuis/vertical-overview extension
 'use strict';
 
 const { Clutter, Gio, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
@@ -37,8 +38,8 @@ let original_MAX_THUMBNAIL_SCALE;
 var WORKSPACE_CUT_SIZE = 10;
 
 // keep adjacent workspaces out of the screen
-const WORKSPACE_MAX_SPACING = 250;
-const WORKSPACE_MIN_SPACING = 250;
+const WORKSPACE_MAX_SPACING = 350;
+const WORKSPACE_MIN_SPACING = 350;
 
 var DASH_MAX_HEIGHT_RATIO = 0.15;
 var DASH_ITEM_LABEL_SHOW_TIME = 150;
@@ -132,6 +133,10 @@ function activate() {
 
     _setAppDisplayOrientation(true);
     _updateSettings();
+
+    // workaround for mainstream bug - overview always shows workspace 1 instead of the active one after restart
+    Main.wm.actionMoveWorkspace(global.workspace_manager.get_active_workspace().get_neighbor(-2));
+    Main.wm.actionMoveWorkspace(global.workspace_manager.get_active_workspace().get_neighbor(-1));
 }
 
 function reset() {
@@ -239,7 +244,6 @@ function _updateSearchControlerView() {
             if (tmbBox._originalWidth)
                 tmbBox.width = tmbBox._originalWidth;
         }
-
     });
 }
 
@@ -249,6 +253,7 @@ function _injectWindowPreview() {
     _windowPreviewInjections['_init'] = _Util.injectToFunction(
         WindowPreview.WindowPreview.prototype, '_init', function() {
             this._title.get_constraints()[1].offset = - 1.3 * WindowPreview.ICON_SIZE;
+            this.set_child_above_sibling(this._title, null);
         }
     );
 }
@@ -268,7 +273,7 @@ function _setAppDisplayOrientation(vertical = false) {
     } else {
         appDisplay._scrollView.set_policy(St.PolicyType.EXTERNAL, St.PolicyType.NEVER);
         if (_appDisplayScrollConId) {
-            appDisplay.disconnect(_appDisplayScrollConId);
+            appDisplay._adjustment.disconnect(_appDisplayScrollConId);
             _appDisplayScrollConId = 0;
         }
     }
@@ -510,7 +515,7 @@ var SecondaryMonitorDisplayOverride = {
 }
 
 //------workspaceThumbnail------------------------------------------------------------------------
-
+Background.FADE_ANIMATION_TIME = 0;
 // WorkspaceThumbnail
 var WorkspaceThumbnailOverride = {
     after__init: function () {
@@ -520,12 +525,13 @@ var WorkspaceThumbnailOverride = {
             vignette: false,
             controlPosition: false,
         });
+        this.set_style('border-radius: 8px;');
+        //this._bgManager.backgroundActor.opacity = 100;
         this._viewport.set_child_below_sibling(this._bgManager.backgroundActor, null);
-
-        this.connect('destroy', (function () {
+        this.connect('destroy', function () {
             this._bgManager.destroy();
             this._bgManager = null;
-        }).bind(this));
+        }.bind(this));
     }
 }
 
@@ -913,7 +919,7 @@ var ControlsManagerLayoutOverride = {
 
         const dashPosition = dash._position;
         const dashVertical = [1, 3].includes(dash._position);
-        const dashTop = dash._position === 0;
+        const dashTop = dash._position === 0 && dash.visible;
 
         const wsTmbLeft = this._workspacesThumbnails._positionLeft;
 
