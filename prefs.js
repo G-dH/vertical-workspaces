@@ -11,8 +11,6 @@ const Settings       = Me.imports.settings;
 // gettext
 const _  = Settings._;
 
-const shellVersion = Settings.shellVersion;
-
 // libadwaita is available starting with GNOME Shell 42.
 let Adw = null;
 try { Adw = imports.gi.Adw; } catch (e) {}
@@ -21,20 +19,16 @@ let gOptions;
 let stackSwitcher;
 let stack;
 
-// conversion of Gtk3 / Gtk4 widgets add methods
-const append = shellVersion < 40 ? 'add' : 'append';
-const set_child = shellVersion < 40 ? 'add' : 'set_child';
-
 const LAYOUT_TITLE = _('Layout');
 const LAYOUT_ICON = 'view-grid-symbolic';
 const ADJUSTMENTS_TITLE = _('Adjustments');
 const ADJUSTMENTS_ICON = 'preferences-other-symbolic';
 
+
 function _newImageFromIconName(name, size = null) {
-    const args = shellVersion >= 40 ? [name] : [name, size];
+    const args = [name];
     return Gtk.Image.new_from_icon_name(...args);
 }
-
 
 function init() {
     ExtensionUtils.initTranslations(Me.metadata['gettext-domain']);
@@ -58,9 +52,9 @@ function fillPreferencesWindow(window) {
     window.set_search_enabled(true);
     window.connect('close-request', _onDestroy);
 
-    /*const width = 600;
-    const height = 800;
-    window.set_default_size(width, height);*/
+    const width = 600;
+    const height = 600;
+    window.set_default_size(width, height);
 
     return window;
 }
@@ -86,8 +80,6 @@ function buildPrefsWidget() {
         hexpand: true,
     });
 
-    if (shellVersion < 40) stackSwitcher.homogeneous = true;
-
     const context = stackSwitcher.get_style_context();
     context.add_class('caption');
 
@@ -109,8 +101,8 @@ function buildPrefsWidget() {
         const icon = pagesBtns[i][1];
         icon.margin_start = 30;
         icon.margin_end = 30;
-        box[append](icon);
-        box[append](pagesBtns[i][0]);
+        box.append(icon);
+        box.append(pagesBtns[i][0]);
         if (stackSwitcher.get_children) {
             stBtn = stackSwitcher.get_children()[i];
             stBtn.add(box);
@@ -129,19 +121,14 @@ function buildPrefsWidget() {
 
     prefsWidget.connect('realize', (widget) => {
         const window = widget.get_root ? widget.get_root() : widget.get_toplevel();
-        /*const width = 600;
-        const height = 800;
-        window.set_default_size(width, height);*/
+        const width = 600;
+        const height = 600;
+        window.set_default_size(width, height);
         
         const headerbar = window.get_titlebar();
-        if (shellVersion >= 40) {
-            headerbar.title_widget = stackSwitcher;
-        } else {
-            headerbar.custom_title = stackSwitcher;
-        }
+        headerbar.title_widget = stackSwitcher;
 
-        const signal = Gtk.get_major_version() === 3 ? 'destroy' : 'close-request';
-        window.connect(signal, _onDestroy);
+        window.connect('close-request', _onDestroy);
     });
 
     return prefsWidget;
@@ -231,15 +218,15 @@ function getLegacyPage(optionList) {
             lbl.set_markup(option); // option is plain text if item is section title
             const context = lbl.get_style_context();
             context.add_class('heading');
-            mainBox[append](lbl);
+            mainBox.append(lbl);
             frame = new Gtk.Frame({
                 margin_bottom: 10,
             });
             frameBox = new Gtk.ListBox({
                 selection_mode: null,
             });
-            mainBox[append](frame);
-            frame[set_child](frameBox);
+            mainBox.append(frame);
+            frame.set_child(frameBox);
             continue;
         }
         const grid = new Gtk.Grid({
@@ -257,10 +244,10 @@ function getLegacyPage(optionList) {
             grid.attach(widget, 6, 0, 3, 1);
         }
 
-        frameBox[append](grid);
+        frameBox.append(grid);
     }
 
-    page[set_child](mainBox);
+    page.set_child(mainBox);
     page.show_all && page.show_all();
 
     return page;
@@ -355,7 +342,7 @@ function _optionsItem(text, caption, widget, variable, options = []) {
         });
         option.set_markup(text);
 
-        label[append](option);
+        label.append(option);
 
         if (caption) {
             const captionLbl = new Gtk.Label({
@@ -367,7 +354,7 @@ function _optionsItem(text, caption, widget, variable, options = []) {
             context.add_class('dim-label');
             context.add_class('caption');
             captionLbl.set_text(caption);
-            label[append](captionLbl);
+            label.append(captionLbl);
         }
 
     } else {
