@@ -67,6 +67,7 @@ let _appDisplayScrollConId;
 let _shownOverviewSigId;
 let _hidingOverviewSigId;
 let _searchControllerSigId;
+let _wsTmbBoxResizeDelayId;
 let _verticalOverview;
 let _prevDash;
 
@@ -167,6 +168,11 @@ function reset() {
         _searchControllerSigId = 0;
     }
 
+    if (_wsTmbBoxResizeDelayId) {
+        GLib.source_remove(_wsTmbBoxResizeDelayId);
+        _wsTmbBoxResizeDelayId = 0;
+    }
+
     for (let name in _windowPreviewInjections) {
         _Util.removeInjection(WindowPreview.WindowPreview.prototype, _windowPreviewInjections, name);
     }
@@ -230,7 +236,7 @@ function _updateSearchControlerView() {
     // before first search activation the search container is not yet allocated, we must wait until the transition animation ends
     if (searchController._searchResults._content.allocation.x2 === -Infinity)
         timeout = 300;
-    GLib.timeout_add(GLib.PRIORITY_DEFAULT, timeout, () => {
+    _wsTmbBoxResizeDelayId =  GLib.timeout_add(GLib.PRIORITY_DEFAULT, timeout, () => {
         // the real width needs to be calculated from allocation coordinates
         const searchAllocation = searchController._searchResults._content.allocation;
         const searchWidth = searchAllocation.x2 - searchAllocation.x1;
@@ -244,6 +250,8 @@ function _updateSearchControlerView() {
             if (tmbBox._originalWidth)
                 tmbBox.width = tmbBox._originalWidth;
         }
+        _wsTmbBoxResizeDelayId = 0;
+        return GLib.SOURCE_REMOVE;
     });
 }
 
