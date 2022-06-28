@@ -1,7 +1,7 @@
 {
   "name": "Vertical Workspaces",
   "uuid": "vertical-workspaces@G-dH.github.com",
-  "description": "Changes the horizontal workspaces orientation and layout of Activities Overview to vertical.",
+  "description": "Changes the horizontal orientation of workspaces to vertical and adds customizations of the Activities Overview layout.",
   "shell-version": [
     "40",
     "41",
