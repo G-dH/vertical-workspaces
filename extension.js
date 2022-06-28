@@ -19,6 +19,7 @@ function enable() {
         700,
         () => {
             VerticalWorkspaces.activate();
+            log(`${Me.metadata.name}: enabled`);
             _enableTimeoutId = 0;
             return GLib.SOURCE_REMOVE;
         }
@@ -26,9 +27,11 @@ function enable() {
 }
 
 function disable() {
-    VerticalWorkspaces.reset();
     if (_enableTimeoutId) {
         GLib.source_remove(_enableTimeoutId);
         _enableTimeoutId = 0;
+    } else {
+        VerticalWorkspaces.reset();
     }
+    log(`${Me.metadata.name}: disabled`);
 }

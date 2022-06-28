@@ -1,4 +1,4 @@
-// Vertical Vorkspaces
+// Vertical Workspaces
 // GPL v3 ©G-dH@Github.com
 'use strict';
 
