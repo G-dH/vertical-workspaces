@@ -71,6 +71,8 @@ let _wsTmbBoxResizeDelayId;
 let _verticalOverview;
 let _prevDash;
 
+var _correctInitialOverviewWsBug;
+
 function activate() {
     gOptions = new Settings.Options();
     gOptions.connect('changed', _updateSettings);
@@ -136,8 +138,11 @@ function activate() {
     _updateSettings();
 
     // workaround for mainstream bug - overview always shows workspace 1 instead of the active one after restart
-    Main.wm.actionMoveWorkspace(global.workspace_manager.get_active_workspace().get_neighbor(-2));
-    Main.wm.actionMoveWorkspace(global.workspace_manager.get_active_workspace().get_neighbor(-1));
+    if (_correctInitialOverviewWsBug) {
+        Main.wm.actionMoveWorkspace(global.workspace_manager.get_active_workspace().get_neighbor(-2));
+        Main.wm.actionMoveWorkspace(global.workspace_manager.get_active_workspace().get_neighbor(-1));
+        _correctInitialOverviewWsBug = false;
+    }
 }
 
 function reset() {

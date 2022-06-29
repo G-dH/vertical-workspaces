@@ -11,6 +11,8 @@ let _enableTimeoutId = 0;
 
 function init() {
     ExtensionUtils.initTranslations();
+    // correct the view only after restart
+    VerticalWorkspaces._correctInitialOverviewWsBug = true;
 }
 
 function enable() {
