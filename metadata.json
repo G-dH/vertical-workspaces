@@ -1,7 +1,7 @@
 {
   "name": "Vertical Workspaces",
   "uuid": "vertical-workspaces@G-dH.github.com",
-  "description": "Changes the horizontal orientation of workspaces to vertical and adds customizations of the Activities Overview layout.\n\nPlease only report bugs and feature requests on the GitHub page linked below as Extension Homepage. Thank you.",
+  "description": "Changes the horizontal orientation of workspaces to vertical and adds customizations of the Activities Overview layout.\n\nPlease report bugs and feature requests on the GitHub page linked below as Extension Homepage. Thank you.",
   "shell-version": [
     "40",
     "41",
@@ -9,5 +9,5 @@
   ],
   "url": "https://github.com/G-dH/vertical-workspaces",
   "gettext-domain": "vertical-workspaces",
-  "version": 3
+  "version": 4
 }
