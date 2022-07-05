@@ -1045,11 +1045,11 @@ var ControlsManagerLayoutOverride = {
         const dashPosition = dash._position;
         const centerAppGrid = gOptions.get('centerAppGrid');
 
-        const appDisplayX = centerAppGrid ? spacing + thumbnailsWidth : 0 + (dashPosition === 3 ? dash.width + spacing : 0) + (wsTmbLeft ? thumbnailsWidth : 0);
+        const appDisplayX = centerAppGrid ? spacing + thumbnailsWidth : (dashPosition === 3 ? dash.width + spacing : 0) + (wsTmbLeft ? thumbnailsWidth : 0) + spacing;
 
         //const appDisplayX = centerAppGrid ? spacing + thumbnailsWidth : boxX;
 
-        const adWidth = centerAppGrid ? width - 2 * (thumbnailsWidth + spacing) : boxWidth;
+        const adWidth = centerAppGrid ? width - 2 * (thumbnailsWidth + spacing) : width - thumbnailsWidth - spacing;
         switch (state) {
         case ControlsState.HIDDEN:
         case ControlsState.WINDOW_PICKER:
