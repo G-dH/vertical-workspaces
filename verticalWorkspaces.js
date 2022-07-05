@@ -281,6 +281,7 @@ function _setAppDisplayOrientation(vertical = false) {
     // following line itself only changes in which axis will operate overshoot detection which switches appDisplay pages while dragging app icon to vertical
     appDisplay._orientation = CLUTTER_ORIENTATION;
     appDisplay._grid.layoutManager._orientation = CLUTTER_ORIENTATION;
+    appDisplay._swipeTracker.orientation = CLUTTER_ORIENTATION;
     if (vertical) {
         appDisplay._scrollView.set_policy(St.PolicyType.NEVER, St.PolicyType.EXTERNAL);
     } else {
