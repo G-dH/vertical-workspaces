@@ -103,7 +103,7 @@ function activate() {
 
     const controlsManager = Main.overview._overview._controls;
 
-    _stateAdjustmentValueSigId = controlsManager._stateAdjustment.connect("notify::value", _updateWorkspacesDisplay.bind(controlsManager));
+    _stateAdjustmentValueSigId = controlsManager._stateAdjustment.connect('notify::value', _updateWorkspacesDisplay.bind(controlsManager));
 
     _prevDash = Main.overview.dash;
     _shownOverviewSigId = Main.overview.connect('shown', () => {
@@ -400,7 +400,7 @@ var WorkspacesViewOverride = {
             WORKSPACE_MAX_SPACING * scaleFactor);
     },
 
-    // spread windows during entering appDisplay page to add some action (looks more natural)
+    // spread windows during entering appDisplay page from HIDDEN state to add some action (looks more natural)
     _getWorkspaceModeForOverviewState: function(state) {
         const { ControlsState } = OverviewControls;
 
@@ -414,6 +414,31 @@ var WorkspacesViewOverride = {
         }
 
         return 0;
+    },
+
+    _updateWorkspacesState: function() {
+        const adj = this._scrollAdjustment;
+        const fitMode = this._fitModeAdjustment.value;
+
+        const { initialState, finalState, progress } =
+            this._overviewAdjustment.getStateTransitionParams();
+
+        const workspaceMode = (1 - fitMode) * Util.lerp(
+            this._getWorkspaceModeForOverviewState(initialState),
+            this._getWorkspaceModeForOverviewState(finalState),
+            progress);
+
+        // Fade and scale inactive workspaces
+        this._workspaces.forEach((w, index) => {
+            w.stateAdjustment.value = workspaceMode;
+
+            const distanceToCurrentWorkspace = Math.abs(adj.value - index);
+
+            const scaleProgress = 1 - Math.clamp(distanceToCurrentWorkspace, 0, 1);
+
+            const scale = Util.lerp(1, 1, scaleProgress);
+            w.set_scale(scale, scale);
+        });
     }
 }
 
@@ -891,6 +916,7 @@ var ControlsManagerOverride = {
             case ControlsState.WINDOW_PICKER:
                 return WorkspacesView.FitMode.SINGLE;
             case ControlsState.APP_GRID:
+                //areturn WorkspacesView.FitMode.ALL;
                 return WorkspacesView.FitMode.SINGLE;
             default:
                 return WorkspacesView.FitMode.SINGLE;
@@ -920,7 +946,7 @@ var ControlsManagerLayoutOverride = {
     _computeWorkspacesBoxForState: function(state, box, workAreaBox, dashHeight, thumbnailsWidth) {
         const workspaceBox = box.copy();
         let [width, height] = workspaceBox.get_size();
-        const { y1: startY } = workAreaBox;
+        const { x1: startX, y1: startY } = workAreaBox;
         const { spacing } = this;
         //const { expandFraction } = this._workspacesThumbnails;
 
@@ -944,6 +970,7 @@ var ControlsManagerLayoutOverride = {
 
         let wWidth;
         let wHeight;
+        let wsBoxY;
 
         switch (state) {
         case OverviewControls.ControlsState.HIDDEN:
@@ -991,8 +1018,9 @@ var ControlsManagerLayoutOverride = {
             }
 
             const wsBoxX = Math.round(xOffset);
-            const wsBoxY = Math.round(startY + yOffset + ((dashHeight && dashTop) ? dashHeight : spacing)/* + (searchHeight ? searchHeight + spacing : 0)*/);
-            workspaceBox.set_origin(wsBoxX, wsBoxY);
+            wsBoxY = Math.round(startY + yOffset + ((dashHeight && dashTop) ? dashHeight : spacing)/* + (searchHeight ? searchHeight + spacing : 0)*/);
+
+            workspaceBox.set_origin(Math.round(wsBoxX), Math.round(wsBoxY));
             workspaceBox.set_size(wWidth, wHeight);
 
             break;
@@ -1001,12 +1029,16 @@ var ControlsManagerLayoutOverride = {
         return workspaceBox;
     },
 
-    _getAppDisplayBoxForState: function(state, box, workAreaBox, searchHeight, dashHeight, appGridBox, thumbnailsWidth) {
-        const [width, height] = box.get_size();
-        const { y1: startY } = workAreaBox;
+    _getAppDisplayBoxForState: function(state, box, workAreaBox, /*searchHeight, dashHeight,*/ appGridBox, thumbnailsWidth) {
+        const [width] = box.get_size();
         const { x1: startX } = workAreaBox;
+        const { x1: boxX } = appGridBox;
+        const { y1: boxY } = appGridBox;
+        const boxWidth = appGridBox.get_width();
+        const boxHeight = appGridBox.get_height();
         const appDisplayBox = new Clutter.ActorBox();
         const { spacing } = this;
+
 
         const wsTmbLeft = this._workspacesThumbnails._positionLeft;
         const dash = Main.overview.dash;
@@ -1014,18 +1046,21 @@ var ControlsManagerLayoutOverride = {
         const centerAppGrid = gOptions.get('centerAppGrid');
 
         const appDisplayX = centerAppGrid ? spacing + thumbnailsWidth : 0 + (dashPosition === 3 ? dash.width + spacing : 0) + (wsTmbLeft ? thumbnailsWidth : 0);
+
+        //const appDisplayX = centerAppGrid ? spacing + thumbnailsWidth : boxX;
+
+        const adWidth = centerAppGrid ? width - 2 * (thumbnailsWidth + spacing) : boxWidth;
         switch (state) {
         case ControlsState.HIDDEN:
         case ControlsState.WINDOW_PICKER:
-            appDisplayBox.set_origin(appDisplayX, box.y2);
+            appDisplayBox.set_origin(startX + width, boxY);
             break;
         case ControlsState.APP_GRID:
-            appDisplayBox.set_origin(appDisplayX, startY + (dashPosition === 0 ? dashHeight : spacing));
+            appDisplayBox.set_origin(appDisplayX, boxY);
             break;
         }
 
-        appDisplayBox.set_size(centerAppGrid ? width - 2 * (thumbnailsWidth + spacing) : width - spacing - thumbnailsWidth,
-                               height - ([0, 2].includes(dashPosition) ? dashHeight + 2 * spacing : 0));
+        appDisplayBox.set_size(adWidth, boxHeight);
         return appDisplayBox;
     },
 
@@ -1199,12 +1234,12 @@ var ControlsManagerLayoutOverride = {
 
         availableHeight -= searchHeight + spacing;
 
-        // AppDisplay
+        // AppDisplay - state, box, workAreaBox, searchHeight, dashHeight, appGridBox, thumbnailsWidth
         if (this._appDisplay.visible) {
             const workspaceAppGridBox =
                 this._cachedWorkspaceBoxes.get(ControlsState.APP_GRID);
 
-            params = [box, workAreaBox, searchHeight, dashHeight, workspaceAppGridBox, thumbnailsWidth];
+            params = [box, workAreaBox, /*searchHeight, dashHeight,*/ workspaceAppGridBox, thumbnailsWidth];
             let appDisplayBox;
             if (!transitionParams.transitioning) {
                 appDisplayBox =
@@ -1363,35 +1398,41 @@ function _updateWorkspacesDisplay() {
 
     const paramsForState = s => {
         let opacity;
+//        let scale;
         switch (s) {
             case ControlsState.HIDDEN:
             case ControlsState.WINDOW_PICKER:
                 opacity = 255;
+//                scale = 1;
                 break;
             case ControlsState.APP_GRID:
                 opacity = 0;
+//                scale = 0;
                 break;
             default:
                 opacity = 255;
+//                scale = 1;
                 break;
         }
-        return { opacity };
+        return { opacity/*, scale*/ };
     };
 
     let initialParams = paramsForState(initialState);
     let finalParams = paramsForState(finalState);
 
     let opacity = Math.round(Util.lerp(initialParams.opacity, finalParams.opacity, progress));
+    let scale = Util.lerp(initialParams.scale, finalParams.scale, progress);
 
     let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
     let params = {
         opacity: opacity,
+        //scale_x: scale,
         duration: 0,
         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
         onComplete: () => {
             // workspacesDisplay needs to go off screen, otherwise it blocks DND operations within the App Display
             // but the 'visibile' property ruins transition animation and breakes workspace control
-            // scale_y = 0 works like visibile = 0 but without collateral damage
+            // scale_y = 0 works like visibile = false but without collateral damage
             this._workspacesDisplay.scale_y = (progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
             this._workspacesDisplay.reactive = workspacesDisplayVisible;
             this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
