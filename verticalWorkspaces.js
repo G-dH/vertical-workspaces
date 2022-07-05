@@ -143,6 +143,9 @@ function activate() {
         Main.wm.actionMoveWorkspace(global.workspace_manager.get_active_workspace().get_neighbor(-1));
         _correctInitialOverviewWsBug = false;
     }
+
+    // reverse swipe gestures for enter/leave overview and ws switching
+    Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
 }
 
 function reset() {
@@ -193,6 +196,8 @@ function reset() {
     _Util.overrideProto(Workspace.WorkspaceLayout.prototype, verticalOverrides['WorkspaceLayout']);
     _Util.overrideProto(AppDisplay.BaseAppView.prototype, verticalOverrides['BaseAppView']);
     _Util.overrideProto(Dash.DashItemContainer.prototype, verticalOverrides['DashItemContainer']);
+
+    Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
 
     verticalOverrides = {}
 
