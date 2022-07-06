@@ -5,6 +5,8 @@ This extension does not offer vertical Dash but is compatible with Dash to Dock,
 
 Supported GNOME versions: 40, 41, 42.
 
+[<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
+
 ![Various Overview Layouts](screenshots/vertical-workspaces.gif)
 ![Settings window](screenshots/screenshot.png)
 ![Settings window](screenshots/screenshot1.png)
