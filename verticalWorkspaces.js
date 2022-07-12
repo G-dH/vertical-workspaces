@@ -1,6 +1,7 @@
 // Vertical Workspaces
 // GPL v3 ©G-dH@Github.com
 // used parts of https://github.com/RensAlthuis/vertical-overview extension
+
 'use strict';
 
 const { Clutter, Gio, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
@@ -117,7 +118,7 @@ function activate() {
             return true;
         }
 
-         // Move dash above workspaces
+        // Move dash above workspaces
         dash.get_parent().set_child_above_sibling(dash, null);
     });
 
@@ -146,6 +147,9 @@ function activate() {
 
     // reverse swipe gestures for enter/leave overview and ws switching
     Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
+
+    // switch PageUp/PageDown workspace switcher shortcuts
+    _switchPageShortcuts();
 }
 
 function reset() {
@@ -211,6 +215,9 @@ function reset() {
     _prevDash = null;
     gOptions.destroy();
     gOptions = null;
+
+    // switch PageUp/PageDown workspace switcher shortcuts
+    _switchPageShortcuts();
 }
 
 //*************************************************************************************************
@@ -218,17 +225,20 @@ function reset() {
 function _updateSettings(settings, key) {
     switch (key) {
         case 'ws-thumbnail-scale':
-            WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale') / 100;
+            WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale', true) / 100;
             // in case we adjusted actual thumbnail scale before, we need to update the value,
             // otherwise the new scale constant can limit the size to smaller values but not above them
             const width = global.display.get_monitor_geometry(global.display.get_primary_monitor()).width;
             Main.overview._overview._controls._thumbnailsBox.width = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE * width;
             break;
         case 'dash-max-scale':
-            DASH_MAX_HEIGHT_RATIO = gOptions.get('dashMaxScale') / 100;
+            DASH_MAX_HEIGHT_RATIO = gOptions.get('dashMaxScale', true) / 100;
             break;
         case 'dash-bg-opacity':
-            Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity') * 2.5);
+            Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5);
+            break;
+        case 'enable-page-shortcuts':
+            _switchPageShortcuts();
     }
 }
 
@@ -265,6 +275,72 @@ function _updateSearchControlerView() {
     });
 }
 
+function _switchPageShortcuts() {
+    if (!gOptions.get('enablePageShortcuts'))
+        return;
+
+    const vertical = global.workspaceManager.layout_rows === -1;
+    const schema  = 'org.gnome.desktop.wm.keybindings';
+    const settings = ExtensionUtils.getSettings(schema);
+
+    const keyLeft = 'switch-to-workspace-left';
+    const keyRight = 'switch-to-workspace-right';
+    const keyUp = 'switch-to-workspace-up';
+    const keyDown = 'switch-to-workspace-down';
+
+    const keyMoveLeft = 'move-to-workspace-left';
+    const keyMoveRight = 'move-to-workspace-right';
+    const keyMoveUp = 'move-to-workspace-up';
+    const keyMoveDown = 'move-to-workspace-down';
+
+    const switchPrevSc = '<Super>Page_Up';
+    const switchNextSc = '<Super>Page_Down';
+    const movePrevSc = '<Super><Shift>Page_Up';
+    const moveNextSc = '<Super><Shift>Page_Down';
+
+    let switchLeft = settings.get_strv(keyLeft);
+    let switchRight = settings.get_strv(keyRight);
+    let switchUp = settings.get_strv(keyUp);
+    let switchDown = settings.get_strv(keyDown);
+
+    let moveLeft = settings.get_strv(keyMoveLeft);
+    let moveRight = settings.get_strv(keyMoveRight);
+    let moveUp = settings.get_strv(keyMoveUp);
+    let moveDown = settings.get_strv(keyMoveDown);
+
+    if (vertical) {
+        switchLeft.includes(switchPrevSc)  && switchLeft.splice(switchLeft.indexOf(switchPrevSc), 1);
+        switchRight.includes(switchNextSc) && switchRight.splice(switchRight.indexOf(switchNextSc), 1);
+        moveLeft.includes(movePrevSc)      && moveLeft.splice(moveLeft.indexOf(movePrevSc), 1);
+        moveRight.includes(moveNextSc)     && moveRight.splice(moveRight.indexOf(moveNextSc), 1);
+
+        switchUp.includes(switchPrevSc)    || switchUp.push(switchPrevSc);
+        switchDown.includes(switchNextSc)  || switchDown.push(switchNextSc);
+        moveUp.includes(movePrevSc)        || moveUp.push(movePrevSc);
+        moveDown.includes(moveNextSc)      || moveDown.push(moveNextSc);
+    } else {
+        switchLeft.includes(switchPrevSc)  || switchLeft.push(switchPrevSc);
+        switchRight.includes(switchNextSc) || switchRight.push(switchNextSc);
+        moveLeft.includes(movePrevSc)      || moveLeft.push(movePrevSc);
+        moveRight.includes(moveNextSc)     || moveRight.push(moveNextSc);
+
+        switchUp.includes(switchPrevSc)    && switchUp.splice(switchUp.indexOf(switchPrevSc), 1);
+        switchDown.includes(switchNextSc)  && switchDown.splice(switchDown.indexOf(switchNextSc), 1);
+        moveUp.includes(movePrevSc)        && moveUp.splice(moveUp.indexOf(movePrevSc), 1);
+        moveDown.includes(moveNextSc)      && moveDown.splice(moveDown.indexOf(moveNextSc), 1);
+    }
+
+    settings.set_strv(keyLeft, switchLeft);
+    settings.set_strv(keyRight, switchRight);
+    settings.set_strv(keyUp, switchUp);
+    settings.set_strv(keyDown, switchDown);
+
+    settings.set_strv(keyMoveLeft, moveLeft);
+    settings.set_strv(keyMoveRight, moveRight);
+    settings.set_strv(keyMoveUp, moveUp);
+    settings.set_strv(keyMoveDown, moveDown);
+}
+
 //----- WindowPreview ------------------------------------------------------------------
 
 function _injectWindowPreview() {
@@ -280,7 +356,7 @@ function _injectWindowPreview() {
 function _setAppDisplayOrientation(vertical = false) {
     const CLUTTER_ORIENTATION = vertical ? Clutter.Orientation.VERTICAL : Clutter.Orientation.HORIZONTAL;
     const scroll = vertical ? 'vscroll' : 'hscroll';
-    // app display to vertical, has issues - page indicator not working
+    // app display to vertical has issues - page indicator not working
     // global appDisplay orientation switch is not built-in
     let appDisplay = Main.overview._overview._controls._appDisplay;
     // following line itself only changes in which axis will operate overshoot detection which switches appDisplay pages while dragging app icon to vertical
@@ -416,6 +492,7 @@ var WorkspacesViewOverride = {
         return 0;
     },
 
+    // this is only changing WORKSPACE_INACTIVE_SCALE to 1
     _updateWorkspacesState: function() {
         const adj = this._scrollAdjustment;
         const fitMode = this._fitModeAdjustment.value;
@@ -916,7 +993,7 @@ var ControlsManagerOverride = {
             case ControlsState.WINDOW_PICKER:
                 return WorkspacesView.FitMode.SINGLE;
             case ControlsState.APP_GRID:
-                //areturn WorkspacesView.FitMode.ALL;
+                //return WorkspacesView.FitMode.ALL;
                 return WorkspacesView.FitMode.SINGLE;
             default:
                 return WorkspacesView.FitMode.SINGLE;
@@ -973,12 +1050,12 @@ var ControlsManagerLayoutOverride = {
         let wsBoxY;
 
         switch (state) {
-        case OverviewControls.ControlsState.HIDDEN:
+        case ControlsState.HIDDEN:
             workspaceBox.set_origin(...workAreaBox.get_origin());
             workspaceBox.set_size(...workAreaBox.get_size());
             break;
-        case OverviewControls.ControlsState.WINDOW_PICKER:
-        case OverviewControls.ControlsState.APP_GRID:
+        case ControlsState.WINDOW_PICKER:
+        case ControlsState.APP_GRID:
             dashHeight = dash.visible ? dashHeight : 0;
             wWidth = width
                         - spacing
@@ -1032,9 +1109,7 @@ var ControlsManagerLayoutOverride = {
     _getAppDisplayBoxForState: function(state, box, workAreaBox, /*searchHeight, dashHeight,*/ appGridBox, thumbnailsWidth) {
         const [width] = box.get_size();
         const { x1: startX } = workAreaBox;
-        const { x1: boxX } = appGridBox;
         const { y1: boxY } = appGridBox;
-        const boxWidth = appGridBox.get_width();
         const boxHeight = appGridBox.get_height();
         const appDisplayBox = new Clutter.ActorBox();
         const { spacing } = this;
@@ -1046,8 +1121,6 @@ var ControlsManagerLayoutOverride = {
         const centerAppGrid = gOptions.get('centerAppGrid');
 
         const appDisplayX = centerAppGrid ? spacing + thumbnailsWidth : (dashPosition === 3 ? dash.width + spacing : 0) + (wsTmbLeft ? thumbnailsWidth : 0) + spacing;
-
-        //const appDisplayX = centerAppGrid ? spacing + thumbnailsWidth : boxX;
 
         const adWidth = centerAppGrid ? width - 2 * (thumbnailsWidth + spacing) : width - thumbnailsWidth - spacing;
         switch (state) {
@@ -1421,7 +1494,7 @@ function _updateWorkspacesDisplay() {
     let finalParams = paramsForState(finalState);
 
     let opacity = Math.round(Util.lerp(initialParams.opacity, finalParams.opacity, progress));
-    let scale = Util.lerp(initialParams.scale, finalParams.scale, progress);
+    //let scale = Util.lerp(initialParams.scale, finalParams.scale, progress);
 
     let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
     let params = {

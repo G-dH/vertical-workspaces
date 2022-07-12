@@ -568,5 +568,21 @@ function _getAdjustmentsOptionList() {
             'dashBgOpacity'
         )
     );
+
+    optionList.push(
+        _optionsItem(
+            _('Keyboard'),
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Override Page Up/Down Shortcuts'),
+            _('This option automatically overrides the Super(+Sift)+Page Up/Down keyboard shortcuts for the current workspace orientation. If you encounter any issues, check the configuration in the dconf editor.'),
+            _newSwitch(),
+            'enablePageShortcuts',
+        )
+    );
+
     return optionList;
 }

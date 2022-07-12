@@ -30,6 +30,7 @@ var Options = class Options {
                 300,
                 () => {
                     this._gsettings.apply();
+                    this._updateCachedSettings();
                     this._writeTimeoutId = 0;
                     return GLib.SOURCE_REMOVE;
                 }
@@ -45,11 +46,10 @@ var Options = class Options {
             dashMaxScale: ['int', 'dash-max-scale'],
             centerSearch: ['boolean', 'center-search'],
             centerAppGrid: ['boolean', 'center-app-grid'],
-            dashBgOpacity: ['int', 'dash-bg-opacity']
+            dashBgOpacity: ['int', 'dash-bg-opacity'],
+            enablePageShortcuts: ['boolean', 'enable-page-shortcuts']
         }
         this.cachedOptions = {};
-
-        this.connect('changed', this._updateCachedSettings.bind(this));
     }
 
     connect(name, callback) {
