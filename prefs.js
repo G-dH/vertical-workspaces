@@ -52,8 +52,8 @@ function fillPreferencesWindow(window) {
     window.set_search_enabled(true);
     window.connect('close-request', _onDestroy);
 
-    const width = 600;
-    const height = 600;
+    const width = 700;
+    const height = 700;
     window.set_default_size(width, height);
 
     return window;
@@ -121,8 +121,8 @@ function buildPrefsWidget() {
 
     prefsWidget.connect('realize', (widget) => {
         const window = widget.get_root ? widget.get_root() : widget.get_toplevel();
-        const width = 600;
-        const height = 600;
+        const width = 700;
+        const height = 700;
         window.set_default_size(width, height);
         
         const headerbar = window.get_titlebar();
