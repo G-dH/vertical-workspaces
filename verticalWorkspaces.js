@@ -477,6 +477,11 @@ var WorkspacesViewOverride = {
             WORKSPACE_MAX_SPACING * scaleFactor);
     },
 
+    // this function has duplicate in OverviewControls so we use one function for both to avoid issues with syncing them
+    _getFitModeForState: function(state) {
+        return _getFitModeForState(state);
+    },
+
     // spread windows during entering appDisplay page from HIDDEN state to add some action (looks more natural)
     _getWorkspaceModeForOverviewState: function(state) {
         const { ControlsState } = OverviewControls;
@@ -517,6 +522,20 @@ var WorkspacesViewOverride = {
             const scale = Util.lerp(1, 1, scaleProgress);
             w.set_scale(scale, scale);
         });
+    }
+}
+
+// common for OverviewControls and Vertical Workspaces
+function _getFitModeForState(state) {
+    switch (state) {
+    case ControlsState.HIDDEN:
+    case ControlsState.WINDOW_PICKER:
+        return WorkspacesView.FitMode.SINGLE;
+    case ControlsState.APP_GRID:
+        return WorkspacesView.FitMode.SINGLE;
+        //return WorkspacesView.FitMode.ALL;
+    default:
+        return WorkspacesView.FitMode.SINGLE;
     }
 }
 
@@ -988,17 +1007,9 @@ var ThumbnailsBoxOverride = {
 // ControlsManager
 
 var ControlsManagerOverride = {
+    // this function has duplicate in WorkspaceView so we use one function for both to avoid issues with syncing them
     _getFitModeForState: function(state) {
-        switch (state) {
-            case ControlsState.HIDDEN:
-            case ControlsState.WINDOW_PICKER:
-                return WorkspacesView.FitMode.SINGLE;
-            case ControlsState.APP_GRID:
-                //return WorkspacesView.FitMode.ALL;
-                return WorkspacesView.FitMode.SINGLE;
-            default:
-                return WorkspacesView.FitMode.SINGLE;
-        }
+        return _getFitModeForState(state);
     },
 
     _getThumbnailsBoxParams: function() {
