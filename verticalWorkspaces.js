@@ -213,11 +213,12 @@ function reset() {
     const reset = true;
     _moveDashAppGridIcon(reset);
     _prevDash = null;
-    gOptions.destroy();
-    gOptions = null;
 
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
+
+    gOptions.destroy();
+    gOptions = null;
 }
 
 //*************************************************************************************************
