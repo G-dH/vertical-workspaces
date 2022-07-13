@@ -10,20 +10,20 @@
     <key type="i" name="dash-position">
       <default>0</default>
     </key>
-    <key type="b" name="center-dash-to-ws">
-      <default>true</default>
-    </key>
     <key type="i" name="show-app-icon-position">
       <default>0</default>
     </key>
+    <key type="b" name="center-dash-to-ws">
+      <default>false</default>
+    </key>
     <key type="b" name="center-search">
-      <default>true</default>
+      <default>false</default>
     </key>
     <key type="b" name="center-app-grid">
-      <default>true</default>
+      <default>false</default>
     </key>
     <key type="i" name="ws-thumbnail-scale">
-      <default>12</default>
+      <default>13</default>
     </key>
     <key type="i" name="dash-max-scale">
       <default>15</default>
