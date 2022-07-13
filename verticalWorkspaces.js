@@ -1483,35 +1483,35 @@ function _updateWorkspacesDisplay() {
 
     const paramsForState = s => {
         let opacity;
-//        let scale;
+        let scale;
         switch (s) {
-            case ControlsState.HIDDEN:
-            case ControlsState.WINDOW_PICKER:
-                opacity = 255;
-//                scale = 1;
-                break;
-            case ControlsState.APP_GRID:
-                opacity = 0;
-//                scale = 0;
-                break;
-            default:
-                opacity = 255;
-//                scale = 1;
-                break;
+        case ControlsState.HIDDEN:
+        case ControlsState.WINDOW_PICKER:
+            opacity = 255;
+            scale = 1;
+            break;
+        case ControlsState.APP_GRID:
+            opacity = 0;
+            scale = 0;
+            break;
+        default:
+            opacity = 255;
+            scale = 1;
+            break;
         }
-        return { opacity/*, scale*/ };
+        return { opacity, scale };
     };
 
     let initialParams = paramsForState(initialState);
     let finalParams = paramsForState(finalState);
 
     let opacity = Math.round(Util.lerp(initialParams.opacity, finalParams.opacity, progress));
-    //let scale = Util.lerp(initialParams.scale, finalParams.scale, progress);
+    let scale = Util.lerp(initialParams.scale, finalParams.scale, progress);
 
     let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
     let params = {
         opacity: opacity,
-        //scale_x: scale,
+        scale_x: scale,
         duration: 0,
         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
         onComplete: () => {
