@@ -1230,13 +1230,14 @@ var ControlsManagerLayoutOverride = {
         let thumbnailsHeight = 0;
 
         const { expandFraction } = this._workspacesThumbnails;
-        thumbnailsHeight = height - 2 * spacing - (dashVertical ? 0 : dashHeight);
+        thumbnailsHeight = height - 2 * spacing - (dashVertical ? 0 : dashHeight + spacing);
 
         thumbnailsWidth = this._workspacesThumbnails.get_preferred_width(thumbnailsHeight)[0];
         thumbnailsWidth = Math.round(Math.min(
             thumbnailsWidth * expandFraction,
             width * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE));
 
+        thumbnailsHeight = this._workspacesThumbnails.get_preferred_height(thumbnailsWidth)[1];
         let wstX;
         // 0 - left, 1 - right
         const wsThumbnailsPosition = gOptions.get('workspaceThumbnailsPosition');
@@ -1248,7 +1249,12 @@ var ControlsManagerLayoutOverride = {
             this._workspacesThumbnails._positionLeft = true;
         }
 
-        childBox.set_origin(wstX, startY + ((dashHeight && DASH_TOP && !dashVertical) ? dashHeight + spacing : (3 * spacing)));
+        let wstYOffset = ((dashHeight && DASH_TOP && !dashVertical) ? dashHeight + spacing : (3 * spacing));
+        if (gOptions.get('centerWsSwitcher')) {
+            wstYOffset += Math.max(0, (height - 5*spacing - thumbnailsHeight - (dashVertical ? 0 : dashHeight)) / 2);
+        }
+
+        childBox.set_origin(wstX, startY + wstYOffset);
 
         childBox.set_size(thumbnailsWidth, thumbnailsHeight);
         this._workspacesThumbnails.allocate(childBox);

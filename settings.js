@@ -27,7 +27,7 @@ var Options = class Options {
 
             this._writeTimeoutId = GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
-                300,
+                100,
                 () => {
                     this._gsettings.apply();
                     this._updateCachedSettings();
@@ -41,6 +41,7 @@ var Options = class Options {
             secondaryWsThumbnailsPosition: ['int', 'secondary-ws-thumbnails-position'],
             dashPosition: ['int', 'dash-position'],
             centerDashToWs: ['boolean', 'center-dash-to-ws'],
+            centerWsSwitcher: ['boolean', 'center-ws-switcher'],
             showAppsIconPosition: ['int', 'show-app-icon-position'],
             wsThumbnailScale: ['int', 'ws-thumbnail-scale'],
             dashMaxScale: ['int', 'dash-max-scale'],

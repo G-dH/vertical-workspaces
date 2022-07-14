@@ -292,6 +292,17 @@ function _newComboBox() {
     return comboBox;
 }
 
+function _newDropDown() {
+    const dropDown = new Gtk.DropDown({
+        model: new Gtk.StringList(),
+        halign: Gtk.Align.END,
+        valign: Gtk.Align.CENTER,
+        hexpand: true,
+    });
+    dropDown.is_dropDown = true;
+    return dropDown;
+}
+
 function _newEntry() {
     const entry = new Gtk.Entry({
         width_chars: 25,
@@ -380,8 +391,16 @@ function _optionsItem(text, caption, widget, variable, options = []) {
             let iter;
             model.set(iter = model.append(), [0, 1], [label, value]);
         }
+        widget.set_active(gOptions.get(variable));
         settings.bind(key, widget, 'active', Gio.SettingsBindFlags.DEFAULT);
 
+    } else if (widget && widget.is_dropDown) {
+        const model = widget.get_model();
+        for (const [label, value] of options) {
+            model.append(label);
+        }
+        //widget.set_selected(gOptions.get(variable));
+        settings.bind(key, widget, 'selected', Gio.SettingsBindFlags.DEFAULT);
     } else if (widget && widget.is_entry) {
         if (options) {
             const names = gOptions.get(variable);
@@ -427,13 +446,14 @@ function _getLayoutOptionList() {
             _('Dash Position'),
             null,
             _newComboBox(),
+            //_newDropDown(),
             'dashPosition',
-            [   [_('Top-Left'), 0],
-                [_('Top-Center'), 1],
-                [_('Top-Right'), 2],
-                [_('Bottom-Left'), 3],
-                [_('Bottom-Center'), 4],
-                [_('Bottom-Right'), 5],
+            [   [_('Top Left'), 0],
+                [_('Top Center'), 1],
+                [_('Top Right'), 2],
+                [_('Bottom Left'), 3],
+                [_('Bottom Center'), 4],
+                [_('Bottom Right'), 5],
             ]
         )
     );
@@ -443,6 +463,7 @@ function _getLayoutOptionList() {
             _('Show Apps Icon Position'),
             _('The Apps icon in Dash'),
             _newComboBox(),
+            //_newDropDown(),
             'showAppsIconPosition',
             [   [_('Start'), 0],
                 [_('End'), 1],
@@ -455,6 +476,7 @@ function _getLayoutOptionList() {
             _('Workspace Switcher Position'),
             null,
             _newComboBox(),
+            //_newDropDown(),
             'workspaceThumbnailsPosition',
             [   [_('Left'), 0],
                 [_('Right'), 1],
@@ -467,6 +489,7 @@ function _getLayoutOptionList() {
             _('Workspace Switcher Position on Secondary Monitor'),
             _('Allows you to place workspace switcher of the secondary monitor closer to the one on the primary monitor. "Default" option follows position of the primary workspace switcher.'),
             _newComboBox(),
+            //_newDropDown(),
             'secondaryWsThumbnailsPosition',
             [   [_('Left'), 0],
                 [_('Right'), 1],
@@ -481,6 +504,15 @@ function _getLayoutOptionList() {
             _('Dash will be centered to the workspace preview instead of the screen, if centered position is seleceted in the above option.'),
             _newSwitch(),
             'centerDashToWs',
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Center Workspace Switcher'),
+            _('Workspace switcher will be verticaly centered to the workspace preview.'),
+            _newSwitch(),
+            'centerWsSwitcher',
         )
     );
 
