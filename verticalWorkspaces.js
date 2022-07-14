@@ -630,7 +630,9 @@ var SecondaryMonitorDisplayOverride = {
             }
 
             const childBox = new Clutter.ActorBox();
-            childBox.set_origin(wstX, Math.min(padding, (height - thumbnailsHeight) / 2));
+            const availSpace = height - thumbnailsHeight;
+            const centerWst = gOptions.get('centerWsSwitcher');
+            childBox.set_origin(wstX, Math.max(spacing, centerWst ? availSpace / 2 : (availSpace > padding ? padding : spacing)));
             childBox.set_size(thumbnailsWidth, thumbnailsHeight);
             this._thumbnails.allocate(childBox);
         }
