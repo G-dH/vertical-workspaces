@@ -50,7 +50,8 @@ var Options = class Options {
             dashBgOpacity: ['int', 'dash-bg-opacity'],
             enablePageShortcuts: ['boolean', 'enable-page-shortcuts'],
             showDash: ['boolean', 'show-dash'],
-            showWsSwitcher: ['boolean', 'show-ws-switcher']
+            showWsSwitcher: ['boolean', 'show-ws-switcher'],
+            showWsSwitcherBg: ['boolean', 'show-ws-switcher-bg']
         }
         this.cachedOptions = {};
     }

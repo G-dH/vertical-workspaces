@@ -43,5 +43,8 @@
     <key type="b" name="show-ws-switcher">
       <default>true</default>
     </key>
+    <key type="b" name="show-ws-switcher-bg">
+      <default>true</default>
+    </key>
   </schema>
 </schemalist>

@@ -468,6 +468,15 @@ function _geContentOptionList() {
         )
     );
 
+    optionList.push(
+        _optionsItem(
+            _('Show Wallpaper in Workspace Switcher'),
+            _('Workspace switcher previews will include the current desktop backgroud.'),
+            _newSwitch(),
+            'showWsSwitcherBg',
+        )
+    );
+
     return optionList;
 }
 

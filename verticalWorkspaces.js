@@ -139,13 +139,8 @@ function activate() {
     _setAppDisplayOrientation(true);
     _updateSettings();
 
-    // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
-    // conflicts with multimonitor setup if executed too early
-    /*if (_correctInitialOverviewWsBug) {
-        Main.wm.actionMoveWorkspace(global.workspace_manager.get_active_workspace().get_neighbor(-2));
-        Main.wm.actionMoveWorkspace(global.workspace_manager.get_active_workspace().get_neighbor(-1));
-        _correctInitialOverviewWsBug = false;
-    }*/
+    // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
+    Main.overview._overview._controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
 
     // reverse swipe gestures for enter/leave overview and ws switching
     Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
@@ -688,19 +683,30 @@ Background.FADE_ANIMATION_TIME = 0;
 // WorkspaceThumbnail
 var WorkspaceThumbnailOverride = {
     after__init: function () {
+
+        if (!gOptions.get('showWsSwitcherBg'))
+            return;
         this._bgManager = new Background.BackgroundManager({
             monitorIndex: this.monitorIndex,
             container: this._viewport,
             vignette: false,
             controlPosition: false,
         });
-        this.set_style('border-radius: 8px;');
-        //this._bgManager.backgroundActor.opacity = 100;
+        //radius of ws thumbnail backgroung
+        //this.set_style('border-radius: 8px;');
+
         this._viewport.set_child_below_sibling(this._bgManager.backgroundActor, null);
+
         this.connect('destroy', function () {
             this._bgManager.destroy();
             this._bgManager = null;
         }.bind(this));
+
+        //this._bgManager.backgroundActor.opacity = 100; 
+        /*const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
+        const cornerRadius = scaleFactor * 60;
+        const backgroundContent = this._bgManager.backgroundActor.content;
+        backgroundContent.rounded_clip_radius = cornerRadius;*/
     }
 }
 
@@ -810,7 +816,9 @@ var ThumbnailsBoxOverride = {
             return DND.DragMotionResult.CONTINUE;
     },
 
-    vfunc_get_preferred_width: function(forHeight) {
+    //vfunc_get_preferred_width: function(forHeight) {
+    // override of this vfunc doesn't work for some reason (tested on Ubuntu and Fedora), it's not reachable
+    get_preferred_width: function(forHeight) {
         if (forHeight === -1)
             return this.get_preferred_height(forHeight);
 
@@ -828,6 +836,7 @@ var ThumbnailsBoxOverride = {
         scale = Math.min(scale, WorkspaceThumbnail.MAX_THUMBNAIL_SCALE);
 
         const width = Math.round(this._porthole.width * scale);
+
         return themeNode.adjust_preferred_height(width, width);
     },
 
@@ -907,10 +916,10 @@ var ThumbnailsBoxOverride = {
 
         // We always request size for MAX_THUMBNAIL_SCALE, distribute
         // space evently if we use smaller thumbnails
-        const extraHeight =
-            (WorkspaceThumbnail.MAX_THUMBNAIL_SCALE * portholeHeight - thumbnailHeight) * nWorkspaces;
-        box.y1 -= Math.round(extraHeight / 2);
-        box.y2 -= Math.round(extraHeight / 2);
+        //const extraHeight =
+        //    (WorkspaceThumbnail.MAX_THUMBNAIL_SCALE * portholeHeight - thumbnailHeight) * nWorkspaces;
+        //box.y1 -= Math.round(extraHeight / 2);
+        //box.y2 -= Math.round(extraHeight / 2);
 
         let indicatorValue = this._scrollAdjustment.value;
         let indicatorUpperWs = Math.ceil(indicatorValue);
@@ -1264,13 +1273,16 @@ var ControlsManagerLayoutOverride = {
         if (this._workspacesThumbnails.visible) {
             const { expandFraction } = this._workspacesThumbnails;
             thumbnailsHeight = height - 2 * spacing - (dashVertical ? 0 : dashHeight + spacing);
-    
+
             thumbnailsWidth = this._workspacesThumbnails.get_preferred_width(thumbnailsHeight)[0];
-            thumbnailsWidth = Math.round(Math.min(
+            thumbnailsWidth = Math.min(
                 thumbnailsWidth * expandFraction,
-                width * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE));
-    
-            thumbnailsHeight = this._workspacesThumbnails.get_preferred_height(thumbnailsWidth)[1];
+                width * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE
+            );
+            thumbnailsHeight = Math.round(Math.min(this._workspacesThumbnails.get_preferred_height(thumbnailsWidth)[1], thumbnailsHeight));
+
+            thumbnailsWidth = Math.round(this._workspacesThumbnails.get_preferred_width(thumbnailsHeight)[0]);
+
             let wstX;
             // 0 - left, 1 - right
             if (wsThumbnailsPosition) {
@@ -1280,20 +1292,17 @@ var ControlsManagerLayoutOverride = {
                 wstX = startX + (dashPosition === 3 ? dashWidth : 0) + spacing;
                 this._workspacesThumbnails._positionLeft = true;
             }
-    
+
             let wstYOffset = ((dashHeight && DASH_TOP && !dashVertical) ? dashHeight + spacing : (3 * spacing));
             if (gOptions.get('centerWsSwitcher')) {
-                wstYOffset += Math.max(0, (height - 5*spacing - thumbnailsHeight - (dashVertical ? 0 : dashHeight)) / 2);
+                wstYOffset += Math.max(0, (height - 5 * spacing - thumbnailsHeight - (dashVertical ? 0 : dashHeight)) / 2);
             }
-    
+
             childBox.set_origin(wstX, startY + wstYOffset);
             childBox.set_size(thumbnailsWidth, thumbnailsHeight);
-    
+
             this._workspacesThumbnails.allocate(childBox);
-            
         }
-        //thumbnailsWidth = this._workspacesThumbnails.visible ? thumbnailsWidth : 0;
-        //thumbnailsHeight = this._workspacesThumbnails.visible ? thumbnailsHeight : 0;
 
         // Dash center to ws
         if (DASH_CENTERED_WS) {
