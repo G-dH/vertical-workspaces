@@ -98,6 +98,7 @@ function activate() {
     verticalOverrides['SecondaryMonitorDisplay'] = _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayOverride);
     verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, AppDisplayOverride);
     verticalOverrides['DashItemContainer'] = _Util.overrideProto(Dash.DashItemContainer.prototype, DashItemContainerOverride);
+    verticalOverrides['WindowPreview'] = _Util.overrideProto(WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
 
     original_MAX_THUMBNAIL_SCALE = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
     WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale') / 100;
@@ -129,7 +130,7 @@ function activate() {
         parent.set_child_above_sibling(appDisplay, null);
     });
 
-    Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity') * 2.5);
+    Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity') * 2.5); // conversion % to 0-255
     Main.overview.searchEntry.visible = false;
     _moveDashAppGridIcon();
 
@@ -138,12 +139,13 @@ function activate() {
     _setAppDisplayOrientation(true);
     _updateSettings();
 
-    // workaround for mainstream bug - overview always shows workspace 1 instead of the active one after restart
-    if (_correctInitialOverviewWsBug) {
+    // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
+    // conflicts with multimonitor setup if executed too early
+    /*if (_correctInitialOverviewWsBug) {
         Main.wm.actionMoveWorkspace(global.workspace_manager.get_active_workspace().get_neighbor(-2));
         Main.wm.actionMoveWorkspace(global.workspace_manager.get_active_workspace().get_neighbor(-1));
         _correctInitialOverviewWsBug = false;
-    }
+    }*/
 
     // reverse swipe gestures for enter/leave overview and ws switching
     Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
@@ -200,6 +202,7 @@ function reset() {
     _Util.overrideProto(Workspace.WorkspaceLayout.prototype, verticalOverrides['WorkspaceLayout']);
     _Util.overrideProto(AppDisplay.BaseAppView.prototype, verticalOverrides['BaseAppView']);
     _Util.overrideProto(Dash.DashItemContainer.prototype, verticalOverrides['DashItemContainer']);
+    _Util.overrideProto(WindowPreview.WindowPreview.prototype, verticalOverrides['WindowPreview']);
 
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
 
@@ -223,23 +226,27 @@ function reset() {
 
 //*************************************************************************************************
 
-function _updateSettings(settings, key) {
+function _updateSettings(settings, key = 'all') {
     switch (key) {
+        case 'all':
         case 'ws-thumbnail-scale':
             WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale', true) / 100;
             // in case we adjusted actual thumbnail scale before, we need to update the value,
             // otherwise the new scale constant can limit the size to smaller values but not above them
             const width = global.display.get_monitor_geometry(global.display.get_primary_monitor()).width;
             Main.overview._overview._controls._thumbnailsBox.width = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE * width;
-            break;
+        case 'all':
         case 'dash-max-scale':
             DASH_MAX_HEIGHT_RATIO = gOptions.get('dashMaxScale', true) / 100;
-            break;
+        case 'all':
         case 'dash-bg-opacity':
             Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5);
-            break;
+        case 'all':
         case 'enable-page-shortcuts':
             _switchPageShortcuts();
+        case 'all':
+        case 'show-dash':
+            Main.overview.dash.visible = gOptions.get('showDash', true);
     }
 }
 
@@ -539,6 +546,24 @@ function _getFitModeForState(state) {
     }
 }
 
+// WindowPreview
+var WindowPreviewOverride = {
+    _updateIconScale: function() {
+        const { ControlsState } = OverviewControls;
+        const { currentState, initialState, finalState } =
+            this._overviewAdjustment.getStateTransitionParams();
+        const visible =
+            initialState > ControlsState.HIDDEN ||
+            finalState > ControlsState.HIDDEN;
+        const scale = visible
+            ? (currentState >= 1 ? 1 : currentState % 1) : 0;
+        this._icon.set({
+            scale_x: scale,
+            scale_y: scale,
+        });
+    }
+}
+
 //  SecondaryMonitorDisplay
 var SecondaryMonitorDisplayOverride = {
     _getThumbnailParamsForState: function(state) {
@@ -615,6 +640,7 @@ var SecondaryMonitorDisplayOverride = {
 
         thumbnailsHeight = Math.min(thumbnailsHeight, height - 2 * spacing);
 
+        this._thumbnails.visible = gOptions.get('showWsSwitcher');
         if (this._thumbnails.visible) {
             // 2 - default, 0 - left, 1 - right
             const wsThumbnailsPosition = gOptions.get('secondaryWsThumbnailsPosition') === 2
@@ -696,8 +722,8 @@ var ThumbnailsBoxOverride = {
 
         if (rtl) {
             const baseY = workspace.y + workspace.height;
-            targetY1 = baseX - WORKSPACE_CUT_SIZE;
-            targetY2 = baseX + spacing + WORKSPACE_CUT_SIZE;
+            targetY1 = baseY - WORKSPACE_CUT_SIZE;
+            targetY2 = baseY + spacing + WORKSPACE_CUT_SIZE;
         } else {
             targetY1 = workspace.y - spacing - WORKSPACE_CUT_SIZE;
             targetY2 = workspace.y + WORKSPACE_CUT_SIZE;
@@ -883,6 +909,7 @@ var ThumbnailsBoxOverride = {
         // space evently if we use smaller thumbnails
         const extraHeight =
             (WorkspaceThumbnail.MAX_THUMBNAIL_SCALE * portholeHeight - thumbnailHeight) * nWorkspaces;
+        box.y1 -= Math.round(extraHeight / 2);
         box.y2 -= Math.round(extraHeight / 2);
 
         let indicatorValue = this._scrollAdjustment.value;
@@ -996,10 +1023,11 @@ var ThumbnailsBoxOverride = {
     },
 
     _updateShouldShow: function() {
-        if (this._shouldShow === true)
+        const shouldShow = gOptions.get('showWsSwitcher');
+        if (this._shouldShow === shouldShow)
             return;
 
-        this._shouldShow = true;
+        this._shouldShow = shouldShow;
         this.notify('should-show');
     }
 }
@@ -1231,35 +1259,41 @@ var ControlsManagerLayoutOverride = {
         let thumbnailsWidth = 0;
         let thumbnailsHeight = 0;
 
-        const { expandFraction } = this._workspacesThumbnails;
-        thumbnailsHeight = height - 2 * spacing - (dashVertical ? 0 : dashHeight + spacing);
+        const wsThumbnailsPosition = this._workspacesThumbnails.visible && gOptions.get('workspaceThumbnailsPosition');
 
-        thumbnailsWidth = this._workspacesThumbnails.get_preferred_width(thumbnailsHeight)[0];
-        thumbnailsWidth = Math.round(Math.min(
-            thumbnailsWidth * expandFraction,
-            width * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE));
-
-        thumbnailsHeight = this._workspacesThumbnails.get_preferred_height(thumbnailsWidth)[1];
-        let wstX;
-        // 0 - left, 1 - right
-        const wsThumbnailsPosition = gOptions.get('workspaceThumbnailsPosition');
-        if (wsThumbnailsPosition) {
-            wstX = width - (dashPosition === 1 ? dashWidth : 0) - spacing - thumbnailsWidth;
-            this._workspacesThumbnails._positionLeft = false;
-        } else {
-            wstX = startX + (dashPosition === 3 ? dashWidth : 0) + spacing;
-            this._workspacesThumbnails._positionLeft = true;
+        if (this._workspacesThumbnails.visible) {
+            const { expandFraction } = this._workspacesThumbnails;
+            thumbnailsHeight = height - 2 * spacing - (dashVertical ? 0 : dashHeight + spacing);
+    
+            thumbnailsWidth = this._workspacesThumbnails.get_preferred_width(thumbnailsHeight)[0];
+            thumbnailsWidth = Math.round(Math.min(
+                thumbnailsWidth * expandFraction,
+                width * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE));
+    
+            thumbnailsHeight = this._workspacesThumbnails.get_preferred_height(thumbnailsWidth)[1];
+            let wstX;
+            // 0 - left, 1 - right
+            if (wsThumbnailsPosition) {
+                wstX = width - (dashPosition === 1 ? dashWidth : 0) - spacing - thumbnailsWidth;
+                this._workspacesThumbnails._positionLeft = false;
+            } else {
+                wstX = startX + (dashPosition === 3 ? dashWidth : 0) + spacing;
+                this._workspacesThumbnails._positionLeft = true;
+            }
+    
+            let wstYOffset = ((dashHeight && DASH_TOP && !dashVertical) ? dashHeight + spacing : (3 * spacing));
+            if (gOptions.get('centerWsSwitcher')) {
+                wstYOffset += Math.max(0, (height - 5*spacing - thumbnailsHeight - (dashVertical ? 0 : dashHeight)) / 2);
+            }
+    
+            childBox.set_origin(wstX, startY + wstYOffset);
+            childBox.set_size(thumbnailsWidth, thumbnailsHeight);
+    
+            this._workspacesThumbnails.allocate(childBox);
+            
         }
-
-        let wstYOffset = ((dashHeight && DASH_TOP && !dashVertical) ? dashHeight + spacing : (3 * spacing));
-        if (gOptions.get('centerWsSwitcher')) {
-            wstYOffset += Math.max(0, (height - 5*spacing - thumbnailsHeight - (dashVertical ? 0 : dashHeight)) / 2);
-        }
-
-        childBox.set_origin(wstX, startY + wstYOffset);
-
-        childBox.set_size(thumbnailsWidth, thumbnailsHeight);
-        this._workspacesThumbnails.allocate(childBox);
+        //thumbnailsWidth = this._workspacesThumbnails.visible ? thumbnailsWidth : 0;
+        //thumbnailsHeight = this._workspacesThumbnails.visible ? thumbnailsHeight : 0;
 
         // Dash center to ws
         if (DASH_CENTERED_WS) {

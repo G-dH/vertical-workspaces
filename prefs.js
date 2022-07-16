@@ -19,6 +19,8 @@ let gOptions;
 let stackSwitcher;
 let stack;
 
+const CONTENT_TITLE = _('Content');
+const CONTENT_ICON = 'view-reveal-symbolic';
 const LAYOUT_TITLE = _('Layout');
 const LAYOUT_ICON = 'view-grid-symbolic';
 const ADJUSTMENTS_TITLE = _('Adjustments');
@@ -46,8 +48,14 @@ function fillPreferencesWindow(window) {
         icon_name: ADJUSTMENTS_ICON
     });
 
+    const contentOptionsPage = getAdwPage(_geContentOptionList(), {
+        title: CONTENT_TITLE,
+        icon_name: CONTENT_ICON
+    });
+
     window.add(layoutOptionsPage);
     window.add(adjustmentOptionsPage);
+    window.add(contentOptionsPage);
 
     window.set_search_enabled(true);
     window.connect('close-request', _onDestroy);
@@ -89,10 +97,12 @@ function buildPrefsWidget() {
 
     stack.add_named(getLegacyPage(_getLayoutOptionList()), 'layout');
     stack.add_named(getLegacyPage(_getAdjustmentsOptionList()), 'adjustments');
+    stack.add_named(getLegacyPage(_geContentOptionList()), 'content');
 
     const pagesBtns = [
         [new Gtk.Label({ label: LAYOUT_TITLE}), _newImageFromIconName(LAYOUT_ICON, Gtk.IconSize.BUTTON)],
-        [new Gtk.Label({ label: ADJUSTMENTS_TITLE}), _newImageFromIconName(ADJUSTMENTS_ICON, Gtk.IconSize.BUTTON)]
+        [new Gtk.Label({ label: ADJUSTMENTS_TITLE}), _newImageFromIconName(ADJUSTMENTS_ICON, Gtk.IconSize.BUTTON)],
+        [new Gtk.Label({ label: CONTENT_TITLE}), _newImageFromIconName(CONTENT_ICON, Gtk.IconSize.BUTTON)]
     ];
 
     let stBtn = stackSwitcher.get_first_child ? stackSwitcher.get_first_child() : null;
@@ -429,6 +439,38 @@ function _optionsItem(text, caption, widget, variable, options = []) {
 }
 
 //////////////////////////////////////////////////////////////////////
+function _geContentOptionList() {
+    const optionList = [];
+    // options item format:
+    // [text, caption, widget, settings-variable, options for combo]
+
+    optionList.push(
+        _optionsItem(
+            _('Content of the Overview'),
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Show Dash'),
+            _('Disable to remove Dash from Activities Overview.'),
+            _newSwitch(),
+            'showDash',
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Show Workspace Switcher'),
+            _('Disable to remove workspace switcher from Activities Overview.'),
+            _newSwitch(),
+            'showWsSwitcher',
+        )
+    );
+
+    return optionList;
+}
+
 
 function _getLayoutOptionList() {
     const optionList = [];

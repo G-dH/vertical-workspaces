@@ -37,5 +37,11 @@
     <key type="b" name="enable-page-shortcuts">
       <default>false</default>
     </key>
+    <key type="b" name="show-dash">
+      <default>true</default>
+    </key>
+    <key type="b" name="show-ws-switcher">
+      <default>true</default>
+    </key>
   </schema>
 </schemalist>
