@@ -524,13 +524,15 @@ function _getLayoutOptionList() {
 
     optionList.push(
         _optionsItem(
-            _('Workspace Switcher Position'),
-            null,
+            _('Workspace Switcher Position and Max Height'),
+            _('Position of the workspace switcher on the screen. Full-Height options allow the workspace switcher to use the full height of the screen at the expense of the space available for Dash.'),
             _newComboBox(),
             //_newDropDown(),
             'workspaceThumbnailsPosition',
             [   [_('Left'), 0],
                 [_('Right'), 1],
+                [_('Left - Full-Height'), 2],
+                [_('Right - Full-Height'), 3],
             ]
         )
     );
@@ -552,7 +554,7 @@ function _getLayoutOptionList() {
     optionList.push(
         _optionsItem(
             _('Center Dash to Workspace'),
-            _('Dash will be centered to the workspace preview instead of the screen, if centered position is selected in the above option.'),
+            _('Dash will be centered relative to the workspace preview instead of the screen, if centered position is selected in the above option.'),
             _newSwitch(),
             'centerDashToWs',
         )
@@ -561,7 +563,7 @@ function _getLayoutOptionList() {
     optionList.push(
         _optionsItem(
             _('Center Workspace Switcher'),
-            _('Workspace switcher will be verticaly centered to the workspace preview.'),
+            _('Workspace switcher will be centered vertically.'),
             _newSwitch(),
             'centerWsSwitcher',
         )

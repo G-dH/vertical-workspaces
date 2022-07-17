@@ -51,7 +51,8 @@ var Options = class Options {
             enablePageShortcuts: ['boolean', 'enable-page-shortcuts'],
             showDash: ['boolean', 'show-dash'],
             showWsSwitcher: ['boolean', 'show-ws-switcher'],
-            showWsSwitcherBg: ['boolean', 'show-ws-switcher-bg']
+            showWsSwitcherBg: ['boolean', 'show-ws-switcher-bg'],
+            wsSwitcherFullHeight: ['boolean', 'ws-switcher-full-height']
         }
         this.cachedOptions = {};
     }
