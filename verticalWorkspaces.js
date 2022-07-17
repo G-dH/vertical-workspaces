@@ -1261,13 +1261,15 @@ var ControlsManagerLayoutOverride = {
                                 : height - 3 * spacing - (DASH_VERTICAL ? 0 : dashHeightReservation + spacing);
 
             wsTmbWidth = this._workspacesThumbnails.get_preferred_width(thumbnailsHeight)[0];
-            wsTmbWidth = Math.min(
+            wsTmbWidth = Math.round(Math.min(
                 wsTmbWidth * expandFraction,
                 width * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE
-            );
-            thumbnailsHeight = Math.round(Math.min(this._workspacesThumbnails.get_preferred_height(wsTmbWidth)[1], thumbnailsHeight));
+            ));
+            const WS_CENTRED = gOptions.get('centerWsSwitcher');
+            if (WS_CENTRED)
+                thumbnailsHeight = Math.round(Math.min(this._workspacesThumbnails.get_preferred_height(wsTmbWidth)[1], thumbnailsHeight));
 
-            wsTmbWidth = Math.round(this._workspacesThumbnails.get_preferred_width(thumbnailsHeight)[0]);
+            //wsTmbWidth = Math.round(this._workspacesThumbnails.get_preferred_width(thumbnailsHeight)[0]);
 
             let wsTmbX;
             if (WS_TMB_RIGHT) {
@@ -1279,13 +1281,12 @@ var ControlsManagerLayoutOverride = {
             }
 
             let wstYOffset = ((dashHeightReservation && DASH_TOP && !DASH_VERTICAL) ? dashHeight + spacing : spacing);
-            if (gOptions.get('centerWsSwitcher')) {
+            if (WS_CENTRED) {
                 wstYOffset += Math.max(0, (height - 5 * spacing - thumbnailsHeight - (DASH_VERTICAL ? 0 : dashHeightReservation)) / 2);
             }
 
             childBox.set_origin(wsTmbX, startY + wstYOffset);
             childBox.set_size(wsTmbWidth, thumbnailsHeight);
-
             this._workspacesThumbnails.allocate(childBox);
         }
 
