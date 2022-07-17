@@ -36,22 +36,24 @@ WindowPreview.ICON_SIZE;
 let gOptions = null;
 let original_MAX_THUMBNAIL_SCALE;
 
-var WORKSPACE_CUT_SIZE = 10;
+const BACKGROUND_CORNER_RADIUS_PIXELS = 40;
+
+const WORKSPACE_CUT_SIZE = 10;
 
 // keep adjacent workspaces out of the screen
 const WORKSPACE_MAX_SPACING = 350;
 const WORKSPACE_MIN_SPACING = 350;
 
-var DASH_MAX_HEIGHT_RATIO = 0.15;
-var DASH_ITEM_LABEL_SHOW_TIME = 150;
+let DASH_MAX_HEIGHT_RATIO = 0.15;
+const DASH_ITEM_LABEL_SHOW_TIME = 150;
 
-var ControlsState = {
+const ControlsState = {
     HIDDEN: 0,
     WINDOW_PICKER: 1,
     APP_GRID: 2,
 };
 
-var DashPosition = {
+const DashPosition = {
     TOP_LEFT: 0,
     TOP_CENTER: 1,
     TOP_RIGHT: 2,
@@ -71,8 +73,6 @@ let _searchControllerSigId;
 let _wsTmbBoxResizeDelayId;
 let _verticalOverview;
 let _prevDash;
-
-var _correctInitialOverviewWsBug;
 
 function activate() {
     gOptions = new Settings.Options();
@@ -139,14 +139,15 @@ function activate() {
     _setAppDisplayOrientation(true);
     _updateSettings();
 
-    // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
-    Main.overview._overview._controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
-
     // reverse swipe gestures for enter/leave overview and ws switching
     Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
 
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
+
+    // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
+    Main.overview._overview._controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
+
 }
 
 function reset() {
@@ -684,6 +685,9 @@ Background.FADE_ANIMATION_TIME = 0;
 var WorkspaceThumbnailOverride = {
     after__init: function () {
 
+        //radius of ws thumbnail backgroung
+        this.set_style('border-radius: 8px;');
+
         if (!gOptions.get('showWsSwitcherBg'))
             return;
         this._bgManager = new Background.BackgroundManager({
@@ -692,8 +696,6 @@ var WorkspaceThumbnailOverride = {
             vignette: false,
             controlPosition: false,
         });
-        //radius of ws thumbnail backgroung
-        //this.set_style('border-radius: 8px;');
 
         this._viewport.set_child_below_sibling(this._bgManager.backgroundActor, null);
 
@@ -702,11 +704,19 @@ var WorkspaceThumbnailOverride = {
             this._bgManager = null;
         }.bind(this));
 
-        //this._bgManager.backgroundActor.opacity = 100; 
-        /*const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
-        const cornerRadius = scaleFactor * 60;
+        //this._bgManager.backgroundActor.opacity = 100;
+        const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
+        const cornerRadius = scaleFactor * BACKGROUND_CORNER_RADIUS_PIXELS;
         const backgroundContent = this._bgManager.backgroundActor.content;
-        backgroundContent.rounded_clip_radius = cornerRadius;*/
+        backgroundContent.rounded_clip_radius = cornerRadius;
+
+        const rect = new Graphene.Rect();
+        rect.origin.x = this._viewport.x;
+        rect.origin.y = this._viewport.y;
+        rect.size.width = this._viewport.width;
+        rect.size.height = this._viewport.height;
+
+        this._bgManager.backgroundActor.content.set_rounded_clip_bounds(rect);
     }
 }
 
@@ -914,13 +924,6 @@ var ThumbnailsBoxOverride = {
         const thumbnailHeight = thumbnailFullHeight * this._expandFraction;
         const roundedVScale = thumbnailHeight / portholeHeight;
 
-        // We always request size for MAX_THUMBNAIL_SCALE, distribute
-        // space evently if we use smaller thumbnails
-        //const extraHeight =
-        //    (WorkspaceThumbnail.MAX_THUMBNAIL_SCALE * portholeHeight - thumbnailHeight) * nWorkspaces;
-        //box.y1 -= Math.round(extraHeight / 2);
-        //box.y2 -= Math.round(extraHeight / 2);
-
         let indicatorValue = this._scrollAdjustment.value;
         let indicatorUpperWs = Math.ceil(indicatorValue);
         let indicatorLowerWs = Math.floor(indicatorValue);
@@ -1032,6 +1035,9 @@ var ThumbnailsBoxOverride = {
     },
 
     _updateShouldShow: function() {
+        // set current workspace indicator border radius
+        //this._indicator.set_style('border-radius: 8px;');
+
         const shouldShow = gOptions.get('showWsSwitcher');
         if (this._shouldShow === shouldShow)
             return;
@@ -1059,12 +1065,8 @@ var ControlsManagerOverride = {
 
     _updateThumbnailsBox: function() {
         const { shouldShow } = this._thumbnailsBox;
-
         const thumbnailsBoxVisible = shouldShow;
-        if (thumbnailsBoxVisible) {
-            this._thumbnailsBox.opacity = 255;
-            this._thumbnailsBox.visible = thumbnailsBoxVisible;
-        }
+        this._thumbnailsBox.visible = thumbnailsBoxVisible;
     },
 }
 
