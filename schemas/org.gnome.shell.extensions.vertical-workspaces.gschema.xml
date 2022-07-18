@@ -49,5 +49,8 @@
     <key type="b" name="ws-switcher-full-height">
       <default>false</default>
     </key>
+    <key type="i" name="app-grid-animation">
+      <default>1</default>
+    </key>
   </schema>
 </schemalist>

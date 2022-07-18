@@ -511,6 +511,15 @@ function _getLayoutOptionList() {
 
     optionList.push(
         _optionsItem(
+            _('Center Dash to Workspace'),
+            _('Dash will be centered relative to the workspace preview instead of the screen, if centered position is selected in the above option.'),
+            _newSwitch(),
+            'centerDashToWs',
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
             _('Show Apps Icon Position'),
             _('The Apps icon in Dash'),
             _newComboBox(),
@@ -553,15 +562,6 @@ function _getLayoutOptionList() {
 
     optionList.push(
         _optionsItem(
-            _('Center Dash to Workspace'),
-            _('Dash will be centered relative to the workspace preview instead of the screen, if centered position is selected in the above option.'),
-            _newSwitch(),
-            'centerDashToWs',
-        )
-    );
-
-    optionList.push(
-        _optionsItem(
             _('Center Workspace Switcher'),
             _('Workspace switcher will be centered vertically.'),
             _newSwitch(),
@@ -597,7 +597,7 @@ function _getAdjustmentsOptionList() {
 
     optionList.push(
         _optionsItem(
-            _('Adjustments'),
+            _('Scale'),
         )
     );
 
@@ -653,6 +653,31 @@ function _getAdjustmentsOptionList() {
             'dashBgOpacity'
         )
     );
+
+    //----------------------------------------------------------------
+
+    optionList.push(
+        _optionsItem(
+            _('Behavior'),
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('App Grid Animation'),
+            _(`When entering the App Grid view, the app grid animates from the edge of the screen (defaultly from the right edge to follow the three fingers gesture on the trackpad). You can choose other direction or disable the animation if you don't like it.`),
+            _newComboBox(),
+            //_newDropDown(),
+            'appGridAnimation',
+            [   [_('Disable'), 0],
+                [_('From Right'), 1],
+                [_('From Left'), 2],
+                [_('From Bottom'), 3],
+            ]
+        )
+    );
+
+    //----------------------------------------------------------------
 
     optionList.push(
         _optionsItem(

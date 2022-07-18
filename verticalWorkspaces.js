@@ -103,10 +103,6 @@ function activate() {
     original_MAX_THUMBNAIL_SCALE = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
     WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale') / 100;
 
-    const controlsManager = Main.overview._overview._controls;
-
-    _stateAdjustmentValueSigId = controlsManager._stateAdjustment.connect('notify::value', _updateWorkspacesDisplay.bind(controlsManager));
-
     _prevDash = Main.overview.dash;
     _shownOverviewSigId = Main.overview.connect('shown', () => {
         _moveDashAppGridIcon();
@@ -495,7 +491,7 @@ var WorkspacesViewOverride = {
         case ControlsState.WINDOW_PICKER:
             return 1;
         case ControlsState.APP_GRID:
-            return 1;
+            return gOptions.get('appGridAnimation') ? 1 : 0;
         }
 
         return 0;
@@ -545,14 +541,17 @@ function _getFitModeForState(state) {
 // WindowPreview
 var WindowPreviewOverride = {
     _updateIconScale: function() {
-        const { ControlsState } = OverviewControls;
+        //const { ControlsState } = OverviewControls;
         const { currentState, initialState, finalState } =
             this._overviewAdjustment.getStateTransitionParams();
         const visible =
-            initialState > ControlsState.HIDDEN ||
-            finalState > ControlsState.HIDDEN;
+            /*initialState > ControlsState.HIDDEN ||
+            finalState > ControlsState.HIDDEN;*/
+            initialState === ControlsState.WINDOW_PICKER ||
+            finalState === ControlsState.WINDOW_PICKER;
         const scale = visible
-            ? (currentState >= 1 ? 1 : currentState % 1) : 0;
+            //? (currentState >= 1 ? 1 : currentState % 1) : 0;
+            ? 1 - Math.abs(ControlsState.WINDOW_PICKER - currentState) : 0;
         this._icon.set({
             scale_x: scale,
             scale_y: scale,
@@ -1052,22 +1051,100 @@ var ThumbnailsBoxOverride = {
 // ControlsManager
 
 var ControlsManagerOverride = {
+    // this function overrides Main.overview._overview._controls._update, but in reality the original code is being executed
+    /*_update: function() {
+        const params = this._stateAdjustment.getStateTransitionParams();
+
+        const fitMode = Util.lerp(
+            this._getFitModeForState(params.initialState),
+            this._getFitModeForState(params.finalState),
+            params.progress);
+
+        const { fitModeAdjustment } = this._workspacesDisplay;
+        fitModeAdjustment.value = fitMode;
+
+        this._updateThumbnailsBox();
+        this._updateAppDisplayVisibility(params);
+    }*/
+
     // this function has duplicate in WorkspaceView so we use one function for both to avoid issues with syncing them
     _getFitModeForState: function(state) {
         return _getFitModeForState(state);
     },
 
-    _getThumbnailsBoxParams: function() {
+    // this function is never called
+    /*_getThumbnailsBoxParams: function() {
         const opacity = 255;
         const scale = 1;
         return [ opacity, scale];
-    },
+    },*/
 
     _updateThumbnailsBox: function() {
         const { shouldShow } = this._thumbnailsBox;
         const thumbnailsBoxVisible = shouldShow;
         this._thumbnailsBox.visible = thumbnailsBoxVisible;
+
+        // this call should be directly in _update(), but we cannot replace it
+        // _update() overrides Main.overview._overview._controls._update, but in reality the original code is being executed instead
+        this._updateWorkspacesDisplay();
     },
+
+    // this function is pure addition to the original code and handles wsDisp transition to APP_GRID view
+    _updateWorkspacesDisplay: function() {
+        const { initialState, finalState, progress } = this._stateAdjustment.getStateTransitionParams();
+        const { searchActive } = this._searchController;
+
+        const paramsForState = s => {
+            let opacity;
+            let scale;
+            switch (s) {
+            case ControlsState.HIDDEN:
+            case ControlsState.WINDOW_PICKER:
+                opacity = 255;
+                scale = 1;
+                break;
+            case ControlsState.APP_GRID:
+                opacity = 0;
+                scale = 0;
+                //scale = gOptions.get('appGridAnimation') ? 0 : 1;
+                break;
+            default:
+                opacity = 255;
+                scale = 1;
+                break;
+            }
+            return { opacity, scale };
+        };
+
+        let initialParams = paramsForState(initialState);
+        let finalParams = paramsForState(finalState);
+
+        let opacity = Math.round(Util.lerp(initialParams.opacity, finalParams.opacity, progress));
+        let scale = Util.lerp(initialParams.scale, finalParams.scale, progress);
+
+        const animationDirection = gOptions.get('appGridAnimation');
+        let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
+        let params = {
+            opacity: opacity,
+            scale_x: (animationDirection === 1) ? scale : 1,
+            //scale_y: (animationDirection === 3) ? scale : 1,
+            duration: 0,
+            mode: Clutter.AnimationMode.EASE_OUT_QUART,//EASE_OUT_QUAD,
+        }
+
+        // workspacesDisplay needs to go off screen, otherwise it blocks DND operations within the App Display
+        // but the 'visibile' property ruins transition animation and breakes workspace control
+        // scale_y = 0 works like visibile = false but without collateral damage
+        this._workspacesDisplay.scale_y = (progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
+        this._workspacesDisplay.reactive = workspacesDisplayVisible;
+        this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
+        // scale workspaces back to normal size before transition from AppGrid view
+        if (progress < 1 && !this._workspacesDisplay.scale_y) {
+            this._workspacesDisplay.scale_y = 1;
+        }
+
+        this._workspacesDisplay.ease(params);
+    }
 }
 
 //-------ControlsManagerLayout-----------------------------
@@ -1179,7 +1256,22 @@ var ControlsManagerLayoutOverride = {
         switch (state) {
         case ControlsState.HIDDEN:
         case ControlsState.WINDOW_PICKER:
-            appDisplayBox.set_origin(startX + width, boxY);
+            const animationDirection = gOptions.get('appGridAnimation');
+            // 1 - left, 2 - right, 3 - bottom
+            switch (animationDirection) {
+            case 0:
+                appDisplayBox.set_origin(appDisplayX, boxY);
+                break;
+            case 1:
+                appDisplayBox.set_origin(startX + width, boxY);
+                break;
+            case 2:
+                appDisplayBox.set_origin(startX - adWidth, boxY);
+                break;
+            case 3:
+                appDisplayBox.set_origin(appDisplayX, workAreaBox.y2);
+                break;
+            }
             break;
         case ControlsState.APP_GRID:
             appDisplayBox.set_origin(appDisplayX, boxY);
@@ -1542,62 +1634,4 @@ var AppDisplayOverride  = {
 
         return AppDisplay.SidePages.NONE;
     }
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-function _updateWorkspacesDisplay() {
-    const { initialState, finalState, progress } = this._stateAdjustment.getStateTransitionParams();
-    const { searchActive } = this._searchController;
-
-    const paramsForState = s => {
-        let opacity;
-        let scale;
-        switch (s) {
-        case ControlsState.HIDDEN:
-        case ControlsState.WINDOW_PICKER:
-            opacity = 255;
-            scale = 1;
-            break;
-        case ControlsState.APP_GRID:
-            opacity = 0;
-            scale = 0;
-            break;
-        default:
-            opacity = 255;
-            scale = 1;
-            break;
-        }
-        return { opacity, scale };
-    };
-
-    let initialParams = paramsForState(initialState);
-    let finalParams = paramsForState(finalState);
-
-    let opacity = Math.round(Util.lerp(initialParams.opacity, finalParams.opacity, progress));
-    let scale = Util.lerp(initialParams.scale, finalParams.scale, progress);
-
-    let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
-    let params = {
-        opacity: opacity,
-        scale_x: scale,
-        duration: 0,
-        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-        onComplete: () => {
-            // workspacesDisplay needs to go off screen, otherwise it blocks DND operations within the App Display
-            // but the 'visibile' property ruins transition animation and breakes workspace control
-            // scale_y = 0 works like visibile = false but without collateral damage
-            this._workspacesDisplay.scale_y = (progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
-            this._workspacesDisplay.reactive = workspacesDisplayVisible;
-            this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
-        }
-    }
-
-    // scale workspaces back to normal size before transition from AppGrid view
-    if (progress < 1 && !this._workspacesDisplay.scale_y) {
-        this._workspacesDisplay.scale_y = 1;
-    }
-
-    this._workspacesDisplay.ease(params);
 }
