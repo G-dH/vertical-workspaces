@@ -665,7 +665,7 @@ function _getAdjustmentsOptionList() {
     optionList.push(
         _optionsItem(
             _('App Grid Animation'),
-            _(`When entering the App Grid view, the app grid animates from the edge of the screen (defaultly from the right edge to follow the three fingers gesture on the trackpad). You can choose other direction or disable the animation if you don't like it.`),
+            _(`When entering the App Grid view, the app grid animates from the edge of the screen (defaultly from the right edge to follow the three fingers trackpad gesture). You can choose other direction or disable the animation if you don't like it.`),
             _newComboBox(),
             //_newDropDown(),
             'appGridAnimation',
