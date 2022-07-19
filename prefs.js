@@ -677,6 +677,19 @@ function _getAdjustmentsOptionList() {
         )
     );
 
+    optionList.push(
+        _optionsItem(
+            _('Workspace Animation'),
+            _(`When entering / leaving the App Grid view, the workspace can animate to/from workspace thumbnails. The animation can be choppy if you have many workspaces with many windows and weak hw.`),
+            _newComboBox(),
+            //_newDropDown(),
+            'workspaceAnimation',
+            [   [_('Disable'), 0],
+                [_('Enable'), 1],
+            ]
+        )
+    );
+
     //----------------------------------------------------------------
 
     optionList.push(

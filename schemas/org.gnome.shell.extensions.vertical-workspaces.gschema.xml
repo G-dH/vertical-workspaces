@@ -52,5 +52,8 @@
     <key type="i" name="app-grid-animation">
       <default>1</default>
     </key>
+    <key type="i" name="workspace-animation">
+      <default>1</default>
+    </key>
   </schema>
 </schemalist>

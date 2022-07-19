@@ -53,7 +53,8 @@ var Options = class Options {
             showWsSwitcher: ['boolean', 'show-ws-switcher'],
             showWsSwitcherBg: ['boolean', 'show-ws-switcher-bg'],
             wsSwitcherFullHeight: ['boolean', 'ws-switcher-full-height'],
-            appGridAnimation: ['int', 'app-grid-animation']
+            appGridAnimation: ['int', 'app-grid-animation'],
+            workspaceAnimation: ['int', 'workspace-animation']
         }
         this.cachedOptions = {};
     }

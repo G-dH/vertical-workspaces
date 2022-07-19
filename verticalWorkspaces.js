@@ -41,8 +41,8 @@ const BACKGROUND_CORNER_RADIUS_PIXELS = 40;
 const WORKSPACE_CUT_SIZE = 10;
 
 // keep adjacent workspaces out of the screen
-const WORKSPACE_MAX_SPACING = 350;
-const WORKSPACE_MIN_SPACING = 350;
+let WORKSPACE_MAX_SPACING = 350;
+let WORKSPACE_MIN_SPACING = 5;
 
 let DASH_MAX_HEIGHT_RATIO = 0.15;
 const DASH_ITEM_LABEL_SHOW_TIME = 150;
@@ -127,10 +127,10 @@ function activate() {
     });
 
     Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity') * 2.5); // conversion % to 0-255
-    Main.overview.searchEntry.visible = false;
     _moveDashAppGridIcon();
 
-    _searchControllerSigId =  Main.overview._overview.controls._searchController.connect('notify::search-active', _updateSearchControlerView);
+    Main.overview.searchEntry.visible = false;
+    _searchControllerSigId =  Main.overview._overview.controls._searchController.connect('notify::search-active', _updateSearchEntryVisibility);
 
     _setAppDisplayOrientation(true);
     _updateSettings();
@@ -202,8 +202,6 @@ function reset() {
 
     _setAppDisplayOrientation(false);
 
-    Main.overview.searchEntry.visible = true;
-
     Main.overview.dash._background.opacity = 255;
     const reset = true;
     _moveDashAppGridIcon(reset);
@@ -242,36 +240,14 @@ function _updateSettings(settings, key = 'all') {
     }
 }
 
-function _updateSearchControlerView() {
+function _updateSearchEntryVisibility() {
     // show search entry only if the user starts typing, and hide it when leaving the search mode
-    Main.overview.searchEntry.visible = Main.overview._overview.controls._searchController._searchActive;
-
-    // adjust size of workspace thumbnails if needed
-    if (!gOptions.get('centerSearch'))
-        return;
-
-    const searchController = Main.overview._overview._controls._searchController;
-    const searchActive = searchController._searchActive;
-    let timeout = 0;
-    // before first search activation the search container is not yet allocated, we must wait until the transition animation ends
-    if (searchController._searchResults._content.allocation.x2 === -Infinity)
-        timeout = 300;
-    _wsTmbBoxResizeDelayId =  GLib.timeout_add(GLib.PRIORITY_DEFAULT, timeout, () => {
-        // the real width needs to be calculated from allocation coordinates
-        const searchAllocation = searchController._searchResults._content.allocation;
-        const searchWidth = searchAllocation.x2 - searchAllocation.x1;
-        const tmbBox = Main.overview._overview._controls._thumbnailsBox;
-        const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
-        const tmbBoxMaxWidth = (geometry.width - searchWidth - 50) / 2;
-        if (searchActive && tmbBox.width > tmbBoxMaxWidth) {
-            tmbBox._originalWidth = tmbBox.width;
-            tmbBox.width = Math.round(tmbBoxMaxWidth);
-        } else {
-            if (tmbBox._originalWidth)
-                tmbBox.width = tmbBox._originalWidth;
-        }
-        _wsTmbBoxResizeDelayId = 0;
-        return GLib.SOURCE_REMOVE;
+    const searchActive = Main.overview._overview.controls._searchController._searchActive;
+    Main.overview.searchEntry.ease({
+        opacity: searchActive ? 255 : 0,
+        duration: OverviewControls.SIDE_CONTROLS_ANIMATION_TIME,
+        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+        onComplete: () => (Main.overview.searchEntry.visible = searchActive),
     });
 }
 
@@ -380,8 +356,14 @@ function _setAppDisplayOrientation(vertical = false) {
     appDisplay._adjustment = appDisplay._scrollView[scroll].adjustment;
 
     // no need to connect already connected signal (wasn't removed the original one before)
-    if (!vertical)
+    if (!vertical) {
+        // reset used appdisplay properties
+        Main.overview.searchEntry.visible = true;
+        Main.overview._overview._controls._appDisplay.scale_y = 1;
+        Main.overview._overview._controls._appDisplay.scale_x = 1;
+        Main.overview._overview._controls._appDisplay.opacity = 255;
         return;
+    }
 
     _appDisplayScrollConId = appDisplay._adjustment.connect('notify::value', adj => {
         appDisplay._updateFade();
@@ -518,8 +500,13 @@ var WorkspacesViewOverride = {
 
             const scaleProgress = 1 - Math.clamp(distanceToCurrentWorkspace, 0, 1);
 
-            const scale = Util.lerp(1, 1, scaleProgress);
+            const scale = Util.lerp(1, 1, scaleProgress);//Util.lerp(WORKSPACE_INACTIVE_SCALE, 1, scaleProgress);
             w.set_scale(scale, scale);
+            // if we disable inactive workspaces, ws animation will be noticably smoother
+            // the only drawback is, that windows on inactive workspaces will be spreaded with the first ws switching in the overview
+            // so you'll see the spread animation during workspace switching animation
+            w.visible = scaleProgress ? true : false;
+            //w.opacity = scaleProgress ? 255 : 0;
         });
     }
 }
@@ -531,8 +518,10 @@ function _getFitModeForState(state) {
     case ControlsState.WINDOW_PICKER:
         return WorkspacesView.FitMode.SINGLE;
     case ControlsState.APP_GRID:
-        return WorkspacesView.FitMode.SINGLE;
-        //return WorkspacesView.FitMode.ALL;
+        if (gOptions.get('workspaceAnimation') === 1)
+            return WorkspacesView.FitMode.ALL;
+        else
+            return WorkspacesView.FitMode.SINGLE;
     default:
         return WorkspacesView.FitMode.SINGLE;
     }
@@ -541,7 +530,6 @@ function _getFitModeForState(state) {
 // WindowPreview
 var WindowPreviewOverride = {
     _updateIconScale: function() {
-        //const { ControlsState } = OverviewControls;
         const { currentState, initialState, finalState } =
             this._overviewAdjustment.getStateTransitionParams();
         const visible =
@@ -552,9 +540,15 @@ var WindowPreviewOverride = {
         const scale = visible
             //? (currentState >= 1 ? 1 : currentState % 1) : 0;
             ? 1 - Math.abs(ControlsState.WINDOW_PICKER - currentState) : 0;
+
         this._icon.set({
             scale_x: scale,
             scale_y: scale,
+        });
+
+        // if titles are in 'always show' mode (set by another extension), we need to add transition between visible/invisible state
+        this._title.set({
+            opacity: scale * 255
         });
     }
 }
@@ -704,11 +698,14 @@ var WorkspaceThumbnailOverride = {
         }.bind(this));
 
         //this._bgManager.backgroundActor.opacity = 100;
+
+        // this all is just for the small border radius...
         const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
         const cornerRadius = scaleFactor * BACKGROUND_CORNER_RADIUS_PIXELS;
         const backgroundContent = this._bgManager.backgroundActor.content;
         backgroundContent.rounded_clip_radius = cornerRadius;
 
+        // the original clip has some addition at the bottom
         const rect = new Graphene.Rect();
         rect.origin.x = this._viewport.x;
         rect.origin.y = this._viewport.y;
@@ -827,7 +824,7 @@ var ThumbnailsBoxOverride = {
 
     //vfunc_get_preferred_width: function(forHeight) {
     // override of this vfunc doesn't work for some reason (tested on Ubuntu and Fedora), it's not reachable
-    get_preferred_width: function(forHeight) {
+    get_preferred_custom_width: function(forHeight) {
         if (forHeight === -1)
             return this.get_preferred_height(forHeight);
 
@@ -849,7 +846,7 @@ var ThumbnailsBoxOverride = {
         return themeNode.adjust_preferred_height(width, width);
     },
 
-    vfunc_get_preferred_height: function(_forWidth) {
+    get_preferred_custom_height: function(_forWidth) {
         // Note that for getPreferredHeight/Width we cheat a bit and skip propagating
         // the size request to our children because we know how big they are and know
         // that the actors aren't depending on the virtual functions being called.
@@ -861,11 +858,6 @@ var ThumbnailsBoxOverride = {
 
         const naturalheight = this._thumbnails.reduce((accumulator, thumbnail, index) => {
             let workspaceSpacing = 0;
-
-            /*if (index > 0)
-                workspaceSpacing += spacing / 2;
-            if (index < this._thumbnails.length - 1)
-                workspaceSpacing += spacing / 2;*/
 
             const progress = 1 - thumbnail.collapse_fraction;
             const height = (this._porthole.height * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE + workspaceSpacing) * progress;
@@ -1072,13 +1064,6 @@ var ControlsManagerOverride = {
         return _getFitModeForState(state);
     },
 
-    // this function is never called
-    /*_getThumbnailsBoxParams: function() {
-        const opacity = 255;
-        const scale = 1;
-        return [ opacity, scale];
-    },*/
-
     _updateThumbnailsBox: function() {
         const { shouldShow } = this._thumbnailsBox;
         const thumbnailsBoxVisible = shouldShow;
@@ -1096,56 +1081,42 @@ var ControlsManagerOverride = {
 
         const paramsForState = s => {
             let opacity;
-            let scale;
             switch (s) {
             case ControlsState.HIDDEN:
             case ControlsState.WINDOW_PICKER:
                 opacity = 255;
-                scale = 1;
                 break;
             case ControlsState.APP_GRID:
                 opacity = 0;
-                scale = 0;
-                //scale = gOptions.get('appGridAnimation') ? 0 : 1;
                 break;
             default:
                 opacity = 255;
-                scale = 1;
                 break;
             }
-            return { opacity, scale };
+            return { opacity };
         };
 
         let initialParams = paramsForState(initialState);
         let finalParams = paramsForState(finalState);
 
         let opacity = Math.round(Util.lerp(initialParams.opacity, finalParams.opacity, progress));
-        let scale = Util.lerp(initialParams.scale, finalParams.scale, progress);
 
-        const animationDirection = gOptions.get('appGridAnimation');
+        const appGridAnimation = gOptions.get('appGridAnimation');
+        const workspaceAnimation = gOptions.get('workspaceAnimation');
         let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
-        let params = {
-            opacity: opacity,
-            scale_x: (animationDirection === 1) ? scale : 1,
-            //scale_y: (animationDirection === 3) ? scale : 1,
-            duration: 0,
-            mode: Clutter.AnimationMode.EASE_OUT_QUART,//EASE_OUT_QUAD,
+
+        if (workspaceAnimation !== 1) {
+            this._workspacesDisplay.opacity = opacity;
         }
 
         this._appDisplay.opacity = 255 - opacity;
-        // workspacesDisplay needs to go off screen, otherwise it blocks DND operations within the App Display
-        // but the 'visibile' property ruins transition animation and breakes workspace control
-        // scale_y = 0 works like visibile = false but without collateral damage
-        this._workspacesDisplay.scale_y = (progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
-        this._appDisplay.scale_y = (progress == 1 && finalState != ControlsState.APP_GRID) ? 0 : 1;
-        this._workspacesDisplay.reactive = workspacesDisplayVisible;
-        this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
-        // scale workspaces back to normal size before transition from AppGrid view
-        if (progress < 1 && !this._workspacesDisplay.scale_y) {
-            this._workspacesDisplay.scale_y = 1;
-        }
 
-        this._workspacesDisplay.ease(params);
+        // workspacesDisplay needs to go off screen in APP_GRID state, otherwise it blocks DND operations within the App Display
+        // but the 'visibile' property ruins transition animation and breakes workspace control
+        // scale_y = 0 hides the object but without collateral damage
+        this._workspacesDisplay.scale_y = (!appGridAnimation && progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
+        //this._workspacesDisplay.reactive = workspacesDisplayVisible;
+        this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
     }
 }
 
@@ -1181,6 +1152,8 @@ var ControlsManagerLayoutOverride = {
         let wHeight;
         let wsBoxY;
 
+        const ANIMATION = gOptions.get('workspaceAnimation');
+
         switch (state) {
         case ControlsState.HIDDEN:
             workspaceBox.set_origin(...workAreaBox.get_origin());
@@ -1188,51 +1161,54 @@ var ControlsManagerLayoutOverride = {
             break;
         case ControlsState.WINDOW_PICKER:
         case ControlsState.APP_GRID:
-            dashHeight = dash.visible ? dashHeight : 0;
-            wWidth = width
-                        - spacing
-                        - (DASH_VERTICAL ? dash.width + spacing : spacing)
-                        - (thumbnailsWidth ? thumbnailsWidth + spacing : 0)
-                        - 2 * spacing;
-            wHeight = height
-                        - (DASH_VERTICAL ? 4 * spacing : (dashHeight ? dashHeight + spacing : 4 * spacing))
-                        - 3 * spacing;
-            const ratio = width / height;
-            let wRatio = wWidth / wHeight;
-            let scale = ratio / wRatio;
-
-            if (scale > 1) {
-                wHeight = Math.round(wHeight / scale);
-                wWidth = Math.round(wHeight * ratio);
+            if (ANIMATION === 1 && state === ControlsState.APP_GRID) {
+                workspaceBox.set_origin(...this._workspacesThumbnails.get_position());
+                workspaceBox.set_size(...this._workspacesThumbnails.get_size());
             } else {
-                wWidth = Math.round(wWidth * scale);
-                wHeight = Math.round(wWidth / ratio);
+                dashHeight = dash.visible ? dashHeight : 0;
+                wWidth = width
+                            - spacing
+                            - (DASH_VERTICAL ? dash.width + spacing : spacing)
+                            - (thumbnailsWidth ? thumbnailsWidth + spacing : 0)
+                            - 2 * spacing;
+                wHeight = height
+                            - (DASH_VERTICAL ? 4 * spacing : (dashHeight ? dashHeight + spacing : 4 * spacing))
+                            - 3 * spacing;
+                const ratio = width / height;
+                let wRatio = wWidth / wHeight;
+                let scale = ratio / wRatio;
+
+                if (scale > 1) {
+                    wHeight = Math.round(wHeight / scale);
+                    wWidth = Math.round(wHeight * ratio);
+                } else {
+                    wWidth = Math.round(wWidth * scale);
+                    wHeight = Math.round(wWidth / ratio);
+                }
+
+                let xOffset = 0;
+                let yOffset = 0;
+
+                yOffset = DASH_TOP ? spacing : (((height - wHeight - (!DASH_VERTICAL ? dashHeight : 0)) / 3));
+
+                // move the workspace box to the middle of the screen, if possible
+                const centeredBoxX = (width - wWidth) / 2;
+                xOffset = Math.min(centeredBoxX, width - wWidth - thumbnailsWidth - 2 * spacing);
+
+                this._xAlignCenter = false;
+                if (xOffset !== centeredBoxX) { // in this case xOffset holds max possible wsBoxX coordinance
+                    xOffset = (dashPosition === 3 ? dash.width + spacing : 0) + (thumbnailsWidth && WS_TMB_LEFT ? thumbnailsWidth + spacing : 0)
+                            + (width - wWidth - 2 * spacing - thumbnailsWidth - ((DASH_VERTICAL && dash.visible) ? dash.width + spacing : 0)) / 2;
+                } else {
+                    this._xAlignCenter = true;
+                }
+
+                const wsBoxX = Math.round(xOffset);
+                wsBoxY = Math.round(startY + yOffset + ((dashHeight && DASH_TOP) ? dashHeight : spacing)/* + (searchHeight ? searchHeight + spacing : 0)*/);
+
+                workspaceBox.set_origin(Math.round(wsBoxX), Math.round(wsBoxY));
+                workspaceBox.set_size(wWidth, wHeight);
             }
-
-            let xOffset = 0;
-            let yOffset = 0;
-
-            yOffset = DASH_TOP ? spacing : (((height - wHeight - (!DASH_VERTICAL ? dashHeight : 0)) / 3));
-
-            // move the workspace box to the middle of the screen, if possible
-            const centeredBoxX = (width - wWidth) / 2;
-            xOffset = Math.min(centeredBoxX, width - wWidth - thumbnailsWidth - 2 * spacing);
-
-            this._xAlignCenter = false;
-            if (xOffset !== centeredBoxX) { // in this case xOffset holds max possible wsBoxX coordinance
-                xOffset = (dashPosition === 3 ? dash.width + spacing : 0) + (thumbnailsWidth && WS_TMB_LEFT ? thumbnailsWidth + spacing : 0)
-                        + (width - wWidth - 2 * spacing - thumbnailsWidth - ((DASH_VERTICAL && dash.visible) ? dash.width + spacing : 0)) / 2;
-            } else {
-                this._xAlignCenter = true;
-            }
-
-            const wsBoxX = Math.round(xOffset);
-            wsBoxY = Math.round(startY + yOffset + ((dashHeight && DASH_TOP) ? dashHeight : spacing)/* + (searchHeight ? searchHeight + spacing : 0)*/);
-
-            workspaceBox.set_origin(Math.round(wsBoxX), Math.round(wsBoxY));
-            workspaceBox.set_size(wWidth, wHeight);
-
-            break;
         }
 
         return workspaceBox;
@@ -1347,23 +1323,31 @@ var ControlsManagerLayoutOverride = {
         let wsTmbWidth = 0;
         let thumbnailsHeight = 0;
 
+        const CENTER_SEARCH_VIEW = gOptions.get('centerSearch');
         if (this._workspacesThumbnails.visible) {
+            const REDUCE_WS_TMB_IF_NEEDED = this._searchController._searchActive && CENTER_SEARCH_VIEW;
+            const WS_TMB_CENTRED = gOptions.get('centerWsSwitcher');
+
             const { expandFraction } = this._workspacesThumbnails;
             const dashHeightReservation = WS_TMB_FULL_HEIGHT ? 0 : dashHeight;
             thumbnailsHeight = WS_TMB_FULL_HEIGHT
                                 ? height - 2 * spacing
                                 : height - 3 * spacing - (DASH_VERTICAL ? 0 : dashHeightReservation + spacing);
 
-            wsTmbWidth = this._workspacesThumbnails.get_preferred_width(thumbnailsHeight)[0];
+            wsTmbWidth = this._workspacesThumbnails.get_preferred_custom_width(thumbnailsHeight)[0];
             wsTmbWidth = Math.round(Math.min(
                 wsTmbWidth * expandFraction,
                 width * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE
             ));
-            const WS_CENTRED = gOptions.get('centerWsSwitcher');
-            if (WS_CENTRED)
-                thumbnailsHeight = Math.round(Math.min(this._workspacesThumbnails.get_preferred_height(wsTmbWidth)[1], thumbnailsHeight));
 
-            //wsTmbWidth = Math.round(this._workspacesThumbnails.get_preferred_width(thumbnailsHeight)[0]);
+            if (REDUCE_WS_TMB_IF_NEEDED) {
+                const searchAllocation = this._searchController._searchResults._content.allocation;
+                const searchWidth = searchAllocation.x2 - searchAllocation.x1;
+                wsTmbWidth = Math.clamp((width - searchWidth) / 2 - spacing, width * 0.05, wsTmbWidth);
+            }
+
+
+            thumbnailsHeight = Math.round(Math.min(this._workspacesThumbnails.get_preferred_custom_height(wsTmbWidth)[1], thumbnailsHeight));
 
             let wsTmbX;
             if (WS_TMB_RIGHT) {
@@ -1375,7 +1359,7 @@ var ControlsManagerLayoutOverride = {
             }
 
             let wstYOffset = ((dashHeightReservation && DASH_TOP && !DASH_VERTICAL) ? dashHeight + spacing : spacing);
-            if (WS_CENTRED) {
+            if (WS_TMB_CENTRED) {
                 wstYOffset += Math.max(0, (height - 5 * spacing - thumbnailsHeight - (DASH_VERTICAL ? 0 : dashHeightReservation)) / 2);
             }
 
@@ -1414,7 +1398,6 @@ var ControlsManagerLayoutOverride = {
         if (DASH_CENTERED_WS) {
             const offSet = Math.floor((wWidth - dashWidth) / 2);
             if (offSet < 0) {
-                //dashWidth = width;
                 dashX = spacing;
                 if (wsTmbWidth && !WS_TMB_RIGHT) {
                     dashX = width - dashWidth - spacing;
@@ -1457,7 +1440,7 @@ var ControlsManagerLayoutOverride = {
 
         // Search entry
         const searchXoffset = spacing + (WS_TMB_RIGHT ? 0 : wsTmbWidth + spacing);
-        let [searchHeight] = this._searchEntry.get_preferred_height(width - wsTmbWidth - DASH_VERTICAL ? dashWidth : 0);
+        let [searchHeight] = this._searchEntry.get_preferred_height(width - wsTmbWidth);
 
         // Y possition under top Dash
         let searchEntryX, searchEntryY;
@@ -1470,8 +1453,7 @@ var ControlsManagerLayoutOverride = {
         searchEntryX = startX + searchXoffset;
         const searchEntryWidth = this._xAlignCenter ? width : width - 2 * spacing - wsTmbWidth; // xAlignCenter is given by wsBox
 
-        let centerSearchView = gOptions.get('centerSearch');
-        if (centerSearchView) {
+        if (CENTER_SEARCH_VIEW) {
             childBox.set_origin(0, searchEntryY);
             childBox.set_size(width, searchHeight);
         } else {
@@ -1486,7 +1468,7 @@ var ControlsManagerLayoutOverride = {
         // AppDisplay - state, box, workAreaBox, searchHeight, dashHeight, appGridBox, wsTmbWidth
         if (this._appDisplay.visible) {
             const workspaceAppGridBox =
-                this._cachedWorkspaceBoxes.get(ControlsState.APP_GRID);
+                this._cachedWorkspaceBoxes.get(ControlsState.WINDOW_PICKER);
 
             params = [box, workAreaBox, /*searchHeight, dashHeight,*/ workspaceAppGridBox, wsTmbWidth];
             let appDisplayBox;
@@ -1507,7 +1489,7 @@ var ControlsManagerLayoutOverride = {
 
         // Search
         let searchWidth = width;
-        if (centerSearchView) {
+        if (CENTER_SEARCH_VIEW) {
             childBox.set_origin(0, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight + spacing);
         } else {
             childBox.set_origin(this._xAlignCenter ? 0 : searchXoffset, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight + spacing);
