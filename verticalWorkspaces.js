@@ -86,6 +86,7 @@ function activate() {
     // fix overlay base for vertical workspaces
     verticalOverrides['WorkspaceLayout'] = _Util.overrideProto(Workspace.WorkspaceLayout.prototype, WorkspaceLayoutOverride);
     verticalOverrides['WorkspacesView'] = _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, WorkspacesViewOverride);
+    verticalOverrides['WorkspacesDisplay'] = _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, workspacesDisplayOverride);
 
     // move titles into window previews
     _injectWindowPreview();
@@ -185,6 +186,7 @@ function reset() {
     _windowPreviewInjections = {};
 
     _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, verticalOverrides['WorkspacesView']);
+    _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, verticalOverrides['WorkspacesDisplay']);
     _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, verticalOverrides['SecondaryMonitorDisplay']);
 
     _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, verticalOverrides['ThumbnailsBox']);
@@ -221,10 +223,6 @@ function _updateSettings(settings, key = 'all') {
         case 'all':
         case 'ws-thumbnail-scale':
             WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale', true) / 100;
-            // in case we adjusted actual thumbnail scale before, we need to update the value,
-            // otherwise the new scale constant can limit the size to smaller values but not above them
-            const width = global.display.get_monitor_geometry(global.display.get_primary_monitor()).width;
-            Main.overview._overview._controls._thumbnailsBox.width = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE * width;
         case 'all':
         case 'dash-max-scale':
             DASH_MAX_HEIGHT_RATIO = gOptions.get('dashMaxScale', true) / 100;
@@ -416,8 +414,8 @@ var WorkspacesViewOverride = {
 
         // Single fit mode implies centered too
         let [x1, y1] = box.get_origin();
-        const [, workspaceWidth] = workspace.get_preferred_width(Math.floor(height));
-        const [, workspaceHeight] = workspace.get_preferred_height(workspaceWidth);
+        const [, workspaceWidth] = workspace ? workspace.get_preferred_width(Math.floor(height)) : [,width];
+        const [, workspaceHeight] = workspace ? workspace.get_preferred_height(workspaceWidth) : [,height];
 
         if (vertical) {
             x1 += (width - workspaceWidth) / 2;
@@ -511,6 +509,47 @@ var WorkspacesViewOverride = {
     }
 }
 
+var workspacesDisplayOverride = {
+    _updateWorkspacesViews: function() {
+        for (let i = 0; i < this._workspacesViews.length; i++)
+            this._workspacesViews[i].destroy();
+
+        this._primaryIndex = Main.layoutManager.primaryIndex;
+        this._workspacesViews = [];
+        let monitors = Main.layoutManager.monitors;
+        for (let i = 0; i < monitors.length; i++) {
+            let view;
+            if (i === this._primaryIndex) {
+                view = new WorkspacesView.WorkspacesView(i,
+                    this._controls,
+                    this._scrollAdjustment,
+                    this._fitModeAdjustment,
+                    this._overviewAdjustment);
+
+                view.visible = this._primaryVisible;
+                this.bind_property('opacity', view, 'opacity', GObject.BindingFlags.SYNC_CREATE);
+                this.add_child(view);
+            } else {
+                view = new WorkspacesView.SecondaryMonitorDisplay(i,
+                    this._controls,
+                    this._scrollAdjustment,
+                    // Secondary monitors don't need FitMode.ALL since there is workspace switcher always visible
+                    //this._fitModeAdjustment,
+                    new St.Adjustment({
+                        actor: this,
+                        value: 0,//FitMode.SINGLE,
+                        lower: 0,//FitMode.SINGLE,
+                        upper: 0,//FitMode.SINGLE,
+                    }),
+                    this._overviewAdjustment);
+                Main.layoutManager.overviewGroup.add_actor(view);
+            }
+
+            this._workspacesViews.push(view);
+        }
+    }
+}
+
 // common for OverviewControls and Vertical Workspaces
 function _getFitModeForState(state) {
     switch (state) {
@@ -575,13 +614,13 @@ var SecondaryMonitorDisplayOverride = {
         return { opacity, scale };
     },
 
-    _getThumbnailsWidth: function(box) {
+    _getThumbnailsWidth: function(box, spacing) {
         if (!this._thumbnails.visible)
             return 0;
 
         const [width, height] = box.get_size();
         const { expandFraction } = this._thumbnails;
-        const [, thumbnailsWidth] = this._thumbnails.get_preferred_width(height);
+        const [, thumbnailsWidth] = this._thumbnails.get_preferred_custom_width(height - 2 * spacing);
         return Math.min(
             thumbnailsWidth * expandFraction,
             width * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE);
@@ -621,20 +660,18 @@ var SecondaryMonitorDisplayOverride = {
         const [width, height] = contentBox.get_size();
         const { expandFraction } = this._thumbnails;
         const spacing = themeNode.get_length('spacing') * expandFraction;
-        const padding =
-            Math.round((1 - WorkspacesView.SECONDARY_WORKSPACE_SCALE) * height / 2);
+        const padding = Math.round((1 - WorkspacesView.SECONDARY_WORKSPACE_SCALE) * height / 2);
 
-        const thumbnailsWidth = this._getThumbnailsWidth(contentBox);
-        let [, thumbnailsHeight] = this._thumbnails.get_preferred_height(thumbnailsWidth);
-
-        thumbnailsHeight = Math.min(thumbnailsHeight, height - 2 * spacing);
+        let thumbnailsWidth = this._getThumbnailsWidth(contentBox, spacing);
+        let [, thumbnailsHeight] = this._thumbnails.get_preferred_custom_height(thumbnailsWidth);
 
         this._thumbnails.visible = gOptions.get('showWsSwitcher');
         if (this._thumbnails.visible) {
             // 2 - default, 0 - left, 1 - right
-            const wsTmbPosition = gOptions.get('secondaryWsThumbnailsPosition') === 2
-                                            ? gOptions.get('workspaceThumbnailsPosition')
-                                            : gOptions.get('secondaryWsThumbnailsPosition');
+            let wsTmbPosition = gOptions.get('secondaryWsThumbnailsPosition');
+            if (wsTmbPosition === 2) // default - copy primary monitor option
+                wsTmbPosition = gOptions.get('workspaceThumbnailsPosition') % 2; // 0,2 - left, 1,3 right
+
             let wsTmbX;
             if (wsTmbPosition) {
                 wsTmbX = width - spacing - thumbnailsWidth;
@@ -647,7 +684,10 @@ var SecondaryMonitorDisplayOverride = {
             const childBox = new Clutter.ActorBox();
             const availSpace = height - thumbnailsHeight;
             const centerWst = gOptions.get('centerWsSwitcher');
-            childBox.set_origin(wsTmbX, Math.max(spacing, centerWst ? availSpace / 2 : (availSpace > padding ? padding : spacing)));
+
+            let wsTmbY =  Math.max(spacing, centerWst ? availSpace / 2 : (availSpace > padding ? padding : spacing));
+
+            childBox.set_origin(wsTmbX, wsTmbY);
             childBox.set_size(thumbnailsWidth, thumbnailsHeight);
             this._thumbnails.allocate(childBox);
         }
@@ -669,6 +709,50 @@ var SecondaryMonitorDisplayOverride = {
             workspacesBox = initialBox.interpolate(finalBox, progress);
         }
         this._workspacesView.allocate(workspacesBox);
+    },
+
+    _updateThumbnailVisibility: function() {
+        const visible = !this._settings.get_boolean('workspaces-only-on-primary');
+
+        if (this._thumbnails.visible === visible)
+            return;
+
+        this._thumbnails.show();
+        this._updateThumbnailParams();
+        this._thumbnails.ease_property('expand-fraction', visible ? 1 : 0, {
+            duration: OverviewControls.SIDE_CONTROLS_ANIMATION_TIME,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => {
+                this._thumbnails.visible = visible;
+                this._thumbnails._indicator.visible = visible;
+            },
+        });
+    },
+
+    _updateWorkspacesView: function() {
+        if (this._workspacesView)
+            this._workspacesView.destroy();
+
+        if (this._settings.get_boolean('workspaces-only-on-primary')) {
+            this._workspacesView = new WorkspacesView.ExtraWorkspaceView(
+                this._monitorIndex,
+                this._overviewAdjustment);
+        } else {
+            this._workspacesView = new WorkspacesView.WorkspacesView(
+                this._monitorIndex,
+                this._controls,
+                this._scrollAdjustment,
+                // Secondary monitors don't need FitMode.ALL since there is workspace switcher always visible
+                //this._fitModeAdjustment,
+                new St.Adjustment({
+                    actor: this,
+                    value: 0,//FitMode.SINGLE,
+                    lower: 0,//FitMode.SINGLE,
+                    upper: 0,//FitMode.SINGLE,
+                }),
+                this._overviewAdjustment);
+        }
+        this.add_child(this._workspacesView);
     }
 }
 
@@ -1345,7 +1429,6 @@ var ControlsManagerLayoutOverride = {
                 const searchWidth = searchAllocation.x2 - searchAllocation.x1;
                 wsTmbWidth = Math.clamp((width - searchWidth) / 2 - spacing, width * 0.05, wsTmbWidth);
             }
-
 
             thumbnailsHeight = Math.round(Math.min(this._workspacesThumbnails.get_preferred_custom_height(wsTmbWidth)[1], thumbnailsHeight));
 
