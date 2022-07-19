@@ -1114,7 +1114,7 @@ var ControlsManagerOverride = {
         // workspacesDisplay needs to go off screen in APP_GRID state, otherwise it blocks DND operations within the App Display
         // but the 'visibile' property ruins transition animation and breakes workspace control
         // scale_y = 0 hides the object but without collateral damage
-        this._workspacesDisplay.scale_y = (!appGridAnimation && progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
+        this._workspacesDisplay.scale_y = (progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
         //this._workspacesDisplay.reactive = workspacesDisplayVisible;
         this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
     }
