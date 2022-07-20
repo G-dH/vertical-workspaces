@@ -4,7 +4,7 @@
 
 'use strict';
 
-const { Clutter, Gio, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
+const { Clutter, Gio, GObject, Graphene, Meta, Shell, St } = imports.gi;
 
 const DND = imports.ui.dnd;
 const Main = imports.ui.main;
@@ -64,13 +64,11 @@ const DashPosition = {
 
 let verticalOverrides = {};
 let _windowPreviewInjections = {};
-let _stateAdjustmentValueSigId;
 let _appDisplayScrollConId;
 
 let _shownOverviewSigId;
 let _hidingOverviewSigId;
 let _searchControllerSigId;
-let _wsTmbBoxResizeDelayId;
 let _verticalOverview;
 let _prevDash;
 
@@ -154,12 +152,6 @@ function reset() {
     if (original_MAX_THUMBNAIL_SCALE)
         WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = original_MAX_THUMBNAIL_SCALE;
 
-    const controlsManager = Main.overview._overview._controls;
-    if (_stateAdjustmentValueSigId) {
-        controlsManager._stateAdjustment.disconnect(_stateAdjustmentValueSigId);
-        _stateAdjustmentValueSigId = 0;
-    }
-
     if (_shownOverviewSigId) {
         Main.overview.disconnect(_shownOverviewSigId);
         _shownOverviewSigId = 0;
@@ -173,11 +165,6 @@ function reset() {
     if (_searchControllerSigId) {
         Main.overview._overview.controls._searchController.disconnect(_searchControllerSigId);
         _searchControllerSigId = 0;
-    }
-
-    if (_wsTmbBoxResizeDelayId) {
-        GLib.source_remove(_wsTmbBoxResizeDelayId);
-        _wsTmbBoxResizeDelayId = 0;
     }
 
     for (let name in _windowPreviewInjections) {
