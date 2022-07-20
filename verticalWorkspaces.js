@@ -42,7 +42,7 @@ const WORKSPACE_CUT_SIZE = 10;
 
 // keep adjacent workspaces out of the screen
 let WORKSPACE_MAX_SPACING = 350;
-let WORKSPACE_MIN_SPACING = 5;
+let WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
 
 let DASH_MAX_HEIGHT_RATIO = 0.15;
 const DASH_ITEM_LABEL_SHOW_TIME = 150;
@@ -205,6 +205,9 @@ function reset() {
     _setAppDisplayOrientation(false);
 
     Main.overview.dash._background.opacity = 255;
+    Main.overview.searchEntry.visible = true;
+    Main.overview.searchEntry.opacity = 255;
+
     const reset = true;
     _moveDashAppGridIcon(reset);
     _prevDash = null;
@@ -356,7 +359,6 @@ function _setAppDisplayOrientation(vertical = false) {
     // no need to connect already connected signal (wasn't removed the original one before)
     if (!vertical) {
         // reset used appdisplay properties
-        Main.overview.searchEntry.visible = true;
         Main.overview._overview._controls._appDisplay.scale_y = 1;
         Main.overview._overview._controls._appDisplay.scale_x = 1;
         Main.overview._overview._controls._appDisplay.opacity = 255;
@@ -910,7 +912,7 @@ var ThumbnailsBoxOverride = {
     // override of this vfunc doesn't work for some reason (tested on Ubuntu and Fedora), it's not reachable
     get_preferred_custom_width: function(forHeight) {
         if (forHeight === -1)
-            return this.get_preferred_height(forHeight);
+            return this.get_preferred_custom_height(forHeight);
 
         let themeNode = this.get_theme_node();
 
@@ -927,7 +929,7 @@ var ThumbnailsBoxOverride = {
 
         const width = Math.round(this._porthole.width * scale);
 
-        return themeNode.adjust_preferred_height(width, width);
+        return themeNode.adjust_preferred_width(width, width);
     },
 
     get_preferred_custom_height: function(_forWidth) {
@@ -938,17 +940,25 @@ var ThumbnailsBoxOverride = {
 
         let spacing = themeNode.get_length('spacing');
         let nWorkspaces = this._thumbnails.length;
+
         let totalSpacing = (nWorkspaces - 1) * spacing;
+
+        const ratio = this._porthole.width / this._porthole.height;
+        const tmbHeight = _forWidth / ratio;
 
         const naturalheight = this._thumbnails.reduce((accumulator, thumbnail, index) => {
             let workspaceSpacing = 0;
 
             const progress = 1 - thumbnail.collapse_fraction;
-            const height = (this._porthole.height * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE + workspaceSpacing) * progress;
+            //const height = (this._porthole.height * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE + workspaceSpacing) * progress;
+            const height = (tmbHeight) * progress;
             return accumulator + height;
         }, 0);
 
-        return themeNode.adjust_preferred_width(totalSpacing, naturalheight);
+        //return themeNode.adjust_preferred_height(totalSpacing, naturalheight);
+        // we need to calculate the height precisely as it need to align with the workspacesDisplay because of transition animation
+        // This works perfectly for fullHD monitor, for some reason 5:4 aspect ratio monitor adds unnecessary pixels to the final height of the thumbnailsBox
+        return [totalSpacing, naturalheight];
     },
 
     vfunc_allocate: function(box) {
@@ -1185,12 +1195,14 @@ var ControlsManagerOverride = {
 
         let opacity = Math.round(Util.lerp(initialParams.opacity, finalParams.opacity, progress));
 
-        const appGridAnimation = gOptions.get('appGridAnimation');
+        //const appGridAnimation = gOptions.get('appGridAnimation');
         const workspaceAnimation = gOptions.get('workspaceAnimation');
         let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
 
         if (workspaceAnimation !== 1) {
             this._workspacesDisplay.opacity = opacity;
+        } else if (!gOptions.get('showWsSwitcherBg')) {
+            this._workspacesDisplay._workspacesViews[global.display.get_primary_monitor()]._workspaces[this._workspaceAdjustment.value]._background.opacity = opacity + (255 - opacity) / 2;
         }
 
         this._appDisplay.opacity = 255 - opacity;
