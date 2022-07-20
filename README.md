@@ -1,13 +1,13 @@
 # Vertical Workspaces
 
-GNOME Shell extension that changes the horizontal layout of workspaces to vertical and adds customization of the Activities Overview layout.
+GNOME Shell extension that changes the horizontal layout of workspaces to vertical and adds customization of the Activities overview layout. See options on screenshots below.
 This extension does NOT offer vertical orientation of Dash but is compatible with *Dash to Dock* / *Ubuntu Dock* extensions and their forks, which support the vertical orientation.
 
 Supported GNOME versions: 40, 41, 42.
 
 [<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
 
-![Various Overview Layouts](screenshots/vertical-workspaces.gif)
+![Various Overview Layouts](screenshots/screenshot.jpg)
 ![Settings window](screenshots/screenshot.png)
 ![Settings window](screenshots/screenshot1.png)
 ![Settings window](screenshots/screenshot2.png)
@@ -20,7 +20,7 @@ The easiest way to install Vertical Workspaces: go to [extensions.gnome.org](htt
 
 ### Installation from GitHub repository
 The most recent version in the repository is the one I'm currently using and developing on my own systems, problems may occure, but usually nothing serious.
-You may need to install `gettext` for successful installation.
+You may need to install `git`, `gettext` and `glib2.0` for successful installation.
 Navigate to the directory you want to download the source code and execute following commands in the terminal:
 
     git clone https://github.com/G-dH/vertical-workspaces.git
