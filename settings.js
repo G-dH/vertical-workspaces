@@ -53,7 +53,8 @@ var Options = class Options {
             showWsSwitcher: ['boolean', 'show-ws-switcher'],
             showWsSwitcherBg: ['boolean', 'show-ws-switcher-bg'],
             appGridAnimation: ['int', 'app-grid-animation'],
-            workspaceAnimation: ['int', 'workspace-animation']
+            workspaceAnimation: ['int', 'workspace-animation'],
+            fixUbuntuDock: ['boolean', 'fix-ubuntu-dock']
         }
         this.cachedOptions = {};
     }
@@ -85,7 +86,7 @@ var Options = class Options {
             } else {
                 gSettings = this._gsettings;
             }
-    
+
             this.cachedOptions[option] = gSettings.get_value(key).deep_unpack();
         }
 

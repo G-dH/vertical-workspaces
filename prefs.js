@@ -19,12 +19,14 @@ let gOptions;
 let stackSwitcher;
 let stack;
 
-const CONTENT_TITLE = _('Content');
-const CONTENT_ICON = 'view-reveal-symbolic';
 const LAYOUT_TITLE = _('Layout');
 const LAYOUT_ICON = 'view-grid-symbolic';
 const ADJUSTMENTS_TITLE = _('Adjustments');
 const ADJUSTMENTS_ICON = 'preferences-other-symbolic';
+const CONTENT_TITLE = _('Content');
+const CONTENT_ICON = 'view-reveal-symbolic';
+const MISC_TITLE = _('Misc');
+const MISC_ICON = 'applications-utilities-symbolic';
 
 
 function _newImageFromIconName(name, size = null) {
@@ -53,9 +55,15 @@ function fillPreferencesWindow(window) {
         icon_name: CONTENT_ICON
     });
 
+    const miscOptionsPage = getAdwPage(_geMiscOptionList(), {
+        title: MISC_TITLE,
+        icon_name: MISC_ICON
+    });
+
     window.add(layoutOptionsPage);
     window.add(adjustmentOptionsPage);
     window.add(contentOptionsPage);
+    window.add(miscOptionsPage);
 
     window.set_search_enabled(true);
     window.connect('close-request', _onDestroy);
@@ -98,11 +106,13 @@ function buildPrefsWidget() {
     stack.add_named(getLegacyPage(_getLayoutOptionList()), 'layout');
     stack.add_named(getLegacyPage(_getAdjustmentsOptionList()), 'adjustments');
     stack.add_named(getLegacyPage(_geContentOptionList()), 'content');
+    stack.add_named(getLegacyPage(_geMiscOptionList()), 'misc');
 
     const pagesBtns = [
         [new Gtk.Label({ label: LAYOUT_TITLE}), _newImageFromIconName(LAYOUT_ICON, Gtk.IconSize.BUTTON)],
         [new Gtk.Label({ label: ADJUSTMENTS_TITLE}), _newImageFromIconName(ADJUSTMENTS_ICON, Gtk.IconSize.BUTTON)],
         [new Gtk.Label({ label: CONTENT_TITLE}), _newImageFromIconName(CONTENT_ICON, Gtk.IconSize.BUTTON)]
+        [new Gtk.Label({ label: MISC_TITLE}), _newImageFromIconName(MISC_ICON, Gtk.IconSize.BUTTON)]
     ];
 
     let stBtn = stackSwitcher.get_first_child ? stackSwitcher.get_first_child() : null;
@@ -134,7 +144,7 @@ function buildPrefsWidget() {
         const width = 700;
         const height = 700;
         window.set_default_size(width, height);
-        
+
         const headerbar = window.get_titlebar();
         headerbar.title_widget = stackSwitcher;
 
@@ -439,48 +449,6 @@ function _optionsItem(text, caption, widget, variable, options = []) {
 }
 
 //////////////////////////////////////////////////////////////////////
-function _geContentOptionList() {
-    const optionList = [];
-    // options item format:
-    // [text, caption, widget, settings-variable, options for combo]
-
-    optionList.push(
-        _optionsItem(
-            _('Content of the Overview'),
-        )
-    );
-
-    optionList.push(
-        _optionsItem(
-            _('Show Dash'),
-            _('Disable to remove Dash from Activities Overview.'),
-            _newSwitch(),
-            'showDash',
-        )
-    );
-
-    optionList.push(
-        _optionsItem(
-            _('Show Workspace Switcher'),
-            _('Disable to remove workspace switcher from Activities Overview.'),
-            _newSwitch(),
-            'showWsSwitcher',
-        )
-    );
-
-    optionList.push(
-        _optionsItem(
-            _('Show Wallpaper in Workspace Switcher'),
-            _('Workspace switcher previews will include the current desktop backgroud.'),
-            _newSwitch(),
-            'showWsSwitcherBg',
-        )
-    );
-
-    return optionList;
-}
-
-
 function _getLayoutOptionList() {
     const optionList = [];
     // options item format:
@@ -690,7 +658,56 @@ function _getAdjustmentsOptionList() {
         )
     );
 
-    //----------------------------------------------------------------
+    return optionList;
+}
+
+// ------------------------------------------------------------------------------
+
+function _geContentOptionList() {
+    const optionList = [];
+    // options item format:
+    // [text, caption, widget, settings-variable, options for combo]
+
+    optionList.push(
+        _optionsItem(
+            _('Content of the Overview'),
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Show Dash'),
+            _('Disable to remove Dash from Activities Overview.'),
+            _newSwitch(),
+            'showDash',
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Show Workspace Switcher'),
+            _('Disable to remove workspace switcher from Activities Overview.'),
+            _newSwitch(),
+            'showWsSwitcher',
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Show Wallpaper in Workspace Switcher'),
+            _('Workspace switcher previews will include the current desktop backgroud.'),
+            _newSwitch(),
+            'showWsSwitcherBg',
+        )
+    );
+
+    return optionList;
+}
+
+function _geMiscOptionList() {
+    const optionList = [];
+    // options item format:
+    // [text, caption, widget, settings-variable, options for combo]
 
     optionList.push(
         _optionsItem(
@@ -704,6 +721,21 @@ function _getAdjustmentsOptionList() {
             _('This option automatically overrides the Super(+Sift)+Page Up/Down keyboard shortcuts for the current workspace orientation. If you encounter any issues, check the configuration in the dconf editor.'),
             _newSwitch(),
             'enablePageShortcuts',
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Workarounds'),
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Fix for Ubuntu Dock'),
+            _('With the default Ubuntu Dock you may experience issues with Activities overview after you change Dock position or change monitors cinfiguration. If you are experiencing such issues, try to enable this option, or replace the dock extension.'),
+            _newSwitch(),
+            'fixUbuntuDock',
         )
     );
 

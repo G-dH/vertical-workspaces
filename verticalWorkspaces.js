@@ -66,9 +66,11 @@ let verticalOverrides = {};
 let _windowPreviewInjections = {};
 let _appDisplayScrollConId;
 
+let _monitorsChangedSigId;
 let _shellSettings;
 let _watchDockSigId;
 let _resetTimeoutId;
+let _resetExtensionIfEnabled;
 let _shownOverviewSigId;
 let _hidingOverviewSigId;
 let _searchControllerSigId;
@@ -122,6 +124,8 @@ function activate() {
     verticalOverrides['DashItemContainer'] = _Util.overrideProto(Dash.DashItemContainer.prototype, DashItemContainerOverride);
     verticalOverrides['WindowPreview'] = _Util.overrideProto(WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
 
+    _fixUbuntuDock(gOptions.get('fixUbuntuDock'));
+
     _prevDash = {};
     const dash = Main.overview.dash;
     _prevDash.dash = dash;
@@ -136,15 +140,8 @@ function activate() {
 
         // workaround for Ubuntu Dock breaking overview allocations after changing position
         if (_prevDash.dash !== dash || _prevDash.position !== dash._position) {
-            _resetExtension(0);
+            _resetExtensionIfEnabled(0);
         }
-    });
-
-    // Workaround for Ubuntu Dock breaking overview allocations after changing monitor configuration and deactivating dock
-    Main.layoutManager.connect('monitors-changed', () => _resetExtension(3000));
-    _shellSettings = ExtensionUtils.getSettings( 'org.gnome.shell');
-    _watchDockSigId = _shellSettings.connect('changed::enabled-extensions', settings => {
-        _resetExtension();
     });
 
     _hidingOverviewSigId = Main.overview.connect('hiding', () => {
@@ -174,12 +171,7 @@ function activate() {
 function reset() {
     _enabled = false;
 
-    if (_watchDockSigId)
-        _shellSettings.disconnect(_watchDockSigId);
-    _shellSettings = null;
-
-    if (_resetTimeoutId)
-        GLib.source_remove(_resetTimeoutId);
+    _fixUbuntuDock(false);
 
     // switch workspace orientation back to horizontal
     global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, 1, -1);
@@ -264,9 +256,37 @@ function _resetExtension(timeout = 200) {
     );
 }
 
+function _fixUbuntuDock(activate = true) {
+    // Workaround for Ubuntu Dock breaking overview allocations after changing monitor configuration and deactivating dock
+    if (_shellSettings && _watchDockSigId) {
+        _shellSettings.disconnect(_watchDockSigId);
+        _watchDockSigId = 0;
+    }
+    _shellSettings = null;
+
+    if (_resetTimeoutId) {
+        GLib.source_remove(_resetTimeoutId);
+        _resetTimeoutId = 0;
+    }
+
+    if (_monitorsChangedSigId) {
+        Main.layoutManager.disconnect(_monitorsChangedSigId);
+        _monitorsChangedSigId = 0;
+    }
+    _resetExtensionIfEnabled = () => {};
+
+    if (!activate)
+        return;
+
+    _monitorsChangedSigId = Main.layoutManager.connect('monitors-changed', () => _resetExtension(3000));
+    _shellSettings = ExtensionUtils.getSettings( 'org.gnome.shell');
+    _watchDockSigId = _shellSettings.connect('changed::enabled-extensions', _resetExtension);
+    _resetExtensionIfEnabled = _resetExtension;
+}
+
 //*************************************************************************************************
 
-function _updateSettings() {
+function _updateSettings(settings, key) {
     WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale', true) / 100;
     DASH_MAX_HEIGHT_RATIO = gOptions.get('dashMaxScale', true) / 100;
     WS_TMB_POSITION = gOptions.get('workspaceThumbnailsPosition', true);
@@ -286,6 +306,8 @@ function _updateSettings() {
 
     _switchPageShortcuts();
     _moveDashAppGridIcon();
+    if (key === 'fix-ubuntu-dock')
+        _fixUbuntuDock(gOptions.get('fixUbuntuDock', true));
 }
 
 function _updateSearchEntryVisibility() {
