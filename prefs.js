@@ -111,7 +111,7 @@ function buildPrefsWidget() {
     const pagesBtns = [
         [new Gtk.Label({ label: LAYOUT_TITLE}), _newImageFromIconName(LAYOUT_ICON, Gtk.IconSize.BUTTON)],
         [new Gtk.Label({ label: ADJUSTMENTS_TITLE}), _newImageFromIconName(ADJUSTMENTS_ICON, Gtk.IconSize.BUTTON)],
-        [new Gtk.Label({ label: CONTENT_TITLE}), _newImageFromIconName(CONTENT_ICON, Gtk.IconSize.BUTTON)]
+        [new Gtk.Label({ label: CONTENT_TITLE}), _newImageFromIconName(CONTENT_ICON, Gtk.IconSize.BUTTON)],
         [new Gtk.Label({ label: MISC_TITLE}), _newImageFromIconName(MISC_ICON, Gtk.IconSize.BUTTON)]
     ];
 
