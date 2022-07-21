@@ -297,7 +297,7 @@ function _updateSettings(settings, key) {
     CENTER_SEARCH_VIEW = gOptions.get('centerSearch', true);
     CENTER_APP_GRID = gOptions.get('centerAppGrid', true);
     SHOW_WS_SWITCHER = gOptions.get('showWsSwitcher', true);
-    SHOW_WS_SWITCHER_BG = gOptions.get('showWsSwitcherBg', true);
+    SHOW_WS_SWITCHER_BG = gOptions.get('showWsSwitcherBg', true) && SHOW_WS_SWITCHER;
     APP_GRID_ANIMATION = gOptions.get('appGridAnimation', true);
     WS_ANIMATION = gOptions.get('workspaceAnimation', true);
 
@@ -628,7 +628,7 @@ function _getFitModeForState(state) {
     case ControlsState.WINDOW_PICKER:
         return WorkspacesView.FitMode.SINGLE;
     case ControlsState.APP_GRID:
-        if (WS_ANIMATION === 1)
+        if (WS_ANIMATION === 1  && SHOW_WS_SWITCHER)
             return WorkspacesView.FitMode.ALL;
         else
             return WorkspacesView.FitMode.SINGLE;
@@ -1265,7 +1265,7 @@ var ControlsManagerOverride = {
 
         let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
 
-        if (WS_ANIMATION !== 1) {
+        if (WS_ANIMATION !== 1 && SHOW_WS_SWITCHER) {
             this._workspacesDisplay.opacity = opacity;
         } else if (!SHOW_WS_SWITCHER_BG) {
             // fade out ws wallpaper during transition to ws switcher if ws switcher background disabled
@@ -1321,7 +1321,7 @@ var ControlsManagerLayoutOverride = {
             break;
         case ControlsState.WINDOW_PICKER:
         case ControlsState.APP_GRID:
-            if (WS_ANIMATION === 1 && state === ControlsState.APP_GRID) {
+            if (WS_ANIMATION === 1  && SHOW_WS_SWITCHER && state === ControlsState.APP_GRID) {
                 workspaceBox.set_origin(...this._workspacesThumbnails.get_position());
                 workspaceBox.set_size(...this._workspacesThumbnails.get_size());
             } else {
@@ -1453,8 +1453,8 @@ var ControlsManagerLayoutOverride = {
         dashWidth = Math.min(dashWidth, width - 2 * spacing);
 
         let dashPosition = DASH_POSITION;
-        const DASH_CENTERED = (dashPosition === DashPosition.TOP_CENTER) || (dashPosition === DashPosition.BOTTOM_CENTER);
-        const DASH_CENTERED_WS = DASH_CENTERED && CENTER_DASH_WS;
+        const DASH_CENTER = (dashPosition === DashPosition.TOP_CENTER) || (dashPosition === DashPosition.BOTTOM_CENTER);
+        const DASH_CENTER_WS = DASH_CENTER && CENTER_DASH_WS;
         const DASH_LEFT = dashPosition === DashPosition.TOP_LEFT || dashPosition === DashPosition.BOTTOM_LEFT;
         // convert position of the dock to Ubuntu Dock / Dash to Dock language
         dashPosition = dashPosition < DashPosition.BOTTOM_LEFT ? 0 : 2; // 0 - top, 2 - bottom
@@ -1523,20 +1523,43 @@ var ControlsManagerLayoutOverride = {
             this._workspacesThumbnails.allocate(childBox);
         }
 
-        const wWidth = width - spacing - wsTmbWidth - spacing - (DASH_VERTICAL ? dashWidth + spacing : 0);
-        let dashXOffset = (!WS_TMB_RIGHT && !WS_TMB_FULL_HEIGHT) ? 0 : wsTmbWidth + spacing;
+        const wMaxWidth = width - spacing - wsTmbWidth - 2 * spacing - (DASH_VERTICAL ? dashWidth + spacing : 0);
+        let dashXOffset = 0;
         if (WS_TMB_FULL_HEIGHT) {
-            this._dash.setMaxSize(wWidth - spacing, maxDashHeight);
-            [, dashHeight] = this._dash.get_preferred_height(wWidth);
+            this._dash.setMaxSize(wMaxWidth, maxDashHeight);
+            [, dashHeight] = this._dash.get_preferred_height(wMaxWidth);
             [, dashWidth] = this._dash.get_preferred_width(dashHeight);
             dashHeight = Math.min(dashHeight, maxDashHeight);
-            dashWidth = Math.min(dashWidth, wWidth);
+            dashWidth = Math.min(dashWidth, wMaxWidth);
             dashXOffset = wsTmbPosition === 2 ? wsTmbWidth + spacing : 0;
         }
 
         let dashX, dashY;
-        if (DASH_CENTERED) {
-            dashX = Math.max(spacing, dashXOffset + (width - dashXOffset - dashWidth) / 2);
+        if (DASH_CENTER) {
+            dashX = (width - dashWidth) / 2;
+            if (dashXOffset) {
+                if (WS_TMB_RIGHT) {
+                    dashX = Math.min(dashX, width - (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing));
+                } else {
+                    dashX = Math.max(dashX, (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing));
+                }
+            }
+            if (DASH_CENTER_WS) {
+                const offSet = Math.floor((wMaxWidth - dashWidth) / 2);
+                if (offSet < 0) {
+                    dashX = spacing;
+                    if (wsTmbWidth && !WS_TMB_RIGHT) {
+                        dashX = width - dashWidth - spacing;
+                    }
+                } else if (!this._xAlignCenter) { // this variable provides _getWorkspacesBoxForState()
+                    // workspace preview will be centered even when ws switcher is visible, but so small that it fits
+                    if (wsTmbWidth && !WS_TMB_RIGHT) {
+                        dashX = wsTmbWidth + spacing + offSet;
+                    } else {
+                        dashX = offSet;
+                    }
+                }
+            }
         } else if (DASH_LEFT) {
             dashX = dashXOffset + spacing;
         } else {
@@ -1547,24 +1570,6 @@ var ControlsManagerLayoutOverride = {
             dashY = startY;
         } else {
             dashY = startY + height - dashHeight;
-        }
-
-        // Dash center to ws
-        if (DASH_CENTERED_WS) {
-            const offSet = Math.floor((wWidth - dashWidth) / 2);
-            if (offSet < 0) {
-                dashX = spacing;
-                if (wsTmbWidth && !WS_TMB_RIGHT) {
-                    dashX = width - dashWidth - spacing;
-                }
-            } else {
-                // move Dash above/below ws preview
-                if (wsTmbWidth && !WS_TMB_RIGHT) {
-                    dashX = wsTmbWidth + spacing + offSet;
-                } else {
-                    dashX = offSet;
-                }
-            }
         }
 
         childBox.set_origin(dashX, dashY);
