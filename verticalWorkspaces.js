@@ -4,7 +4,7 @@
 
 'use strict';
 
-const { Clutter, Gio, GObject, Graphene, Meta, Shell, St } = imports.gi;
+const { Clutter, Gio, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
 
 const DND = imports.ui.dnd;
 const Main = imports.ui.main;
@@ -66,14 +66,37 @@ let verticalOverrides = {};
 let _windowPreviewInjections = {};
 let _appDisplayScrollConId;
 
+let _shellSettings;
+let _watchDockSigId;
+let _resetTimeoutId;
 let _shownOverviewSigId;
 let _hidingOverviewSigId;
 let _searchControllerSigId;
 let _verticalOverview;
 let _prevDash;
 
+// constants from settings
+let WS_TMB_POSITION;
+let SEC_WS_TMB_POSITION;
+let DASH_POSITION;
+let CENTER_DASH_WS;
+let CENTER_WS_SWITCHER;
+let CENTER_SEARCH_VIEW;
+let CENTER_APP_GRID;
+let SHOW_WS_SWITCHER;
+let SHOW_WS_SWITCHER_BG;
+let APP_GRID_ANIMATION;
+let WS_ANIMATION;
+
+let _enabled = false;
+
+
 function activate() {
+    _enabled = true;
+    original_MAX_THUMBNAIL_SCALE = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
+
     gOptions = new Settings.Options();
+    _updateSettings();
     gOptions.connect('changed', _updateSettings);
     if (Object.keys(verticalOverrides).length != 0)
         reset();
@@ -99,23 +122,29 @@ function activate() {
     verticalOverrides['DashItemContainer'] = _Util.overrideProto(Dash.DashItemContainer.prototype, DashItemContainerOverride);
     verticalOverrides['WindowPreview'] = _Util.overrideProto(WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
 
-    original_MAX_THUMBNAIL_SCALE = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
-    WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale') / 100;
-
-    _prevDash = Main.overview.dash;
-    _shownOverviewSigId = Main.overview.connect('shown', () => {
-        _moveDashAppGridIcon();
+    _prevDash = {};
+    const dash = Main.overview.dash;
+    _prevDash.dash = dash;
+    _prevDash.position = dash.position;
+    _shownOverviewSigId = Main.overview.connect('showing', () => {
+        // just for case when some other extension changed the value, like Just Perfection when disabled
+        WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale') / 100;
         const dash = Main.overview.dash;
-        if (dash !== _prevDash) {
-            reset();
-            activate(_verticalOverview);
-            _prevDash = dash;
-            dash._background.opacity = 0;
-            return true;
-        }
 
         // Move dash above workspaces
         dash.get_parent().set_child_above_sibling(dash, null);
+
+        // workaround for Ubuntu Dock breaking overview allocations after changing position
+        if (_prevDash.dash !== dash || _prevDash.position !== dash._position) {
+            _resetExtension(0);
+        }
+    });
+
+    // Workaround for Ubuntu Dock breaking overview allocations after changing monitor configuration and deactivating dock
+    Main.layoutManager.connect('monitors-changed', () => _resetExtension(3000));
+    _shellSettings = ExtensionUtils.getSettings( 'org.gnome.shell');
+    _watchDockSigId = _shellSettings.connect('changed::enabled-extensions', settings => {
+        _resetExtension();
     });
 
     _hidingOverviewSigId = Main.overview.connect('hiding', () => {
@@ -125,14 +154,12 @@ function activate() {
         parent.set_child_above_sibling(appDisplay, null);
     });
 
-    Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity') * 2.5); // conversion % to 0-255
     _moveDashAppGridIcon();
 
     Main.overview.searchEntry.visible = false;
     _searchControllerSigId =  Main.overview._overview.controls._searchController.connect('notify::search-active', _updateSearchEntryVisibility);
 
     _setAppDisplayOrientation(true);
-    _updateSettings();
 
     // reverse swipe gestures for enter/leave overview and ws switching
     Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
@@ -142,10 +169,18 @@ function activate() {
 
     // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
     Main.overview._overview._controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
-
 }
 
 function reset() {
+    _enabled = false;
+
+    if (_watchDockSigId)
+        _shellSettings.disconnect(_watchDockSigId);
+    _shellSettings = null;
+
+    if (_resetTimeoutId)
+        GLib.source_remove(_resetTimeoutId);
+
     // switch workspace orientation back to horizontal
     global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, 1, -1);
 
@@ -191,6 +226,7 @@ function reset() {
 
     _setAppDisplayOrientation(false);
 
+    Main.overview.dash.visible = true;
     Main.overview.dash._background.opacity = 255;
     Main.overview.searchEntry.visible = true;
     Main.overview.searchEntry.opacity = 255;
@@ -206,26 +242,50 @@ function reset() {
     gOptions = null;
 }
 
+function _resetExtension(timeout = 200) {
+    if (_resetTimeoutId)
+        GLib.source_remove(_resetTimeoutId);
+    _resetTimeoutId = GLib.timeout_add(
+        GLib.PRIORITY_DEFAULT,
+        timeout,
+        () => {
+            if (!_enabled)
+                return;
+            const dash = Main.overview.dash;
+            if (dash !== _prevDash) {
+                log(`[${Me.metadata.name}]: Dash has been replaced, resetting...`);
+                reset();
+                activate();
+                _prevDash = dash;
+            }
+            _resetTimeoutId = 0;
+            return GLib.SOURCE_REMOVE;
+        }
+    );
+}
+
 //*************************************************************************************************
 
-function _updateSettings(settings, key = 'all') {
-    switch (key) {
-        case 'all':
-        case 'ws-thumbnail-scale':
-            WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale', true) / 100;
-        case 'all':
-        case 'dash-max-scale':
-            DASH_MAX_HEIGHT_RATIO = gOptions.get('dashMaxScale', true) / 100;
-        case 'all':
-        case 'dash-bg-opacity':
-            Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5);
-        case 'all':
-        case 'enable-page-shortcuts':
-            _switchPageShortcuts();
-        case 'all':
-        case 'show-dash':
-            Main.overview.dash.visible = gOptions.get('showDash', true);
-    }
+function _updateSettings() {
+    WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale', true) / 100;
+    DASH_MAX_HEIGHT_RATIO = gOptions.get('dashMaxScale', true) / 100;
+    WS_TMB_POSITION = gOptions.get('workspaceThumbnailsPosition', true);
+    SEC_WS_TMB_POSITION = gOptions.get('secondaryWsThumbnailsPosition', true);
+    DASH_POSITION = gOptions.get('dashPosition', true);
+    CENTER_DASH_WS = gOptions.get('centerDashToWs', true);
+    CENTER_WS_SWITCHER = gOptions.get('centerWsSwitcher', true);
+    CENTER_SEARCH_VIEW = gOptions.get('centerSearch', true);
+    CENTER_APP_GRID = gOptions.get('centerAppGrid', true);
+    SHOW_WS_SWITCHER = gOptions.get('showWsSwitcher', true);
+    SHOW_WS_SWITCHER_BG = gOptions.get('showWsSwitcherBg', true);
+    APP_GRID_ANIMATION = gOptions.get('appGridAnimation', true);
+    WS_ANIMATION = gOptions.get('workspaceAnimation', true);
+
+    Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
+    Main.overview.dash.visible = gOptions.get('showDash', true);
+
+    _switchPageShortcuts();
+    _moveDashAppGridIcon();
 }
 
 function _updateSearchEntryVisibility() {
@@ -460,7 +520,7 @@ var WorkspacesViewOverride = {
         case ControlsState.WINDOW_PICKER:
             return 1;
         case ControlsState.APP_GRID:
-            return gOptions.get('appGridAnimation') ? 1 : 0;
+            return APP_GRID_ANIMATION ? 1 : 0;
         }
 
         return 0;
@@ -546,7 +606,7 @@ function _getFitModeForState(state) {
     case ControlsState.WINDOW_PICKER:
         return WorkspacesView.FitMode.SINGLE;
     case ControlsState.APP_GRID:
-        if (gOptions.get('workspaceAnimation') === 1)
+        if (WS_ANIMATION === 1)
             return WorkspacesView.FitMode.ALL;
         else
             return WorkspacesView.FitMode.SINGLE;
@@ -654,12 +714,12 @@ var SecondaryMonitorDisplayOverride = {
         let thumbnailsWidth = this._getThumbnailsWidth(contentBox, spacing);
         let [, thumbnailsHeight] = this._thumbnails.get_preferred_custom_height(thumbnailsWidth);
 
-        this._thumbnails.visible = gOptions.get('showWsSwitcher');
+        this._thumbnails.visible = SHOW_WS_SWITCHER;
         if (this._thumbnails.visible) {
             // 2 - default, 0 - left, 1 - right
-            let wsTmbPosition = gOptions.get('secondaryWsThumbnailsPosition');
+            let wsTmbPosition = SEC_WS_TMB_POSITION;
             if (wsTmbPosition === 2) // default - copy primary monitor option
-                wsTmbPosition = gOptions.get('workspaceThumbnailsPosition') % 2; // 0,2 - left, 1,3 right
+                wsTmbPosition = WS_TMB_POSITION % 2; // 0,2 - left, 1,3 right
 
             let wsTmbX;
             if (wsTmbPosition) {
@@ -672,9 +732,8 @@ var SecondaryMonitorDisplayOverride = {
 
             const childBox = new Clutter.ActorBox();
             const availSpace = height - thumbnailsHeight;
-            const centerWst = gOptions.get('centerWsSwitcher');
 
-            let wsTmbY =  Math.max(spacing, centerWst ? availSpace / 2 : (availSpace > padding ? padding : spacing));
+            let wsTmbY =  Math.max(spacing, CENTER_WS_SWITCHER ? availSpace / 2 : (availSpace > padding ? padding : spacing));
 
             childBox.set_origin(wsTmbX, wsTmbY);
             childBox.set_size(thumbnailsWidth, thumbnailsHeight);
@@ -754,7 +813,7 @@ var WorkspaceThumbnailOverride = {
         //radius of ws thumbnail backgroung
         this.set_style('border-radius: 8px;');
 
-        if (!gOptions.get('showWsSwitcherBg'))
+        if (!SHOW_WS_SWITCHER_BG)
             return;
         this._bgManager = new Background.BackgroundManager({
             monitorIndex: this.monitorIndex,
@@ -1110,7 +1169,7 @@ var ThumbnailsBoxOverride = {
         // set current workspace indicator border radius
         //this._indicator.set_style('border-radius: 8px;');
 
-        const shouldShow = gOptions.get('showWsSwitcher');
+        const shouldShow = SHOW_WS_SWITCHER;
         if (this._shouldShow === shouldShow)
             return;
 
@@ -1182,14 +1241,13 @@ var ControlsManagerOverride = {
 
         let opacity = Math.round(Util.lerp(initialParams.opacity, finalParams.opacity, progress));
 
-        //const appGridAnimation = gOptions.get('appGridAnimation');
-        const workspaceAnimation = gOptions.get('workspaceAnimation');
         let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
 
-        if (workspaceAnimation !== 1) {
+        if (WS_ANIMATION !== 1) {
             this._workspacesDisplay.opacity = opacity;
-        } else if (!gOptions.get('showWsSwitcherBg')) {
-            this._workspacesDisplay._workspacesViews[global.display.get_primary_monitor()]._workspaces[this._workspaceAdjustment.value]._background.opacity = opacity + (255 - opacity) / 2;
+        } else if (!SHOW_WS_SWITCHER_BG) {
+            // fade out ws wallpaper during transition to ws switcher if ws switcher background disabled
+            this._workspacesDisplay._workspacesViews[global.display.get_primary_monitor()]._workspaces[this._workspaceAdjustment.value]._background.opacity = opacity;
         }
 
         this._appDisplay.opacity = 255 - opacity;
@@ -1198,7 +1256,6 @@ var ControlsManagerOverride = {
         // but the 'visibile' property ruins transition animation and breakes workspace control
         // scale_y = 0 hides the object but without collateral damage
         this._workspacesDisplay.scale_y = (progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
-        //this._workspacesDisplay.reactive = workspacesDisplayVisible;
         this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
     }
 }
@@ -1235,8 +1292,6 @@ var ControlsManagerLayoutOverride = {
         let wHeight;
         let wsBoxY;
 
-        const ANIMATION = gOptions.get('workspaceAnimation');
-
         switch (state) {
         case ControlsState.HIDDEN:
             workspaceBox.set_origin(...workAreaBox.get_origin());
@@ -1244,7 +1299,7 @@ var ControlsManagerLayoutOverride = {
             break;
         case ControlsState.WINDOW_PICKER:
         case ControlsState.APP_GRID:
-            if (ANIMATION === 1 && state === ControlsState.APP_GRID) {
+            if (WS_ANIMATION === 1 && state === ControlsState.APP_GRID) {
                 workspaceBox.set_origin(...this._workspacesThumbnails.get_position());
                 workspaceBox.set_size(...this._workspacesThumbnails.get_size());
             } else {
@@ -1309,7 +1364,6 @@ var ControlsManagerLayoutOverride = {
         const WS_TMB_LEFT = this._workspacesThumbnails._positionLeft;
         const dash = Main.overview.dash;
         const dashPosition = dash._position;
-        const CENTER_APP_GRID = gOptions.get('centerAppGrid');
 
         const appDisplayX = CENTER_APP_GRID ? spacing + thumbnailsWidth : (dashPosition === 3 ? dash.width + spacing : 0) + (WS_TMB_LEFT ? thumbnailsWidth : 0) + spacing;
 
@@ -1317,9 +1371,8 @@ var ControlsManagerLayoutOverride = {
         switch (state) {
         case ControlsState.HIDDEN:
         case ControlsState.WINDOW_PICKER:
-            const animationDirection = gOptions.get('appGridAnimation');
             // 1 - left, 2 - right, 3 - bottom
-            switch (animationDirection) {
+            switch (APP_GRID_ANIMATION) {
             case 0:
                 appDisplayBox.set_origin(appDisplayX, boxY);
                 break;
@@ -1364,7 +1417,7 @@ var ControlsManagerLayoutOverride = {
         let dashHeight;
         let dashWidth;
 
-        const wsTmbPosition = this._workspacesThumbnails.visible && gOptions.get('workspaceThumbnailsPosition');
+        const wsTmbPosition = this._workspacesThumbnails.visible && WS_TMB_POSITION;
         const WS_TMB_FULL_HEIGHT = wsTmbPosition > 1;
         // 0 - left, 1 - right, 2 - left hull-height, 3 - right full-height
         const WS_TMB_RIGHT = wsTmbPosition === 1 || wsTmbPosition === 3;
@@ -1377,9 +1430,9 @@ var ControlsManagerLayoutOverride = {
         dashHeight = Math.min(dashHeight, maxDashHeight);
         dashWidth = Math.min(dashWidth, width - 2 * spacing);
 
-        let dashPosition = gOptions.get('dashPosition');
+        let dashPosition = DASH_POSITION;
         const DASH_CENTERED = (dashPosition === DashPosition.TOP_CENTER) || (dashPosition === DashPosition.BOTTOM_CENTER);
-        const DASH_CENTERED_WS = DASH_CENTERED && gOptions.get('centerDashToWs');
+        const DASH_CENTERED_WS = DASH_CENTERED && CENTER_DASH_WS;
         const DASH_LEFT = dashPosition === DashPosition.TOP_LEFT || dashPosition === DashPosition.BOTTOM_LEFT;
         // convert position of the dock to Ubuntu Dock / Dash to Dock language
         dashPosition = dashPosition < DashPosition.BOTTOM_LEFT ? 0 : 2; // 0 - top, 2 - bottom
@@ -1406,10 +1459,8 @@ var ControlsManagerLayoutOverride = {
         let wsTmbWidth = 0;
         let thumbnailsHeight = 0;
 
-        const CENTER_SEARCH_VIEW = gOptions.get('centerSearch');
         if (this._workspacesThumbnails.visible) {
             const REDUCE_WS_TMB_IF_NEEDED = this._searchController._searchActive && CENTER_SEARCH_VIEW;
-            const WS_TMB_CENTRED = gOptions.get('centerWsSwitcher');
 
             const { expandFraction } = this._workspacesThumbnails;
             const dashHeightReservation = WS_TMB_FULL_HEIGHT ? 0 : dashHeight;
@@ -1436,12 +1487,12 @@ var ControlsManagerLayoutOverride = {
                 wsTmbX = width - (dashPosition === 1 ? dashWidth : 0) - spacing - wsTmbWidth;
                 this._workspacesThumbnails._positionLeft = false;
             } else {
-                wsTmbX = startX + (dashPosition === 3 ? dashWidth : 0) + spacing;
+                wsTmbX = (dashPosition === 3 ? dashWidth + spacing : 0) + spacing;
                 this._workspacesThumbnails._positionLeft = true;
             }
 
             let wstYOffset = ((dashHeightReservation && DASH_TOP && !DASH_VERTICAL) ? dashHeight + spacing : spacing);
-            if (WS_TMB_CENTRED) {
+            if (CENTER_WS_SWITCHER) {
                 wstYOffset += Math.max(0, (height - 5 * spacing - thumbnailsHeight - (DASH_VERTICAL ? 0 : dashHeightReservation)) / 2);
             }
 

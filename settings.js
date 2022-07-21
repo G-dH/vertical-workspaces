@@ -52,7 +52,6 @@ var Options = class Options {
             showDash: ['boolean', 'show-dash'],
             showWsSwitcher: ['boolean', 'show-ws-switcher'],
             showWsSwitcherBg: ['boolean', 'show-ws-switcher-bg'],
-            wsSwitcherFullHeight: ['boolean', 'ws-switcher-full-height'],
             appGridAnimation: ['int', 'app-grid-animation'],
             workspaceAnimation: ['int', 'workspace-animation']
         }
