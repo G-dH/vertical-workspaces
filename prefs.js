@@ -641,6 +641,7 @@ function _getAdjustmentsOptionList() {
                 [_('From Right'), 1],
                 [_('From Left'), 2],
                 [_('From Bottom'), 3],
+                [_('Auto'), 4]
             ]
         )
     );
@@ -718,7 +719,7 @@ function _geMiscOptionList() {
     optionList.push(
         _optionsItem(
             _('Override Page Up/Down Shortcuts'),
-            _('This option automatically overrides the Super(+Sift)+Page Up/Down keyboard shortcuts for the current workspace orientation. If you encounter any issues, check the configuration in the dconf editor.'),
+            _('This option automatically overrides the (Sift +) Super + Page Up/Down keyboard shortcuts for the current workspace orientation. If you encounter any issues, check the configuration in the dconf editor.'),
             _newSwitch(),
             'enablePageShortcuts',
         )
@@ -732,8 +733,8 @@ function _geMiscOptionList() {
 
     optionList.push(
         _optionsItem(
-            _('Fix for Ubuntu Dock'),
-            _('With the default Ubuntu Dock you may experience issues with Activities overview after you change Dock position or change monitors cinfiguration. If you are experiencing such issues, try to enable this option, or replace the dock extension.'),
+            _('Fix for Dash to Dock'),
+            _('With the default Ubuntu Dock and other Dash To Dock forks, you may experience issues with Activities overview after you change Dock position or change monitors configuration. If you are experiencing such issues, try to enable this option, or replace the dock extension.'),
             _newSwitch(),
             'fixUbuntuDock',
         )

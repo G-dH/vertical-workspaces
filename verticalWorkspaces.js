@@ -133,8 +133,11 @@ function activate() {
     _shownOverviewSigId = Main.overview.connect('showing', () => {
         // just for case when some other extension changed the value, like Just Perfection when disabled
         WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale') / 100;
-        const dash = Main.overview.dash;
 
+        if (global.workspace_manager.layout_rows)
+            global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
+
+        const dash = Main.overview.dash;
         // Move dash above workspaces
         dash.get_parent().set_child_above_sibling(dash, null);
 
@@ -299,6 +302,7 @@ function _updateSettings(settings, key) {
     SHOW_WS_SWITCHER = gOptions.get('showWsSwitcher', true);
     SHOW_WS_SWITCHER_BG = gOptions.get('showWsSwitcherBg', true) && SHOW_WS_SWITCHER;
     APP_GRID_ANIMATION = gOptions.get('appGridAnimation', true);
+    if (APP_GRID_ANIMATION === 4) APP_GRID_ANIMATION = (!(WS_TMB_POSITION % 2) || !SHOW_WS_SWITCHER) ? 1 : 2;
     WS_ANIMATION = gOptions.get('workspaceAnimation', true);
 
     Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
@@ -628,7 +632,7 @@ function _getFitModeForState(state) {
     case ControlsState.WINDOW_PICKER:
         return WorkspacesView.FitMode.SINGLE;
     case ControlsState.APP_GRID:
-        if (WS_ANIMATION === 1  && SHOW_WS_SWITCHER)
+        if ((WS_ANIMATION === 1) && SHOW_WS_SWITCHER)
             return WorkspacesView.FitMode.ALL;
         else
             return WorkspacesView.FitMode.SINGLE;
@@ -1265,7 +1269,7 @@ var ControlsManagerOverride = {
 
         let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
 
-        if (WS_ANIMATION !== 1 && SHOW_WS_SWITCHER) {
+        if ((WS_ANIMATION !== 1) || !SHOW_WS_SWITCHER) {
             this._workspacesDisplay.opacity = opacity;
         } else if (!SHOW_WS_SWITCHER_BG) {
             // fade out ws wallpaper during transition to ws switcher if ws switcher background disabled
@@ -1321,7 +1325,7 @@ var ControlsManagerLayoutOverride = {
             break;
         case ControlsState.WINDOW_PICKER:
         case ControlsState.APP_GRID:
-            if (WS_ANIMATION === 1  && SHOW_WS_SWITCHER && state === ControlsState.APP_GRID) {
+            if ((WS_ANIMATION === 1) && SHOW_WS_SWITCHER && state === ControlsState.APP_GRID) {
                 workspaceBox.set_origin(...this._workspacesThumbnails.get_position());
                 workspaceBox.set_size(...this._workspacesThumbnails.get_size());
             } else {
