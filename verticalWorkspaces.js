@@ -72,6 +72,7 @@ let _watchDockSigId;
 let _resetTimeoutId;
 let _resetExtensionIfEnabled;
 let _shownOverviewSigId;
+let _showingOverviewSigId;
 let _hidingOverviewSigId;
 let _searchControllerSigId;
 let _verticalOverview;
@@ -130,21 +131,16 @@ function activate() {
     const dash = Main.overview.dash;
     _prevDash.dash = dash;
     _prevDash.position = dash.position;
-    _shownOverviewSigId = Main.overview.connect('showing', () => {
+    _shownOverviewSigId = Main.overview.connect('shown', () => {
         // just for case when some other extension changed the value, like Just Perfection when disabled
         WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale') / 100;
 
-        if (global.workspace_manager.layout_rows)
-            global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
+        /*if (global.workspace_manager.layout_rows != -1)
+            global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);*/
 
         const dash = Main.overview.dash;
         // Move dash above workspaces
         dash.get_parent().set_child_above_sibling(dash, null);
-
-        // workaround for Ubuntu Dock breaking overview allocations after changing position
-        if (_prevDash.dash !== dash || _prevDash.position !== dash._position) {
-            _resetExtensionIfEnabled(0);
-        }
     });
 
     _hidingOverviewSigId = Main.overview.connect('hiding', () => {
@@ -278,6 +274,11 @@ function _fixUbuntuDock(activate = true) {
     }
     _resetExtensionIfEnabled = () => {};
 
+    if (_showingOverviewSigId) {
+        Main.overview.connect.disconnect(_showingOverviewSigId);
+        _showingOverviewSigId = 0;
+    }
+
     if (!activate)
         return;
 
@@ -285,6 +286,12 @@ function _fixUbuntuDock(activate = true) {
     _shellSettings = ExtensionUtils.getSettings( 'org.gnome.shell');
     _watchDockSigId = _shellSettings.connect('changed::enabled-extensions', _resetExtension);
     _resetExtensionIfEnabled = _resetExtension;
+    _showingOverviewSigId = Main.overview.connect('showing', () => {
+        // workaround for Ubuntu Dock breaking overview allocations after changing position
+         if (_prevDash.dash !== dash || _prevDash.position !== dash._position) {
+             _resetExtensionIfEnabled(0);
+         }
+     });
 }
 
 //*************************************************************************************************
@@ -309,9 +316,10 @@ function _updateSettings(settings, key) {
     Main.overview.dash.visible = gOptions.get('showDash', true);
 
     _switchPageShortcuts();
-    _moveDashAppGridIcon();
     if (key === 'fix-ubuntu-dock')
         _fixUbuntuDock(gOptions.get('fixUbuntuDock', true));
+    if (key === 'show-app-icon-position')
+        _moveDashAppGridIcon();
 }
 
 function _updateSearchEntryVisibility() {
@@ -463,7 +471,7 @@ function _moveDashAppGridIcon(reset = false) {
     // move dash app grid icon to the front
     const dash = Main.overview.dash;
     let target;
-    if (reset || gOptions.get('showAppsIconPosition'))
+    if (reset || gOptions.get('showAppsIconPosition', true))
         target = dash._showAppsIcon;
     else
         target = dash._box;
