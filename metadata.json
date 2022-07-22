@@ -1,7 +1,7 @@
 {
   "name": "Vertical Workspaces",
   "uuid": "vertical-workspaces@G-dH.github.com",
-  "description": "Changes the horizontal orientation of workspaces to vertical and adds customizations of the Activities Overview layout.\n\nPlease report bugs and feature requests on the GitHub page linked below as Extension Homepage. Thank you.",
+  "description": "Changes the horizontal orientation of workspaces to vertical and adds options to customize Activities overview layout.\n\nThis extension doesn't offer vertical orientation of the Dash, but is compatible with Dash to Dock / Ubuntu dock.\n\nPlease report bugs and feature requests on the GitHub page linked below as Extension Homepage.",
   "shell-version": [
     "40",
     "41",
