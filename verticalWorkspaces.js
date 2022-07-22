@@ -544,7 +544,7 @@ var WorkspacesViewOverride = {
         return _getFitModeForState(state);
     },
 
-    // spread windows during entering appDisplay page from HIDDEN state to add some action (looks more natural)
+    // mormal view 0, spread windows 1
     _getWorkspaceModeForOverviewState: function(state) {
         const { ControlsState } = OverviewControls;
 
@@ -554,7 +554,7 @@ var WorkspacesViewOverride = {
         case ControlsState.WINDOW_PICKER:
             return 1;
         case ControlsState.APP_GRID:
-            return APP_GRID_ANIMATION ? 1 : 0;
+            return this._monitorIndex === global.display.get_primary_monitor() ? 0 : 1;
         }
 
         return 0;
@@ -581,11 +581,12 @@ var WorkspacesViewOverride = {
 
             const scaleProgress = 1 - Math.clamp(distanceToCurrentWorkspace, 0, 1);
 
-            const scale = Util.lerp(1, 1, scaleProgress);//Util.lerp(WORKSPACE_INACTIVE_SCALE, 1, scaleProgress);
-            w.set_scale(scale, scale);
+            //const scale = Util.lerp(1, 1, scaleProgress);//Util.lerp(WORKSPACE_INACTIVE_SCALE, 1, scaleProgress);
+            //w.set_scale(scale, scale);
+
             // if we disable inactive workspaces, ws animation will be noticably smoother
-            // the only drawback is, that windows on inactive workspaces will be spreaded with the first ws switching in the overview
-            // so you'll see the spread animation during workspace switching animation
+            // the only drawback is, that windows on inactive workspaces will be spread with the first ws switching in the overview
+            // so you'll see the spread animation during the first workspace switching animation
             w.visible = scaleProgress ? true : false;
             //w.opacity = scaleProgress ? 255 : 0;
         });
@@ -654,15 +655,26 @@ var WindowPreviewOverride = {
     _updateIconScale: function() {
         const { currentState, initialState, finalState } =
             this._overviewAdjustment.getStateTransitionParams();
-        const visible =
-            /*initialState > ControlsState.HIDDEN ||
-            finalState > ControlsState.HIDDEN;*/
-            initialState === ControlsState.WINDOW_PICKER ||
-            finalState === ControlsState.WINDOW_PICKER;
-        const scale = visible
-            //? (currentState >= 1 ? 1 : currentState % 1) : 0;
-            ? 1 - Math.abs(ControlsState.WINDOW_PICKER - currentState) : 0;
 
+        // Current state - 0 - HIDDEN, 1 - WINDOW_PICKER, 2 - APP_GRID
+        const primaryMonitor = this.metaWindow.get_monitor() === global.display.get_primary_monitor();
+
+        const visible =
+            (initialState > ControlsState.HIDDEN || finalState > ControlsState.HIDDEN)
+            && !(finalState === ControlsState.APP_GRID && primaryMonitor);
+
+        let scale = visible
+            ? (currentState >= 1 ? 1 : currentState % 1) : 0;
+        if (!primaryMonitor &&
+            ((initialState === ControlsState.WINDOW_PICKER && finalState === ControlsState.APP_GRID) ||
+            (initialState === ControlsState.APP_GRID && finalState === ControlsState.WINDOW_PICKER))
+            ) {
+
+            scale = 1;
+        } else if (primaryMonitor && ((initialState === ControlsState.WINDOW_PICKER && finalState === ControlsState.APP_GRID) ||
+            initialState === ControlsState.APP_GRID && finalState === ControlsState.HIDDEN)) {
+            scale = 0;
+        }
         this._icon.set({
             scale_x: scale,
             scale_y: scale,
@@ -832,6 +844,7 @@ var SecondaryMonitorDisplayOverride = {
                     lower: 0,//FitMode.SINGLE,
                     upper: 0,//FitMode.SINGLE,
                 }),
+                //secondaryOverviewAdjustment);
                 this._overviewAdjustment);
         }
         this.add_child(this._workspacesView);
