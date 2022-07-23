@@ -9,6 +9,7 @@ const { Clutter, Gio, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
 const DND = imports.ui.dnd;
 const Main = imports.ui.main;
 const AppDisplay = imports.ui.appDisplay;
+const IconGrid = imports.ui.iconGrid;
 const Dash = imports.ui.dash;
 const Layout = imports.ui.layout;
 const Overview = imports.ui.overview;
@@ -275,7 +276,7 @@ function _fixUbuntuDock(activate = true) {
     _resetExtensionIfEnabled = () => {};
 
     if (_showingOverviewSigId) {
-        Main.overview.connect.disconnect(_showingOverviewSigId);
+        Main.overview.disconnect(_showingOverviewSigId);
         _showingOverviewSigId = 0;
     }
 
@@ -284,10 +285,11 @@ function _fixUbuntuDock(activate = true) {
 
     _monitorsChangedSigId = Main.layoutManager.connect('monitors-changed', () => _resetExtension(3000));
     _shellSettings = ExtensionUtils.getSettings( 'org.gnome.shell');
-    _watchDockSigId = _shellSettings.connect('changed::enabled-extensions', _resetExtension);
+    _watchDockSigId = _shellSettings.connect('changed::enabled-extensions', () => _resetExtension());
     _resetExtensionIfEnabled = _resetExtension;
     _showingOverviewSigId = Main.overview.connect('showing', () => {
         // workaround for Ubuntu Dock breaking overview allocations after changing position
+        const dash = Main.overview.dash;
          if (_prevDash.dash !== dash || _prevDash.position !== dash._position) {
              _resetExtensionIfEnabled(0);
          }
@@ -554,7 +556,7 @@ var WorkspacesViewOverride = {
         case ControlsState.WINDOW_PICKER:
             return 1;
         case ControlsState.APP_GRID:
-            return this._monitorIndex === global.display.get_primary_monitor() ? 0 : 1;
+            return ((this._monitorIndex !== global.display.get_primary_monitor()) || WS_ANIMATION === 0) ? 1 : 0;
         }
 
         return 0;
