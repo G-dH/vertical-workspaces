@@ -487,7 +487,7 @@ function _getLayoutOptionList() {
     optionList.push(
         _optionsItem(
             _('Fine Tune Dash Position'),
-            _('Adjust position of the dock on chosen axis.'),
+            _('Adjust position of the dock on chosen axis. Works with default Dash only.'),
             dashPositionScale,
             'dashPositionAdjust'
         )
@@ -496,7 +496,7 @@ function _getLayoutOptionList() {
     optionList.push(
         _optionsItem(
             _('Center Horizontal Dash to Workspace'),
-            _('If position Top or Bottom is selected, Dash position will be calculated relative to the workspace preview instead of the screen.'),
+            _('If position Top or Bottom is selected, Dash position will be calculated relative to the workspace preview instead of the screen. Works with default Dash only.'),
             _newSwitch(),
             'centerDashToWs',
         )
@@ -603,28 +603,10 @@ function _getAdjustmentsOptionList() {
         )
     );
 
-    /*const dashScaleAdjustment = new Gtk.Adjustment({
-        upper: 15,
-        lower: 5,
-        step_increment: 1,
-        page_increment: 1,
-    });
-
-    const dashMaxScale = _newScale(dashScaleAdjustment);
-    dashMaxScale.add_mark(15, Gtk.PositionType.TOP, null);
-    optionList.push(
-        _optionsItem(
-            _('Dash Height Max Scale'),
-            _('Adjusts maximum height of the default Dash (% relative to display height). App icons resize in steps: 64 - 48 - 32 - 24 - 16 px.'),
-            dashMaxScale,
-            'dashMaxScale'
-        )
-    );*/
-
     optionList.push(
         _optionsItem(
             _('Dash Max Icon Size'),
-            _('Maximum size of Dash icons in pixels.'),
+            _('Maximum size of Dash icons in pixels. Works with default Dash only.'),
             _newComboBox(),
             //_newDropDown(),
             'dashMaxIconSize',

@@ -39,7 +39,8 @@ function override(horizonatal = false) {
 function reset() {
     if (verticalOverrides === {})
         return;
-    set_to_horizontal();
+    if (Main.overview.dash._isHorizontal === undefined)
+        set_to_horizontal();
     Util.overrideProto(Dash.Dash.prototype, verticalOverrides['Dash']);
     Util.overrideProto(Dash.Dash.prototype, verticalOverrides['DashCommon']);
     Util.overrideProto(Dash.DashItemContainer.prototype, verticalOverrides['DashItemContainer']);
@@ -48,6 +49,8 @@ function reset() {
 
 function set_to_vertical() {
     let dash = Main.overview.dash;
+    if (dash._isHorizontal !== undefined)
+        return;
     //_dash_workId = dash._workId;
     //dash._workId = Main.initializeDeferredWork(dash._box, dash._redisplay.bind(dash));
 
@@ -377,7 +380,6 @@ var DashOverride = {
 
         if ([1, 3].includes(DASH_POSITION)) {
             let indicator = appIcon._dot;
-            indicator.set_style('margin-top: 15px;');
             indicator.x_align = DASH_POSITION === 3 ? Clutter.ActorAlign.START : Clutter.ActorAlign.END;
             indicator.y_align = Clutter.ActorAlign.CENTER;
         }

@@ -1501,8 +1501,6 @@ var ControlsManagerLayoutOverride = {
 
         const wsTmbPosition = this._workspacesThumbnails.visible && WS_TMB_POSITION;
         const WS_TMB_FULL_HEIGHT = wsTmbPosition > 1;
-        // 0 - left, 1 - right, 2 - left hull-height, 3 - right full-height
-        const WS_TMB_RIGHT = wsTmbPosition === 1 || wsTmbPosition === 3;
 
         let dashPosition = DASH_POSITION;
         const DASH_CENTER_WS = CENTER_DASH_WS;
@@ -1510,37 +1508,36 @@ var ControlsManagerLayoutOverride = {
         this._dash._position = dashPosition;
 
         let DASH_VERTICAL = [1, 3].includes(dashPosition);
-        // dash cloud be other than the default, could be Dash to Dock
+        // dash cloud be overriden by the Dash to Dock clone
         // Dash to Dock has property _isHorizontal
         const dash = Main.overview.dash;
+        if (dash._isHorizontal !== undefined) {
+            dashHeight = dash.height;
+            dashWidth = dash.width;
+            dashPosition = dash._position;
+            DASH_TOP = dash._position === 0;
+            DASH_VERTICAL = [1, 3].includes(dashPosition);
+            this._dash.allocate(childBox);
+        } else if (this._dash.visible) {
+            // default dock
+            if (DASH_VERTICAL) {
+                this._dash.setMaxSize(maxDashWidth, height);
+                [, dashWidth] = this._dash.get_preferred_width(height);
+                [, dashHeight] = this._dash.get_preferred_height(dashWidth);
+                dashWidth = Math.min(dashWidth, maxDashWidth);
+                dashHeight = Math.min(dashHeight, height - 2 * spacing);
 
-        if (this._dash.visible) {
-            if (dash._isHorizontal !== undefined) {
-                dashHeight = dash.height;
-                dashWidth = dash.width;
-                dashPosition = dash._position;
-                DASH_TOP = dash._position === 0;
-                DASH_VERTICAL = [1, 3].includes(dashPosition);
-            } else { // for default dock
-                if (DASH_VERTICAL) {
-                    this._dash.setMaxSize(maxDashWidth, height);
-                    [, dashWidth] = this._dash.get_preferred_width(height);
-                    [, dashHeight] = this._dash.get_preferred_height(dashWidth);
-
-                    dashWidth = Math.min(dashWidth, maxDashWidth);
-                    dashHeight = Math.min(dashHeight, height - 2 * spacing);
-                } else {
-                    if (!WS_TMB_FULL_HEIGHT) {
-                        this._dash.setMaxSize(width, maxDashHeight);
-                    [, dashHeight] = this._dash.get_preferred_height(width);
-                    [, dashWidth] = this._dash.get_preferred_width(dashHeight);
-                    dashHeight = Math.min(dashHeight, maxDashHeight);
-                    dashWidth = Math.min(dashWidth, width - 2 * spacing);
-                    }
-                }
+            } else if (!WS_TMB_FULL_HEIGHT) {
+                    this._dash.setMaxSize(width, maxDashHeight);
+                [, dashHeight] = this._dash.get_preferred_height(width);
+                [, dashWidth] = this._dash.get_preferred_width(dashHeight);
+                dashHeight = Math.min(dashHeight, maxDashHeight);
+                dashWidth = Math.min(dashWidth, width - 2 * spacing);
             }
         }
 
+        // 0 - left, 1 - right, 2 - left hull-height, 3 - right full-height
+        const WS_TMB_RIGHT = [1, 3].includes(wsTmbPosition);
         availableHeight -= DASH_VERTICAL ? 0 : dashHeight + spacing;
 
         // Workspace Thumbnails
@@ -1611,7 +1608,7 @@ var ControlsManagerLayoutOverride = {
                 dashX = 0;
             }
             else if (dashPosition === DashPosition.TOP)
-                dashY = startY + spacing / 2;
+                dashY = startY;
             else
                 dashY = startY + height - dashHeight;
 
