@@ -396,7 +396,6 @@ function _optionsItem(text, caption, widget, variable, options = []) {
 
     let settings;
     let key;
-
     if (variable && gOptions.options[variable]) {
         const opt = gOptions.options[variable];
         key = opt[1];
@@ -530,6 +529,24 @@ function _getLayoutOptionList() {
         )
     );
 
+    const wstPositionAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: -100,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const wstPositionScale = _newScale(wstPositionAdjustment);
+    wstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
+    optionList.push(
+        _optionsItem(
+            _('Fine Tune Workspace Switcher Position'),
+            _('Adjusts workspace thumbnails vertical position.'),
+            wstPositionScale,
+            'wsTmbPositionAdjust'
+        )
+    );
+
     optionList.push(
         _optionsItem(
             _('Workspace Switcher Position on Secondary Monitor'),
@@ -541,15 +558,6 @@ function _getLayoutOptionList() {
                 [_('Right'), 1],
                 [_('Default'), 2],
             ]
-        )
-    );
-
-    optionList.push(
-        _optionsItem(
-            _('Center Workspace Switcher'),
-            _('Workspace switcher will be centered vertically.'),
-            _newSwitch(),
-            'centerWsSwitcher',
         )
     );
 

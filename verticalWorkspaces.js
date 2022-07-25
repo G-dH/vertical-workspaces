@@ -79,11 +79,11 @@ let _prevDash;
 
 // constants from settings
 let WS_TMB_POSITION;
+let WS_TMB_POSITION_ADJUSTMENT
 let SEC_WS_TMB_POSITION;
 let DASH_POSITION;
 let DASH_POSITION_ADJUSTMENT;
 let CENTER_DASH_WS;
-let CENTER_WS_SWITCHER;
 let CENTER_SEARCH_VIEW;
 let CENTER_APP_GRID;
 let SHOW_WS_SWITCHER;
@@ -306,6 +306,7 @@ function _fixUbuntuDock(activate = true) {
 function _updateSettings(settings, key) {
     WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale', true) / 100;
     WS_TMB_POSITION = gOptions.get('workspaceThumbnailsPosition', true);
+    WS_TMB_POSITION_ADJUSTMENT = gOptions.get('wsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
     SEC_WS_TMB_POSITION = gOptions.get('secondaryWsThumbnailsPosition', true);
     VerticalDash.MAX_ICON_SIZE = VerticalDash.baseIconSizes[gOptions.get('dashMaxIconSize', true)];
     DASH_POSITION = gOptions.get('dashPosition', true);
@@ -315,9 +316,8 @@ function _updateSettings(settings, key) {
     }
     VerticalDash.DASH_POSITION = DASH_POSITION;
     DASH_POSITION_ADJUSTMENT = gOptions.get('dashPositionAdjust', true);
-    DASH_POSITION_ADJUSTMENT = DASH_POSITION_ADJUSTMENT * -1 / 100; // range -1 to 1
+    DASH_POSITION_ADJUSTMENT = DASH_POSITION_ADJUSTMENT * -1 / 100; // range 1 to -1
     CENTER_DASH_WS = gOptions.get('centerDashToWs', true);
-    CENTER_WS_SWITCHER = gOptions.get('centerWsSwitcher', true);
     CENTER_SEARCH_VIEW = gOptions.get('centerSearch', true);
     CENTER_APP_GRID = gOptions.get('centerAppGrid', true);
     SHOW_WS_SWITCHER = gOptions.get('showWsSwitcher', true);
@@ -810,7 +810,7 @@ var SecondaryMonitorDisplayOverride = {
             const childBox = new Clutter.ActorBox();
             const availSpace = height - thumbnailsHeight;
 
-            let wsTmbY =  Math.max(spacing, CENTER_WS_SWITCHER ? availSpace / 2 : (availSpace > padding ? padding : spacing));
+            let wsTmbY =  Math.max(spacing, availSpace / 2);
 
             childBox.set_origin(wsTmbX, wsTmbY);
             childBox.set_size(thumbnailsWidth, thumbnailsHeight);
@@ -1548,7 +1548,7 @@ var ControlsManagerLayoutOverride = {
             const REDUCE_WS_TMB_IF_NEEDED = this._searchController._searchActive && CENTER_SEARCH_VIEW;
 
             const { expandFraction } = this._workspacesThumbnails;
-            const dashHeightReservation = WS_TMB_FULL_HEIGHT ? 0 : dashHeight;
+            const dashHeightReservation = !WS_TMB_FULL_HEIGHT ? dashHeight : 0;
             thumbnailsHeight = WS_TMB_FULL_HEIGHT
                                 ? height - 2 * spacing
                                 : height - 3 * spacing - (DASH_VERTICAL ? 0 : dashHeightReservation + spacing);
@@ -1577,12 +1577,11 @@ var ControlsManagerLayoutOverride = {
             }
 
             //let wstYOffset = ((dashHeightReservation && DASH_TOP && !DASH_VERTICAL) ? dashHeight + spacing : spacing);
-            let wstYOffset = ((dashHeightReservation && DASH_TOP) ? dashHeight + spacing : spacing);
-            if (CENTER_WS_SWITCHER) {
-                wstYOffset += Math.max(0, (height - 5 * spacing - thumbnailsHeight - (DASH_VERTICAL ? 0 : dashHeightReservation)) / 2);
-            }
+            let wstOffset = (height - spacing - thumbnailsHeight - spacing - (DASH_VERTICAL ? 0 : dashHeightReservation)) / 2;
+            wstOffset = wstOffset - WS_TMB_POSITION_ADJUSTMENT * wstOffset;
+            let wsTmbY = startY + ((dashHeightReservation && DASH_TOP) ? dashHeight + spacing : spacing) + wstOffset;
 
-            childBox.set_origin(wsTmbX, startY + wstYOffset);
+            childBox.set_origin(wsTmbX, wsTmbY);
             childBox.set_size(wsTmbWidth, thumbnailsHeight);
 
             this._workspacesThumbnails.allocate(childBox);

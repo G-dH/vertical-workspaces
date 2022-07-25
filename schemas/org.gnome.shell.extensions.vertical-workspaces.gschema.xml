@@ -16,8 +16,8 @@
     <key type="i" name="show-app-icon-position">
       <default>0</default>
     </key>
-    <key type="b" name="center-ws-switcher">
-      <default>false</default>
+    <key type="i" name="wst-position-adjust">
+      <default>0</default>
     </key>
     <key type="b" name="center-dash-to-ws">
       <default>false</default>

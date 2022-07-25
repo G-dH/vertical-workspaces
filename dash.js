@@ -12,7 +12,8 @@ const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Util = Me.imports.util;
 
 let verticalOverrides = {};
-let _dash_workId;
+let _origWorkId;
+let _newWorkId;
 
 var baseIconSizes = [16, 24, 32, 48, 64];
 var MAX_ICON_SIZE = 64;
@@ -34,6 +35,14 @@ function override(horizonatal = false) {
         verticalOverrides['DashCommon'] = Util.overrideProto(Dash.Dash.prototype, DashCommonOverride);
         set_to_vertical();
     }
+    let dash = Main.overview.dash;
+    if (!_newWorkId) {
+        _origWorkId = dash._workId;
+        dash._workId = Main.initializeDeferredWork(dash._box, dash._redisplay.bind(dash));
+        _newWorkId = dash._workId;
+    } else {
+        dash._workId = _newWorkId;
+    }
 }
 
 function reset() {
@@ -49,10 +58,9 @@ function reset() {
 
 function set_to_vertical() {
     let dash = Main.overview.dash;
+    // don't touch Dash to Dock
     if (dash._isHorizontal !== undefined)
         return;
-    //_dash_workId = dash._workId;
-    //dash._workId = Main.initializeDeferredWork(dash._box, dash._redisplay.bind(dash));
 
     dash._box.layout_manager.orientation = Clutter.Orientation.VERTICAL;
     dash._dashContainer.layout_manager.orientation = Clutter.Orientation.VERTICAL;
@@ -101,7 +109,8 @@ function dash_disable_style() {
 
 function set_to_horizontal() {
     let dash = Main.overview._overview._controls.dash;
-    //dash._workId = _dash_workId; //pretty sure this is a leak, but there no provided way to disconnect these...
+    if (_origWorkId)
+        dash._workId = _origWorkId; //pretty sure this is a leak, but there no provided way to disconnect these...
     dash._box.layout_manager.orientation = Clutter.Orientation.HORIZONTAL;
     dash._dashContainer.layout_manager.orientation = Clutter.Orientation.HORIZONTAL;
     dash._dashContainer.y_expand = true;
