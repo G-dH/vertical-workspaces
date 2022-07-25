@@ -1,5 +1,15 @@
 ## Changelog:
-### v6
+### v8
+**Added:**
+- **Vertical Dash** which can be placed at the left and right side of the screen, in addition to top and bottom positions.
+- `Fine Tune Position` sliders for Dash and window switcher.
+- `Dash Height Max Scale` option has been replaced by `Dash Max Icon Size` option which allows more precise setting.
+
+### v7 22-07-23
+**Fixed:**
+- Fix of `Fix for Dash to Dock`
+
+### v6 22-07-23
 **Added:**
 - Option `Auto` to App Grid Animation menu, changes animation direction acording to workspace switcher position and visibility.
 - Option `Fix for Dash to Dock` helps to keep VW consistent when DtD updates its position and while updating monitors configuration.
