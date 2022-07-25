@@ -1,0 +1,89 @@
+/* General dash */
+#dash.vertical-overview {
+	margin-right: 5px;
+	padding: 10px 0;
+}
+
+#dash.vertical-overview .dash-item-container .app-well-app,
+#dash.vertical-overview .show-apps {
+	padding-right: 10px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+#dash.vertical-overview .dash-separator {
+	height: 1px;
+	margin-right: 0;
+	margin-top: 7px;
+	margin-bottom: 7px;
+	background-color: transparentize(#eeeeec, 0.7);
+}
+
+#dash.vertical-overview .overview-icon {
+	padding: 10px 0;
+}
+
+#dash.vertical-overview .app-well-app-running-dot {
+	margin: 6px 0px;
+}
+
+/* 40 style dash */
+#dash.vertical-overview .dash-item-container:last-child {
+	margin-bottom: 14px;
+}
+
+#dash.vertical-overview .dash-background {
+	margin-left: 16px;
+}
+
+#dash.vertical-overview .dash-item-container .app-well-app,
+#dash.vertical-overview .show-apps {
+	padding-left: 26px;
+}
+
+#dash.vertical-overview .dash-separator {
+	margin-left: 16px;
+}
+
+/* 3.38 style dash */
+#dash.vertical-overview.vertical-overview-old-dash {
+	color: #eeeeec;
+	background-color: rgba(32, 32, 32, 0.76);
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	padding: 0px 0;
+	border-radius: 0 15px 15px 0;
+	border-left-width: 0;
+}
+
+#dash.vertical-overview.vertical-overview-old-dash .show-apps:active .overview-icon,
+#dash.vertical-overview.vertical-overview-old-dash .show-apps:checked .overview-icon {
+	background-color: rgba(7, 7, 7, 0.46);
+}
+
+#dash.vertical-overview.vertical-overview-old-dash .dash-item-container:last-child {
+	margin-bottom: 0px;
+}
+
+#dash.vertical-overview.vertical-overview-old-dash .dash-background {
+	background: none;
+	margin-left: 0;
+}
+
+#dash.vertical-overview.vertical-overview-old-dash .dash-item-container .app-well-app, 
+#dash.vertical-overview.vertical-overview-old-dash .show-apps {
+	padding-left: 10px;
+}
+
+#dash.vertical-overview.vertical-overview-old-dash .dash-separator {
+	margin-left: 0px;
+}
+
+/* 3.38 style workspace thumbnails */
+.vertical-overview.workspace-thumbnails {
+	color: #eeeeec;
+	background-color: rgba(32, 32, 32, 0.76);
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	padding: 6px;
+	border-radius: 10px 0 0 10px;
+	border-right-width: 0;
+}

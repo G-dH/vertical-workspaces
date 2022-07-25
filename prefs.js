@@ -467,13 +467,29 @@ function _getLayoutOptionList() {
             _newComboBox(),
             //_newDropDown(),
             'dashPosition',
-            [   [_('Top Left'), 0],
-                [_('Top Center'), 1],
-                [_('Top Right'), 2],
-                [_('Bottom Left'), 3],
-                [_('Bottom Center'), 4],
-                [_('Bottom Right'), 5],
+            [   [_('Top'), 0],
+                [_('Right'), 1],
+                [_('Bottom'), 2],
+                [_('Left'), 3],
             ]
+        )
+    );
+
+    const dashPositionAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: -100,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const dashPositionScale = _newScale(dashPositionAdjustment);
+    dashPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
+    optionList.push(
+        _optionsItem(
+            _('Fine Tune Dash Position'),
+            _('Adjust position of the dock on chosen axis.'),
+            dashPositionScale,
+            'dashPositionAdjust'
         )
     );
 
@@ -587,7 +603,7 @@ function _getAdjustmentsOptionList() {
         )
     );
 
-    const dashScaleAdjustment = new Gtk.Adjustment({
+    /*const dashScaleAdjustment = new Gtk.Adjustment({
         upper: 15,
         lower: 5,
         step_increment: 1,
@@ -602,6 +618,22 @@ function _getAdjustmentsOptionList() {
             _('Adjusts maximum height of the default Dash (% relative to display height). App icons resize in steps: 64 - 48 - 32 - 24 - 16 px.'),
             dashMaxScale,
             'dashMaxScale'
+        )
+    );*/
+
+    optionList.push(
+        _optionsItem(
+            _('Dash Max Icon Size'),
+            _('Maximum size of Dash icons in pixels.'),
+            _newComboBox(),
+            //_newDropDown(),
+            'dashMaxIconSize',
+            [   [_('16'), 0],
+                [_('24'), 1],
+                [_('32'), 2],
+                [_('48'), 3],
+                [_('64'), 4],
+            ]
         )
     );
 

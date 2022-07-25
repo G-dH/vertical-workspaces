@@ -9,7 +9,6 @@ const { Clutter, Gio, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
 const DND = imports.ui.dnd;
 const Main = imports.ui.main;
 const AppDisplay = imports.ui.appDisplay;
-const IconGrid = imports.ui.iconGrid;
 const Dash = imports.ui.dash;
 const Layout = imports.ui.layout;
 const Overview = imports.ui.overview;
@@ -25,6 +24,8 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Settings = Me.imports.settings;
 const shellVersion = Settings.shellVersion;
+
+const VerticalDash = Me.imports.dash;
 
 const _Util = Me.imports.util;
 
@@ -45,8 +46,7 @@ const WORKSPACE_CUT_SIZE = 10;
 let WORKSPACE_MAX_SPACING = 350;
 let WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
 
-let DASH_MAX_HEIGHT_RATIO = 0.15;
-const DASH_ITEM_LABEL_SHOW_TIME = 150;
+let DASH_MAX_SIZE_RATIO = 0.15;
 
 const ControlsState = {
     HIDDEN: 0,
@@ -55,12 +55,10 @@ const ControlsState = {
 };
 
 const DashPosition = {
-    TOP_LEFT: 0,
-    TOP_CENTER: 1,
-    TOP_RIGHT: 2,
-    BOTTOM_LEFT: 3,
-    BOTTOM_CENTER: 4,
-    BOTTOM_RIGHT: 5
+    TOP: 0,
+    RIGHT: 1,
+    BOTTOM: 2,
+    LEFT: 3
 }
 
 let verticalOverrides = {};
@@ -83,6 +81,7 @@ let _prevDash;
 let WS_TMB_POSITION;
 let SEC_WS_TMB_POSITION;
 let DASH_POSITION;
+let DASH_POSITION_ADJUSTMENT;
 let CENTER_DASH_WS;
 let CENTER_WS_SWITCHER;
 let CENTER_SEARCH_VIEW;
@@ -97,6 +96,7 @@ let _enabled = false;
 
 function activate() {
     _enabled = true;
+    VerticalDash.DashPosition = DashPosition;
     original_MAX_THUMBNAIL_SCALE = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
 
     gOptions = new Settings.Options();
@@ -122,8 +122,7 @@ function activate() {
     verticalOverrides['ControlsManager'] = _Util.overrideProto(OverviewControls.ControlsManager.prototype, ControlsManagerOverride);
     verticalOverrides['ControlsManagerLayout'] = _Util.overrideProto(OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutOverride);
     verticalOverrides['SecondaryMonitorDisplay'] = _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayOverride);
-    verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, AppDisplayOverride);
-    verticalOverrides['DashItemContainer'] = _Util.overrideProto(Dash.DashItemContainer.prototype, DashItemContainerOverride);
+    verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
     verticalOverrides['WindowPreview'] = _Util.overrideProto(WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
 
     _fixUbuntuDock(gOptions.get('fixUbuntuDock'));
@@ -164,8 +163,12 @@ function activate() {
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
 
+    // set Dash orientation
+    _updateDashPosition();
+
     // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
     Main.overview._overview._controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
+
 }
 
 function reset() {
@@ -209,7 +212,6 @@ function reset() {
     _Util.overrideProto(OverviewControls.ControlsManager.prototype, verticalOverrides['ControlsManager']);
     _Util.overrideProto(Workspace.WorkspaceLayout.prototype, verticalOverrides['WorkspaceLayout']);
     _Util.overrideProto(AppDisplay.BaseAppView.prototype, verticalOverrides['BaseAppView']);
-    _Util.overrideProto(Dash.DashItemContainer.prototype, verticalOverrides['DashItemContainer']);
     _Util.overrideProto(WindowPreview.WindowPreview.prototype, verticalOverrides['WindowPreview']);
 
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
@@ -229,6 +231,9 @@ function reset() {
 
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
+
+    // remove Dash overrides if needed
+    VerticalDash.reset();
 
     gOptions.destroy();
     gOptions = null;
@@ -300,10 +305,15 @@ function _fixUbuntuDock(activate = true) {
 
 function _updateSettings(settings, key) {
     WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale', true) / 100;
-    DASH_MAX_HEIGHT_RATIO = gOptions.get('dashMaxScale', true) / 100;
     WS_TMB_POSITION = gOptions.get('workspaceThumbnailsPosition', true);
     SEC_WS_TMB_POSITION = gOptions.get('secondaryWsThumbnailsPosition', true);
+    VerticalDash.MAX_ICON_SIZE = VerticalDash.baseIconSizes[gOptions.get('dashMaxIconSize', true)];
     DASH_POSITION = gOptions.get('dashPosition', true);
+    if (DASH_POSITION >= DashPosition.length)
+        DASH_POSITION = DashPosition.BOTTOM;
+    VerticalDash.DASH_POSITION = DASH_POSITION;
+    DASH_POSITION_ADJUSTMENT = gOptions.get('dashPositionAdjust', true);
+    DASH_POSITION_ADJUSTMENT = DASH_POSITION_ADJUSTMENT * -1 / 100; // range -1 to 1
     CENTER_DASH_WS = gOptions.get('centerDashToWs', true);
     CENTER_WS_SWITCHER = gOptions.get('centerWsSwitcher', true);
     CENTER_SEARCH_VIEW = gOptions.get('centerSearch', true);
@@ -322,6 +332,30 @@ function _updateSettings(settings, key) {
         _fixUbuntuDock(gOptions.get('fixUbuntuDock', true));
     if (key === 'show-app-icon-position')
         _moveDashAppGridIcon();
+    if (key === 'dash-position')
+        _updateDashPosition();
+    if (key === 'dash-max-icon-size')
+        Main.overview.dash._redisplay();
+}
+
+function _updateDashPosition() {
+    switch (DASH_POSITION) {
+    case DashPosition.TOP:
+    case DashPosition.BOTTOM:
+        //VerticalDash.reset();
+        const horizontal = true;
+        VerticalDash.override(horizontal);
+        VerticalDash.gOptions = null;
+        break;
+    case DashPosition.LEFT:
+    case DashPosition.RIGHT:
+        VerticalDash.gOptions = gOptions;
+        VerticalDash.override();
+        break;
+    default:
+        VerticalDash.reset();
+    }
+    Main.overview.dash._redisplay();
 }
 
 function _updateSearchEntryVisibility() {
@@ -472,17 +506,10 @@ function _setAppDisplayOrientation(vertical = false) {
 function _moveDashAppGridIcon(reset = false) {
     // move dash app grid icon to the front
     const dash = Main.overview.dash;
-    let target;
     if (reset || gOptions.get('showAppsIconPosition', true))
-        target = dash._showAppsIcon;
+        dash._dashContainer.set_child_at_index(dash._showAppsIcon, 1);
     else
-        target = dash._box;
-    const container = dash._dashContainer;
-    // swap the children only if needed
-    if (container.get_first_child() === target) {
-        container.remove_actor(target);
-        container.add_actor(target);
-    }
+        dash._dashContainer.set_child_at_index(dash._showAppsIcon, 0);
 }
 
 // ---- workspacesView ----------------------------------------
@@ -562,7 +589,7 @@ var WorkspacesViewOverride = {
         return 0;
     },
 
-    // this is only changing WORKSPACE_INACTIVE_SCALE to 1
+    // disable scaling and hide inactive workspaces
     _updateWorkspacesState: function() {
         const adj = this._scrollAdjustment;
         const fitMode = this._fitModeAdjustment.value;
@@ -874,7 +901,8 @@ var WorkspaceThumbnailOverride = {
         this._viewport.set_child_below_sibling(this._bgManager.backgroundActor, null);
 
         this.connect('destroy', function () {
-            this._bgManager.destroy();
+            if (this._bgManager)
+                this._bgManager.destroy();
             this._bgManager = null;
         }.bind(this));
 
@@ -1384,7 +1412,7 @@ var ControlsManagerLayoutOverride = {
 
                 this._xAlignCenter = false;
                 if (xOffset !== centeredBoxX) { // in this case xOffset holds max possible wsBoxX coordinance
-                    xOffset = (dashPosition === 3 ? dash.width + spacing : 0) + (thumbnailsWidth && WS_TMB_LEFT ? thumbnailsWidth + spacing : 0)
+                    xOffset = ((dashPosition === 3 && dash.visible) ? dash.width + spacing : 0) + (thumbnailsWidth && WS_TMB_LEFT ? thumbnailsWidth + spacing : 0)
                             + (width - wWidth - 2 * spacing - thumbnailsWidth - ((DASH_VERTICAL && dash.visible) ? dash.width + spacing : 0)) / 2;
                 } else {
                     this._xAlignCenter = true;
@@ -1401,11 +1429,11 @@ var ControlsManagerLayoutOverride = {
         return workspaceBox;
     },
 
-    _getAppDisplayBoxForState: function(state, box, workAreaBox, /*searchHeight, dashHeight,*/ appGridBox, thumbnailsWidth) {
+    _getAppDisplayBoxForState: function(state, box, workAreaBox, /*searchHeight,*/ dashWidth, dashHeight, appGridBox, thumbnailsWidth) {
         const [width] = box.get_size();
         const { x1: startX } = workAreaBox;
-        const { y1: boxY } = appGridBox;
-        const boxHeight = appGridBox.get_height();
+        const { y1: startY } = workAreaBox;
+        const height = workAreaBox.get_height();
         const appDisplayBox = new Clutter.ActorBox();
         const { spacing } = this;
 
@@ -1415,21 +1443,23 @@ var ControlsManagerLayoutOverride = {
         const dashPosition = dash._position;
 
         const appDisplayX = CENTER_APP_GRID ? spacing + thumbnailsWidth : (dashPosition === 3 ? dash.width + spacing : 0) + (WS_TMB_LEFT ? thumbnailsWidth : 0) + spacing;
+        const appDisplayY = startY + (dashPosition === DashPosition.TOP ? dashHeight + spacing : spacing);
 
-        const adWidth = CENTER_APP_GRID ? width - 2 * (thumbnailsWidth + spacing) : width - thumbnailsWidth - spacing;
+        const adWidth = CENTER_APP_GRID ? width - 2 * (thumbnailsWidth + spacing) : width - ([1, 3].includes(dashPosition) ? dashWidth + 2 * spacing : 2 * spacing) - thumbnailsWidth - spacing;
+        const adHeight = height - ([0, 2].includes(dashPosition) ? dashHeight + 3 * spacing : 2 * spacing);
         switch (state) {
         case ControlsState.HIDDEN:
         case ControlsState.WINDOW_PICKER:
             // 1 - left, 2 - right, 3 - bottom
             switch (APP_GRID_ANIMATION) {
             case 0:
-                appDisplayBox.set_origin(appDisplayX, boxY);
+                appDisplayBox.set_origin(appDisplayX, appDisplayY);
                 break;
             case 1:
-                appDisplayBox.set_origin(startX + width, boxY);
+                appDisplayBox.set_origin(startX + width, appDisplayY);
                 break;
             case 2:
-                appDisplayBox.set_origin(startX - adWidth, boxY);
+                appDisplayBox.set_origin(startX - adWidth, appDisplayY);
                 break;
             case 3:
                 appDisplayBox.set_origin(appDisplayX, workAreaBox.y2);
@@ -1437,11 +1467,11 @@ var ControlsManagerLayoutOverride = {
             }
             break;
         case ControlsState.APP_GRID:
-            appDisplayBox.set_origin(appDisplayX, boxY);
+            appDisplayBox.set_origin(appDisplayX, appDisplayY);
             break;
         }
 
-        appDisplayBox.set_size(adWidth, boxHeight);
+        appDisplayBox.set_size(adWidth, adHeight);
         return appDisplayBox;
     },
 
@@ -1458,49 +1488,57 @@ var ControlsManagerLayoutOverride = {
         workAreaBox.set_origin(startX, startY);
         workAreaBox.set_size(workArea.width, workArea.height);
         box.y1 += startY;
+        box.x1 += startX;
         const [width, height] = box.get_size();
         let availableHeight = height;
 
         // Dash
-        const maxDashHeight = Math.round(box.get_height() * DASH_MAX_HEIGHT_RATIO);
-        let dashHeight;
-        let dashWidth;
+        const maxDashHeight = Math.round(box.get_height() * DASH_MAX_SIZE_RATIO);
+        const maxDashWidth = maxDashHeight * 0.8;
+        let dashHeight = 0;
+        let dashWidth = 0;
 
         const wsTmbPosition = this._workspacesThumbnails.visible && WS_TMB_POSITION;
         const WS_TMB_FULL_HEIGHT = wsTmbPosition > 1;
         // 0 - left, 1 - right, 2 - left hull-height, 3 - right full-height
         const WS_TMB_RIGHT = wsTmbPosition === 1 || wsTmbPosition === 3;
 
-        if (!WS_TMB_FULL_HEIGHT) {
-            this._dash.setMaxSize(width, maxDashHeight);
-        }
-        [, dashHeight] = this._dash.get_preferred_height(width);
-        [, dashWidth] = this._dash.get_preferred_width(dashHeight);
-        dashHeight = Math.min(dashHeight, maxDashHeight);
-        dashWidth = Math.min(dashWidth, width - 2 * spacing);
-
         let dashPosition = DASH_POSITION;
-        const DASH_CENTER = (dashPosition === DashPosition.TOP_CENTER) || (dashPosition === DashPosition.BOTTOM_CENTER);
-        const DASH_CENTER_WS = DASH_CENTER && CENTER_DASH_WS;
-        const DASH_LEFT = dashPosition === DashPosition.TOP_LEFT || dashPosition === DashPosition.BOTTOM_LEFT;
-        // convert position of the dock to Ubuntu Dock / Dash to Dock language
-        dashPosition = dashPosition < DashPosition.BOTTOM_LEFT ? 0 : 2; // 0 - top, 2 - bottom
+        const DASH_CENTER_WS = CENTER_DASH_WS;
         let DASH_TOP = dashPosition === 0;
         this._dash._position = dashPosition;
 
+        let DASH_VERTICAL = [1, 3].includes(dashPosition);
         // dash cloud be other than the default, could be Dash to Dock
         // Dash to Dock has property _isHorizontal
         const dash = Main.overview.dash;
-        if (dash._isHorizontal !== undefined) {
-            dashHeight = dash.height;
-            dashWidth = dash.width;
-            dashPosition = dash._position;
-            DASH_TOP = dash._position === 0;
-        }
-        const DASH_VERTICAL = [1, 3].includes(dashPosition);
 
-        dashHeight = dash.visible ? dashHeight : 0;
-        dashWidth = dash.visible ? dashWidth : 0;
+        if (this._dash.visible) {
+            if (dash._isHorizontal !== undefined) {
+                dashHeight = dash.height;
+                dashWidth = dash.width;
+                dashPosition = dash._position;
+                DASH_TOP = dash._position === 0;
+                DASH_VERTICAL = [1, 3].includes(dashPosition);
+            } else { // for default dock
+                if (DASH_VERTICAL) {
+                    this._dash.setMaxSize(maxDashWidth, height);
+                    [, dashWidth] = this._dash.get_preferred_width(height);
+                    [, dashHeight] = this._dash.get_preferred_height(dashWidth);
+
+                    dashWidth = Math.min(dashWidth, maxDashWidth);
+                    dashHeight = Math.min(dashHeight, height - 2 * spacing);
+                } else {
+                    if (!WS_TMB_FULL_HEIGHT) {
+                        this._dash.setMaxSize(width, maxDashHeight);
+                    [, dashHeight] = this._dash.get_preferred_height(width);
+                    [, dashWidth] = this._dash.get_preferred_width(dashHeight);
+                    dashHeight = Math.min(dashHeight, maxDashHeight);
+                    dashWidth = Math.min(dashWidth, width - 2 * spacing);
+                    }
+                }
+            }
+        }
 
         availableHeight -= DASH_VERTICAL ? 0 : dashHeight + spacing;
 
@@ -1540,69 +1578,80 @@ var ControlsManagerLayoutOverride = {
                 this._workspacesThumbnails._positionLeft = true;
             }
 
-            let wstYOffset = ((dashHeightReservation && DASH_TOP && !DASH_VERTICAL) ? dashHeight + spacing : spacing);
+            //let wstYOffset = ((dashHeightReservation && DASH_TOP && !DASH_VERTICAL) ? dashHeight + spacing : spacing);
+            let wstYOffset = ((dashHeightReservation && DASH_TOP) ? dashHeight + spacing : spacing);
             if (CENTER_WS_SWITCHER) {
                 wstYOffset += Math.max(0, (height - 5 * spacing - thumbnailsHeight - (DASH_VERTICAL ? 0 : dashHeightReservation)) / 2);
             }
 
             childBox.set_origin(wsTmbX, startY + wstYOffset);
             childBox.set_size(wsTmbWidth, thumbnailsHeight);
+
             this._workspacesThumbnails.allocate(childBox);
         }
 
-        const wMaxWidth = width - spacing - wsTmbWidth - 2 * spacing - (DASH_VERTICAL ? dashWidth + spacing : 0);
-        let dashXOffset = 0;
-        if (WS_TMB_FULL_HEIGHT) {
-            this._dash.setMaxSize(wMaxWidth, maxDashHeight);
-            [, dashHeight] = this._dash.get_preferred_height(wMaxWidth);
-            [, dashWidth] = this._dash.get_preferred_width(dashHeight);
-            dashHeight = Math.min(dashHeight, maxDashHeight);
-            dashWidth = Math.min(dashWidth, wMaxWidth);
-            dashXOffset = wsTmbPosition === 2 ? wsTmbWidth + spacing : 0;
-        }
 
-        let dashX, dashY;
-        if (DASH_CENTER) {
-            dashX = (width - dashWidth) / 2;
-            if (dashXOffset) {
-                if (WS_TMB_RIGHT) {
-                    dashX = Math.min(dashX, width - (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing));
-                } else {
-                    dashX = Math.max(dashX, (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing));
-                }
+        if (this._dash.visible) {
+            const wMaxWidth = width - spacing - wsTmbWidth - 2 * spacing - (DASH_VERTICAL ? dashWidth + spacing : 0);
+            let dashXOffset = 0;
+            if (WS_TMB_FULL_HEIGHT && !DASH_VERTICAL) {
+                this._dash.setMaxSize(wMaxWidth, maxDashHeight);
+                [, dashHeight] = this._dash.get_preferred_height(wMaxWidth);
+                [, dashWidth] = this._dash.get_preferred_width(dashHeight);
+                dashHeight = Math.min(dashHeight, maxDashHeight);
+                dashWidth = Math.min(dashWidth, wMaxWidth);
+                dashXOffset = wsTmbPosition === 2 ? wsTmbWidth + spacing : 0;
             }
-            if (DASH_CENTER_WS) {
-                const offSet = Math.floor((wMaxWidth - dashWidth) / 2);
-                if (offSet < 0) {
-                    dashX = spacing;
-                    if (wsTmbWidth && !WS_TMB_RIGHT) {
-                        dashX = width - dashWidth - spacing;
-                    }
-                } else if (!this._xAlignCenter) { // this variable provides _getWorkspacesBoxForState()
-                    // workspace preview will be centered even when ws switcher is visible, but so small that it fits
-                    if (wsTmbWidth && !WS_TMB_RIGHT) {
-                        dashX = wsTmbWidth + spacing + offSet;
+
+            let dashX, dashY;
+            if (dashPosition === DashPosition.RIGHT)
+                dashX = startX + width - dashWidth;
+            else if (dashPosition === DashPosition.LEFT)
+                dashX = startX;
+            else if (dashPosition === DashPosition.TOP)
+                dashY = startY + spacing / 2;
+            else
+                dashY = startY + height - dashHeight;
+
+            if (!DASH_VERTICAL) {
+                const offset = (width - (WS_TMB_FULL_HEIGHT ? wsTmbWidth + spacing : 0) - dashWidth - 2 * spacing) / 2;
+
+                if (WS_TMB_FULL_HEIGHT) {
+                    if (WS_TMB_RIGHT) {
+                        dashX = startX + offset - DASH_POSITION_ADJUSTMENT * offset;
+                        //dashX = Math.min(dashX, width - (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing));
+                        dashX = Math.min(dashX, width - spacing - dashWidth - (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing));
                     } else {
-                        dashX = offSet;
+                        dashX = startX + (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing) + offset - DASH_POSITION_ADJUSTMENT * offset;
+                        dashX = Math.max(dashX, wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing);
                     }
                 }
+                if (DASH_CENTER_WS) {
+                    const offSet = Math.floor((wMaxWidth - dashWidth) / 2);
+                    if (offSet < 0) {
+                        dashX = spacing;
+                        if (wsTmbWidth && !WS_TMB_RIGHT) {
+                            dashX = width - dashWidth - spacing;
+                        }
+                    } else if (!this._xAlignCenter) { // this variable provides _getWorkspacesBoxForState()
+                        // workspace preview will be centered even when ws switcher is visible, but so small that it fits
+                        if (wsTmbWidth && !WS_TMB_RIGHT) {
+                            dashX = wsTmbWidth + spacing + offSet;
+                        } else {
+                            dashX = offSet;
+                        }
+                    }
+                }
+            } else {
+                const offset = (height - dashHeight) / 2;
+                dashY = startY + offset - DASH_POSITION_ADJUSTMENT * offset;
             }
-        } else if (DASH_LEFT) {
-            dashX = dashXOffset + spacing;
-        } else {
-            dashX = width - spacing - dashWidth;
+
+            childBox.set_origin(dashX, dashY);
+            childBox.set_size(dashWidth, dashHeight);
+            this._dash.allocate(childBox);
         }
 
-        if (DASH_TOP) {
-            dashY = startY;
-        } else {
-            dashY = startY + height - dashHeight;
-        }
-
-        childBox.set_origin(dashX, dashY);
-        childBox.set_size(dashWidth, dashHeight);
-
-        this._dash.allocate(childBox);
 
         // Workspaces
         let params = [box, workAreaBox, dashHeight, wsTmbWidth];
@@ -1657,7 +1706,7 @@ var ControlsManagerLayoutOverride = {
             const workspaceAppGridBox =
                 this._cachedWorkspaceBoxes.get(ControlsState.WINDOW_PICKER);
 
-            params = [box, workAreaBox, /*searchHeight, dashHeight,*/ workspaceAppGridBox, wsTmbWidth];
+            params = [box, workAreaBox, /*searchHeight,*/ dashWidth, dashHeight, workspaceAppGridBox, wsTmbWidth];
             let appDisplayBox;
             if (!transitionParams.transitioning) {
                 appDisplayBox =
@@ -1670,7 +1719,6 @@ var ControlsManagerLayoutOverride = {
 
                 appDisplayBox = initialBox.interpolate(finalBox, transitionParams.progress);
             }
-
             this._appDisplay.allocate(appDisplayBox);
         }
 
@@ -1740,52 +1788,9 @@ var WorkspaceLayoutOverride = {
     }
 }
 
-var DashItemContainerOverride = {
-    // move labels under the icons
-    showLabel() {
-        if (!this._labelText)
-            return;
-
-        this.label.set_text(this._labelText);
-        this.label.opacity = 0;
-        this.label.show();
-
-        let [stageX, stageY] = this.get_transformed_position();
-
-        const itemWidth = this.allocation.get_width();
-        const itemHeight = this.allocation.get_height();
-
-        const labelWidth = this.label.get_width();
-        const labelHeight = this.label.get_height();
-        const xOffset = Math.floor((itemWidth - labelWidth) / 2);
-        const x = Math.clamp(stageX + xOffset, 0, global.stage.width - labelWidth);
-
-        let node = this.label.get_theme_node();
-        let yOffset, y;
-
-        const positionBottom = Main.overview.dash._position === 0;
-
-        if (positionBottom) {
-            yOffset = itemHeight - labelHeight + 3 * node.get_length('-y-offset');
-            y = stageY + yOffset;
-        } else {
-            yOffset = node.get_length('-y-offset');
-            y = stageY - this.label.height - yOffset;
-        }
-
-        this.label.set_position(x, y);
-        this.label.ease({
-            opacity: 255,
-            duration: DASH_ITEM_LABEL_SHOW_TIME,
-            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-        });
-    }
-}
-
 //------ appDisplay --------------------------------------------------------------------------------
 
-// Appdisplay
-var AppDisplayOverride  = {
+var BaseAppViewOverride  = {
     // this fixes dnd from appDisplay to workspace switcher if appDisplay is on page 1. weird bug, weird solution..
     _pageForCoords: function(x, y) {
         if (this._dragMonitor != null)

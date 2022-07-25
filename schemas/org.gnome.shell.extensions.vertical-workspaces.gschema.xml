@@ -10,6 +10,9 @@
     <key type="i" name="dash-position">
       <default>0</default>
     </key>
+    <key type="i" name="dash-position-adjust">
+      <default>50</default>
+    </key>
     <key type="i" name="show-app-icon-position">
       <default>0</default>
     </key>
@@ -28,8 +31,8 @@
     <key type="i" name="ws-thumbnail-scale">
       <default>13</default>
     </key>
-    <key type="i" name="dash-max-scale">
-      <default>15</default>
+    <key type="i" name="dash-max-icon-size">
+      <default>4</default>
     </key>
     <key type="i" name="dash-bg-opacity">
       <default>100</default>
