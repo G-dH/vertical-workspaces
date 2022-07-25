@@ -309,8 +309,10 @@ function _updateSettings(settings, key) {
     SEC_WS_TMB_POSITION = gOptions.get('secondaryWsThumbnailsPosition', true);
     VerticalDash.MAX_ICON_SIZE = VerticalDash.baseIconSizes[gOptions.get('dashMaxIconSize', true)];
     DASH_POSITION = gOptions.get('dashPosition', true);
-    if (DASH_POSITION >= DashPosition.length)
+    if (DASH_POSITION >= DashPosition.length) {
         DASH_POSITION = DashPosition.BOTTOM;
+        gOptions.set('dashPosition', DASH_POSITION);
+    }
     VerticalDash.DASH_POSITION = DASH_POSITION;
     DASH_POSITION_ADJUSTMENT = gOptions.get('dashPositionAdjust', true);
     DASH_POSITION_ADJUSTMENT = DASH_POSITION_ADJUSTMENT * -1 / 100; // range -1 to 1
@@ -1420,7 +1422,6 @@ var ControlsManagerLayoutOverride = {
 
                 const wsBoxX = Math.round(xOffset);
                 wsBoxY = Math.round(startY + yOffset + ((dashHeight && DASH_TOP) ? dashHeight : spacing)/* + (searchHeight ? searchHeight + spacing : 0)*/);
-
                 workspaceBox.set_origin(Math.round(wsBoxX), Math.round(wsBoxY));
                 workspaceBox.set_size(wWidth, wHeight);
             }
@@ -1603,32 +1604,33 @@ var ControlsManagerLayoutOverride = {
                 dashXOffset = wsTmbPosition === 2 ? wsTmbWidth + spacing : 0;
             }
 
-            let dashX, dashY;
+            let dashX, dashY, offset;
             if (dashPosition === DashPosition.RIGHT)
-                dashX = startX + width - dashWidth;
-            else if (dashPosition === DashPosition.LEFT)
-                dashX = startX;
+                dashX = width - dashWidth;
+            else if (dashPosition === DashPosition.LEFT) {
+                dashX = 0;
+            }
             else if (dashPosition === DashPosition.TOP)
                 dashY = startY + spacing / 2;
             else
                 dashY = startY + height - dashHeight;
 
             if (!DASH_VERTICAL) {
-                const offset = (width - (WS_TMB_FULL_HEIGHT ? wsTmbWidth + spacing : 0) - dashWidth - 2 * spacing) / 2;
+                offset = (width - (WS_TMB_FULL_HEIGHT ? wsTmbWidth + spacing : 0) - dashWidth - 2 * spacing) / 2;
+                offset = offset - DASH_POSITION_ADJUSTMENT * offset;
+                dashX = offset;
 
                 if (WS_TMB_FULL_HEIGHT) {
                     if (WS_TMB_RIGHT) {
-                        dashX = startX + offset - DASH_POSITION_ADJUSTMENT * offset;
-                        //dashX = Math.min(dashX, width - (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing));
                         dashX = Math.min(dashX, width - spacing - dashWidth - (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing));
                     } else {
-                        dashX = startX + (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing) + offset - DASH_POSITION_ADJUSTMENT * offset;
+                        dashX = (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing) + offset;
                         dashX = Math.max(dashX, wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing);
                     }
                 }
                 if (DASH_CENTER_WS) {
-                    const offSet = Math.floor((wMaxWidth - dashWidth) / 2);
-                    if (offSet < 0) {
+                    let offSetWs = Math.floor((wMaxWidth - dashWidth) / 2);
+                    if (offSetWs < 0) {
                         dashX = spacing;
                         if (wsTmbWidth && !WS_TMB_RIGHT) {
                             dashX = width - dashWidth - spacing;
@@ -1636,9 +1638,9 @@ var ControlsManagerLayoutOverride = {
                     } else if (!this._xAlignCenter) { // this variable provides _getWorkspacesBoxForState()
                         // workspace preview will be centered even when ws switcher is visible, but so small that it fits
                         if (wsTmbWidth && !WS_TMB_RIGHT) {
-                            dashX = wsTmbWidth + spacing + offSet;
+                            dashX = wsTmbWidth + spacing + offSetWs;
                         } else {
-                            dashX = offSet;
+                            dashX = offSetWs;
                         }
                     }
                 }

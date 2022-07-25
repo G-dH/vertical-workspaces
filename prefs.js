@@ -495,8 +495,8 @@ function _getLayoutOptionList() {
 
     optionList.push(
         _optionsItem(
-            _('Center Dash to Workspace'),
-            _('Dash will be centered relative to the workspace preview instead of the screen, if centered position is selected in the above option.'),
+            _('Center Horizontal Dash to Workspace'),
+            _('If position Top or Bottom is selected, Dash position will be calculated relative to the workspace preview instead of the screen.'),
             _newSwitch(),
             'centerDashToWs',
         )
