@@ -486,7 +486,7 @@ function _getLayoutOptionList() {
     optionList.push(
         _optionsItem(
             _('Fine Tune Dash Position'),
-            _('Adjust position of the dock on chosen axis. Works with default Dash only.'),
+            _('Adjust position of the dock on chosen axis. Works only with default Dash.'),
             dashPositionScale,
             'dashPositionAdjust'
         )
@@ -495,7 +495,7 @@ function _getLayoutOptionList() {
     optionList.push(
         _optionsItem(
             _('Center Horizontal Dash to Workspace'),
-            _('If position Top or Bottom is selected, Dash position will be calculated relative to the workspace preview instead of the screen. Works with default Dash only.'),
+            _('If position Top or Bottom is selected, Dash position will be calculated relative to the workspace preview instead of the screen. Works only with default Dash.'),
             _newSwitch(),
             'centerDashToWs',
         )
@@ -614,7 +614,7 @@ function _getAdjustmentsOptionList() {
     optionList.push(
         _optionsItem(
             _('Dash Max Icon Size'),
-            _('Maximum size of Dash icons in pixels. Works with default Dash only.'),
+            _('Maximum size of Dash icons in pixels. Works only with default Dash.'),
             _newComboBox(),
             //_newDropDown(),
             'dashMaxIconSize',

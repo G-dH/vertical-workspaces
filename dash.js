@@ -27,21 +27,25 @@ function override(horizonatal = false) {
 
     verticalOverrides['DashItemContainer'] = Util.overrideProto(Dash.DashItemContainer.prototype, DashItemContainerOverride);
 
+    const dash = Main.overview.dash;
     if (horizonatal) {
         verticalOverrides['DashCommon'] = Util.overrideProto(Dash.Dash.prototype, DashCommonOverride);
+        if (_origWorkId)
+            dash._workId = _origWorkId;
     }
     else {
         verticalOverrides['Dash'] = Util.overrideProto(Dash.Dash.prototype, DashOverride);
         verticalOverrides['DashCommon'] = Util.overrideProto(Dash.Dash.prototype, DashCommonOverride);
         set_to_vertical();
-    }
-    let dash = Main.overview.dash;
-    if (!_newWorkId) {
-        _origWorkId = dash._workId;
-        dash._workId = Main.initializeDeferredWork(dash._box, dash._redisplay.bind(dash));
-        _newWorkId = dash._workId;
-    } else {
-        dash._workId = _newWorkId;
+        dash.add_style_class_name("vertical-overview");
+
+        if (!_newWorkId) {
+            _origWorkId = dash._workId;
+            dash._workId = Main.initializeDeferredWork(dash._box, dash._redisplay.bind(dash));
+            _newWorkId = dash._workId;
+        } else {
+            dash._workId = _newWorkId;
+        }
     }
 }
 
@@ -54,6 +58,9 @@ function reset() {
     Util.overrideProto(Dash.Dash.prototype, verticalOverrides['DashCommon']);
     Util.overrideProto(Dash.DashItemContainer.prototype, verticalOverrides['DashItemContainer']);
     verticalOverrides = {};
+    Main.overview.dash.remove_style_class_name("vertical-overview");
+    Main.overview.dash.remove_style_class_name("vertical-overview-left");
+    Main.overview.dash.remove_style_class_name("vertical-overview-right");
 }
 
 function set_to_vertical() {
@@ -69,11 +76,6 @@ function set_to_vertical() {
     dash.x_align = Clutter.ActorAlign.START;
     dash.y_align = Clutter.ActorAlign.CENTER;
 
-    //dash.add_style_class_name("vertical-overview");
-    /*if (global.vertical_overview.old_style_enabled && global.vertical_overview.default_old_style_enabled) {
-        dash.add_style_class_name("vertical-overview-old-dash");
-    }*/
-
     let sizerBox = dash._background.get_children()[0];
     sizerBox.clear_constraints();
     sizerBox.add_constraint(new Clutter.BindConstraint({
@@ -87,6 +89,8 @@ function set_to_vertical() {
     dash._box.remove_all_children();
     dash._separator = null;
     dash._queueRedisplay();
+
+    dash.add_style_class_name(DASH_POSITION === DashPosition.LEFT ? 'vertical-overview-left' : 'vertical-overview-right');
 }
 
 function custom_run_indicator(settings, label) {
@@ -101,12 +105,6 @@ function custom_run_indicator(settings, label) {
     dash._separator = null;
     dash._queueRedisplay();
 }
-
-function dash_disable_style() {
-    let dash = Main.overview.dash;
-    dash.remove_style_class_name("vertical-overview");
-}
-
 function set_to_horizontal() {
     let dash = Main.overview._overview._controls.dash;
     if (_origWorkId)
@@ -117,8 +115,6 @@ function set_to_horizontal() {
     dash._dashContainer.x_expand = false;
     dash.x_align = Clutter.ActorAlign.CENTER;
     dash.y_align = 0;
-
-    dash_disable_style();
 
     let sizerBox = dash._background.get_children()[0];
     sizerBox.clear_constraints();
@@ -365,7 +361,7 @@ var DashOverride = {
                     x_align: Clutter.ActorAlign.CENTER,
                     y_align: Clutter.ActorAlign.CENTER,
                     width: this.iconSize,
-                    height: 1
+                    height: 1,
                 });
                 this._box.add_child(this._separator)
             }

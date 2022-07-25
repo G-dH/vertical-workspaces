@@ -1,12 +1,12 @@
 /* General dash */
 #dash.vertical-overview {
-	margin-right: 5px;
+	margin-right: 0px;
 	padding: 10px 0;
 }
 
 #dash.vertical-overview .dash-item-container .app-well-app,
 #dash.vertical-overview .show-apps {
-	padding-right: 10px;
+	padding-right: 5px;
 	padding-top: 2px;
 	padding-bottom: 2px;
 }
@@ -20,7 +20,7 @@
 }
 
 #dash.vertical-overview .overview-icon {
-	padding: 10px 0;
+	padding: 5px 0;
 }
 
 #dash.vertical-overview .app-well-app-running-dot {
@@ -33,16 +33,24 @@
 }
 
 #dash.vertical-overview .dash-background {
-	margin-left: 16px;
+	margin-left: 0px;
+}
+
+#dash.vertical-overview-left .dash-background {
+	border-radius: 0 15px 15px 0;
+}
+
+#dash.vertical-overview-right .dash-background {
+	border-radius: 15px 0 0 15px;
 }
 
 #dash.vertical-overview .dash-item-container .app-well-app,
 #dash.vertical-overview .show-apps {
-	padding-left: 26px;
+	padding-left: 5px;
 }
 
 #dash.vertical-overview .dash-separator {
-	margin-left: 16px;
+	margin-left: 3px;
 }
 
 /* 3.38 style dash */

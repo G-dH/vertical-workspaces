@@ -1410,7 +1410,8 @@ var ControlsManagerLayoutOverride = {
 
                 // move the workspace box to the middle of the screen, if possible
                 const centeredBoxX = (width - wWidth) / 2;
-                xOffset = Math.min(centeredBoxX, width - wWidth - thumbnailsWidth - 2 * spacing);
+                xOffset = Math.min(centeredBoxX, width - wWidth - thumbnailsWidth - 2 * spacing - 
+                    (((DASH_POSITION === 2 && [1, 3].includes(WS_TMB_POSITION)) || (DASH_POSITION === 3 && [0, 2].includes(WS_TMB_POSITION))) ? dash.width + spacing : 0));
 
                 this._xAlignCenter = false;
                 if (xOffset !== centeredBoxX) { // in this case xOffset holds max possible wsBoxX coordinance
@@ -1576,7 +1577,6 @@ var ControlsManagerLayoutOverride = {
                 this._workspacesThumbnails._positionLeft = true;
             }
 
-            //let wstYOffset = ((dashHeightReservation && DASH_TOP && !DASH_VERTICAL) ? dashHeight + spacing : spacing);
             let wstOffset = (height - spacing - thumbnailsHeight - spacing - (DASH_VERTICAL ? 0 : dashHeightReservation)) / 2;
             wstOffset = wstOffset - WS_TMB_POSITION_ADJUSTMENT * wstOffset;
             let wsTmbY = startY + ((dashHeightReservation && DASH_TOP) ? dashHeight + spacing : spacing) + wstOffset;
@@ -1590,14 +1590,12 @@ var ControlsManagerLayoutOverride = {
 
         if (this._dash.visible) {
             const wMaxWidth = width - spacing - wsTmbWidth - 2 * spacing - (DASH_VERTICAL ? dashWidth + spacing : 0);
-            let dashXOffset = 0;
             if (WS_TMB_FULL_HEIGHT && !DASH_VERTICAL) {
                 this._dash.setMaxSize(wMaxWidth, maxDashHeight);
                 [, dashHeight] = this._dash.get_preferred_height(wMaxWidth);
                 [, dashWidth] = this._dash.get_preferred_width(dashHeight);
                 dashHeight = Math.min(dashHeight, maxDashHeight);
                 dashWidth = Math.min(dashWidth, wMaxWidth);
-                dashXOffset = wsTmbPosition === 2 ? wsTmbWidth + spacing : 0;
             }
 
             let dashX, dashY, offset;
@@ -1612,36 +1610,21 @@ var ControlsManagerLayoutOverride = {
                 dashY = startY + height - dashHeight;
 
             if (!DASH_VERTICAL) {
-                offset = (width - (WS_TMB_FULL_HEIGHT ? wsTmbWidth + spacing : 0) - dashWidth - 2 * spacing) / 2;
+                offset = (width - ((WS_TMB_FULL_HEIGHT || DASH_CENTER_WS) ? wsTmbWidth + spacing : 0) - dashWidth - 2 * spacing) / 2;
                 offset = offset - DASH_POSITION_ADJUSTMENT * offset;
                 dashX = offset;
 
-                if (WS_TMB_FULL_HEIGHT) {
+                if (WS_TMB_FULL_HEIGHT || DASH_CENTER_WS) {
                     if (WS_TMB_RIGHT) {
                         dashX = Math.min(dashX, width - spacing - dashWidth - (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing));
                     } else {
                         dashX = (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing) + offset;
                         dashX = Math.max(dashX, wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing);
-                    }
-                }
-                if (DASH_CENTER_WS) {
-                    let offSetWs = Math.floor((wMaxWidth - dashWidth) / 2);
-                    if (offSetWs < 0) {
-                        dashX = spacing;
-                        if (wsTmbWidth && !WS_TMB_RIGHT) {
-                            dashX = width - dashWidth - spacing;
-                        }
-                    } else if (!this._xAlignCenter) { // this variable provides _getWorkspacesBoxForState()
-                        // workspace preview will be centered even when ws switcher is visible, but so small that it fits
-                        if (wsTmbWidth && !WS_TMB_RIGHT) {
-                            dashX = wsTmbWidth + spacing + offSetWs;
-                        } else {
-                            dashX = offSetWs;
-                        }
+                        dashX = Math.min(dashX, width - dashWidth - spacing);
                     }
                 }
             } else {
-                const offset = (height - dashHeight) / 2;
+                const offset = Math.max(0, (height - dashHeight - 2 * spacing) / 2);
                 dashY = startY + offset - DASH_POSITION_ADJUSTMENT * offset;
             }
 
