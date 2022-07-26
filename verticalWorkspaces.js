@@ -1546,7 +1546,6 @@ var ControlsManagerLayoutOverride = {
 
         // 0 - left, 1 - right, 2 - left hull-height, 3 - right full-height
         const WS_TMB_RIGHT = [1, 3].includes(wsTmbPosition);
-        availableHeight -= DASH_VERTICAL ? 0 : dashHeight + spacing;
 
         // Workspace Thumbnails
         let wsTmbWidth = 0;
@@ -1645,6 +1644,7 @@ var ControlsManagerLayoutOverride = {
             this._dash.allocate(childBox);
         }
 
+        availableHeight -= (DASH_VERTICAL ? 0 : dashHeight + spacing);
 
         // Workspaces
         let params = [box, workAreaBox, dashHeight, wsTmbWidth];
