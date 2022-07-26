@@ -1,5 +1,13 @@
-// Vertical Workpaces
-// GPL v3 ©G-dH@Github.com
+/**
+ * Vertical Workspaces
+ * extension.js
+ *
+ * @author     GdH <G-dH@github.com>
+ * @copyright  2022
+ * @license    GPL-3.0
+ * used parts of https://github.com/RensAlthuis/vertical-overview extension
+ */
+
 'use strict';
 
 const { GLib } = imports.gi;

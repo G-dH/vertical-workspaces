@@ -1,6 +1,12 @@
-// Vertical Workspaces
-// GPL v3 ©G-dH@Github.com
-// used parts of https://github.com/RensAlthuis/vertical-overview extension
+/**
+ * Vertical Workspaces
+ * verticalworkspaces.js
+ *
+ * @author     GdH <G-dH@github.com>
+ * @copyright  2022
+ * @license    GPL-3.0
+ * used parts of https://github.com/RensAlthuis/vertical-overview extension
+ */
 
 'use strict';
 
@@ -125,8 +131,6 @@ function activate() {
     verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
     verticalOverrides['WindowPreview'] = _Util.overrideProto(WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
 
-    _fixUbuntuDock(gOptions.get('fixUbuntuDock'));
-
     _prevDash = {};
     const dash = Main.overview.dash;
     _prevDash.dash = dash;
@@ -169,6 +173,8 @@ function activate() {
     // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
     Main.overview._overview._controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
 
+    _fixUbuntuDock(gOptions.get('fixUbuntuDock'));
+    _firstRun = true;
 }
 
 function reset() {
@@ -249,7 +255,7 @@ function _resetExtension(timeout = 200) {
             if (!_enabled)
                 return;
             const dash = Main.overview.dash;
-            if (dash !== _prevDash) {
+            if ( _prevDash.dash && dash !== _prevDash.dash) {
                 log(`[${Me.metadata.name}]: Dash has been replaced, resetting...`);
                 reset();
                 activate();
@@ -285,8 +291,9 @@ function _fixUbuntuDock(activate = true) {
         _showingOverviewSigId = 0;
     }
 
-    if (!activate)
+    if (!activate) {
         return;
+    }
 
     _monitorsChangedSigId = Main.layoutManager.connect('monitors-changed', () => _resetExtension(3000));
     _shellSettings = ExtensionUtils.getSettings( 'org.gnome.shell');
@@ -1410,18 +1417,18 @@ var ControlsManagerLayoutOverride = {
 
                 // move the workspace box to the middle of the screen, if possible
                 const centeredBoxX = (width - wWidth) / 2;
-                xOffset = Math.min(centeredBoxX, width - wWidth - thumbnailsWidth - 2 * spacing - 
+                xOffset = Math.min(centeredBoxX, width - wWidth - thumbnailsWidth - 2 * spacing -
                     (((DASH_POSITION === 2 && [1, 3].includes(WS_TMB_POSITION)) || (DASH_POSITION === 3 && [0, 2].includes(WS_TMB_POSITION))) ? dash.width + spacing : 0));
 
                 this._xAlignCenter = false;
                 if (xOffset !== centeredBoxX) { // in this case xOffset holds max possible wsBoxX coordinance
-                    xOffset = ((dashPosition === 3 && dash.visible) ? dash.width + spacing : 0) + (thumbnailsWidth && WS_TMB_LEFT ? thumbnailsWidth + spacing : 0)
+                    xOffset = ((dashPosition === 3 && dash.visible) ? dash.width + spacing : 0) + ((thumbnailsWidth && WS_TMB_LEFT) ? thumbnailsWidth + spacing : 0)
                             + (width - wWidth - 2 * spacing - thumbnailsWidth - ((DASH_VERTICAL && dash.visible) ? dash.width + spacing : 0)) / 2;
                 } else {
                     this._xAlignCenter = true;
                 }
 
-                const wsBoxX = Math.round(xOffset);
+                const wsBoxX = startX + Math.round(xOffset);
                 wsBoxY = Math.round(startY + yOffset + ((dashHeight && DASH_TOP) ? dashHeight : spacing)/* + (searchHeight ? searchHeight + spacing : 0)*/);
                 workspaceBox.set_origin(Math.round(wsBoxX), Math.round(wsBoxY));
                 workspaceBox.set_size(wWidth, wHeight);
@@ -1444,7 +1451,7 @@ var ControlsManagerLayoutOverride = {
         const dash = Main.overview.dash;
         const dashPosition = dash._position;
 
-        const appDisplayX = CENTER_APP_GRID ? spacing + thumbnailsWidth : (dashPosition === 3 ? dash.width + spacing : 0) + (WS_TMB_LEFT ? thumbnailsWidth : 0) + spacing;
+        const appDisplayX = startX + (CENTER_APP_GRID ? spacing + thumbnailsWidth : (dashPosition === 3 ? dash.width + spacing : 0) + (WS_TMB_LEFT ? thumbnailsWidth : 0) + spacing);
         const appDisplayY = startY + (dashPosition === DashPosition.TOP ? dashHeight + spacing : spacing);
 
         const adWidth = CENTER_APP_GRID ? width - 2 * (thumbnailsWidth + spacing) : width - ([1, 3].includes(dashPosition) ? dashWidth + 2 * spacing : 2 * spacing) - thumbnailsWidth - spacing;
@@ -1570,10 +1577,10 @@ var ControlsManagerLayoutOverride = {
 
             let wsTmbX;
             if (WS_TMB_RIGHT) {
-                wsTmbX = width - (dashPosition === 1 ? dashWidth : 0) - spacing - wsTmbWidth;
+                wsTmbX = startX + width - (dashPosition === 1 ? dashWidth : 0) - spacing - wsTmbWidth;
                 this._workspacesThumbnails._positionLeft = false;
             } else {
-                wsTmbX = (dashPosition === 3 ? dashWidth + spacing : 0) + spacing;
+                wsTmbX = startX + (dashPosition === 3 ? dashWidth + spacing : 0) + spacing;
                 this._workspacesThumbnails._positionLeft = true;
             }
 
@@ -1622,6 +1629,11 @@ var ControlsManagerLayoutOverride = {
                         dashX = Math.max(dashX, wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing);
                         dashX = Math.min(dashX, width - dashWidth - spacing);
                     }
+                }
+                if (WS_TMB_FULL_HEIGHT && !DASH_CENTER_WS) {
+                    dashX = WS_TMB_RIGHT
+                                ? Math.min(width - 3 * spacing - wsTmbWidth - dashWidth, dashX + (wsTmbWidth + spacing) / 2 * (1 - Math.abs(DASH_POSITION_ADJUSTMENT)))
+                                : Math.max(wsTmbWidth + 2 * spacing, dashX - (wsTmbWidth + spacing) / 2 * (1 - Math.abs(DASH_POSITION_ADJUSTMENT)));
                 }
             } else {
                 const offset = Math.max(0, (height - dashHeight - 2 * spacing) / 2);

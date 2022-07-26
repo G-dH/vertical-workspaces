@@ -1,3 +1,13 @@
+/**
+ * Vertical Workspaces
+ * dash.js
+ *
+ * @author     GdH <G-dH@github.com>
+ * @copyright  2022
+ * @license    GPL-3.0
+ * modified dash modul of https://github.com/RensAlthuis/vertical-overview extension
+ */
+
 const { Clutter, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
 const AppDisplay = imports.ui.appDisplay;
 const AppFavorites = imports.ui.appFavorites;
@@ -93,18 +103,6 @@ function set_to_vertical() {
     dash.add_style_class_name(DASH_POSITION === DashPosition.LEFT ? 'vertical-overview-left' : 'vertical-overview-right');
 }
 
-function custom_run_indicator(settings, label) {
-    let dash = Main.overview._overview._controls.dash;
-    if (false) {
-        dash.customRunIndicatorEnabled = true;
-    } else {
-        dash.customRunIndicatorEnabled = false;
-    }
-
-    dash._box.remove_all_children();
-    dash._separator = null;
-    dash._queueRedisplay();
-}
 function set_to_horizontal() {
     let dash = Main.overview._overview._controls.dash;
     if (_origWorkId)
@@ -383,11 +381,9 @@ var DashOverride = {
     _createAppItem: function (app) {
         let appIcon = new DashIcon(app);
 
-        if ([1, 3].includes(DASH_POSITION)) {
-            let indicator = appIcon._dot;
-            indicator.x_align = DASH_POSITION === 3 ? Clutter.ActorAlign.START : Clutter.ActorAlign.END;
-            indicator.y_align = Clutter.ActorAlign.CENTER;
-        }
+        let indicator = appIcon._dot;
+        indicator.x_align = DASH_POSITION === 3 ? Clutter.ActorAlign.START : Clutter.ActorAlign.END;
+        indicator.y_align = Clutter.ActorAlign.CENTER;
 
         appIcon.connect('menu-state-changed',
             (o, opened) => {
