@@ -174,7 +174,6 @@ function activate() {
     Main.overview._overview._controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
 
     _fixUbuntuDock(gOptions.get('fixUbuntuDock'));
-    _firstRun = true;
 }
 
 function reset() {
