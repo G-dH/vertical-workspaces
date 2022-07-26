@@ -1,7 +1,7 @@
 /* General dash */
 #dash.vertical-overview {
 	margin-right: 0px;
-	padding: 10px 0;
+	/*padding: 0px 0;*/
 }
 
 #dash.vertical-overview .dash-item-container .app-well-app,
@@ -14,8 +14,8 @@
 #dash.vertical-overview .dash-separator {
 	height: 1px;
 	margin-right: 0;
-	margin-top: 7px;
-	margin-bottom: 7px;
+	margin-top: 4px;
+	margin-bottom: 4px;
 	background-color: transparentize(#eeeeec, 0.7);
 }
 
@@ -38,10 +38,12 @@
 
 #dash.vertical-overview-left .dash-background {
 	border-radius: 0 15px 15px 0;
+	border-left: 0px;
 }
 
 #dash.vertical-overview-right .dash-background {
 	border-radius: 15px 0 0 15px;
+	border-right: 0px;
 }
 
 #dash.vertical-overview .dash-item-container .app-well-app,

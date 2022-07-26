@@ -1616,7 +1616,7 @@ var ControlsManagerLayoutOverride = {
                 dashY = startY + height - dashHeight;
 
             if (!DASH_VERTICAL) {
-                offset = (width - ((WS_TMB_FULL_HEIGHT || DASH_CENTER_WS) ? wsTmbWidth + spacing : 0) - dashWidth - 2 * spacing) / 2;
+                offset = (width - ((WS_TMB_FULL_HEIGHT || DASH_CENTER_WS) ? wsTmbWidth + spacing : 0) - dashWidth) / 2;
                 offset = offset - DASH_POSITION_ADJUSTMENT * offset;
                 dashX = offset;
 
@@ -1635,11 +1635,11 @@ var ControlsManagerLayoutOverride = {
                                 : Math.max(wsTmbWidth + 2 * spacing, dashX - (wsTmbWidth + spacing) / 2 * (1 - Math.abs(DASH_POSITION_ADJUSTMENT)));
                 }
             } else {
-                const offset = Math.max(0, (height - dashHeight - 2 * spacing) / 2);
-                dashY = startY + offset - DASH_POSITION_ADJUSTMENT * offset;
+                const offset = (height - dashHeight) / 2;
+                dashY = startY + ((offset - DASH_POSITION_ADJUSTMENT * offset));
             }
 
-            childBox.set_origin(dashX, dashY);
+            childBox.set_origin(startX + dashX, dashY);
             childBox.set_size(dashWidth, dashHeight);
             this._dash.allocate(childBox);
         }
