@@ -139,8 +139,8 @@ function activate() {
         // just for case when some other extension changed the value, like Just Perfection when disabled
         WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale') / 100;
 
-        /*if (global.workspace_manager.layout_rows != -1)
-            global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);*/
+        if (global.workspace_manager.layout_rows != -1)
+            global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
 
         const dash = Main.overview.dash;
         // Move dash above workspaces
@@ -814,9 +814,10 @@ var SecondaryMonitorDisplayOverride = {
             }
 
             const childBox = new Clutter.ActorBox();
-            const availSpace = height - thumbnailsHeight;
+            const availSpace = height - thumbnailsHeight - 2 * spacing;
 
-            let wsTmbY =  Math.max(spacing, availSpace / 2);
+            let wsTmbY =  availSpace / 2;
+            wsTmbY -= WS_TMB_POSITION_ADJUSTMENT * wsTmbY;
 
             childBox.set_origin(wsTmbX, wsTmbY);
             childBox.set_size(thumbnailsWidth, thumbnailsHeight);
