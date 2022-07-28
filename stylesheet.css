@@ -97,3 +97,15 @@
 	border-radius: 10px 0 0 10px;
 	border-right-width: 0;
 }
+
+.ws-tmb-label {
+	margin: 5px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-left: 7px;
+	padding-right: 7px;
+	border-radius: 12px;
+	border: solid 1px rgba(86, 86, 86, 0.8);
+	background-color: rgba(46, 46, 46, 0.9);
+	color: rgb(255, 255, 255);
+}

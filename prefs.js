@@ -582,7 +582,7 @@ function _getLayoutOptionList() {
     optionList.push(
         _optionsItem(
             _('Fine Tune Secondary Workspace Thumbnails Position'),
-            _('Adjusts secondary workspace thumbnails vertical position.'),
+            _('Adjusts secondary monitors workspace thumbnails vertical position.'),
             SecWstPositionScale,
             'SecWsTmbPositionAdjust'
         )
@@ -677,6 +677,30 @@ function _getAdjustmentsOptionList() {
     optionList.push(
         _optionsItem(
             _('Appearance'),
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Show Workspace Thumbnails Labels'),
+            _('Each workspace thumbnail can show its index and name (if defined) or name of current app.'),
+            _newComboBox(),
+            //_newDropDown(),
+            'showWsTmbLabels',
+            [   [_('Disable'), 0],
+                [_('Index'), 1],
+                [_('Index + Workspace Name'), 2],
+                [_('Index + Current App Name'), 3],
+            ]
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Show Workspace Thumbnail Label on Hover'),
+            _('Show label only when the mouse pointer hovers over a thumbnail'),
+            _newSwitch(),
+            'showWsTmbLabelsOnHover',
         )
     );
 

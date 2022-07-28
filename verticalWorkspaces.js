@@ -88,13 +88,15 @@ let WS_TMB_POSITION;
 let WS_TMB_POSITION_ADJUSTMENT
 let SEC_WS_TMB_POSITION_ADJUSTMENT;
 let SEC_WS_TMB_POSITION;
+let SHOW_WS_TMB;
+let SHOW_WS_TMB_BG;
+let SHOW_WST_LABELS_ON_HOVER;
+let SHOW_WST_LABELS;
 let DASH_POSITION;
 let DASH_POSITION_ADJUSTMENT;
 let CENTER_DASH_WS;
 let CENTER_SEARCH_VIEW;
 let CENTER_APP_GRID;
-let SHOW_WS_SWITCHER;
-let SHOW_WS_SWITCHER_BG;
 let APP_GRID_ANIMATION;
 let WS_ANIMATION;
 
@@ -327,19 +329,21 @@ function _updateSettings(settings, key) {
     Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
 
     WS_TMB_POSITION = gOptions.get('workspaceThumbnailsPosition', true);
-    SHOW_WS_SWITCHER = WS_TMB_POSITION !== 4; // 4 - disable
+    SHOW_WS_TMB = WS_TMB_POSITION !== 4; // 4 - disable
     WS_TMB_POSITION_ADJUSTMENT = gOptions.get('wsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
     SEC_WS_TMB_POSITION = gOptions.get('secondaryWsThumbnailsPosition', true);
     SEC_WS_TMB_POSITION_ADJUSTMENT = gOptions.get('SecWsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
+    SHOW_WST_LABELS = gOptions.get('showWsTmbLabels', true);
+    SHOW_WST_LABELS_ON_HOVER = gOptions.get('showWsTmbLabelsOnHover', true);
 
     WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale', true) / 100;
-    SHOW_WS_SWITCHER_BG = gOptions.get('showWsSwitcherBg', true) && SHOW_WS_SWITCHER;
+    SHOW_WS_TMB_BG = gOptions.get('showWsSwitcherBg', true) && SHOW_WS_TMB;
 
     CENTER_APP_GRID = gOptions.get('centerAppGrid', true);
 
     CENTER_SEARCH_VIEW = gOptions.get('centerSearch', true);
     APP_GRID_ANIMATION = gOptions.get('appGridAnimation', true);
-    if (APP_GRID_ANIMATION === 4) APP_GRID_ANIMATION = (!(WS_TMB_POSITION % 2) || !SHOW_WS_SWITCHER) ? 1 : 2;
+    if (APP_GRID_ANIMATION === 4) APP_GRID_ANIMATION = (!(WS_TMB_POSITION % 2) || !SHOW_WS_TMB) ? 1 : 2;
     WS_ANIMATION = gOptions.get('workspaceAnimation', true);
 
     _switchPageShortcuts();
@@ -685,7 +689,7 @@ function _getFitModeForState(state) {
     case ControlsState.WINDOW_PICKER:
         return WorkspacesView.FitMode.SINGLE;
     case ControlsState.APP_GRID:
-        if ((WS_ANIMATION === 1) && SHOW_WS_SWITCHER)
+        if ((WS_ANIMATION === 1) && SHOW_WS_TMB)
             return WorkspacesView.FitMode.ALL;
         else
             return WorkspacesView.FitMode.SINGLE;
@@ -805,7 +809,7 @@ var SecondaryMonitorDisplayOverride = {
         let [, thumbnailsHeight] = this._thumbnails.get_preferred_custom_height(thumbnailsWidth);
         thumbnailsHeight = Math.min(thumbnailsHeight, height - 2 * spacing);
 
-        this._thumbnails.visible = SHOW_WS_SWITCHER;
+        this._thumbnails.visible = SHOW_WS_TMB;
         if (this._thumbnails.visible) {
             // 2 - default, 0 - left, 1 - right
             let wsTmbPosition = SEC_WS_TMB_POSITION;
@@ -899,15 +903,65 @@ var SecondaryMonitorDisplayOverride = {
 }
 
 //------workspaceThumbnail------------------------------------------------------------------------
-Background.FADE_ANIMATION_TIME = 0;
+//Background.FADE_ANIMATION_TIME = 0;
 // WorkspaceThumbnail
 var WorkspaceThumbnailOverride = {
     after__init: function () {
-
         //radius of ws thumbnail backgroung
         this.set_style('border-radius: 8px;');
 
-        if (!SHOW_WS_SWITCHER_BG)
+        // add workspace thumbnails labels if enabled
+        if (SHOW_WST_LABELS) { // 0 - disable
+            // layout manager allows aligning widget childs
+            this.layout_manager = new Clutter.BinLayout();
+            const wsIndex = this.metaWorkspace.index();
+
+            let label = `${wsIndex + 1}`;
+
+            if (SHOW_WST_LABELS === 2) { // 2 - index + workspace name
+                const settings = ExtensionUtils.getSettings('org.gnome.desktop.wm.preferences');
+                const wsLabels = settings.get_strv('workspace-names');
+                if (wsLabels.length > wsIndex && wsLabels[wsIndex]) {
+                    label += `: ${wsLabels[wsIndex]}`;
+                }
+            } else if (SHOW_WST_LABELS === 3) { // 3- index + app name
+                const metaWin = global.display.get_tab_list(0, this.metaWorkspace).filter(w => w.get_monitor() === this.monitorIndex)[0];
+
+                if (metaWin) {
+                    let tracker = Shell.WindowTracker.get_default();
+                    label += `: ${tracker.get_window_app(metaWin).get_name()}`;
+                }
+            }
+            this._wsLabel = new St.Label({
+                text: label,
+                style_class: /*'window-caption',//*/ 'ws-tmb-label',
+                x_align: Clutter.ActorAlign.CENTER,
+                y_align: Clutter.ActorAlign.END,
+                x_expand: true,
+                y_expand: true,
+            });
+            this._wsLabel.set_style('padding-top: 5px; padding-bottom: 5px;');
+            this._wsLabel._maxOpacity = 255;
+            this._wsLabel.opacity = this._wsLabel._maxOpacity;
+            this.add_child(this._wsLabel);
+            this.set_child_above_sibling(this._wsLabel, null);
+            if (SHOW_WST_LABELS_ON_HOVER) {
+                this._wsLabel.opacity = 0;
+                this.reactive = true;
+                this.connect('enter-event', ()=> this._wsLabel.ease({
+                    duration: 100,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    opacity: this._wsLabel._maxOpacity
+                }));
+                this.connect('leave-event', ()=> this._wsLabel.ease({
+                    duration: 100,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    opacity: 0
+                }));
+            }
+        }
+
+        if (!SHOW_WS_TMB_BG)
             return;
         this._bgManager = new Background.BackgroundManager({
             monitorIndex: this.monitorIndex,
@@ -924,7 +978,7 @@ var WorkspaceThumbnailOverride = {
             this._bgManager = null;
         }.bind(this));
 
-        //this._bgManager.backgroundActor.opacity = 100;
+        this._bgManager.backgroundActor.opacity = 220;
 
         // this all is just for the small border radius...
         const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
@@ -1264,13 +1318,13 @@ var ThumbnailsBoxOverride = {
         // set current workspace indicator border radius
         //this._indicator.set_style('border-radius: 8px;');
 
-        const shouldShow = SHOW_WS_SWITCHER;
+        const shouldShow = SHOW_WS_TMB;
         if (this._shouldShow === shouldShow)
             return;
 
         this._shouldShow = shouldShow;
         this.notify('should-show');
-    }
+    },
 }
 
 //------- overviewControls --------------------------------
@@ -1278,20 +1332,9 @@ var ThumbnailsBoxOverride = {
 // ControlsManager
 
 var ControlsManagerOverride = {
-    // this function overrides Main.overview._overview._controls._update, but in reality the original code is being executed
+    // this function overrides Main.overview._overview._controls._update, but in reality the original code is being executed - bug..
     /*_update: function() {
-        const params = this._stateAdjustment.getStateTransitionParams();
-
-        const fitMode = Util.lerp(
-            this._getFitModeForState(params.initialState),
-            this._getFitModeForState(params.finalState),
-            params.progress);
-
-        const { fitModeAdjustment } = this._workspacesDisplay;
-        fitModeAdjustment.value = fitMode;
-
-        this._updateThumbnailsBox();
-        this._updateAppDisplayVisibility(params);
+        ...
     }*/
 
     // this function has duplicate in WorkspaceView so we use one function for both to avoid issues with syncing them
@@ -1338,9 +1381,9 @@ var ControlsManagerOverride = {
 
         let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
 
-        if ((WS_ANIMATION !== 1) || !SHOW_WS_SWITCHER) {
+        if ((WS_ANIMATION !== 1) || !SHOW_WS_TMB) {
             this._workspacesDisplay.opacity = opacity;
-        } else if (!SHOW_WS_SWITCHER_BG) {
+        } else if (!SHOW_WS_TMB_BG) {
             // fade out ws wallpaper during transition to ws switcher if ws switcher background disabled
             this._workspacesDisplay._workspacesViews[global.display.get_primary_monitor()]._workspaces[this._workspaceAdjustment.value]._background.opacity = opacity;
         }
@@ -1394,7 +1437,7 @@ var ControlsManagerLayoutOverride = {
             break;
         case ControlsState.WINDOW_PICKER:
         case ControlsState.APP_GRID:
-            if ((WS_ANIMATION === 1) && SHOW_WS_SWITCHER && state === ControlsState.APP_GRID) {
+            if ((WS_ANIMATION === 1) && SHOW_WS_TMB && state === ControlsState.APP_GRID) {
                 workspaceBox.set_origin(...this._workspacesThumbnails.get_position());
                 workspaceBox.set_size(...this._workspacesThumbnails.get_size());
             } else {

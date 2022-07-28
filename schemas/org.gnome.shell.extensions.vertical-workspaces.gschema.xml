@@ -19,6 +19,12 @@
     <key type="i" name="wst-position-adjust">
       <default>0</default>
     </key>
+    <key type="i" name="show-wst-labels">
+      <default>1</default>
+    </key>
+    <key type="b" name="show-wst-labels-on-hover">
+      <default>true</default>
+    </key>
     <key type="i" name="sec-wst-position-adjust">
       <default>0</default>
     </key>

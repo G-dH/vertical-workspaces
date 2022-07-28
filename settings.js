@@ -49,6 +49,8 @@ var Options = class Options {
             dashPosition: ['int', 'dash-position'],
             dashPositionAdjust: ['int', 'dash-position-adjust'],
             wsTmbPositionAdjust: ['int', 'wst-position-adjust'],
+            showWsTmbLabels: ['int', 'show-wst-labels'],
+            showWsTmbLabelsOnHover: ['boolean', 'show-wst-labels-on-hover'],
             SecWsTmbPositionAdjust: ['int', 'sec-wst-position-adjust'],
             dashMaxIconSize: ['int', 'dash-max-icon-size'],
             centerDashToWs: ['boolean', 'center-dash-to-ws'],
