@@ -1,5 +1,14 @@
 ## Changelog:
-### v8
+### v9
+**Added:**
+- Option `Show Workspace Thumbnails Labels` allows to show label on each workspace thumbnail. Options: `Index`, `Index + Workspace Name`, `Index + App Name`
+- Option `Show Workspace Thumbnail Label on Hover` hides the labels until mouse hovers over a thumbnail.
+- Option to hide Workspace Thumbnails on primary and secondary monitors individually in their position option list.
+
+**Changed:**
+- Settings page `Content` has been removed and `Disable` options were added to the position option list of the `Dash` and `Workspace Thumbnails`.
+
+### v8 22-07-27
 **Added:**
 - **Vertical Dash** which can be placed at the left and right side of the screen, in addition to top and bottom positions.
 - `Fine Tune Position` sliders for Dash and window switcher.
