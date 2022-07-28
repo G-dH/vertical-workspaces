@@ -19,6 +19,9 @@
     <key type="i" name="wst-position-adjust">
       <default>0</default>
     </key>
+    <key type="i" name="sec-wst-position-adjust">
+      <default>0</default>
+    </key>
     <key type="b" name="center-dash-to-ws">
       <default>false</default>
     </key>
@@ -39,12 +42,6 @@
     </key>
     <key type="b" name="enable-page-shortcuts">
       <default>false</default>
-    </key>
-    <key type="b" name="show-dash">
-      <default>true</default>
-    </key>
-    <key type="b" name="show-ws-switcher">
-      <default>true</default>
     </key>
     <key type="b" name="show-ws-switcher-bg">
       <default>true</default>

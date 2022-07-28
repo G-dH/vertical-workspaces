@@ -23,8 +23,8 @@ const LAYOUT_TITLE = _('Layout');
 const LAYOUT_ICON = 'view-grid-symbolic';
 const ADJUSTMENTS_TITLE = _('Adjustments');
 const ADJUSTMENTS_ICON = 'preferences-other-symbolic';
-const CONTENT_TITLE = _('Content');
-const CONTENT_ICON = 'view-reveal-symbolic';
+//const CONTENT_TITLE = _('Content');
+//const CONTENT_ICON = 'view-reveal-symbolic';
 const MISC_TITLE = _('Misc');
 const MISC_ICON = 'applications-utilities-symbolic';
 
@@ -50,10 +50,10 @@ function fillPreferencesWindow(window) {
         icon_name: ADJUSTMENTS_ICON
     });
 
-    const contentOptionsPage = getAdwPage(_geContentOptionList(), {
+    /*const contentOptionsPage = getAdwPage(_geContentOptionList(), {
         title: CONTENT_TITLE,
         icon_name: CONTENT_ICON
-    });
+    });*/
 
     const miscOptionsPage = getAdwPage(_geMiscOptionList(), {
         title: MISC_TITLE,
@@ -62,7 +62,7 @@ function fillPreferencesWindow(window) {
 
     window.add(layoutOptionsPage);
     window.add(adjustmentOptionsPage);
-    window.add(contentOptionsPage);
+    //window.add(contentOptionsPage);
     window.add(miscOptionsPage);
 
     window.set_search_enabled(true);
@@ -105,13 +105,13 @@ function buildPrefsWidget() {
 
     stack.add_named(getLegacyPage(_getLayoutOptionList()), 'layout');
     stack.add_named(getLegacyPage(_getAdjustmentsOptionList()), 'adjustments');
-    stack.add_named(getLegacyPage(_geContentOptionList()), 'content');
+    //stack.add_named(getLegacyPage(_geContentOptionList()), 'content');
     stack.add_named(getLegacyPage(_geMiscOptionList()), 'misc');
 
     const pagesBtns = [
         [new Gtk.Label({ label: LAYOUT_TITLE}), _newImageFromIconName(LAYOUT_ICON, Gtk.IconSize.BUTTON)],
         [new Gtk.Label({ label: ADJUSTMENTS_TITLE}), _newImageFromIconName(ADJUSTMENTS_ICON, Gtk.IconSize.BUTTON)],
-        [new Gtk.Label({ label: CONTENT_TITLE}), _newImageFromIconName(CONTENT_ICON, Gtk.IconSize.BUTTON)],
+        //[new Gtk.Label({ label: CONTENT_TITLE}), _newImageFromIconName(CONTENT_ICON, Gtk.IconSize.BUTTON)],
         [new Gtk.Label({ label: MISC_TITLE}), _newImageFromIconName(MISC_ICON, Gtk.IconSize.BUTTON)]
     ];
 
@@ -455,7 +455,7 @@ function _getLayoutOptionList() {
 
     optionList.push(
         _optionsItem(
-            _('Layout'),
+            _('Dash'),
         )
     );
 
@@ -470,6 +470,7 @@ function _getLayoutOptionList() {
                 [_('Right'), 1],
                 [_('Bottom'), 2],
                 [_('Left'), 3],
+                [_('Disable'), 4],
             ]
         )
     );
@@ -516,8 +517,14 @@ function _getLayoutOptionList() {
 
     optionList.push(
         _optionsItem(
-            _('Workspace Switcher Position and Max Height'),
-            _('Position of the workspace switcher on the screen. Full-Height options allow the workspace switcher to use the full height of the screen at the expense of the space available for Dash.'),
+            _('Workspace Thumbnails'),
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Workspace Thumbnails Position and Max Height'),
+            _('Position of the workspace thumbnails on the screen. Full-Height options allow the workspace thumbnails to use the full height of the screen at the expense of the space available for Dash.'),
             _newComboBox(),
             //_newDropDown(),
             'workspaceThumbnailsPosition',
@@ -525,6 +532,7 @@ function _getLayoutOptionList() {
                 [_('Right'), 1],
                 [_('Left - Full-Height'), 2],
                 [_('Right - Full-Height'), 3],
+                [_('Disable'), 4],
             ]
         )
     );
@@ -540,7 +548,7 @@ function _getLayoutOptionList() {
     wstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
     optionList.push(
         _optionsItem(
-            _('Fine Tune Workspace Switcher Position'),
+            _('Fine Tune Workspace Thumbnails Position'),
             _('Adjusts workspace thumbnails vertical position.'),
             wstPositionScale,
             'wsTmbPositionAdjust'
@@ -549,24 +557,40 @@ function _getLayoutOptionList() {
 
     optionList.push(
         _optionsItem(
-            _('Workspace Switcher Position on Secondary Monitor'),
-            _('Allows you to place workspace switcher of the secondary monitor closer to the one on the primary monitor. "Default" option follows position of the primary workspace switcher.'),
+            _('Workspace Thumbnails Position on Secondary Monitor'),
+            _('Allows you to place workspace thumbnails of the secondary monitor closer to the one on the primary monitor. "Default" option follows position of the primary workspace thumbnails.'),
             _newComboBox(),
             //_newDropDown(),
             'secondaryWsThumbnailsPosition',
             [   [_('Left'), 0],
                 [_('Right'), 1],
                 [_('Default'), 2],
+                [_('Disable'), 3],
             ]
+        )
+    );
+
+    const SecWstPositionAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: -100,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const SecWstPositionScale = _newScale(SecWstPositionAdjustment);
+    SecWstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
+    optionList.push(
+        _optionsItem(
+            _('Fine Tune Secondary Workspace Thumbnails Position'),
+            _('Adjusts secondary workspace thumbnails vertical position.'),
+            SecWstPositionScale,
+            'SecWsTmbPositionAdjust'
         )
     );
 
     optionList.push(
         _optionsItem(
-            _('Center Search View'),
-            _('Search view will be centered to the display instead of the available space. If needed workspace thumbnails will be temporarilly scaled down to fit the search box. This option has bigger impact for narrower and small resolution displays.'),
-            _newSwitch(),
-            'centerSearch',
+            _('App Grid'),
         )
     );
 
@@ -576,6 +600,21 @@ function _getLayoutOptionList() {
             _('App grid in app view page will be centered to the display instead of the available space. This option may have impact on the size of the grid, more for narrower and small resolution displays, especially if workspace thumbnails are bigger.'),
             _newSwitch(),
             'centerAppGrid',
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Search View'),
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Center Search View'),
+            _('Search view will be centered to the display instead of the available space. If needed workspace thumbnails will be temporarilly scaled down to fit the search box. This option has bigger impact for narrower and small resolution displays.'),
+            _newSwitch(),
+            'centerSearch',
         )
     );
 
@@ -605,7 +644,7 @@ function _getAdjustmentsOptionList() {
     optionList.push(
         _optionsItem(
             _('Workspace Thumbnails Max Scale'),
-            _('Adjusts maximum size of the workspace switcher (% relative to display width).'),
+            _('Adjusts maximum size of the workspace thumbnails (% relative to display width).'),
             wsThumbnailScale,
             'wsThumbnailScale'
         )
@@ -634,6 +673,13 @@ function _getAdjustmentsOptionList() {
         page_increment: 10,
     });
 
+    //----------------------------------------------------------------
+    optionList.push(
+        _optionsItem(
+            _('Appearance'),
+        )
+    );
+
     const dashBgOpacityScale = _newScale(dashBgAdjustment);
     optionList.push(
         _optionsItem(
@@ -641,6 +687,15 @@ function _getAdjustmentsOptionList() {
             _('Adjusts opacity of the default background (%).'),
             dashBgOpacityScale,
             'dashBgOpacity'
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
+            _('Show Wallpaper in Workspace Thumbnails'),
+            _('Workspace thumbnails will include the current desktop backgroud.'),
+            _newSwitch(),
+            'showWsSwitcherBg',
         )
     );
 
@@ -708,19 +763,10 @@ function _geContentOptionList() {
 
     optionList.push(
         _optionsItem(
-            _('Show Workspace Switcher'),
-            _('Disable to remove workspace switcher from Activities Overview.'),
+            _('Show Workspace Thumbnails'),
+            _('Disable to remove workspace thumbnails from Activities Overview.'),
             _newSwitch(),
             'showWsSwitcher',
-        )
-    );
-
-    optionList.push(
-        _optionsItem(
-            _('Show Wallpaper in Workspace Switcher'),
-            _('Workspace switcher previews will include the current desktop backgroud.'),
-            _newSwitch(),
-            'showWsSwitcherBg',
         )
     );
 
@@ -749,14 +795,14 @@ function _geMiscOptionList() {
 
     optionList.push(
         _optionsItem(
-            _('Workarounds'),
+            _('Compatibility'),
         )
     );
 
     optionList.push(
         _optionsItem(
             _('Fix for Dash to Dock'),
-            _('With the default Ubuntu Dock and other Dash To Dock forks, you may experience issues with Activities overview after you change Dock position or change monitors configuration. If you are experiencing such issues, try to enable this option, or replace the dock extension.'),
+            _('With the default Ubuntu Dock and other Dash To Dock forks, you may experience issues with Activities overview after you change Dock position or change monitors configuration. If you are experiencing such issues, try to enable this option, or disable/replace the dock extension.'),
             _newSwitch(),
             'fixUbuntuDock',
         )

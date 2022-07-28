@@ -86,6 +86,7 @@ let _prevDash;
 // constants from settings
 let WS_TMB_POSITION;
 let WS_TMB_POSITION_ADJUSTMENT
+let SEC_WS_TMB_POSITION_ADJUSTMENT;
 let SEC_WS_TMB_POSITION;
 let DASH_POSITION;
 let DASH_POSITION_ADJUSTMENT;
@@ -310,30 +311,36 @@ function _fixUbuntuDock(activate = true) {
 //*************************************************************************************************
 
 function _updateSettings(settings, key) {
-    WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale', true) / 100;
-    WS_TMB_POSITION = gOptions.get('workspaceThumbnailsPosition', true);
-    WS_TMB_POSITION_ADJUSTMENT = gOptions.get('wsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
-    SEC_WS_TMB_POSITION = gOptions.get('secondaryWsThumbnailsPosition', true);
-    VerticalDash.MAX_ICON_SIZE = VerticalDash.baseIconSizes[gOptions.get('dashMaxIconSize', true)];
     DASH_POSITION = gOptions.get('dashPosition', true);
+    // transition from v7 to v8
     if (DASH_POSITION >= DashPosition.length) {
         DASH_POSITION = DashPosition.BOTTOM;
         gOptions.set('dashPosition', DASH_POSITION);
     }
+    Main.overview.dash.visible = DASH_POSITION !== 4;
     VerticalDash.DASH_POSITION = DASH_POSITION;
     DASH_POSITION_ADJUSTMENT = gOptions.get('dashPositionAdjust', true);
     DASH_POSITION_ADJUSTMENT = DASH_POSITION_ADJUSTMENT * -1 / 100; // range 1 to -1
     CENTER_DASH_WS = gOptions.get('centerDashToWs', true);
-    CENTER_SEARCH_VIEW = gOptions.get('centerSearch', true);
-    CENTER_APP_GRID = gOptions.get('centerAppGrid', true);
-    SHOW_WS_SWITCHER = gOptions.get('showWsSwitcher', true);
+
+    VerticalDash.MAX_ICON_SIZE = VerticalDash.baseIconSizes[gOptions.get('dashMaxIconSize', true)];
+    Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
+
+    WS_TMB_POSITION = gOptions.get('workspaceThumbnailsPosition', true);
+    SHOW_WS_SWITCHER = WS_TMB_POSITION !== 4; // 4 - disable
+    WS_TMB_POSITION_ADJUSTMENT = gOptions.get('wsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
+    SEC_WS_TMB_POSITION = gOptions.get('secondaryWsThumbnailsPosition', true);
+    SEC_WS_TMB_POSITION_ADJUSTMENT = gOptions.get('SecWsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
+
+    WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale', true) / 100;
     SHOW_WS_SWITCHER_BG = gOptions.get('showWsSwitcherBg', true) && SHOW_WS_SWITCHER;
+
+    CENTER_APP_GRID = gOptions.get('centerAppGrid', true);
+
+    CENTER_SEARCH_VIEW = gOptions.get('centerSearch', true);
     APP_GRID_ANIMATION = gOptions.get('appGridAnimation', true);
     if (APP_GRID_ANIMATION === 4) APP_GRID_ANIMATION = (!(WS_TMB_POSITION % 2) || !SHOW_WS_SWITCHER) ? 1 : 2;
     WS_ANIMATION = gOptions.get('workspaceAnimation', true);
-
-    Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
-    Main.overview.dash.visible = gOptions.get('showDash', true);
 
     _switchPageShortcuts();
     if (key === 'fix-ubuntu-dock')
@@ -796,6 +803,7 @@ var SecondaryMonitorDisplayOverride = {
 
         let thumbnailsWidth = this._getThumbnailsWidth(contentBox, spacing);
         let [, thumbnailsHeight] = this._thumbnails.get_preferred_custom_height(thumbnailsWidth);
+        thumbnailsHeight = Math.min(thumbnailsHeight, height - 2 * spacing);
 
         this._thumbnails.visible = SHOW_WS_SWITCHER;
         if (this._thumbnails.visible) {
@@ -805,7 +813,7 @@ var SecondaryMonitorDisplayOverride = {
                 wsTmbPosition = WS_TMB_POSITION % 2; // 0,2 - left, 1,3 right
 
             let wsTmbX;
-            if (wsTmbPosition) {
+            if (wsTmbPosition) { // left
                 wsTmbX = width - spacing - thumbnailsWidth;
                 this._thumbnails._positionLeft = false;
             } else {
@@ -817,7 +825,7 @@ var SecondaryMonitorDisplayOverride = {
             const availSpace = height - thumbnailsHeight - 2 * spacing;
 
             let wsTmbY =  availSpace / 2;
-            wsTmbY -= WS_TMB_POSITION_ADJUSTMENT * wsTmbY;
+            wsTmbY -= SEC_WS_TMB_POSITION_ADJUSTMENT * wsTmbY - spacing;
 
             childBox.set_origin(wsTmbX, wsTmbY);
             childBox.set_size(thumbnailsWidth, thumbnailsHeight);
@@ -844,7 +852,8 @@ var SecondaryMonitorDisplayOverride = {
     },
 
     _updateThumbnailVisibility: function() {
-        const visible = !this._settings.get_boolean('workspaces-only-on-primary');
+        const visible = !(this._settings.get_boolean('workspaces-only-on-primary') ||
+                         SEC_WS_TMB_POSITION === 3);
 
         if (this._thumbnails.visible === visible)
             return;
