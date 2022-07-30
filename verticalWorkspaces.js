@@ -478,16 +478,41 @@ function _setAppDisplayOrientation(vertical = false) {
     appDisplay._swipeTracker.orientation = CLUTTER_ORIENTATION;
     if (vertical) {
         appDisplay._scrollView.set_policy(St.PolicyType.NEVER, St.PolicyType.EXTERNAL);
+
+        // vertical page indicators. sadly, allocate function dont expect which can be problem for narrow screens
+        appDisplay._pageIndicators.vertical = true;
+        appDisplay._box.vertical = false;
+        appDisplay._pageIndicators.x_expand = false;
+        appDisplay._pageIndicators.y_expand = true;
+        appDisplay._pageIndicators.y_align = Clutter.ActorAlign.CENTER;
+
+        // remove touch friendly horizontal navigation bars
+        // clicking on this area still switches pages
+        // needs to update allocation calculations and _pageForCoords()
+        const scrollContainer = appDisplay._scrollView.get_parent();
+        scrollContainer.remove_child(appDisplay._nextPageArrow);
+        scrollContainer.remove_child(appDisplay._prevPageArrow);
+        scrollContainer.remove_child(appDisplay._hintContainer);
     } else {
         appDisplay._scrollView.set_policy(St.PolicyType.EXTERNAL, St.PolicyType.NEVER);
         if (_appDisplayScrollConId) {
             appDisplay._adjustment.disconnect(_appDisplayScrollConId);
             _appDisplayScrollConId = 0;
         }
-    }
 
-    // vertical page indicator is not practical in given configuration...
-    //appDisplay._pageIndicators.vertical = true;
+        // revert horizontal page indicators
+        appDisplay._pageIndicators.vertical = false;
+        appDisplay._box.vertical = true;
+        appDisplay._pageIndicators.x_expand = true;
+        appDisplay._pageIndicators.y_expand = false;
+        appDisplay._pageIndicators.x_align = Clutter.ActorAlign.CENTER;
+
+        // put back touch friendly horizontal navigation bars
+        const scrollContainer = appDisplay._scrollView.get_parent();
+        scrollContainer.add_child(appDisplay._nextPageArrow);
+        scrollContainer.add_child(appDisplay._prevPageArrow);
+        scrollContainer.add_child(appDisplay._hintContainer);
+    }
 
     // value for page indicator is calculated from scroll adjustment, horizontal needs to be replaced by vertical
     appDisplay._adjustment = appDisplay._scrollView[scroll].adjustment;
@@ -907,6 +932,7 @@ var SecondaryMonitorDisplayOverride = {
 // WorkspaceThumbnail
 var WorkspaceThumbnailOverride = {
     after__init: function () {
+
         //radius of ws thumbnail backgroung
         this.set_style('border-radius: 8px;');
 
@@ -914,6 +940,11 @@ var WorkspaceThumbnailOverride = {
         if (SHOW_WST_LABELS) { // 0 - disable
             // layout manager allows aligning widget childs
             this.layout_manager = new Clutter.BinLayout();
+            // adding layout manager to tmb widget breaks wallpaper background aligning and rounded corners
+            // unless border is removed
+            if (SHOW_WS_TMB_BG)
+                this.set_style('border: 0px; border-radius: 8px;');
+
             const wsIndex = this.metaWorkspace.index();
 
             let label = `${wsIndex + 1}`;
@@ -940,11 +971,14 @@ var WorkspaceThumbnailOverride = {
                 x_expand: true,
                 y_expand: true,
             });
-            this._wsLabel.set_style('padding-top: 5px; padding-bottom: 5px;');
+            //this.connect('destroy', () => this._wsLabel.destroy());
+            //this._wsLabel.set_style('padding-top: 5px; padding-bottom: 5px;');
             this._wsLabel._maxOpacity = 255;
             this._wsLabel.opacity = this._wsLabel._maxOpacity;
+
             this.add_child(this._wsLabel);
             this.set_child_above_sibling(this._wsLabel, null);
+
             if (SHOW_WST_LABELS_ON_HOVER) {
                 this._wsLabel.opacity = 0;
                 this.reactive = true;
@@ -961,39 +995,39 @@ var WorkspaceThumbnailOverride = {
             }
         }
 
-        if (!SHOW_WS_TMB_BG)
-            return;
-        this._bgManager = new Background.BackgroundManager({
-            monitorIndex: this.monitorIndex,
-            container: this._viewport,
-            vignette: false,
-            controlPosition: false,
-        });
+        if (SHOW_WS_TMB_BG) {
+            this._bgManager = new Background.BackgroundManager({
+                monitorIndex: this.monitorIndex,
+                container: this._viewport,
+                vignette: false,
+                controlPosition: false,
+            });
 
-        this._viewport.set_child_below_sibling(this._bgManager.backgroundActor, null);
+            this._viewport.set_child_below_sibling(this._bgManager.backgroundActor, null);
 
-        this.connect('destroy', function () {
-            if (this._bgManager)
-                this._bgManager.destroy();
-            this._bgManager = null;
-        }.bind(this));
+            this.connect('destroy', function () {
+                if (this._bgManager)
+                    this._bgManager.destroy();
+                this._bgManager = null;
+            }.bind(this));
 
-        this._bgManager.backgroundActor.opacity = 220;
+            this._bgManager.backgroundActor.opacity = 220;
 
-        // this all is just for the small border radius...
-        const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
-        const cornerRadius = scaleFactor * BACKGROUND_CORNER_RADIUS_PIXELS;
-        const backgroundContent = this._bgManager.backgroundActor.content;
-        backgroundContent.rounded_clip_radius = cornerRadius;
+            // this all is just for the small border radius...
+            const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
+            const cornerRadius = scaleFactor * BACKGROUND_CORNER_RADIUS_PIXELS;
+            const backgroundContent = this._bgManager.backgroundActor.content;
+            backgroundContent.rounded_clip_radius = cornerRadius;
 
-        // the original clip has some addition at the bottom
-        const rect = new Graphene.Rect();
-        rect.origin.x = this._viewport.x;
-        rect.origin.y = this._viewport.y;
-        rect.size.width = this._viewport.width;
-        rect.size.height = this._viewport.height;
+            // the original clip has some addition at the bottom
+            const rect = new Graphene.Rect();
+            rect.origin.x = this._viewport.x;
+            rect.origin.y = this._viewport.y;
+            rect.size.width = this._viewport.width;
+            rect.size.height = this._viewport.height;
 
-        this._bgManager.backgroundActor.content.set_rounded_clip_bounds(rect);
+            this._bgManager.backgroundActor.content.set_rounded_clip_bounds(rect);
+        }
     }
 }
 
@@ -1316,7 +1350,8 @@ var ThumbnailsBoxOverride = {
 
     _updateShouldShow: function() {
         // set current workspace indicator border radius
-        //this._indicator.set_style('border-radius: 8px;');
+        // here just 'cause it's easier than adding to init
+        this._indicator.set_style('border-radius: 8px;');
 
         const shouldShow = SHOW_WS_TMB;
         if (this._shouldShow === shouldShow)
@@ -1395,6 +1430,18 @@ var ControlsManagerOverride = {
         // scale_y = 0 hides the object but without collateral damage
         this._workspacesDisplay.scale_y = (progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
         this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
+    },
+
+    // fix for upstream bug - appGrid.visible after transition from APP_GRID to HIDDEN
+    _updateAppDisplayVisibility: function(stateTransitionParams = null) {
+        if (!stateTransitionParams)
+            stateTransitionParams = this._stateAdjustment.getStateTransitionParams();
+
+        const { currentState } = stateTransitionParams;
+
+        this._appDisplay.visible =
+            currentState > ControlsState.WINDOW_PICKER &&
+            !this._searchController.searchActive;
     }
 }
 
@@ -1835,12 +1882,13 @@ var WorkspaceLayoutOverride = {
 
 //------ appDisplay --------------------------------------------------------------------------------
 
+// this fixes dnd from appDisplay to workspace switcher if appDisplay is on page 1. weird bug, weird solution..
 var BaseAppViewOverride  = {
-    // this fixes dnd from appDisplay to workspace switcher if appDisplay is on page 1. weird bug, weird solution..
     _pageForCoords: function(x, y) {
+        /*************************************** */
         if (this._dragMonitor != null)
             return AppDisplay.SidePages.NONE;
-
+        //************************************** */
         const rtl = this.get_text_direction() === Clutter.TextDirection.RTL;
         const { allocation } = this._grid;
 

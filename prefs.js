@@ -683,21 +683,21 @@ function _getAdjustmentsOptionList() {
     optionList.push(
         _optionsItem(
             _('Show Workspace Thumbnails Labels'),
-            _('Each workspace thumbnail can show its index and name (if defined) or name of current app.'),
+            _('Each workspace thumbnail can show its index and name (if defined in the system settings) or name of its most recently used app.'),
             _newComboBox(),
             //_newDropDown(),
             'showWsTmbLabels',
             [   [_('Disable'), 0],
                 [_('Index'), 1],
-                [_('Index + Workspace Name'), 2],
-                [_('Index + Current App Name'), 3],
+                [_('Index + WS Name'), 2],
+                [_('Index + App Name'), 3],
             ]
         )
     );
 
     optionList.push(
         _optionsItem(
-            _('Show Workspace Thumbnail Label on Hover'),
+            _('Show WS Thumbnail Label on Hover'),
             _('Show label only when the mouse pointer hovers over a thumbnail'),
             _newSwitch(),
             'showWsTmbLabelsOnHover',
