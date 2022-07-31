@@ -246,7 +246,7 @@ function _resetExtension(timeout = 200) {
                 log(`[${Me.metadata.name}]: Dash has been replaced, resetting...`);
                 reset();
                 activate();
-                _prevDash = dash;
+                _prevDash.dash = dash;
             }
             _resetTimeoutId = 0;
             return GLib.SOURCE_REMOVE;
@@ -1899,10 +1899,10 @@ var WorkspaceLayoutOverride = {
 // this fixes dnd from appDisplay to workspace switcher if appDisplay is on page 1. weird bug, weird solution..
 var BaseAppViewOverride  = {
     _pageForCoords: function(x, y) {
-        /*************************************** */
+        /***************************************/
         if (this._dragMonitor != null)
             return AppDisplay.SidePages.NONE;
-        //************************************** */
+        /***************************************/
         const rtl = this.get_text_direction() === Clutter.TextDirection.RTL;
         const { allocation } = this._grid;
 
