@@ -50,6 +50,15 @@
 	border-right: 0px;
 }
 
+.ws-switcher-indicator {
+	padding: 3px;
+	margin: 5px;
+}
+.ws-switcher-indicator:active {
+	  padding: 5px;
+	  margin: 3px;
+}
+
 .ws-tmb-label {
 	margin: 5px;
 	padding-top: 3px;

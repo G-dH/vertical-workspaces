@@ -25,6 +25,7 @@ const WorkspacesView = imports.ui.workspacesView;
 const Workspace = imports.ui.workspace;
 const OverviewControls = imports.ui.overviewControls;
 const WindowPreview = imports.ui.windowPreview;
+const WorkspaceSwitcherPopup = imports.ui.workspaceSwitcherPopup;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -71,6 +72,7 @@ const DashPosition = {
 
 let verticalOverrides = {};
 let _windowPreviewInjections = {};
+let _wsSwitcherPopupInjections = {};
 let _appDisplayScrollConId;
 
 let _monitorsChangedSigId;
@@ -124,6 +126,10 @@ function activate() {
 
     // move titles into window previews
     _injectWindowPreview();
+
+    // GS 42 needs to help with the workspace switcher popup, older versions reflects new orientation automatically
+    if (shellVersion >= 42)
+        _injectWsSwitcherPopup();
 
     // re-layout overview to better serve for vertical orientation
     verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxOverride);
@@ -181,6 +187,13 @@ function reset() {
         _Util.removeInjection(WindowPreview.WindowPreview.prototype, _windowPreviewInjections, name);
     }
     _windowPreviewInjections = {};
+
+    if (shellVersion >= 42) {
+        for (let name in _wsSwitcherPopupInjections) {
+            _Util.removeInjection(WorkspaceSwitcherPopup.WorkspaceSwitcherPopup.prototype, _wsSwitcherPopupInjections, name);
+        }
+        _wsSwitcherPopupInjections = {};
+    }
 
     _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, verticalOverrides['WorkspacesView']);
     _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, verticalOverrides['WorkspacesDisplay']);
@@ -426,6 +439,15 @@ function _switchPageShortcuts() {
     settings.set_strv(keyMoveRight, moveRight);
     settings.set_strv(keyMoveUp, moveUp);
     settings.set_strv(keyMoveDown, moveDown);
+}
+
+//----- WorkspaceSwitcherPopup --------------------------------------------------------
+function _injectWsSwitcherPopup() {
+    _wsSwitcherPopupInjections['_init'] = _Util.injectToFunction(
+        WorkspaceSwitcherPopup.WorkspaceSwitcherPopup.prototype, '_init', function() {
+            this._list.vertical = true;
+        }
+    )
 }
 
 //----- WindowPreview ------------------------------------------------------------------
