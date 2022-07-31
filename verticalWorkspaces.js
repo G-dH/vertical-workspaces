@@ -54,6 +54,8 @@ let WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get
 
 let DASH_MAX_SIZE_RATIO = 0.15;
 
+let MAX_THUMBNAIL_SCALE = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
+
 const ControlsState = {
     HIDDEN: 0,
     WINDOW_PICKER: 1,
@@ -76,9 +78,7 @@ let _shellSettings;
 let _watchDockSigId;
 let _resetTimeoutId;
 let _resetExtensionIfEnabled;
-let _shownOverviewSigId;
 let _showingOverviewSigId;
-let _hidingOverviewSigId;
 let _searchControllerSigId;
 let _verticalOverview;
 let _prevDash;
@@ -138,24 +138,6 @@ function activate() {
     const dash = Main.overview.dash;
     _prevDash.dash = dash;
     _prevDash.position = dash.position;
-    _shownOverviewSigId = Main.overview.connect('shown', () => {
-        // just for case when some other extension changed the value, like Just Perfection when disabled
-        WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale') / 100;
-
-        if (global.workspace_manager.layout_rows != -1)
-            global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
-
-        const dash = Main.overview.dash;
-        // Move dash above workspaces
-        dash.get_parent().set_child_above_sibling(dash, null);
-    });
-
-    _hidingOverviewSigId = Main.overview.connect('hiding', () => {
-        // Move dash below workspaces before hiding the overview
-        const appDisplay = Main.overview._overview.controls._workspacesDisplay;
-        const parent = appDisplay.get_parent();
-        parent.set_child_above_sibling(appDisplay, null);
-    });
 
     _moveDashAppGridIcon();
 
@@ -189,16 +171,6 @@ function reset() {
 
     if (original_MAX_THUMBNAIL_SCALE)
         WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = original_MAX_THUMBNAIL_SCALE;
-
-    if (_shownOverviewSigId) {
-        Main.overview.disconnect(_shownOverviewSigId);
-        _shownOverviewSigId = 0;
-    }
-
-    if (_hidingOverviewSigId) {
-        Main.overview.disconnect(_hidingOverviewSigId);
-        _hidingOverviewSigId = 0;
-    }
 
     if (_searchControllerSigId) {
         Main.overview._overview.controls._searchController.disconnect(_searchControllerSigId);
@@ -336,7 +308,9 @@ function _updateSettings(settings, key) {
     SHOW_WST_LABELS = gOptions.get('showWsTmbLabels', true);
     SHOW_WST_LABELS_ON_HOVER = gOptions.get('showWsTmbLabelsOnHover', true);
 
-    WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale', true) / 100;
+    MAX_THUMBNAIL_SCALE = gOptions.get('wsThumbnailScale', true) / 100;
+    WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = MAX_THUMBNAIL_SCALE;
+
     SHOW_WS_TMB_BG = gOptions.get('showWsSwitcherBg', true) && SHOW_WS_TMB;
 
     CENTER_APP_GRID = gOptions.get('centerAppGrid', true);
@@ -480,11 +454,12 @@ function _setAppDisplayOrientation(vertical = false) {
         appDisplay._scrollView.set_policy(St.PolicyType.NEVER, St.PolicyType.EXTERNAL);
 
         // vertical page indicators. sadly, allocate function dont expect which can be problem for narrow screens
-        appDisplay._pageIndicators.vertical = true;
+        // and the vertical indicator is actually pretty annoying to me
+        /*appDisplay._pageIndicators.vertical = true;
         appDisplay._box.vertical = false;
         appDisplay._pageIndicators.x_expand = false;
         appDisplay._pageIndicators.y_expand = true;
-        appDisplay._pageIndicators.y_align = Clutter.ActorAlign.CENTER;
+        appDisplay._pageIndicators.y_align = Clutter.ActorAlign.CENTER;*/
 
         // remove touch friendly horizontal navigation bars
         // clicking on this area still switches pages
@@ -501,11 +476,11 @@ function _setAppDisplayOrientation(vertical = false) {
         }
 
         // revert horizontal page indicators
-        appDisplay._pageIndicators.vertical = false;
+        /*appDisplay._pageIndicators.vertical = false;
         appDisplay._box.vertical = true;
         appDisplay._pageIndicators.x_expand = true;
         appDisplay._pageIndicators.y_expand = false;
-        appDisplay._pageIndicators.x_align = Clutter.ActorAlign.CENTER;
+        appDisplay._pageIndicators.x_align = Clutter.ActorAlign.CENTER;*/
 
         // put back touch friendly horizontal navigation bars
         const scrollContainer = appDisplay._scrollView.get_parent();
@@ -791,7 +766,7 @@ var SecondaryMonitorDisplayOverride = {
         const [, thumbnailsWidth] = this._thumbnails.get_preferred_custom_width(height - 2 * spacing);
         return Math.min(
             thumbnailsWidth * expandFraction,
-            width * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE);
+            width * MAX_THUMBNAIL_SCALE);
     },
 
     _getWorkspacesBoxForState: function(state, box, padding, thumbnailsWidth, spacing) {
@@ -1154,7 +1129,7 @@ var ThumbnailsBoxOverride = {
         const avail = forHeight - totalSpacing;
 
         let scale = (avail / nWorkspaces) / this._porthole.height;
-        scale = Math.min(scale, WorkspaceThumbnail.MAX_THUMBNAIL_SCALE);
+        scale = Math.min(scale, MAX_THUMBNAIL_SCALE);
 
         const width = Math.round(this._porthole.width * scale);
 
@@ -1179,7 +1154,7 @@ var ThumbnailsBoxOverride = {
             let workspaceSpacing = 0;
 
             const progress = 1 - thumbnail.collapse_fraction;
-            //const height = (this._porthole.height * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE + workspaceSpacing) * progress;
+            //const height = (this._porthole.height * MAX_THUMBNAIL_SCALE + workspaceSpacing) * progress;
             const height = (tmbHeight) * progress;
             return accumulator + height;
         }, 0);
@@ -1430,6 +1405,23 @@ var ControlsManagerOverride = {
         // scale_y = 0 hides the object but without collateral damage
         this._workspacesDisplay.scale_y = (progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
         this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
+
+        if (!this.dash._isAbove && progress === 1 && finalState > ControlsState.HIDDEN) {
+            // set dash above workspace in the overview
+            this.dash.get_parent().set_child_above_sibling(this.dash, null);
+            this.dash._isAbove = true;
+
+            // update max tmb scale in case some other extension changed it
+            WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = MAX_THUMBNAIL_SCALE;
+
+            // make sure the workspace orientation stays vertical
+            if (global.workspace_manager.layout_rows != -1)
+                global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
+        } else if (this.dash._isAbove && progress < 1 && finalState === ControlsState.HIDDEN) { //
+            // keep dash below for ws transition between the overview and hidden state
+            this.dash.get_parent().set_child_below_sibling(this.dash, null);
+            this.dash._isAbove = false;
+        }
     },
 
     // fix for upstream bug - appGrid.visible after transition from APP_GRID to HIDDEN
@@ -1662,7 +1654,7 @@ var ControlsManagerLayoutOverride = {
             wsTmbWidth = this._workspacesThumbnails.get_preferred_custom_width(thumbnailsHeight)[0];
             wsTmbWidth = Math.round(Math.min(
                 wsTmbWidth * expandFraction,
-                width * WorkspaceThumbnail.MAX_THUMBNAIL_SCALE
+                width * MAX_THUMBNAIL_SCALE
             ));
 
             if (REDUCE_WS_TMB_IF_NEEDED) {
