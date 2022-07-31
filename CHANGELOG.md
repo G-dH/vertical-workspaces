@@ -1,11 +1,11 @@
 ## Changelog:
-### v9
+### v9 2022-07-31
 **Added:**
-- Option `Show Workspace Thumbnails Labels` allows to show label on each workspace thumbnail. Options: `Index`, `Index + Workspace Name`, `Index + App Name`
-- Option `Show Workspace Thumbnail Label on Hover` hides the labels until mouse hovers over a thumbnail.
+- Option `Show Workspace Labels` allows to show label on each workspace thumbnail. Options: `Index`, `Index + Workspace Name`, `Index + App Name`
+- Option `Show Workspace Label on Hover` hides the labels until mouse hovers over a thumbnail.
 - Option to hide Workspace Thumbnails on primary and secondary monitors individually in their position option list.
-
-**Changed:**
+- Independent position adjustment for secondary monitors workspace thumbnails.
+- Vertical workspace switcher popup.
 - Settings page `Content` has been removed and `Disable` options were added to the position option list of the `Dash` and `Workspace Thumbnails`.
 
 ### v8 22-07-27
