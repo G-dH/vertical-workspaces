@@ -659,9 +659,11 @@ var WorkspacesViewOverride = {
             // if we disable inactive workspaces, ws animation will be noticably smoother
             // the only drawback is, that windows on inactive workspaces will be spread with the first ws switching in the overview
             // so you'll see the spread animation during the first workspace switching animation
-            !SHOW_WS_PREVIEW_BG && (finalState == 0 || initialState == 0) && (w._background.opacity = Math.abs((finalState == 0 ? 0 : 1) * 255 - progress * 255));
             w.visible = scaleProgress ? true : false;
             //w.opacity = scaleProgress ? 255 : 0;
+
+            // hide workspace background
+            !SHOW_WS_PREVIEW_BG && (finalState == 0 || initialState == 0) && (w._background.opacity = Math.abs((finalState == 0 ? 0 : 1) * 255 - progress * 255));
         });
     }
 }

@@ -517,6 +517,22 @@ function _getLayoutOptionList() {
 
     optionList.push(
         _optionsItem(
+            _('Dash Max Icon Size'),
+            _('Maximum size of Dash icons in pixels. Works only with default Dash.'),
+            _newComboBox(),
+            //_newDropDown(),
+            'dashMaxIconSize',
+            [   [_('16'), 0],
+                [_('24'), 1],
+                [_('32'), 2],
+                [_('48'), 3],
+                [_('64'), 4],
+            ]
+        )
+    );
+
+    optionList.push(
+        _optionsItem(
             _('Workspace Thumbnails'),
         )
     );
@@ -588,6 +604,24 @@ function _getLayoutOptionList() {
         )
     );
 
+    const wsThumbnailScaleAdjustment = new Gtk.Adjustment({
+        upper: 30,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const wsThumbnailScale = _newScale(wsThumbnailScaleAdjustment);
+    wsThumbnailScale.add_mark(13, Gtk.PositionType.TOP, null);
+    optionList.push(
+        _optionsItem(
+            _('Workspace Thumbnails Max Scale'),
+            _('Adjusts maximum size of the workspace thumbnails (% relative to display width).'),
+            wsThumbnailScale,
+            'wsThumbnailScale'
+        )
+    );
+
     optionList.push(
         _optionsItem(
             _('App Grid'),
@@ -626,43 +660,10 @@ function _getAdjustmentsOptionList() {
     // options item format:
     // [text, caption, widget, settings-variable, options for combo]
 
+    //----------------------------------------------------------------
     optionList.push(
         _optionsItem(
-            _('Scale'),
-        )
-    );
-
-    const wsThumbnailScaleAdjustment = new Gtk.Adjustment({
-        upper: 30,
-        lower: 5,
-        step_increment: 1,
-        page_increment: 1,
-    });
-
-    const wsThumbnailScale = _newScale(wsThumbnailScaleAdjustment);
-    wsThumbnailScale.add_mark(13, Gtk.PositionType.TOP, null);
-    optionList.push(
-        _optionsItem(
-            _('Workspace Thumbnails Max Scale'),
-            _('Adjusts maximum size of the workspace thumbnails (% relative to display width).'),
-            wsThumbnailScale,
-            'wsThumbnailScale'
-        )
-    );
-
-    optionList.push(
-        _optionsItem(
-            _('Dash Max Icon Size'),
-            _('Maximum size of Dash icons in pixels. Works only with default Dash.'),
-            _newComboBox(),
-            //_newDropDown(),
-            'dashMaxIconSize',
-            [   [_('16'), 0],
-                [_('24'), 1],
-                [_('32'), 2],
-                [_('48'), 3],
-                [_('64'), 4],
-            ]
+            _('Appearance'),
         )
     );
 
@@ -673,10 +674,13 @@ function _getAdjustmentsOptionList() {
         page_increment: 10,
     });
 
-    //----------------------------------------------------------------
+    const dashBgOpacityScale = _newScale(dashBgAdjustment);
     optionList.push(
         _optionsItem(
-            _('Appearance'),
+            _('Dash Background Opacity'),
+            _('Adjusts opacity of the default background (%).'),
+            dashBgOpacityScale,
+            'dashBgOpacity'
         )
     );
 
@@ -701,16 +705,6 @@ function _getAdjustmentsOptionList() {
             _('Show label only when the mouse pointer hovers over a thumbnail'),
             _newSwitch(),
             'showWsTmbLabelsOnHover',
-        )
-    );
-
-    const dashBgOpacityScale = _newScale(dashBgAdjustment);
-    optionList.push(
-        _optionsItem(
-            _('Dash Background Opacity'),
-            _('Adjusts opacity of the default background (%).'),
-            dashBgOpacityScale,
-            'dashBgOpacity'
         )
     );
 
