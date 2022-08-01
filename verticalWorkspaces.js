@@ -92,6 +92,7 @@ let SEC_WS_TMB_POSITION_ADJUSTMENT;
 let SEC_WS_TMB_POSITION;
 let SHOW_WS_TMB;
 let SHOW_WS_TMB_BG;
+let SHOW_WS_PREVIEW_BG;
 let SHOW_WST_LABELS_ON_HOVER;
 let SHOW_WST_LABELS;
 let DASH_POSITION;
@@ -325,6 +326,7 @@ function _updateSettings(settings, key) {
     WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = MAX_THUMBNAIL_SCALE;
 
     SHOW_WS_TMB_BG = gOptions.get('showWsSwitcherBg', true) && SHOW_WS_TMB;
+    SHOW_WS_PREVIEW_BG = gOptions.get('showWsPreviewBg', true);
 
     CENTER_APP_GRID = gOptions.get('centerAppGrid', true);
 
@@ -657,6 +659,7 @@ var WorkspacesViewOverride = {
             // if we disable inactive workspaces, ws animation will be noticably smoother
             // the only drawback is, that windows on inactive workspaces will be spread with the first ws switching in the overview
             // so you'll see the spread animation during the first workspace switching animation
+            !SHOW_WS_PREVIEW_BG && (finalState == 0 || initialState == 0) && (w._background.opacity = Math.abs((finalState == 0 ? 0 : 1) * 255 - progress * 255));
             w.visible = scaleProgress ? true : false;
             //w.opacity = scaleProgress ? 255 : 0;
         });

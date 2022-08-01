@@ -61,6 +61,7 @@ var Options = class Options {
             dashBgOpacity: ['int', 'dash-bg-opacity'],
             enablePageShortcuts: ['boolean', 'enable-page-shortcuts'],
             showWsSwitcherBg: ['boolean', 'show-ws-switcher-bg'],
+            showWsPreviewBg: ['boolean', 'show-ws-preview-bg'],
             appGridAnimation: ['int', 'app-grid-animation'],
             workspaceAnimation: ['int', 'workspace-animation'],
             fixUbuntuDock: ['boolean', 'fix-ubuntu-dock']

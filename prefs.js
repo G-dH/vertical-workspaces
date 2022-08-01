@@ -723,6 +723,15 @@ function _getAdjustmentsOptionList() {
         )
     );
 
+    optionList.push(
+        _optionsItem(
+            _('Show Workspace Preview Background'),
+            _('Allows you to hide workspace preview background wallpaper in the Activities overview.'),
+            _newSwitch(),
+            'showWsPreviewBg',
+        )
+    );
+
     //----------------------------------------------------------------
 
     optionList.push(
