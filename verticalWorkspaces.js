@@ -660,10 +660,15 @@ var WorkspacesViewOverride = {
             // the only drawback is, that windows on inactive workspaces will be spread with the first ws switching in the overview
             // so you'll see the spread animation during the first workspace switching animation
             w.visible = scaleProgress ? true : false;
-            //w.opacity = scaleProgress ? 255 : 0;
 
             // hide workspace background
-            !SHOW_WS_PREVIEW_BG && (finalState == 0 || initialState == 0) && (w._background.opacity = Math.abs((finalState == 0 ? 0 : 1) * 255 - progress * 255));
+            if (!SHOW_WS_PREVIEW_BG) {
+                if (finalState == 0 || initialState == 0) {
+                    w._background.opacity = Math.abs((finalState == 0 ? 0 : 1) * 255 - progress * 255);
+                } else if (progress === 1 && w.opacity) {
+                    w._background.opacity = 0;
+                }
+            }
         });
     }
 }
@@ -1901,25 +1906,9 @@ var WorkspaceLayoutOverride = {
 
 //------ appDisplay --------------------------------------------------------------------------------
 
-// this fixes dnd from appDisplay to workspace switcher if appDisplay is on page 1. weird bug, weird solution..
+// this fixes dnd from appDisplay to the workspace thumbnail on the left if appDisplay is on page 1 because of appgrid left overshoot
 var BaseAppViewOverride  = {
     _pageForCoords: function(x, y) {
-        /***************************************/
-        if (this._dragMonitor != null)
-            return AppDisplay.SidePages.NONE;
-        /***************************************/
-        const rtl = this.get_text_direction() === Clutter.TextDirection.RTL;
-        const { allocation } = this._grid;
-
-        const [success, pointerX] = this._scrollView.transform_stage_point(x, y);
-        if (!success)
-            return AppDisplay.SidePages.NONE;
-
-        if (pointerX < allocation.x1)
-            return rtl ? AppDisplay.SidePages.NEXT : AppDisplay.SidePages.PREVIOUS;
-        else if (pointerX > allocation.x2)
-            return rtl ? AppDisplay.SidePages.PREVIOUS : AppDisplay.SidePages.NEXT;
-
         return AppDisplay.SidePages.NONE;
     }
 }
