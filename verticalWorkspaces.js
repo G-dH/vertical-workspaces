@@ -663,7 +663,7 @@ var WorkspacesViewOverride = {
 
             // hide workspace background
             if (!SHOW_WS_PREVIEW_BG) {
-                if (finalState == 0 || initialState == 0) {
+                if (finalState === 0 || initialState === 0) {
                     w._background.opacity = Math.abs((finalState == 0 ? 0 : 1) * 255 - progress * 255);
                 } else if (progress === 1 && w.opacity) {
                     w._background.opacity = 0;
@@ -863,7 +863,7 @@ var SecondaryMonitorDisplayOverride = {
             let wsTmbY =  availSpace / 2;
             wsTmbY -= SEC_WS_TMB_POSITION_ADJUSTMENT * wsTmbY - spacing;
 
-            childBox.set_origin(wsTmbX, wsTmbY);
+            childBox.set_origin(Math.round(wsTmbX), Math.round(wsTmbY));
             childBox.set_size(thumbnailsWidth, thumbnailsHeight);
             this._thumbnails.allocate(childBox);
         }
@@ -1526,11 +1526,11 @@ var ControlsManagerLayoutOverride = {
                 let scale = ratio / wRatio;
 
                 if (scale > 1) {
-                    wHeight = Math.round(wHeight / scale);
-                    wWidth = Math.round(wHeight * ratio);
+                    wHeight = wHeight / scale;
+                    wWidth = wHeight * ratio;
                 } else {
-                    wWidth = Math.round(wWidth * scale);
-                    wHeight = Math.round(wWidth / ratio);
+                    wWidth = wWidth * scale;
+                    wHeight = wWidth / ratio;
                 }
 
                 let xOffset = 0;
@@ -1551,10 +1551,10 @@ var ControlsManagerLayoutOverride = {
                     this._xAlignCenter = true;
                 }
 
-                const wsBoxX = startX + Math.round(xOffset);
+                const wsBoxX = startX + xOffset;
                 wsBoxY = Math.round(startY + yOffset + ((dashHeight && DASH_TOP) ? dashHeight : spacing)/* + (searchHeight ? searchHeight + spacing : 0)*/);
                 workspaceBox.set_origin(Math.round(wsBoxX), Math.round(wsBoxY));
-                workspaceBox.set_size(wWidth, wHeight);
+                workspaceBox.set_size(Math.round(wWidth), Math.round(wHeight));
             }
         }
 
@@ -1699,16 +1699,16 @@ var ControlsManagerLayoutOverride = {
 
             let wsTmbX;
             if (WS_TMB_RIGHT) {
-                wsTmbX = startX + width - (dashPosition === 1 ? dashWidth : 0) - spacing - wsTmbWidth;
+                wsTmbX = Math.round(startX + width - (dashPosition === 1 ? dashWidth : 0) - spacing - wsTmbWidth);
                 this._workspacesThumbnails._positionLeft = false;
             } else {
-                wsTmbX = startX + (dashPosition === 3 ? dashWidth + spacing : 0) + spacing;
+                wsTmbX = Math.round(startX + (dashPosition === 3 ? dashWidth + spacing : 0) + spacing);
                 this._workspacesThumbnails._positionLeft = true;
             }
 
             let wstOffset = (height - spacing - thumbnailsHeight - spacing - (DASH_VERTICAL ? 0 : dashHeightReservation)) / 2;
             wstOffset = wstOffset - WS_TMB_POSITION_ADJUSTMENT * wstOffset;
-            let wsTmbY = startY + ((dashHeightReservation && DASH_TOP) ? dashHeight + spacing : spacing) + wstOffset;
+            let wsTmbY = Math.round(startY + ((dashHeightReservation && DASH_TOP) ? dashHeight + spacing : spacing) + wstOffset);
 
             childBox.set_origin(wsTmbX, wsTmbY);
             childBox.set_size(wsTmbWidth, thumbnailsHeight);
@@ -1723,8 +1723,8 @@ var ControlsManagerLayoutOverride = {
                 this._dash.setMaxSize(wMaxWidth, maxDashHeight);
                 [, dashHeight] = this._dash.get_preferred_height(wMaxWidth);
                 [, dashWidth] = this._dash.get_preferred_width(dashHeight);
-                dashHeight = Math.min(dashHeight, maxDashHeight);
-                dashWidth = Math.min(dashWidth, wMaxWidth);
+                dashHeight = Math.round(Math.min(dashHeight, maxDashHeight));
+                dashWidth = Math.round(Math.min(dashWidth, wMaxWidth));
             }
 
             let dashX, dashY, offset;
@@ -1762,7 +1762,7 @@ var ControlsManagerLayoutOverride = {
                 dashY = startY + ((offset - DASH_POSITION_ADJUSTMENT * offset));
             }
 
-            childBox.set_origin(startX + dashX, dashY);
+            childBox.set_origin(Math.round(startX + dashX), Math.round(dashY));
             childBox.set_size(dashWidth, dashHeight);
             this._dash.allocate(childBox);
         }
@@ -1802,7 +1802,7 @@ var ControlsManagerLayoutOverride = {
             searchEntryY = startY + spacing;
         }
 
-        searchEntryX = startX + searchXoffset;
+        searchEntryX = Math.round(startX + searchXoffset);
         const searchEntryWidth = this._xAlignCenter ? width : width - 2 * spacing - wsTmbWidth; // xAlignCenter is given by wsBox
 
         if (CENTER_SEARCH_VIEW) {
