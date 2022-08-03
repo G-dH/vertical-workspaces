@@ -1,4 +1,14 @@
 ## Changelog:
+### v10 2022-08-03
+**Added:**
+- Option `Show Workspace Preview Background` allows to hide background wallpaper in the overview.
+
+**Fixed:**
+- Broken overview after *Dash to Dock* disabled.
+
+**Other changes:**
+- Preferences reorganized
+
 ### v9 2022-07-31
 **Added:**
 - Option `Show Workspace Labels` allows to show label on each workspace thumbnail. Options: `Index`, `Index + Workspace Name`, `Index + App Name`
@@ -29,7 +39,6 @@
 
 ### v5 2022-07-20
 **Added:**
-
 - `Content` page in Preferences window with options to hide Dash, workspace switcher and wallpaper in workspace thumbnails.
 - New transition animations between Window Picker, App Grid and Desktop views.
 - Workspace and App Grid animation options.
