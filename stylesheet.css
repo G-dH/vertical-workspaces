@@ -70,3 +70,11 @@
 	background-color: rgba(46, 46, 46, 0.9);
 	color: rgb(255, 255, 255);
 }
+
+.ws-tmb, .ws-tmb-labeled {
+	border-radius: 6px;
+}
+
+.ws-tmb-labeled {
+	border: 0px;
+}

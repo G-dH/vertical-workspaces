@@ -46,6 +46,7 @@ let gOptions = null;
 let original_MAX_THUMBNAIL_SCALE;
 
 const BACKGROUND_CORNER_RADIUS_PIXELS = 40;
+const WS_TMB_CORNER_RADIUS = 8;
 
 const WORKSPACE_CUT_SIZE = 10;
 
@@ -218,6 +219,8 @@ function reset() {
     Main.overview.dash._background.opacity = 255;
     Main.overview.searchEntry.visible = true;
     Main.overview.searchEntry.opacity = 255;
+
+    //Main.overview._overview._controls._thumbnailsBox._indicator.set_style()
 
     const reset = true;
     _moveDashAppGridIcon(reset);
@@ -457,7 +460,7 @@ function _injectWsSwitcherPopup() {
 function _injectWindowPreview() {
     _windowPreviewInjections['_init'] = _Util.injectToFunction(
         WindowPreview.WindowPreview.prototype, '_init', function() {
-            this._title.get_constraints()[1].offset = - 1.3 * WindowPreview.ICON_SIZE;
+            this._title.get_constraints()[1].offset = - 1.3 * WindowPreview.ICON_SIZE * (this._icon.visible ? 1 : 0.5);
             this.set_child_above_sibling(this._title, null);
         }
     );
@@ -764,6 +767,10 @@ var WindowPreviewOverride = {
         this._title.set({
             opacity: scale * 255
         });
+
+        this._closeButton.set({
+            opacity: scale * 255
+        });
     }
 }
 
@@ -941,7 +948,7 @@ var WorkspaceThumbnailOverride = {
     after__init: function () {
 
         //radius of ws thumbnail backgroung
-        this.set_style('border-radius: 8px;');
+        this.add_style_class_name('ws-tmb');
 
         // add workspace thumbnails labels if enabled
         if (SHOW_WST_LABELS) { // 0 - disable
@@ -950,7 +957,7 @@ var WorkspaceThumbnailOverride = {
             // adding layout manager to tmb widget breaks wallpaper background aligning and rounded corners
             // unless border is removed
             if (SHOW_WS_TMB_BG)
-                this.set_style('border: 0px; border-radius: 8px;');
+                this.add_style_class_name('ws-tmb-labeled');
 
             const wsIndex = this.metaWorkspace.index();
 
@@ -1358,7 +1365,7 @@ var ThumbnailsBoxOverride = {
     _updateShouldShow: function() {
         // set current workspace indicator border radius
         // here just 'cause it's easier than adding to init
-        this._indicator.set_style('border-radius: 8px;');
+        this._indicator.add_style_class_name('ws-tmb');
 
         const shouldShow = SHOW_WS_TMB;
         if (this._shouldShow === shouldShow)
