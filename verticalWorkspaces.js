@@ -103,6 +103,7 @@ let CENTER_SEARCH_VIEW;
 let CENTER_APP_GRID;
 let APP_GRID_ANIMATION;
 let WS_ANIMATION;
+let WIN_PREVIEW_ICON_SIZE;
 
 let _enabled = false;
 
@@ -338,6 +339,8 @@ function _updateSettings(settings, key) {
     if (APP_GRID_ANIMATION === 4) APP_GRID_ANIMATION = (!(WS_TMB_POSITION % 2) || !SHOW_WS_TMB) ? 1 : 2;
     WS_ANIMATION = gOptions.get('workspaceAnimation', true);
 
+    WIN_PREVIEW_ICON_SIZE = [64, 48, 32, 22, 8][gOptions.get('winPreviewIconSize', true)];
+
     _switchPageShortcuts();
     if (key === 'fix-ubuntu-dock')
         _fixUbuntuDock(gOptions.get('fixUbuntuDock', true));
@@ -456,11 +459,48 @@ function _injectWsSwitcherPopup() {
 }
 
 //----- WindowPreview ------------------------------------------------------------------
-
 function _injectWindowPreview() {
     _windowPreviewInjections['_init'] = _Util.injectToFunction(
         WindowPreview.WindowPreview.prototype, '_init', function() {
-            this._title.get_constraints()[1].offset = - 1.3 * WindowPreview.ICON_SIZE * (this._icon.visible ? 1 : 0.5);
+            const ICON_OVERLAP = 0.7;
+
+            if (WIN_PREVIEW_ICON_SIZE < 64) {
+                this.remove_child(this._icon);
+                this._icon.destroy();
+                const tracker = Shell.WindowTracker.get_default();
+                const app = tracker.get_window_app(this.metaWindow);
+                this._icon = app.create_icon_texture(WIN_PREVIEW_ICON_SIZE);
+                this._icon.add_style_class_name('icon-dropshadow');
+                this._icon.set({
+                    reactive: true,
+                    pivot_point: new Graphene.Point({ x: 0.5, y: 0.5 }),
+                });
+                this._icon.add_constraint(new Clutter.BindConstraint({
+                    source: this.windowContainer,
+                    coordinate: Clutter.BindCoordinate.POSITION,
+                }));
+                this._icon.add_constraint(new Clutter.AlignConstraint({
+                    source: this.windowContainer,
+                    align_axis: Clutter.AlignAxis.X_AXIS,
+                    factor: 0.5,
+                }));
+                this._icon.add_constraint(new Clutter.AlignConstraint({
+                    source: this.windowContainer,
+                    align_axis: Clutter.AlignAxis.Y_AXIS,
+                    pivot_point: new Graphene.Point({ x: -1, y: ICON_OVERLAP }),
+                    factor: 1,
+                }));
+                this.add_child(this._icon);
+                if (WIN_PREVIEW_ICON_SIZE < 22) {
+                    // disable app icon
+                    this._icon.hide();
+                }
+            }
+
+            const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
+            const iconOverlap = WIN_PREVIEW_ICON_SIZE * ICON_OVERLAP;
+            // we cannot get propper title height before it gets to the stage, so 35 is estimated height + spacing
+            this._title.get_constraints()[1].offset = scaleFactor * (- iconOverlap - 35);
             this.set_child_above_sibling(this._title, null);
         }
     );
@@ -482,11 +522,15 @@ function _setAppDisplayOrientation(vertical = false) {
 
         // vertical page indicators. sadly, allocate function dont expect which can be problem for narrow screens
         // and the vertical indicator is actually pretty annoying to me
-        /*appDisplay._pageIndicators.vertical = true;
-        appDisplay._box.vertical = false;
-        appDisplay._pageIndicators.x_expand = false;
-        appDisplay._pageIndicators.y_expand = true;
-        appDisplay._pageIndicators.y_align = Clutter.ActorAlign.CENTER;*/
+        /*const pageIndicators = appDisplay._pageIndicators;
+        //pageIndicators.get_parent().remove_actor(pageIndicators);
+        //appDisplay._scrollView.add_actor(pageIndicators);
+        pageIndicators.vertical = true;
+        //appDisplay.box.vertical = false;
+        pageIndicators.x_expand = false;
+        pageIndicators.y_expand = true;
+        pageIndicators.y_align = Clutter.ActorAlign.CENTER;
+        pageIndicators.y_align = Clutter.ActorAlign.END;*/
 
         // remove touch friendly horizontal navigation bars
         // clicking on this area still switches pages
@@ -758,6 +802,7 @@ var WindowPreviewOverride = {
             initialState === ControlsState.APP_GRID && finalState === ControlsState.HIDDEN)) {
             scale = 0;
         }
+
         this._icon.set({
             scale_x: scale,
             scale_y: scale,
@@ -768,9 +813,9 @@ var WindowPreviewOverride = {
             opacity: scale * 255
         });
 
-        this._closeButton.set({
+        /*this._closeButton.set({
             opacity: scale * 255
-        });
+        });*/
     }
 }
 
@@ -1848,9 +1893,9 @@ var ControlsManagerLayoutOverride = {
         // Search
         let searchWidth = width;
         if (CENTER_SEARCH_VIEW) {
-            childBox.set_origin(0, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight + spacing);
+            childBox.set_origin(0, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight);
         } else {
-            childBox.set_origin(this._xAlignCenter ? 0 : searchXoffset, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight + spacing);
+            childBox.set_origin(this._xAlignCenter ? 0 : searchXoffset, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight);
             searchWidth = this._xAlignCenter ? width : width - 2 * spacing - wsTmbWidth;
         }
 

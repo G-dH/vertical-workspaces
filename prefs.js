@@ -726,6 +726,22 @@ function _getAdjustmentsOptionList() {
         )
     );
 
+    optionList.push(
+        _optionsItem(
+            _('Window Preview App Icon Size'),
+            _('Default size is 64.'),
+            _newComboBox(),
+            //_newDropDown(),
+            'winPreviewIconSize',
+            [   [_('64'), 0],
+                [_('48'), 1],
+                [_('32'), 2],
+                [_('22'), 3],
+                [_('Disable'), 4]
+            ]
+        )
+    );
+
     //----------------------------------------------------------------
 
     optionList.push(
