@@ -167,7 +167,13 @@ function activate() {
     // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
     Main.overview._overview._controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
 
-    _fixUbuntuDock(gOptions.get('fixUbuntuDock'));
+    // if Dash to Dock detected force enable "Fix for DtD" option
+    if (Main.overview.dash._isHorizontal !== undefined) {
+        gOptions.set('fixUbuntuDock', true);
+        _fixUbuntuDock(true);
+    } else {
+        _fixUbuntuDock(gOptions.get('fixUbuntuDock'));
+    }
 }
 
 function reset() {
