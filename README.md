@@ -36,6 +36,6 @@ After installation you need to enable the extension and access its settings.
 ## Credits
 This extension uses parts of the [Vertical Overview extension](https://github.com/RensAlthuis/vertical-overview).
 
-## Buy me a coffe
+## Buy me a coffee
 If you like my extensions and want to keep me motivated, you can also buy me a coffee:
-[buymeacoffee.com/georgdh](buymeacoffee.com/georgdh)
+[buymeacoffee.com/georgdh](https://buymeacoffee.com/georgdh)
