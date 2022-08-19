@@ -27,7 +27,8 @@ const ADJUSTMENTS_ICON = 'preferences-other-symbolic';
 //const CONTENT_ICON = 'view-reveal-symbolic';
 const MISC_TITLE = _('Misc');
 const MISC_ICON = 'applications-utilities-symbolic';
-
+const ABOUT_TITLE = _('About');
+const ABOUT_ICON = 'preferences-system-details-symbolic';
 
 function _newImageFromIconName(name, size = null) {
     const args = [name];
@@ -60,10 +61,16 @@ function fillPreferencesWindow(window) {
         icon_name: MISC_ICON
     });
 
+    const aboutPage = _getAboutPage({
+        title: ABOUT_TITLE,
+        icon_name: ABOUT_ICON
+    });
+
     window.add(layoutOptionsPage);
     window.add(adjustmentOptionsPage);
     //window.add(contentOptionsPage);
     window.add(miscOptionsPage);
+    window.add(aboutPage);
 
     window.set_search_enabled(true);
     window.connect('close-request', _onDestroy);
@@ -852,4 +859,118 @@ function _geMiscOptionList() {
     );
 
     return optionList;
+}
+
+/////////////////////////////////////////////////
+
+function _getAboutPage(pageProperties) {
+    const page = new Adw.PreferencesPage(pageProperties);
+
+    const aboutGroup = new Adw.PreferencesGroup({
+        title: Me.metadata.name,
+        hexpand: true,
+    });
+    
+    const linksGroup = new Adw.PreferencesGroup({
+        title: _('Links'),
+        hexpand: true,
+    });
+
+    page.add(aboutGroup);
+    page.add(linksGroup);
+
+////////////////////////////////////////////////////
+
+    aboutGroup.add(_newAdwLabelRow({
+        title: _('Version'),
+        subtitle: _(''),
+        label: Me.metadata.version.toString()
+    }));
+
+    aboutGroup.add(_newResetRow({
+        title: _('Reset all options'),
+        subtitle: _('Set all options to default values.'),
+    }));
+    
+
+    linksGroup.add(_newAdwLinkRow({
+        title: _('Homepage'),
+        subtitle: _('Source code and more info about this extension'),
+        uri: 'https://github.com/G-dH/vertical-workspaces'
+    }));
+
+    linksGroup.add(_newAdwLinkRow({
+        title: _('Gome Extensions'),
+        subtitle: _('Rate and comment the extension on GNOME Extensions site.'),
+        uri: 'https://extensions.gnome.org/extension/5177',
+    }));
+
+    linksGroup.add(_newAdwLinkRow({
+        title: _('Report a bug or suggest new feature'),
+        subtitle: _(''),
+        uri: 'https://github.com/G-dH/vertical-workspaces/issues',
+    }));
+
+    linksGroup.add(_newAdwLinkRow({
+        title: _('Buy Me a Coffee'),
+        subtitle: _('If you like this extension, you can help me with coffee expenses.'),
+        uri: 'https://buymeacoffee.com/georgdh'
+    }));
+
+    return page;
+}
+
+function _newAdwLabelRow(params) {
+    const label = new Gtk.Label({
+        label: params.label
+    });
+
+    const actionRow = new Adw.ActionRow({
+        title: params.title,
+        subtitle: params.subtitle,
+    });
+
+    actionRow.add_suffix(label);
+
+    return actionRow;
+}
+
+function _newAdwLinkRow(params) {
+    const linkBtn = new Gtk.LinkButton({
+        uri: params.uri,
+        halign: Gtk.Align.END,
+        valign: Gtk.Align.CENTER,
+    });
+
+    const actionRow = new Adw.ActionRow({
+        title: params.title,
+        subtitle: params.subtitle,
+        activatable_widget: linkBtn
+    });
+
+    actionRow.add_suffix(linkBtn);
+
+    return actionRow;
+}
+
+function _newResetRow(params) {
+    const btn = new Gtk.Button({
+        icon_name: 'view-refresh-symbolic',
+        halign: Gtk.Align.END,
+        valign: Gtk.Align.CENTER,
+    });
+    btn.connect('clicked', () => {
+        Object.keys(gOptions.options).forEach(key => {
+            gOptions.set(key, gOptions.getDefault(key));
+        });
+    });
+
+    const actionRow = new Adw.ActionRow({
+        title: params.title,
+        subtitle: params.subtitle,
+    });
+
+    actionRow.add_suffix(btn);
+
+    return actionRow;
 }
