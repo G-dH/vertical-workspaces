@@ -459,7 +459,9 @@ function _switchPageShortcuts() {
 function _injectWsSwitcherPopup() {
     _wsSwitcherPopupInjections['_init'] = _Util.injectToFunction(
         WorkspaceSwitcherPopup.WorkspaceSwitcherPopup.prototype, '_init', function() {
-            this._list.vertical = true;
+            if (this._list) {
+                this._list.vertical = true;
+            }
         }
     )
 }
@@ -501,6 +503,7 @@ function _injectWindowPreview() {
                     // disable app icon
                     this._icon.hide();
                 }
+                this._iconSize = WIN_PREVIEW_ICON_SIZE;
             }
 
             const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
