@@ -8,6 +8,8 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me             = ExtensionUtils.getCurrentExtension();
 const Settings       = Me.imports.settings;
 
+const shellVersion   = Settings.shellVersion;
+
 // gettext
 const _  = Settings._;
 
@@ -16,21 +18,14 @@ let Adw = null;
 try { Adw = imports.gi.Adw; } catch (e) {}
 
 let gOptions;
-let stackSwitcher;
-let stack;
+let itemFactory;
+let pageList;
 
-const LAYOUT_TITLE = _('Layout');
-const LAYOUT_ICON = 'view-grid-symbolic';
-const ADJUSTMENTS_TITLE = _('Adjustments');
-const ADJUSTMENTS_ICON = 'preferences-other-symbolic';
-//const CONTENT_TITLE = _('Content');
-//const CONTENT_ICON = 'view-reveal-symbolic';
-const MISC_TITLE = _('Misc');
-const MISC_ICON = 'applications-utilities-symbolic';
-const ABOUT_TITLE = _('About');
-const ABOUT_ICON = 'preferences-system-details-symbolic';
+// conversion of Gtk3 / Gtk4 widgets add methods
+const append = 'append';
+const set_child = 'set_child';
 
-function _newImageFromIconName(name, size = null) {
+function _newImageFromIconName(name) {
     const args = [name];
     return Gtk.Image.new_from_icon_name(...args);
 }
@@ -38,420 +33,43 @@ function _newImageFromIconName(name, size = null) {
 function init() {
     ExtensionUtils.initTranslations(Me.metadata['gettext-domain']);
     gOptions = new Settings.Options();
-}
 
-// this function is called by GS42 if available and returns libadwaita prefes window
-function fillPreferencesWindow(window) {
-    const layoutOptionsPage = getAdwPage(_getLayoutOptionList(), {
-        title: LAYOUT_TITLE,
-        icon_name: LAYOUT_ICON
-    });
-    const adjustmentOptionsPage = getAdwPage(_getAdjustmentsOptionList(), {
-        title: ADJUSTMENTS_TITLE,
-        icon_name: ADJUSTMENTS_ICON
-    });
+    itemFactory = new ItemFactory(gOptions);
 
-    /*const contentOptionsPage = getAdwPage(_geContentOptionList(), {
-        title: CONTENT_TITLE,
-        icon_name: CONTENT_ICON
-    });*/
-
-    const miscOptionsPage = getAdwPage(_geMiscOptionList(), {
-        title: MISC_TITLE,
-        icon_name: MISC_ICON
-    });
-
-    const aboutPage = _getAboutPage({
-        title: ABOUT_TITLE,
-        icon_name: ABOUT_ICON
-    });
-
-    window.add(layoutOptionsPage);
-    window.add(adjustmentOptionsPage);
-    //window.add(contentOptionsPage);
-    window.add(miscOptionsPage);
-    window.add(aboutPage);
-
-    window.set_search_enabled(true);
-    window.connect('close-request', _onDestroy);
-
-    const width = 700;
-    const height = 700;
-    window.set_default_size(width, height);
-
-    return window;
-}
-
-function _onDestroy() {
-    gOptions.destroy();
-    gOptions = null;
-}
-
-
-// this function is called by GS prior to 42 and also by 42 if fillPreferencesWindow not available
-function buildPrefsWidget() {
-    const prefsWidget = new Gtk.Box({
-        orientation: Gtk.Orientation.VERTICAL,
-    });
-
-    stack = new Gtk.Stack({
-        hexpand: true
-    });
-
-    stackSwitcher = new Gtk.StackSwitcher({
-        halign: Gtk.Align.CENTER,
-        hexpand: true,
-    });
-
-    const context = stackSwitcher.get_style_context();
-    context.add_class('caption');
-
-    stackSwitcher.set_stack(stack);
-    stack.set_transition_duration(300);
-    stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT);
-
-    stack.add_named(getLegacyPage(_getLayoutOptionList()), 'layout');
-    stack.add_named(getLegacyPage(_getAdjustmentsOptionList()), 'adjustments');
-    //stack.add_named(getLegacyPage(_geContentOptionList()), 'content');
-    stack.add_named(getLegacyPage(_geMiscOptionList()), 'misc');
-
-    const pagesBtns = [
-        [new Gtk.Label({ label: LAYOUT_TITLE}), _newImageFromIconName(LAYOUT_ICON, Gtk.IconSize.BUTTON)],
-        [new Gtk.Label({ label: ADJUSTMENTS_TITLE}), _newImageFromIconName(ADJUSTMENTS_ICON, Gtk.IconSize.BUTTON)],
-        //[new Gtk.Label({ label: CONTENT_TITLE}), _newImageFromIconName(CONTENT_ICON, Gtk.IconSize.BUTTON)],
-        [new Gtk.Label({ label: MISC_TITLE}), _newImageFromIconName(MISC_ICON, Gtk.IconSize.BUTTON)]
+    pageList = [
+        {
+            name: 'layout',
+            title: _('Layout'),
+            iconName: 'view-grid-symbolic',
+            optionList: _getLayoutOptionList()
+        },
+        {
+            name: 'adjustments',
+            title: _('Adjustments'),
+            iconName: 'preferences-other-symbolic',
+            optionList: _getAdjustmentsOptionList()
+        },
+        {
+            name: 'misc',
+            title: _('Misc'),
+            iconName: 'input-keyboard-symbolic',
+            optionList: _geMiscOptionList()
+        },
+        {
+            name: 'about',
+            title: _('About'),
+            iconName: 'preferences-system-details-symbolic',
+            optionList: _getAboutOptionList()
+        }
     ];
-
-    let stBtn = stackSwitcher.get_first_child ? stackSwitcher.get_first_child() : null;
-    for (let i = 0; i < pagesBtns.length; i++) {
-        const box = new Gtk.Box({orientation: Gtk.Orientation.VERTICAL, spacing: 6, visible: true});
-        const icon = pagesBtns[i][1];
-        icon.margin_start = 30;
-        icon.margin_end = 30;
-        box.append(icon);
-        box.append(pagesBtns[i][0]);
-        if (stackSwitcher.get_children) {
-            stBtn = stackSwitcher.get_children()[i];
-            stBtn.add(box);
-        } else {
-            stBtn.set_child(box);
-            stBtn.visible = true;
-            stBtn = stBtn.get_next_sibling();
-        }
-    }
-
-    stack.show_all && stack.show_all();
-    stackSwitcher.show_all && stackSwitcher.show_all();
-
-    prefsWidget[prefsWidget.add ? 'add' : 'append'](stack);
-    prefsWidget.show_all && prefsWidget.show_all();
-
-    prefsWidget.connect('realize', (widget) => {
-        const window = widget.get_root ? widget.get_root() : widget.get_toplevel();
-        const width = 700;
-        const height = 700;
-        window.set_default_size(width, height);
-
-        const headerbar = window.get_titlebar();
-        headerbar.title_widget = stackSwitcher;
-
-        window.connect('close-request', _onDestroy);
-    });
-
-    return prefsWidget;
 }
 
-///////////////////////////////////////////////////
-function getAdwPage(optionList, pageProperties = {width_request: 800}) {
-    const page = new Adw.PreferencesPage(pageProperties);
-    let group;
-    for (let item of optionList) {
-        // label can be plain text for Section Title
-        // or GtkBox for Option
-        const option = item[0];
-        const widget = item[1];
-
-        if (!widget) {
-            if (group) {
-                page.add(group);
-            }
-            group = new Adw.PreferencesGroup({
-                title: option,
-                hexpand: true,
-            });
-            continue;
-        }
-
-        const row = new Adw.PreferencesRow({
-            title: option._title,
-        });
-
-        const grid = new Gtk.Grid({
-            column_homogeneous: true,
-            column_spacing: 10,
-            margin_start: 8,
-            margin_end: 8,
-            margin_top: 8,
-            margin_bottom: 8,
-            hexpand: true,
-        })
-
-        grid.attach(option, 0, 0, 6, 1);
-        if (widget) {
-            grid.attach(widget, 6, 0, 3, 1);
-        }
-        row.set_child(grid);
-        group.add(row);
-    }
-    page.add(group);
-    return page;
+function fillPreferencesWindow(window) {
+    return new AdwPrefs().getFilledWindow(window, pageList);
 }
 
-function getLegacyPage(optionList) {
-    const page = new Gtk.ScrolledWindow({
-        hscrollbar_policy: Gtk.PolicyType.NEVER,
-        vscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
-        vexpand: true,
-        hexpand: true,
-    });
-
-    const context = page.get_style_context();
-    context.add_class('background');
-
-    const mainBox = new Gtk.Box({
-        orientation: Gtk.Orientation.VERTICAL,
-        spacing: 5,
-        homogeneous: false,
-        margin_start: 16,
-        margin_end: 16,
-        margin_top: 16,
-        margin_bottom: 16,
-    });
-
-    let frame;
-    let frameBox;
-
-    for (let item of optionList) {
-        // item structure: [labelBox, control widget]
-        const option = item[0];
-        const widget = item[1];
-        if (!widget) {
-            // new section
-            let lbl = new Gtk.Label({
-                xalign: 0,
-                margin_top: 4,
-                margin_bottom: 2
-            });
-            lbl.set_markup(option); // option is plain text if item is section title
-            const context = lbl.get_style_context();
-            context.add_class('heading');
-            mainBox.append(lbl);
-            frame = new Gtk.Frame({
-                margin_bottom: 10,
-            });
-            frameBox = new Gtk.ListBox({
-                selection_mode: null,
-            });
-            mainBox.append(frame);
-            frame.set_child(frameBox);
-            continue;
-        }
-        const grid = new Gtk.Grid({
-            column_homogeneous: true,
-            column_spacing: 10,
-            margin_start: 8,
-            margin_end: 8,
-            margin_top: 8,
-            margin_bottom: 8,
-            hexpand: true,
-        })
-
-        grid.attach(option, 0, 0, 6, 1);
-        if (widget) {
-            grid.attach(widget, 6, 0, 3, 1);
-        }
-
-        frameBox.append(grid);
-    }
-
-    page.set_child(mainBox);
-    page.show_all && page.show_all();
-
-    return page;
-}
-
-/////////////////////////////////////////////////////////////////////
-
-function _newSwitch() {
-    let sw = new Gtk.Switch({
-        halign: Gtk.Align.END,
-        valign: Gtk.Align.CENTER,
-        hexpand: true,
-    });
-    sw.is_switch = true;
-    return sw;
-}
-
-function _newSpinButton(adjustment) {
-    let spinButton = new Gtk.SpinButton({
-        halign: Gtk.Align.END,
-        hexpand: true,
-        xalign: 0.5,
-    });
-    spinButton.set_adjustment(adjustment);
-    spinButton.is_spinbutton = true;
-    return spinButton;
-}
-
-function _newComboBox() {
-    const model = new Gtk.ListStore();
-    model.set_column_types([GObject.TYPE_STRING, GObject.TYPE_INT]);
-    const comboBox = new Gtk.ComboBox({
-        model,
-        halign: Gtk.Align.END,
-        valign: Gtk.Align.CENTER,
-        hexpand: true,
-    });
-    const renderer = new Gtk.CellRendererText();
-    comboBox.pack_start(renderer, true);
-    comboBox.add_attribute(renderer, 'text', 0);
-    comboBox.is_combo_box = true;
-    return comboBox;
-}
-
-function _newDropDown() {
-    const dropDown = new Gtk.DropDown({
-        model: new Gtk.StringList(),
-        halign: Gtk.Align.END,
-        valign: Gtk.Align.CENTER,
-        hexpand: true,
-    });
-    dropDown.is_dropDown = true;
-    return dropDown;
-}
-
-function _newEntry() {
-    const entry = new Gtk.Entry({
-        width_chars: 25,
-        halign: Gtk.Align.END,
-        valign: Gtk.Align.CENTER,
-        hexpand: true,
-        xalign: 0,
-    });
-    entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, 'edit-clear-symbolic');
-    entry.set_icon_activatable(Gtk.EntryIconPosition.SECONDARY, true);
-    entry.connect('icon-press', (e) => e.set_text(''));
-    entry.is_entry = true;
-    return entry;
-}
-
-function _newScale(adjustment) {
-    const scale = new Gtk.Scale({
-        orientation: Gtk.Orientation.HORIZONTAL,
-        draw_value:  true,
-        has_origin:  false,
-        value_pos:   Gtk.PositionType.LEFT,
-        digits:      0,
-        halign:      Gtk.Align.FILL,
-        valign:      Gtk.Align.CENTER,
-        hexpand:     true,
-        vexpand:     false,
-    });
-    scale.set_adjustment(adjustment);
-    scale.is_scale = true;
-    return scale;
-}
-
-/*--------------------------------------------------------------------------------------- */
-function _optionsItem(text, caption, widget, variable, options = []) {
-    let item = [];
-    let label;
-    if (widget) {
-        label = new Gtk.Box({
-            orientation: Gtk.Orientation.VERTICAL,
-            spacing: 4,
-            halign: Gtk.Align.START,
-            valign: Gtk.Align.CENTER,
-        });
-
-        label._title = text;
-        const option = new Gtk.Label({
-            halign: Gtk.Align.START,
-        });
-        option.set_markup(text);
-
-        label.append(option);
-
-        if (caption) {
-            const captionLbl = new Gtk.Label({
-                halign: Gtk.Align.START,
-                wrap: true,
-                xalign: 0
-            })
-            const context = captionLbl.get_style_context();
-            context.add_class('dim-label');
-            context.add_class('caption');
-            captionLbl.set_text(caption);
-            label.append(captionLbl);
-        }
-
-    } else {
-        label = text;
-    }
-    item.push(label);
-    item.push(widget);
-
-    let settings;
-    let key;
-    if (variable && gOptions.options[variable]) {
-        const opt = gOptions.options[variable];
-        key = opt[1];
-        settings = opt[2] ? opt[2]() : gOptions._gsettings;
-    }
-    if (widget && widget.is_switch) {
-        settings.bind(key, widget, 'active', Gio.SettingsBindFlags.DEFAULT);
-
-    } else if (widget && widget.is_combo_box) {
-        let model = widget.get_model();
-        for (const [label, value] of options) {
-            let iter;
-            model.set(iter = model.append(), [0, 1], [label, value]);
-        }
-        widget.set_active(gOptions.get(variable));
-        settings.bind(key, widget, 'active', Gio.SettingsBindFlags.DEFAULT);
-
-    } else if (widget && widget.is_dropDown) {
-        const model = widget.get_model();
-        for (const [label, value] of options) {
-            model.append(label);
-        }
-        //widget.set_selected(gOptions.get(variable));
-        settings.bind(key, widget, 'selected', Gio.SettingsBindFlags.DEFAULT);
-    } else if (widget && widget.is_entry) {
-        if (options) {
-            const names = gOptions.get(variable);
-            if (names[options - 1])
-                widget.set_text(names[options - 1]);
-
-            widget.set_placeholder_text(_('Workspace') + ` ${options}`);
-
-            widget.connect('changed', () => {
-                const names = [];
-                wsEntries.forEach(e => {
-                if (e.get_text())
-                    names.push(e.get_text());
-                })
-                gOptions.set('wsNames', names);
-            });
-
-            wsEntries.push(widget);
-        }
-
-    } else if (widget && widget.is_scale) {
-        settings.bind(key, widget.adjustment, 'value', Gio.SettingsBindFlags.DEFAULT);
-    }
-
-    return item;
+function buildPrefsWidget() {
+    return new LegacyPrefs().getPrefsWidget(pageList);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -461,16 +79,16 @@ function _getLayoutOptionList() {
     // [text, caption, widget, settings-variable, options for combo]
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Dash'),
         )
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Dash Position'),
             null,
-            _newComboBox(),
+            itemFactory.newComboBox(),
             //_newDropDown(),
             'dashPosition',
             [   [_('Top'), 0],
@@ -483,10 +101,10 @@ function _getLayoutOptionList() {
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Center Horizontal Dash to Workspace'),
             _('If position Top or Bottom is selected, Dash position will be calculated relative to the workspace preview instead of the screen. Works only with default Dash.'),
-            _newSwitch(),
+            itemFactory.newSwitch(),
             'centerDashToWs',
         )
     );
@@ -498,10 +116,10 @@ function _getLayoutOptionList() {
         page_increment: 10,
     });
 
-    const dashPositionScale = _newScale(dashPositionAdjustment);
+    const dashPositionScale = itemFactory.newScale(dashPositionAdjustment);
     dashPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Fine Tune Dash Position'),
             _('Adjust position of the dock on chosen axis. Works only with default Dash.'),
             dashPositionScale,
@@ -510,10 +128,10 @@ function _getLayoutOptionList() {
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Show Apps Icon Position'),
             _('The Apps icon in Dash'),
-            _newComboBox(),
+            itemFactory.newComboBox(),
             //_newDropDown(),
             'showAppsIconPosition',
             [   [_('Start'), 0],
@@ -523,10 +141,10 @@ function _getLayoutOptionList() {
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Dash Max Icon Size'),
             _('Maximum size of Dash icons in pixels. Works only with default Dash.'),
-            _newComboBox(),
+            itemFactory.newComboBox(),
             //_newDropDown(),
             'dashMaxIconSize',
             [   [_('16'), 0],
@@ -539,16 +157,16 @@ function _getLayoutOptionList() {
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Workspace Thumbnails'),
         )
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Workspace Thumbnails Position and Max Height'),
             _('Position of the workspace thumbnails on the screen. Full-Height options allow the workspace thumbnails to use the full height of the screen at the expense of the space available for Dash.'),
-            _newComboBox(),
+            itemFactory.newComboBox(),
             //_newDropDown(),
             'workspaceThumbnailsPosition',
             [   [_('Left'), 0],
@@ -567,10 +185,10 @@ function _getLayoutOptionList() {
         page_increment: 10,
     });
 
-    const wstPositionScale = _newScale(wstPositionAdjustment);
+    const wstPositionScale = itemFactory.newScale(wstPositionAdjustment);
     wstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Fine Tune Workspace Thumbnails Position'),
             _('Adjusts workspace thumbnails vertical position.'),
             wstPositionScale,
@@ -579,10 +197,10 @@ function _getLayoutOptionList() {
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Workspace Thumbnails Position on Secondary Monitor'),
             _('Allows you to place workspace thumbnails of the secondary monitor closer to the one on the primary monitor. "Default" option follows position of the primary workspace thumbnails.'),
-            _newComboBox(),
+            itemFactory.newComboBox(),
             //_newDropDown(),
             'secondaryWsThumbnailsPosition',
             [   [_('Left'), 0],
@@ -600,10 +218,10 @@ function _getLayoutOptionList() {
         page_increment: 10,
     });
 
-    const SecWstPositionScale = _newScale(SecWstPositionAdjustment);
+    const SecWstPositionScale = itemFactory.newScale(SecWstPositionAdjustment);
     SecWstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Fine Tune Secondary Workspace Thumbnails Position'),
             _('Adjusts secondary monitors workspace thumbnails vertical position.'),
             SecWstPositionScale,
@@ -618,10 +236,10 @@ function _getLayoutOptionList() {
         page_increment: 1,
     });
 
-    const wsThumbnailScale = _newScale(wsThumbnailScaleAdjustment);
+    const wsThumbnailScale = itemFactory.newScale(wsThumbnailScaleAdjustment);
     wsThumbnailScale.add_mark(13, Gtk.PositionType.TOP, null);
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Workspace Thumbnails Max Scale'),
             _('Adjusts maximum size of the workspace thumbnails (% relative to display width).'),
             wsThumbnailScale,
@@ -630,31 +248,31 @@ function _getLayoutOptionList() {
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('App Grid'),
         )
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Center App Grid'),
             _('App grid in app view page will be centered to the display instead of the available space. This option may have impact on the size of the grid, more for narrower and small resolution displays, especially if workspace thumbnails are bigger.'),
-            _newSwitch(),
+            itemFactory.newSwitch(),
             'centerAppGrid',
         )
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Search View'),
         )
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Center Search View'),
             _('Search view will be centered to the display instead of the available space. If needed workspace thumbnails will be temporarilly scaled down to fit the search box. This option has bigger impact for narrower and small resolution displays.'),
-            _newSwitch(),
+            itemFactory.newSwitch(),
             'centerSearch',
         )
     );
@@ -669,7 +287,7 @@ function _getAdjustmentsOptionList() {
 
     //----------------------------------------------------------------
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Appearance'),
         )
     );
@@ -681,9 +299,9 @@ function _getAdjustmentsOptionList() {
         page_increment: 10,
     });
 
-    const dashBgOpacityScale = _newScale(dashBgAdjustment);
+    const dashBgOpacityScale = itemFactory.newScale(dashBgAdjustment);
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Dash Background Opacity'),
             _('Adjusts opacity of the default background (%).'),
             dashBgOpacityScale,
@@ -692,10 +310,10 @@ function _getAdjustmentsOptionList() {
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Show Workspace Thumbnails Labels'),
             _('Each workspace thumbnail can show its index and name (if defined in the system settings) or name of its most recently used app.'),
-            _newComboBox(),
+            itemFactory.newComboBox(),
             //_newDropDown(),
             'showWsTmbLabels',
             [   [_('Disable'), 0],
@@ -707,37 +325,37 @@ function _getAdjustmentsOptionList() {
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Show WS Thumbnail Label on Hover'),
             _('Show label only when the mouse pointer hovers over a thumbnail'),
-            _newSwitch(),
+            itemFactory.newSwitch(),
             'showWsTmbLabelsOnHover',
         )
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Show Wallpaper in Workspace Thumbnails'),
             _('Workspace thumbnails will include the current desktop backgroud.'),
-            _newSwitch(),
+            itemFactory.newSwitch(),
             'showWsSwitcherBg',
         )
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Show Workspace Preview Background'),
             _('Allows you to hide workspace preview background wallpaper in the Activities overview.'),
-            _newSwitch(),
+            itemFactory.newSwitch(),
             'showWsPreviewBg',
         )
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Window Preview App Icon Size'),
             _('Default size is 64.'),
-            _newComboBox(),
+            itemFactory.newComboBox(),
             //_newDropDown(),
             'winPreviewIconSize',
             [   [_('64'), 0],
@@ -752,16 +370,16 @@ function _getAdjustmentsOptionList() {
     //----------------------------------------------------------------
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Behavior'),
         )
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('App Grid Animation'),
             _(`When entering the App Grid view, the app grid animates from the edge of the screen (defaultly from the right edge to follow the three fingers trackpad gesture). You can choose other direction or disable the animation if you don't like it.`),
-            _newComboBox(),
+            itemFactory.newComboBox(),
             //_newDropDown(),
             'appGridAnimation',
             [   [_('Disable'), 0],
@@ -774,49 +392,15 @@ function _getAdjustmentsOptionList() {
     );
 
     optionList.push(
-        _optionsItem(
+        itemFactory.getRowWidget(
             _('Workspace Animation'),
             _(`When entering / leaving the App Grid view, the workspace can animate to/from workspace thumbnails. The animation can be choppy if you have many workspaces with many windows and weak hw.`),
-            _newComboBox(),
+            itemFactory.newComboBox(),
             //_newDropDown(),
             'workspaceAnimation',
             [   [_('Disable'), 0],
                 [_('Enable'), 1],
             ]
-        )
-    );
-
-    return optionList;
-}
-
-// ------------------------------------------------------------------------------
-
-function _geContentOptionList() {
-    const optionList = [];
-    // options item format:
-    // [text, caption, widget, settings-variable, options for combo]
-
-    optionList.push(
-        _optionsItem(
-            _('Content of the Overview'),
-        )
-    );
-
-    optionList.push(
-        _optionsItem(
-            _('Show Dash'),
-            _('Disable to remove Dash from Activities Overview.'),
-            _newSwitch(),
-            'showDash',
-        )
-    );
-
-    optionList.push(
-        _optionsItem(
-            _('Show Workspace Thumbnails'),
-            _('Disable to remove workspace thumbnails from Activities Overview.'),
-            _newSwitch(),
-            'showWsSwitcher',
         )
     );
 
@@ -829,31 +413,31 @@ function _geMiscOptionList() {
     // [text, caption, widget, settings-variable, options for combo]
 
     optionList.push(
-        _optionsItem(
+       itemFactory.getRowWidget(
             _('Keyboard'),
         )
     );
 
     optionList.push(
-        _optionsItem(
+       itemFactory.getRowWidget(
             _('Override Page Up/Down Shortcuts'),
             _('This option automatically overrides the (Sift +) Super + Page Up/Down keyboard shortcuts for the current workspace orientation. If you encounter any issues, check the configuration in the dconf editor.'),
-            _newSwitch(),
+            itemFactory.newSwitch(),
             'enablePageShortcuts',
         )
     );
 
     optionList.push(
-        _optionsItem(
+       itemFactory.getRowWidget(
             _('Compatibility'),
         )
     );
 
     optionList.push(
-        _optionsItem(
+       itemFactory.getRowWidget(
             _('Fix for Dash to Dock'),
             _('With the default Ubuntu Dock and other Dash To Dock forks, you may experience issues with Activities overview after you change Dock position or change monitors configuration. If you are experiencing such issues, try to enable this option, or disable/replace the dock extension.'),
-            _newSwitch(),
+            itemFactory.newSwitch(),
             'fixUbuntuDock',
         )
     );
@@ -861,116 +445,490 @@ function _geMiscOptionList() {
     return optionList;
 }
 
-/////////////////////////////////////////////////
+function _getAboutOptionList() {
+    const optionList = [];
 
-function _getAboutPage(pageProperties) {
-    const page = new Adw.PreferencesPage(pageProperties);
+    optionList.push(itemFactory.getRowWidget(
+        Me.metadata.name
+    ));
 
-    const aboutGroup = new Adw.PreferencesGroup({
-        title: Me.metadata.name,
-        hexpand: true,
-    });
-    
-    const linksGroup = new Adw.PreferencesGroup({
-        title: _('Links'),
-        hexpand: true,
-    });
+    optionList.push(itemFactory.getRowWidget(
+        _('Version'),
+        null,
+        itemFactory.newLabel(Me.metadata.version.toString()),
+    ));
 
-    page.add(aboutGroup);
-    page.add(linksGroup);
+    optionList.push(itemFactory.getRowWidget(
+        _('Reset all options'),
+        _('Set all options to default values.'),
+        itemFactory.newOptionsResetButton(),
+    ));
 
-////////////////////////////////////////////////////
 
-    aboutGroup.add(_newAdwLabelRow({
-        title: _('Version'),
-        subtitle: _(''),
-        label: Me.metadata.version.toString()
-    }));
+    optionList.push(itemFactory.getRowWidget(
+        _('Links')
+    ));
 
-    aboutGroup.add(_newResetRow({
-        title: _('Reset all options'),
-        subtitle: _('Set all options to default values.'),
-    }));
-    
+    optionList.push(itemFactory.getRowWidget(
+        _('Homepage'),
+        _('Source code and more info about this extension'),
+        itemFactory.newLinkButton('https://github.com/G-dH/vertical-workspaces'),
+    ));
 
-    linksGroup.add(_newAdwLinkRow({
-        title: _('Homepage'),
-        subtitle: _('Source code and more info about this extension'),
-        uri: 'https://github.com/G-dH/vertical-workspaces'
-    }));
+    optionList.push(itemFactory.getRowWidget(
+        _('Gome Extensions'),
+        _('Rate and comment the extension on GNOME Extensions site.'),
+        itemFactory.newLinkButton('https://extensions.gnome.org/extension/5177'),
+    ));
 
-    linksGroup.add(_newAdwLinkRow({
-        title: _('Gome Extensions'),
-        subtitle: _('Rate and comment the extension on GNOME Extensions site.'),
-        uri: 'https://extensions.gnome.org/extension/5177',
-    }));
+    optionList.push(itemFactory.getRowWidget(
+        _('Report a bug or suggest new feature'),
+        null,
+        itemFactory.newLinkButton('https://github.com/G-dH/vertical-workspaces/issues'),
+    ));
 
-    linksGroup.add(_newAdwLinkRow({
-        title: _('Report a bug or suggest new feature'),
-        subtitle: _(''),
-        uri: 'https://github.com/G-dH/vertical-workspaces/issues',
-    }));
+    optionList.push(itemFactory.getRowWidget(
+        _('Buy Me a Coffee'),
+        _('If you like this extension, you can help me with my coffee expenses.'),
+        itemFactory.newLinkButton('https://buymeacoffee.com/georgdh'),
+    ));
 
-    linksGroup.add(_newAdwLinkRow({
-        title: _('Buy Me a Coffee'),
-        subtitle: _('If you like this extension, you can help me with coffee expenses.'),
-        uri: 'https://buymeacoffee.com/georgdh'
-    }));
-
-    return page;
+    return optionList;
 }
 
-function _newAdwLabelRow(params) {
-    const label = new Gtk.Label({
-        label: params.label
-    });
 
-    const actionRow = new Adw.ActionRow({
-        title: params.title,
-        subtitle: params.subtitle,
-    });
+//----------------------------------------------------------
 
-    actionRow.add_suffix(label);
+const ItemFactory = class ItemFactory {
+    constructor(options) {
+        this._options = options;
+        this._settings = this._options._gsettings;
+    }
 
-    return actionRow;
-}
+    getRowWidget(text, caption, widget, variable, options = []) {
 
-function _newAdwLinkRow(params) {
-    const linkBtn = new Gtk.LinkButton({
-        uri: params.uri,
-        halign: Gtk.Align.END,
-        valign: Gtk.Align.CENTER,
-    });
+        let item = [];
+        let label;
+        if (widget) {
+            label = new Gtk.Box({
+                orientation: Gtk.Orientation.VERTICAL,
+                spacing: 4,
+                halign: Gtk.Align.START,
+                valign: Gtk.Align.CENTER,
+            });
+            const option = new Gtk.Label({
+                halign: Gtk.Align.START,
+            });
+            option.set_text(text);
+            label[append](option);
 
-    const actionRow = new Adw.ActionRow({
-        title: params.title,
-        subtitle: params.subtitle,
-        activatable_widget: linkBtn
-    });
+            if (caption) {
+                const captionLabel = new Gtk.Label({
+                    halign: Gtk.Align.START,
+                    wrap: true,
+                    /*width_chars: 80,*/
+                    xalign: 0
+                })
+                const context = captionLabel.get_style_context();
+                context.add_class('dim-label');
+                context.add_class('caption');
+                captionLabel.set_text(caption);
+                label[append](captionLabel);
+            }
+            label._title = text;
+        } else {
+            label = text;
+        }
+        item.push(label);
+        item.push(widget);
 
-    actionRow.add_suffix(linkBtn);
+        let key;
 
-    return actionRow;
-}
+        if (variable && this._options.options[variable]) {
+            const opt = this._options.options[variable];
+            key = opt[1];
+        }
 
-function _newResetRow(params) {
-    const btn = new Gtk.Button({
-        icon_name: 'view-refresh-symbolic',
-        halign: Gtk.Align.END,
-        valign: Gtk.Align.CENTER,
-    });
-    btn.connect('clicked', () => {
-        Object.keys(gOptions.options).forEach(key => {
-            gOptions.set(key, gOptions.getDefault(key));
+        if (widget) {
+            if (widget._is_switch) {
+                this._connectSwitch(widget, key, variable);
+            } else if (widget._is_spinbutton || widget._is_scale) {
+                this._connectSpinButton(widget, key, variable);
+            } else if (widget._is_combo_box) {
+                this._connectComboBox(widget, key, variable, options);
+            }
+        }
+
+        return item;
+    }
+
+    _connectSwitch(widget, key, variable) {
+        this._settings.bind(key, widget, 'active', Gio.SettingsBindFlags.DEFAULT);
+    }
+
+    _connectSpinButton(widget, key, variable) {
+        this._settings.bind(key, widget.adjustment, 'value', Gio.SettingsBindFlags.DEFAULT);
+    }
+
+    _connectComboBox(widget, key, variable, options) {
+        let model = widget.get_model();
+        widget._comboMap = {};
+        for (const [label, value] of options) {
+            let iter;
+            model.set(iter = model.append(), [0, 1], [label, value]);
+            if (value === gOptions.get(variable)) {
+                widget.set_active_iter(iter);
+            }
+            widget._comboMap[value] = iter;
+        }
+        gOptions.connect(`changed::${key}`, () => {
+            widget.set_active_iter(widget._comboMap[gOptions.get(variable, true)]);
         });
-    });
+        widget.connect('changed', () => {
+            const [success, iter] = widget.get_active_iter();
 
-    const actionRow = new Adw.ActionRow({
-        title: params.title,
-        subtitle: params.subtitle,
-    });
+            if (!success) return;
 
-    actionRow.add_suffix(btn);
+            gOptions.set(variable, model.get_value(iter, 1));
+        });
+    }
 
-    return actionRow;
+    newSwitch() {
+        let sw = new Gtk.Switch({
+            halign: Gtk.Align.END,
+            valign: Gtk.Align.CENTER,
+            hexpand: true,
+        });
+        sw._is_switch = true;
+        return sw;
+    }
+
+    newSpinButton(adjustment) {
+        let spinButton = new Gtk.SpinButton({
+            halign: Gtk.Align.END,
+            valign: Gtk.Align.CENTER,
+            hexpand: true,
+            vexpand: false,
+            xalign: 0.5,
+        });
+        spinButton.set_adjustment(adjustment);
+        spinButton._is_spinbutton = true;
+        return spinButton;
+    }
+
+    newComboBox() {
+        const model = new Gtk.ListStore();
+        model.set_column_types([GObject.TYPE_STRING, GObject.TYPE_INT]);
+        const comboBox = new Gtk.ComboBox({
+            model,
+            halign: Gtk.Align.END,
+            valign: Gtk.Align.CENTER,
+            hexpand: true,
+        });
+        const renderer = new Gtk.CellRendererText();
+        comboBox.pack_start(renderer, true);
+        comboBox.add_attribute(renderer, 'text', 0);
+        comboBox._is_combo_box = true;
+        return comboBox;
+    }
+
+    newScale(adjustment) {
+        const scale = new Gtk.Scale({
+            orientation: Gtk.Orientation.HORIZONTAL,
+            draw_value:  true,
+            has_origin:  false,
+            value_pos:   Gtk.PositionType.LEFT,
+            digits:      0,
+            halign:      Gtk.Align.FILL,
+            valign:      Gtk.Align.CENTER,
+            hexpand:     true,
+            vexpand:     false,
+        });
+        scale.set_adjustment(adjustment);
+        scale._is_scale = true;
+        return scale;
+    }
+
+    newLabel(text = '') {
+        const label = new Gtk.Label({
+            label: text,
+            halign: Gtk.Align.END,
+            valign: Gtk.Align.CENTER,
+            hexpand: true,
+        });
+        label._activatable = false;
+        return label;
+    }
+
+    newLinkButton(uri) {
+        const linkBtn = new Gtk.LinkButton({
+            label: shellVersion < 42 ? 'Click Me!' : '',
+            uri,
+            halign: Gtk.Align.END,
+            valign: Gtk.Align.CENTER,
+            hexpand: true,
+        });
+        return linkBtn;
+    }
+
+    newOptionsResetButton() {
+        const btn = new Gtk.Button({
+            halign: Gtk.Align.END,
+            valign: Gtk.Align.CENTER,
+            hexpand: true,
+        });
+
+        btn.icon_name = 'view-refresh-symbolic';
+
+        btn.connect('clicked', () => {
+            Object.keys(gOptions.options).forEach(key => {
+                gOptions.set(key, gOptions.getDefault(key));
+            });
+        });
+        btn._activatable = false;
+        return btn;
+    }
+}
+
+const AdwPrefs = class {
+    constructor() {
+    }
+
+    getFilledWindow(window, pages) {
+        for (let page of pages) {
+            const title = page.title;
+            const icon_name = page.iconName;
+            const optionList = page.optionList;
+
+            window.add(
+                this._getAdwPage(optionList, {
+                    title,
+                    icon_name
+                })
+            );
+        }
+
+        window.set_search_enabled(true);
+
+        window.connect('close-request', () => {
+            gOptions.destroy();
+            gOptions = null;
+            itemFactory = null;
+            pageList = null;
+        });
+
+        window.set_default_size(800, 800);
+
+        return window;
+    }
+
+    _getAdwPage(optionList, pageProperties = {}) {
+        pageProperties.width_request = 840;
+        const page = new Adw.PreferencesPage(pageProperties);
+        let group;
+        for (let item of optionList) {
+            // label can be plain text for Section Title
+            // or GtkBox for Option
+            const option = item[0];
+            const widget = item[1];
+            if (!widget) {
+                if (group) {
+                    page.add(group);
+                }
+                group = new Adw.PreferencesGroup({
+                    title: option,
+                    hexpand: true,
+                    width_request: 700
+                });
+                continue;
+            }
+
+            const row = new Adw.ActionRow({
+                title: option._title,
+            });
+
+            const grid = new Gtk.Grid({
+                column_homogeneous: false,
+                column_spacing: 20,
+                margin_start: 8,
+                margin_end: 8,
+                margin_top: 8,
+                margin_bottom: 8,
+                hexpand: true,
+            })
+            /*for (let i of item) {
+                box[append](i);*/
+            grid.attach(option, 0, 0, 1, 1);
+            if (widget) {
+                grid.attach(widget, 1, 0, 1, 1);
+            }
+            row.set_child(grid);
+            if (widget._activatable === false) {
+                row.activatable = false;
+            } else {
+                row.activatable_widget = widget;
+            }
+            group.add(row);
+        }
+        page.add(group);
+        return page;
+    }
+}
+
+const LegacyPrefs = class {
+    constructor() {
+    }
+
+    getPrefsWidget(pages) {
+        const prefsWidget = new Gtk.Box({
+            orientation: Gtk.Orientation.VERTICAL
+        });
+        const stack = new Gtk.Stack({
+            hexpand: true
+        });
+        const stackSwitcher = new Gtk.StackSwitcher({
+            halign: Gtk.Align.CENTER,
+            hexpand: true
+        });
+
+        const context = stackSwitcher.get_style_context();
+        context.add_class('caption');
+
+        stackSwitcher.set_stack(stack);
+        stack.set_transition_duration(300);
+        stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT);
+
+        const pageProperties = {
+            hscrollbar_policy: Gtk.PolicyType.NEVER,
+            vscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
+            vexpand: true,
+            hexpand: true,
+            visible: true
+        };
+
+        const pagesBtns = [];
+
+        for (let page of pages) {
+            const name = page.name;
+            const title = page.title;
+            const iconName = page.iconName;
+            const optionList = page.optionList;
+
+            stack.add_named(this._getLegacyPage(optionList, pageProperties), name);
+            pagesBtns.push(
+                [new Gtk.Label({ label: title}), _newImageFromIconName(iconName, Gtk.IconSize.BUTTON)]
+            );
+        }
+
+        let stBtn = stackSwitcher.get_first_child ? stackSwitcher.get_first_child() : null;
+        for (let i = 0; i < pagesBtns.length; i++) {
+            const box = new Gtk.Box({orientation: Gtk.Orientation.VERTICAL, spacing: 6, visible: true});
+            const icon = pagesBtns[i][1];
+            icon.margin_start = 30;
+            icon.margin_end = 30;
+            box[append](icon);
+            box[append](pagesBtns[i][0]);
+            if (stackSwitcher.get_children) {
+                stBtn = stackSwitcher.get_children()[i];
+                stBtn.add(box);
+            } else {
+                stBtn.set_child(box);
+                stBtn.visible = true;
+                stBtn = stBtn.get_next_sibling();
+            }
+        }
+
+        stack.show_all && stack.show_all();
+        stackSwitcher.show_all && stackSwitcher.show_all();
+
+        prefsWidget[append](stack);
+        prefsWidget.connect('realize', (widget) => {
+            const window = widget.get_root ? widget.get_root() : widget.get_toplevel();
+            const width = 800;
+            const height = 800;
+            window.set_default_size(width, height);
+            const headerbar = window.get_titlebar();
+            headerbar.title_widget = stackSwitcher;
+
+            const signal = Gtk.get_major_version() === 3 ? 'destroy' : 'close-request';
+            window.connect(signal, () => {
+                gOptions.destroy();
+                gOptions = null;
+            });
+        });
+
+        prefsWidget.show_all && prefsWidget.show_all();
+
+        return prefsWidget;
+    }
+
+    _getLegacyPage(optionList, pageProperties) {
+        const page = new Gtk.ScrolledWindow(pageProperties);
+        const mainBox = new Gtk.Box({
+            orientation: Gtk.Orientation.VERTICAL,
+            spacing: 5,
+            homogeneous: false,
+            margin_start: 30,
+            margin_end: 30,
+            margin_top: 12,
+            margin_bottom: 12,
+        });
+
+        const context = page.get_style_context();
+        context.add_class('background');
+
+        let frame;
+        let frameBox;
+        for (let item of optionList) {
+            // label can be plain text for Section Title
+            // or GtkBox for Option
+            const option = item[0];
+            const widget = item[1];
+
+            if (!widget) {
+                const lbl = new Gtk.Label({
+                    label: option,
+                    xalign: 0,
+                    margin_bottom: 4
+                });
+
+                const context = lbl.get_style_context();
+                context.add_class('heading');
+
+                mainBox[append](lbl);
+
+                frame = new Gtk.Frame({
+                    margin_bottom: 16
+                });
+
+                frameBox = new Gtk.ListBox({
+                    selection_mode: null
+                });
+
+                mainBox[append](frame);
+                frame[set_child](frameBox);
+                continue;
+            }
+
+            const grid = new Gtk.Grid({
+                column_homogeneous: false,
+                column_spacing: 20,
+                margin_start: 8,
+                margin_end: 8,
+                margin_top: 8,
+                margin_bottom: 8,
+                hexpand: true
+            })
+
+            grid.attach(option, 0, 0, 5, 1);
+
+            if (widget) {
+                grid.attach(widget, 5, 0, 2, 1);
+            }
+            frameBox[append](grid);
+        }
+        page[set_child](mainBox);
+
+        return page;
+    }
 }
