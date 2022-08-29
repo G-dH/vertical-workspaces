@@ -21,9 +21,6 @@ let gOptions;
 let itemFactory;
 let pageList;
 
-// conversion of Gtk3 / Gtk4 widgets add methods
-const append = 'append';
-const set_child = 'set_child';
 
 function _newImageFromIconName(name) {
     const args = [name];
@@ -53,7 +50,7 @@ function init() {
             name: 'misc',
             title: _('Misc'),
             iconName: 'input-keyboard-symbolic',
-            optionList: _geMiscOptionList()
+            optionList: _getMiscOptionList()
         },
         {
             name: 'about',
@@ -88,8 +85,8 @@ function _getLayoutOptionList() {
         itemFactory.getRowWidget(
             _('Dash Position'),
             null,
-            itemFactory.newComboBox(),
-            //_newDropDown(),
+            //itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'dashPosition',
             [   [_('Top'), 0],
                 [_('Right'), 1],
@@ -131,8 +128,8 @@ function _getLayoutOptionList() {
         itemFactory.getRowWidget(
             _('Show Apps Icon Position'),
             _('The Apps icon in Dash'),
-            itemFactory.newComboBox(),
-            //_newDropDown(),
+            //itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'showAppsIconPosition',
             [   [_('Start'), 0],
                 [_('End'), 1],
@@ -144,8 +141,8 @@ function _getLayoutOptionList() {
         itemFactory.getRowWidget(
             _('Dash Max Icon Size'),
             _('Maximum size of Dash icons in pixels. Works only with default Dash.'),
-            itemFactory.newComboBox(),
-            //_newDropDown(),
+            //itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'dashMaxIconSize',
             [   [_('16'), 0],
                 [_('24'), 1],
@@ -166,8 +163,8 @@ function _getLayoutOptionList() {
         itemFactory.getRowWidget(
             _('Workspace Thumbnails Position and Max Height'),
             _('Position of the workspace thumbnails on the screen. Full-Height options allow the workspace thumbnails to use the full height of the screen at the expense of the space available for Dash.'),
-            itemFactory.newComboBox(),
-            //_newDropDown(),
+            //itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'workspaceThumbnailsPosition',
             [   [_('Left'), 0],
                 [_('Right'), 1],
@@ -200,8 +197,8 @@ function _getLayoutOptionList() {
         itemFactory.getRowWidget(
             _('Workspace Thumbnails Position on Secondary Monitor'),
             _('Allows you to place workspace thumbnails of the secondary monitor closer to the one on the primary monitor. "Default" option follows position of the primary workspace thumbnails.'),
-            itemFactory.newComboBox(),
-            //_newDropDown(),
+            //itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'secondaryWsThumbnailsPosition',
             [   [_('Left'), 0],
                 [_('Right'), 1],
@@ -313,8 +310,8 @@ function _getAdjustmentsOptionList() {
         itemFactory.getRowWidget(
             _('Show Workspace Thumbnails Labels'),
             _('Each workspace thumbnail can show its index and name (if defined in the system settings) or name of its most recently used app.'),
-            itemFactory.newComboBox(),
-            //_newDropDown(),
+            //itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'showWsTmbLabels',
             [   [_('Disable'), 0],
                 [_('Index'), 1],
@@ -355,8 +352,8 @@ function _getAdjustmentsOptionList() {
         itemFactory.getRowWidget(
             _('Window Preview App Icon Size'),
             _('Default size is 64.'),
-            itemFactory.newComboBox(),
-            //_newDropDown(),
+            //itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'winPreviewIconSize',
             [   [_('64'), 0],
                 [_('48'), 1],
@@ -379,8 +376,8 @@ function _getAdjustmentsOptionList() {
         itemFactory.getRowWidget(
             _('App Grid Animation'),
             _(`When entering the App Grid view, the app grid animates from the edge of the screen (defaultly from the right edge to follow the three fingers trackpad gesture). You can choose other direction or disable the animation if you don't like it.`),
-            itemFactory.newComboBox(),
-            //_newDropDown(),
+            //itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'appGridAnimation',
             [   [_('Disable'), 0],
                 [_('From Right'), 1],
@@ -395,8 +392,8 @@ function _getAdjustmentsOptionList() {
         itemFactory.getRowWidget(
             _('Workspace Animation'),
             _(`When entering / leaving the App Grid view, the workspace can animate to/from workspace thumbnails. The animation can be choppy if you have many workspaces with many windows and weak hw.`),
-            itemFactory.newComboBox(),
-            //_newDropDown(),
+            //itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'workspaceAnimation',
             [   [_('Disable'), 0],
                 [_('Enable'), 1],
@@ -407,7 +404,7 @@ function _getAdjustmentsOptionList() {
     return optionList;
 }
 
-function _geMiscOptionList() {
+function _getMiscOptionList() {
     const optionList = [];
     // options item format:
     // [text, caption, widget, settings-variable, options for combo]
@@ -520,7 +517,7 @@ const ItemFactory = class ItemFactory {
                 halign: Gtk.Align.START,
             });
             option.set_text(text);
-            label[append](option);
+            label.append(option);
 
             if (caption) {
                 const captionLabel = new Gtk.Label({
@@ -533,7 +530,7 @@ const ItemFactory = class ItemFactory {
                 context.add_class('dim-label');
                 context.add_class('caption');
                 captionLabel.set_text(caption);
-                label[append](captionLabel);
+                label.append(captionLabel);
             }
             label._title = text;
         } else {
@@ -556,6 +553,8 @@ const ItemFactory = class ItemFactory {
                 this._connectSpinButton(widget, key, variable);
             } else if (widget._is_combo_box) {
                 this._connectComboBox(widget, key, variable, options);
+            } else if (widget._is_drop_down) {
+                this._connectDropDown(widget, key, variable, options);
             }
         }
 
@@ -573,10 +572,11 @@ const ItemFactory = class ItemFactory {
     _connectComboBox(widget, key, variable, options) {
         let model = widget.get_model();
         widget._comboMap = {};
+        const currentValue = gOptions.get(variable);
         for (const [label, value] of options) {
             let iter;
             model.set(iter = model.append(), [0, 1], [label, value]);
-            if (value === gOptions.get(variable)) {
+            if (value === currentValue) {
                 widget.set_active_iter(iter);
             }
             widget._comboMap[value] = iter;
@@ -591,6 +591,47 @@ const ItemFactory = class ItemFactory {
 
             gOptions.set(variable, model.get_value(iter, 1));
         });
+    }
+
+    _connectDropDown(widget, key, variable, options) {
+        const model = widget.get_model();
+        const currentValue = gOptions.get(variable);
+        for (let i = 0; i < options.length; i++) {
+            const text = options[i][0];
+            const id = options[i][1];
+            model.append(new DropDownItem(text, id));
+            if (id === currentValue) {
+                widget.set_selected(i);
+            }
+        }
+
+        const factory = new Gtk.SignalListItemFactory();
+        factory.connect("setup", (factory, list_item) => {
+            const label = new Gtk.Label({xalign: 0});
+            list_item.set_child(label);
+        });
+        factory.connect("bind", (factory, list_item) => {
+            const label = list_item.get_child();
+            const item = list_item.get_item();
+            label.set_text(item.text);
+        });
+
+        widget.connect("notify::selected-item", (dropDown) => {
+            const item = dropDown.get_selected_item();
+            gOptions.set(variable, item.id);
+        });
+
+        gOptions.connect(`changed::${key}`, () => {
+            const newId = gOptions.get(variable, true);
+            for (let i = 0; i < options.length; i++) {
+                const id = options[i][1];
+                if (id === newId) {
+                    widget.set_selected(i);
+                }
+            }
+        });
+
+        widget.set_factory(factory);
     }
 
     newSwitch() {
@@ -630,6 +671,19 @@ const ItemFactory = class ItemFactory {
         comboBox.add_attribute(renderer, 'text', 0);
         comboBox._is_combo_box = true;
         return comboBox;
+    }
+
+    newDropDown() {
+        const dropDown = new Gtk.DropDown({
+            model: new Gio.ListStore({
+                item_type: DropDownItem
+            }),
+            halign: Gtk.Align.END,
+            valign: Gtk.Align.CENTER,
+            hexpand: true,
+        });
+        dropDown._is_drop_down = true;
+        return dropDown;
     }
 
     newScale(adjustment) {
@@ -676,14 +730,15 @@ const ItemFactory = class ItemFactory {
             halign: Gtk.Align.END,
             valign: Gtk.Align.CENTER,
             hexpand: true,
+            css_classes: ['destructive-action'],
+            icon_name: 'view-refresh-symbolic'
         });
 
-        btn.icon_name = 'view-refresh-symbolic';
-
         btn.connect('clicked', () => {
-            Object.keys(gOptions.options).forEach(key => {
-                gOptions.set(key, gOptions.getDefault(key));
-            });
+            const settings = this._settings;
+            settings.list_keys().forEach(
+                key => settings.reset(key)
+            );
         });
         btn._activatable = false;
         return btn;
@@ -757,7 +812,7 @@ const AdwPrefs = class {
                 hexpand: true,
             })
             /*for (let i of item) {
-                box[append](i);*/
+                box.append(i);*/
             grid.attach(option, 0, 0, 1, 1);
             if (widget) {
                 grid.attach(widget, 1, 0, 1, 1);
@@ -826,8 +881,8 @@ const LegacyPrefs = class {
             const icon = pagesBtns[i][1];
             icon.margin_start = 30;
             icon.margin_end = 30;
-            box[append](icon);
-            box[append](pagesBtns[i][0]);
+            box.append(icon);
+            box.append(pagesBtns[i][0]);
             if (stackSwitcher.get_children) {
                 stBtn = stackSwitcher.get_children()[i];
                 stBtn.add(box);
@@ -841,7 +896,7 @@ const LegacyPrefs = class {
         stack.show_all && stack.show_all();
         stackSwitcher.show_all && stackSwitcher.show_all();
 
-        prefsWidget[append](stack);
+        prefsWidget.append(stack);
         prefsWidget.connect('realize', (widget) => {
             const window = widget.get_root ? widget.get_root() : widget.get_toplevel();
             const width = 800;
@@ -895,7 +950,7 @@ const LegacyPrefs = class {
                 const context = lbl.get_style_context();
                 context.add_class('heading');
 
-                mainBox[append](lbl);
+                mainBox.append(lbl);
 
                 frame = new Gtk.Frame({
                     margin_bottom: 16
@@ -905,8 +960,8 @@ const LegacyPrefs = class {
                     selection_mode: null
                 });
 
-                mainBox[append](frame);
-                frame[set_child](frameBox);
+                mainBox.append(frame);
+                frame.set_child(frameBox);
                 continue;
             }
 
@@ -925,10 +980,51 @@ const LegacyPrefs = class {
             if (widget) {
                 grid.attach(widget, 5, 0, 2, 1);
             }
-            frameBox[append](grid);
+            frameBox.append(grid);
         }
-        page[set_child](mainBox);
+        page.set_child(mainBox);
 
         return page;
     }
 }
+
+const DropDownItem = GObject.registerClass({
+    GTypeName: 'DropdownItem',
+    Properties: {
+        'text': GObject.ParamSpec.string(
+            'text',
+            'Text',
+            'DropDown item text',
+            GObject.ParamFlags.READWRITE,
+            ''
+        ),
+        'id': GObject.ParamSpec.int(
+            'id',
+            'Id',
+            'Item id stored in settings',
+            GObject.ParamFlags.READWRITE,
+            0
+        ),
+    },
+}, class DropDownItem extends GObject.Object {
+    constructor(text, id, constructProperties = {}) {
+        super(constructProperties);
+        this._text = text;
+        this._id = id;
+    }
+
+    get text() {
+        return this._text;
+    }
+    set text(text) {
+        this._text = text;
+    }
+
+    get id() {
+        return this._id;
+    }
+    set id(id) {
+        this._id = id;
+    }
+}
+);
