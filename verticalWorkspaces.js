@@ -157,6 +157,7 @@ function activate() {
 
     // reverse swipe gestures for enter/leave overview and ws switching
     Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
+    Main.overview._swipeTracker._reset();
 
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
@@ -217,6 +218,7 @@ function reset() {
     _Util.overrideProto(WindowPreview.WindowPreview.prototype, verticalOverrides['WindowPreview']);
 
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
+    Main.overview._swipeTracker._reset();
 
     verticalOverrides = {}
 
@@ -526,6 +528,7 @@ function _setAppDisplayOrientation(vertical = false) {
     appDisplay._orientation = CLUTTER_ORIENTATION;
     appDisplay._grid.layoutManager._orientation = CLUTTER_ORIENTATION;
     appDisplay._swipeTracker.orientation = CLUTTER_ORIENTATION;
+    appDisplay._swipeTracker._reset();
     if (vertical) {
         appDisplay._scrollView.set_policy(St.PolicyType.NEVER, St.PolicyType.EXTERNAL);
 
@@ -545,9 +548,9 @@ function _setAppDisplayOrientation(vertical = false) {
         // clicking on this area still switches pages
         // needs to update allocation calculations and _pageForCoords()
         const scrollContainer = appDisplay._scrollView.get_parent();
-        scrollContainer.remove_child(appDisplay._nextPageArrow);
-        scrollContainer.remove_child(appDisplay._prevPageArrow);
-        scrollContainer.remove_child(appDisplay._hintContainer);
+        appDisplay._nextPageArrow && scrollContainer.remove_child(appDisplay._nextPageArrow);
+        appDisplay._prevPageArrow && scrollContainer.remove_child(appDisplay._prevPageArrow);
+        appDisplay._hintContainer && scrollContainer.remove_child(appDisplay._hintContainer);
     } else {
         appDisplay._scrollView.set_policy(St.PolicyType.EXTERNAL, St.PolicyType.NEVER);
         if (_appDisplayScrollConId) {
@@ -564,9 +567,9 @@ function _setAppDisplayOrientation(vertical = false) {
 
         // put back touch friendly horizontal navigation bars
         const scrollContainer = appDisplay._scrollView.get_parent();
-        scrollContainer.add_child(appDisplay._nextPageArrow);
-        scrollContainer.add_child(appDisplay._prevPageArrow);
-        scrollContainer.add_child(appDisplay._hintContainer);
+        appDisplay._nextPageArrow && scrollContainer.add_child(appDisplay._nextPageArrow);
+        appDisplay._prevPageArrow && scrollContainer.add_child(appDisplay._prevPageArrow);
+        appDisplay._hintContainer && scrollContainer.add_child(appDisplay._hintContainer);
     }
 
     // value for page indicator is calculated from scroll adjustment, horizontal needs to be replaced by vertical
@@ -1816,7 +1819,7 @@ var ControlsManagerLayoutOverride = {
                 if (WS_TMB_FULL_HEIGHT && !DASH_CENTER_WS) {
                     dashX = WS_TMB_RIGHT
                                 ? Math.min(width - 3 * spacing - wsTmbWidth - dashWidth, dashX + (wsTmbWidth + spacing) / 2 * (1 - Math.abs(DASH_POSITION_ADJUSTMENT)))
-                                : Math.max(wsTmbWidth + 2 * spacing, dashX - (wsTmbWidth + spacing) / 2 * (1 - Math.abs(DASH_POSITION_ADJUSTMENT)));
+                                : Math.max(wsTmbWidth + 2 * spacing, dashX - (wsTmbWidth + 3 * spacing) / 2 * (1 - Math.abs(DASH_POSITION_ADJUSTMENT)));
                 }
             } else {
                 const offset = (height - dashHeight) / 2;
