@@ -141,6 +141,7 @@ function activate() {
     verticalOverrides['ControlsManagerLayout'] = _Util.overrideProto(OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutOverride);
     verticalOverrides['SecondaryMonitorDisplay'] = _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayOverride);
     verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
+    verticalOverrides['AppDisplay'] = _Util.overrideProto(AppDisplay.AppDisplay.prototype, AppDisplayOverride);
     verticalOverrides['WindowPreview'] = _Util.overrideProto(WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
 
     _prevDash = {};
@@ -215,6 +216,7 @@ function reset() {
     _Util.overrideProto(OverviewControls.ControlsManager.prototype, verticalOverrides['ControlsManager']);
     _Util.overrideProto(Workspace.WorkspaceLayout.prototype, verticalOverrides['WorkspaceLayout']);
     _Util.overrideProto(AppDisplay.BaseAppView.prototype, verticalOverrides['BaseAppView']);
+    _Util.overrideProto(AppDisplay.AppDisplay.prototype, verticalOverrides['AppDisplay']);
     _Util.overrideProto(WindowPreview.WindowPreview.prototype, verticalOverrides['WindowPreview']);
 
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
@@ -532,25 +534,24 @@ function _setAppDisplayOrientation(vertical = false) {
     if (vertical) {
         appDisplay._scrollView.set_policy(St.PolicyType.NEVER, St.PolicyType.EXTERNAL);
 
-        // vertical page indicators. sadly, allocate function dont expect which can be problem for narrow screens
-        // and the vertical indicator is actually pretty annoying to me
-        /*const pageIndicators = appDisplay._pageIndicators;
-        //pageIndicators.get_parent().remove_actor(pageIndicators);
-        //appDisplay._scrollView.add_actor(pageIndicators);
+        // move and change orientation of page indicators
+        // needs corrections in appgrid page calculations, e.g. appDisplay.adaptToSoze() fnc,
+        // which complicates use of super call inside the function
+        const pageIndicators = appDisplay._pageIndicators;
         pageIndicators.vertical = true;
-        //appDisplay.box.vertical = false;
+        appDisplay._box.vertical = false;
         pageIndicators.x_expand = false;
-        pageIndicators.y_expand = true;
         pageIndicators.y_align = Clutter.ActorAlign.CENTER;
-        pageIndicators.y_align = Clutter.ActorAlign.END;*/
+        pageIndicators.x_align = Clutter.ActorAlign.START;
 
-        // remove touch friendly horizontal navigation bars
+        // remove touch friendly side navigation bars / arrows
         // clicking on this area still switches pages
         // needs to update allocation calculations and _pageForCoords()
         const scrollContainer = appDisplay._scrollView.get_parent();
-        appDisplay._nextPageArrow && scrollContainer.remove_child(appDisplay._nextPageArrow);
-        appDisplay._prevPageArrow && scrollContainer.remove_child(appDisplay._prevPageArrow);
         appDisplay._hintContainer && scrollContainer.remove_child(appDisplay._hintContainer);
+        // setting their x_scale to 0 removes the arrows and avoid allocation issues compared to .hide() them
+        appDisplay._nextPageArrow.scale_x = 0;
+        appDisplay._prevPageArrow.scale_x = 0;
     } else {
         appDisplay._scrollView.set_policy(St.PolicyType.EXTERNAL, St.PolicyType.NEVER);
         if (_appDisplayScrollConId) {
@@ -558,18 +559,19 @@ function _setAppDisplayOrientation(vertical = false) {
             _appDisplayScrollConId = 0;
         }
 
-        // revert horizontal page indicators
-        /*appDisplay._pageIndicators.vertical = false;
+        // restore original page indicators
+        const pageIndicators = appDisplay._pageIndicators;
+        pageIndicators.vertical = false;
         appDisplay._box.vertical = true;
-        appDisplay._pageIndicators.x_expand = true;
-        appDisplay._pageIndicators.y_expand = false;
-        appDisplay._pageIndicators.x_align = Clutter.ActorAlign.CENTER;*/
+        pageIndicators.x_expand = true;
+        pageIndicators.y_align = Clutter.ActorAlign.END;
+        pageIndicators.x_align = Clutter.ActorAlign.CENTER;
 
-        // put back touch friendly horizontal navigation bars
+        // put back touch friendly navigation bars/buttons
         const scrollContainer = appDisplay._scrollView.get_parent();
-        appDisplay._nextPageArrow && scrollContainer.add_child(appDisplay._nextPageArrow);
-        appDisplay._prevPageArrow && scrollContainer.add_child(appDisplay._prevPageArrow);
         appDisplay._hintContainer && scrollContainer.add_child(appDisplay._hintContainer);
+        appDisplay._nextPageArrow.scale_x = 1;
+        appDisplay._prevPageArrow.scale_x = 1;
     }
 
     // value for page indicator is calculated from scroll adjustment, horizontal needs to be replaced by vertical
@@ -584,24 +586,10 @@ function _setAppDisplayOrientation(vertical = false) {
         return;
     }
 
+    // update appGrid dot pages indicators
     _appDisplayScrollConId = appDisplay._adjustment.connect('notify::value', adj => {
-        appDisplay._updateFade();
         const value = adj.value / adj.page_size;
         appDisplay._pageIndicators.setCurrentPosition(value);
-
-        const distanceToPage = Math.abs(Math.round(value) - value);
-        if (distanceToPage < 0.001) {
-            appDisplay._hintContainer.opacity = 255;
-            appDisplay._hintContainer.translationX = 0;
-        } else {
-            appDisplay._hintContainer.remove_transition('opacity');
-            let opacity = Math.clamp(
-                255 * (1 - (distanceToPage * 2)),
-                0, 255);
-
-            appDisplay._hintContainer.translationX = (Math.round(value) - value) * adj.page_size;
-            appDisplay._hintContainer.opacity = opacity;
-        }
     });
 }
 
@@ -1027,7 +1015,11 @@ var WorkspaceThumbnailOverride = {
                     label += `: ${wsLabels[wsIndex]}`;
                 }
             } else if (SHOW_WST_LABELS === 3) { // 3- index + app name
-                const metaWin = global.display.get_tab_list(0, this.metaWorkspace).filter(w => w.get_monitor() === this.monitorIndex)[0];
+                // global.display.get_tab_list affers workspace filtering using the second argument, but...
+                // ... it sometimes includes windows from other workspaces, like minimized VBox machines, after Shell restarts
+                const metaWin = global.display.get_tab_list(0, null).filter(
+                    w => w.get_monitor() === this.monitorIndex && w.get_workspace().index() === wsIndex
+                )[0];
 
                 if (metaWin) {
                     let tracker = Shell.WindowTracker.get_default();
@@ -1974,5 +1966,18 @@ var WorkspaceLayoutOverride = {
 var BaseAppViewOverride  = {
     _pageForCoords: function(x, y) {
         return AppDisplay.SidePages.NONE;
+    }
+}
+
+// correction of the appGrid size when page indicators were moved from the bottom to the right
+var AppDisplayOverride = {
+    adaptToSize: function(width, height) {
+        const [, indicatorWidth] = this._pageIndicators.get_preferred_width(-1);
+        width -= indicatorWidth;
+
+        this._grid.findBestModeForSize(width, height);
+
+        const adaptToSize = AppDisplay.BaseAppView.prototype.adaptToSize.bind(this);
+        adaptToSize(width, height);
     }
 }
