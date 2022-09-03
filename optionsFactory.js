@@ -9,7 +9,7 @@
 
 'use strict';
 
-const { Gtk, GLib, Gio, GObject } = imports.gi;
+const { Gtk, Gio, GObject } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me             = ExtensionUtils.getCurrentExtension();
