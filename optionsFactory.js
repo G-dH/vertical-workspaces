@@ -24,6 +24,9 @@ const _  = Settings._;
 let Adw = null;
 try { Adw = imports.gi.Adw; } catch (e) {}
 
+function _newImageFromIconName(name) {
+    return Gtk.Image.new_from_icon_name(name);
+}
 
 var ItemFactory = class ItemFactory {
     constructor(gOptions) {

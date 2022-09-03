@@ -33,11 +33,6 @@ let pageList;
 let itemFactory;
 
 
-function _newImageFromIconName(name) {
-    const args = [name];
-    return Gtk.Image.new_from_icon_name(...args);
-}
-
 function init() {
     ExtensionUtils.initTranslations(Me.metadata['gettext-domain']);
     gOptions = new Settings.Options();
