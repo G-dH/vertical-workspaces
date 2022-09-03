@@ -425,6 +425,8 @@ var LegacyPrefs = class {
 
         prefsWidget.show_all && prefsWidget.show_all();
 
+        prefsWidget._stackSwitcher = stackSwitcher;
+
         return prefsWidget;
     }
 

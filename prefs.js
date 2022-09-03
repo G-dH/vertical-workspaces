@@ -88,7 +88,7 @@ function buildPrefsWidget() {
         const height = 800;
         window.set_default_size(width, height);
         const headerbar = window.get_titlebar();
-        headerbar.title_widget = stackSwitcher;
+        headerbar.title_widget = prefsWidget._stackSwitcher;
 
         const signal = Gtk.get_major_version() === 3 ? 'destroy' : 'close-request';
         window.connect(signal, () => {
