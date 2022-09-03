@@ -131,7 +131,7 @@ var ItemFactory = class ItemFactory {
         for (let i = 0; i < options.length; i++) {
             const text = options[i][0];
             const id = options[i][1];
-            model.append(new DropDownItem(text, id));
+            model.append(new DropDownItem({ text, id }));
             if (id === currentValue) {
                 widget.set_selected(i);
             }
@@ -225,11 +225,12 @@ var ItemFactory = class ItemFactory {
             has_origin:  false,
             value_pos:   Gtk.PositionType.LEFT,
             digits:      0,
-            halign:      Gtk.Align.FILL,
+            halign:      Gtk.Align.END,
             valign:      Gtk.Align.CENTER,
             hexpand:     true,
             vexpand:     false,
         });
+        scale.set_size_request(300, -1);
         scale.set_adjustment(adjustment);
         scale._is_scale = true;
         return scale;
@@ -520,12 +521,6 @@ const DropDownItem = GObject.registerClass({
         ),
     },
 }, class DropDownItem extends GObject.Object {
-    constructor(text, id, constructProperties = {}) {
-        super(constructProperties);
-        this._text = text;
-        this._id = id;
-    }
-
     get text() {
         return this._text;
     }
