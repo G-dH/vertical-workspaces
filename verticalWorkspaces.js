@@ -52,7 +52,7 @@ const WORKSPACE_CUT_SIZE = 10;
 
 // keep adjacent workspaces out of the screen
 let WORKSPACE_MAX_SPACING = 350;
-let WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
+let WORKSPACE_MIN_SPACING = 6;
 
 let DASH_MAX_SIZE_RATIO = 0.15;
 
@@ -71,11 +71,11 @@ const DashPosition = {
     LEFT: 3
 }
 
-let verticalOverrides = {};
-let _windowPreviewInjections = {};
-let _wsSwitcherPopupInjections = {};
-let _appDisplayScrollConId;
+let _verticalOverrides;
+let _windowPreviewInjections;
+let _wsSwitcherPopupInjections;
 
+let _appDisplayScrollConId;
 let _monitorsChangedSigId;
 let _shellSettings;
 let _watchDockSigId;
@@ -110,22 +110,27 @@ let _enabled = false;
 
 function activate() {
     _enabled = true;
+    _verticalOverrides = {};
+    _windowPreviewInjections = {};
+    _wsSwitcherPopupInjections = {};
+    WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
+
     VerticalDash.DashPosition = DashPosition;
     original_MAX_THUMBNAIL_SCALE = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
 
     gOptions = new Settings.Options();
     _updateSettings();
     gOptions.connect('changed', _updateSettings);
-    if (Object.keys(verticalOverrides).length != 0)
+    if (Object.keys(_verticalOverrides).length != 0)
         reset();
 
     // switch internal workspace orientation in GS to vertical
     global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
 
     // fix overlay base for vertical workspaces
-    verticalOverrides['WorkspaceLayout'] = _Util.overrideProto(Workspace.WorkspaceLayout.prototype, WorkspaceLayoutOverride);
-    verticalOverrides['WorkspacesView'] = _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, WorkspacesViewOverride);
-    verticalOverrides['WorkspacesDisplay'] = _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, workspacesDisplayOverride);
+    _verticalOverrides['WorkspaceLayout'] = _Util.overrideProto(Workspace.WorkspaceLayout.prototype, WorkspaceLayoutOverride);
+    _verticalOverrides['WorkspacesView'] = _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, WorkspacesViewOverride);
+    _verticalOverrides['WorkspacesDisplay'] = _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, workspacesDisplayOverride);
 
     // move titles into window previews
     _injectWindowPreview();
@@ -135,14 +140,14 @@ function activate() {
         _injectWsSwitcherPopup();
 
     // re-layout overview to better serve for vertical orientation
-    verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxOverride);
-    verticalOverrides['WorkspaceThumbnail'] = _Util.overrideProto(WorkspaceThumbnail.WorkspaceThumbnail.prototype, WorkspaceThumbnailOverride);
-    verticalOverrides['ControlsManager'] = _Util.overrideProto(OverviewControls.ControlsManager.prototype, ControlsManagerOverride);
-    verticalOverrides['ControlsManagerLayout'] = _Util.overrideProto(OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutOverride);
-    verticalOverrides['SecondaryMonitorDisplay'] = _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayOverride);
-    verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
-    verticalOverrides['AppDisplay'] = _Util.overrideProto(AppDisplay.AppDisplay.prototype, AppDisplayOverride);
-    verticalOverrides['WindowPreview'] = _Util.overrideProto(WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
+    _verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxOverride);
+    _verticalOverrides['WorkspaceThumbnail'] = _Util.overrideProto(WorkspaceThumbnail.WorkspaceThumbnail.prototype, WorkspaceThumbnailOverride);
+    _verticalOverrides['ControlsManager'] = _Util.overrideProto(OverviewControls.ControlsManager.prototype, ControlsManagerOverride);
+    _verticalOverrides['ControlsManagerLayout'] = _Util.overrideProto(OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutOverride);
+    _verticalOverrides['SecondaryMonitorDisplay'] = _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayOverride);
+    _verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
+    _verticalOverrides['AppDisplay'] = _Util.overrideProto(AppDisplay.AppDisplay.prototype, AppDisplayOverride);
+    _verticalOverrides['WindowPreview'] = _Util.overrideProto(WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
 
     _prevDash = {};
     const dash = Main.overview.dash;
@@ -206,23 +211,23 @@ function reset() {
         _wsSwitcherPopupInjections = {};
     }
 
-    _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, verticalOverrides['WorkspacesView']);
-    _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, verticalOverrides['WorkspacesDisplay']);
-    _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, verticalOverrides['SecondaryMonitorDisplay']);
+    _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, _verticalOverrides['WorkspacesView']);
+    _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, _verticalOverrides['WorkspacesDisplay']);
+    _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, _verticalOverrides['SecondaryMonitorDisplay']);
 
-    _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, verticalOverrides['ThumbnailsBox']);
-    _Util.overrideProto(WorkspaceThumbnail.WorkspaceThumbnail.prototype, verticalOverrides['WorkspaceThumbnail']);
-    _Util.overrideProto(OverviewControls.ControlsManagerLayout.prototype, verticalOverrides['ControlsManagerLayout']);
-    _Util.overrideProto(OverviewControls.ControlsManager.prototype, verticalOverrides['ControlsManager']);
-    _Util.overrideProto(Workspace.WorkspaceLayout.prototype, verticalOverrides['WorkspaceLayout']);
-    _Util.overrideProto(AppDisplay.BaseAppView.prototype, verticalOverrides['BaseAppView']);
-    _Util.overrideProto(AppDisplay.AppDisplay.prototype, verticalOverrides['AppDisplay']);
-    _Util.overrideProto(WindowPreview.WindowPreview.prototype, verticalOverrides['WindowPreview']);
+    _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, _verticalOverrides['ThumbnailsBox']);
+    _Util.overrideProto(WorkspaceThumbnail.WorkspaceThumbnail.prototype, _verticalOverrides['WorkspaceThumbnail']);
+    _Util.overrideProto(OverviewControls.ControlsManagerLayout.prototype, _verticalOverrides['ControlsManagerLayout']);
+    _Util.overrideProto(OverviewControls.ControlsManager.prototype, _verticalOverrides['ControlsManager']);
+    _Util.overrideProto(Workspace.WorkspaceLayout.prototype, _verticalOverrides['WorkspaceLayout']);
+    _Util.overrideProto(AppDisplay.BaseAppView.prototype, _verticalOverrides['BaseAppView']);
+    _Util.overrideProto(AppDisplay.AppDisplay.prototype, _verticalOverrides['AppDisplay']);
+    _Util.overrideProto(WindowPreview.WindowPreview.prototype, _verticalOverrides['WindowPreview']);
 
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
     Main.overview._swipeTracker._reset();
 
-    verticalOverrides = {}
+    _verticalOverrides = {}
 
     _setAppDisplayOrientation(false);
 

@@ -50,15 +50,18 @@
 	border-right: 0px;
 }
 
+/*adujtment for the vertical ws switcher indicator popup*/
 .ws-switcher-indicator {
 	padding: 3px;
 	margin: 5px;
 }
+
 .ws-switcher-indicator:active {
 	  padding: 5px;
 	  margin: 3px;
 }
 
+/*ws thumbnails captions*/
 .ws-tmb-label {
 	margin: 5px;
 	padding-top: 3px;
@@ -79,6 +82,11 @@
 	border: 0px;
 }
 
+/*app grid page indicatos*/
 .page-indicator-icon {
-	margin-bottom: 15px;
+	margin: 10px 0 10px 0;
+}
+
+.page-indicator {
+	padding: 0px;
 }

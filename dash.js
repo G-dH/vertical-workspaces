@@ -536,7 +536,6 @@ var DashCommonOverride = {
             maxIconSize = Math.min(availWidth, availHeight / iconChildren.length, MAX_ICON_SIZE);
         }
 
-
         let scaleFactor = St.ThemeContext.get_for_stage(global.stage).scale_factor;
         let iconSizes = baseIconSizes.map(s => s * scaleFactor);
 
