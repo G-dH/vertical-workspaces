@@ -517,7 +517,7 @@ const DropDownItem = GObject.registerClass({
             'Id',
             'Item id stored in settings',
             GObject.ParamFlags.READWRITE,
-            0
+            0, 100, 0
         ),
     },
 }, class DropDownItem extends GObject.Object {
