@@ -1,4 +1,16 @@
 ## Changelog:
+### v11 2022-09-04
+**Added**
+- Window preview app icon size
+- About page
+- Reset button that allows to set all options to their default values
+- GNOME Shell 43 support
+- Automatic `Fix for Dash to Dock` option activation when DtD detected during enabling
+
+**Fixed**
+- App Grid page indicator not vertical
+- Workspace thumbnail caption can show window title from different workspace (typically VBox Machine)
+
 ### v10 2022-08-03
 **Added:**
 - Option `Show Workspace Preview Background` allows to hide background wallpaper in the overview.
