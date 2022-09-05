@@ -11,6 +11,7 @@ Supported GNOME versions: 40, 41, 42.
 ![Settings window](screenshots/screenshot.png)
 ![Settings window](screenshots/screenshot1.png)
 ![Settings window](screenshots/screenshot2.png)
+![Settings window](screenshots/screenshot3.png)
 
 ## Installation
 
