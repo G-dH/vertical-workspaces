@@ -379,7 +379,9 @@ function _updateDashPosition() {
     case DashPosition.LEFT:
     case DashPosition.RIGHT:
         VerticalDash.gOptions = gOptions;
-        VerticalDash.override();
+        // avoid conflict with DtD extension
+        if (Main.overview.dash._isHorizontal === undefined)
+            VerticalDash.override();
         break;
     default:
         VerticalDash.reset();
