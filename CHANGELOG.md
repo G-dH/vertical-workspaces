@@ -1,4 +1,8 @@
 ## Changelog:
+### v12 2022-09-04
+**Fixed:**
+- Dash to Dock compatibility issue when original Dash set to vertical position
+
 ### v11 2022-09-04
 **Added**
 - Window preview app icon size
