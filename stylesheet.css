@@ -5,19 +5,20 @@
 	padding: 0px 0;
 }
 
-#dash.vertical-overview .dash-item-container .app-well-app,
+#dash.vertical-overview .app-well-app,
 #dash.vertical-overview .show-apps {
-	padding-right: 5px;
-	padding-left: 5px;
+	padding-right: 8px;
+	padding-left: 8px;
 	/*spacing between icons*/
 	padding-top: 1px;
 	padding-bottom: 1px;
+	margin: 0px;
 }
 
 #dash.vertical-overview .dash-separator {
 	height: 1px;
-	margin-right: 0;
-	margin-left: 3px;
+	margin-right: 2px;
+	margin-left: 2px;
 	margin-top: 4px;
 	margin-bottom: 4px;
 	background-color: transparentize(#eeeeec, 0.7);
@@ -28,26 +29,23 @@
 }
 
 #dash.vertical-overview .app-well-app-running-dot {
-	margin: 6px 0px;
-}
-
-#dash.vertical-overview .dash-item-container:last-child {
-	margin-bottom: 14px;
+	margin: 4px 0px;
 }
 
 #dash.vertical-overview .dash-background {
-	margin-left: 0px;
-	margin-right: 0px;
+	margin: 0;
 }
 
 #dash.vertical-overview-left .dash-background {
 	border-radius: 0 18px 18px 0;
 	border-left: 0px;
+	padding: 8px 12px 8px 4px;
 }
 
 #dash.vertical-overview-right .dash-background {
 	border-radius: 18px 0 0 18px;
 	border-right: 0px;
+	padding: 8px 4px 8px 12px;
 }
 
 /*adujtment for the vertical ws switcher indicator popup*/

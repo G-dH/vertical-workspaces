@@ -439,19 +439,17 @@ var DashItemContainerOverride = {
         } else if (DASH_POSITION === DashPosition.RIGHT) {
             const yOffset = Math.floor((itemHeight - labelHeight) / 2);
 
-            let node = this.label.get_theme_node();
-            const xOffset = node.get_length('-y-offset');
+            const xOffset = 4;
 
-            x = stageX - 2 * xOffset - this.label.width;
+            x = stageX - xOffset - this.label.width;
             y = Math.clamp(stageY + yOffset, 0, global.stage.height - labelHeight);
 
         } if (DASH_POSITION === DashPosition.LEFT) {
             const yOffset = Math.floor((itemHeight - labelHeight) / 2);
 
-            let node = this.label.get_theme_node();
-            const xOffset = node.get_length('-y-offset');
+            const xOffset = 4;
 
-            x = stageX + this.width + 2 * xOffset;
+            x = stageX + this.width + xOffset;
             y = Math.clamp(stageY + yOffset, 0, global.stage.height - labelHeight);
         }
 
