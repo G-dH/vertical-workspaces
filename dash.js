@@ -514,13 +514,15 @@ var DashCommonOverride = {
             availWidth = maxContent.x2 - maxContent.x1;
             // Subtract icon padding and box spacing from the available width
             availWidth -= iconChildren.length * (buttonWidth - iconWidth) +
-                           (iconChildren.length - 1) * spacing;
+                           (iconChildren.length - 1) * spacing +
+                           2 * this._background.get_theme_node().get_horizontal_padding();
 
             availHeight = this._maxHeight;
             availHeight -= this.margin_top + this.margin_bottom;
             availHeight -= this._background.get_theme_node().get_vertical_padding();
             availHeight -= themeNode.get_vertical_padding();
             availHeight -= buttonHeight - iconHeight;
+
             maxIconSize = Math.min(availWidth / iconChildren.length, availHeight, MAX_ICON_SIZE);
         } else {
             availWidth = this._maxWidth;
@@ -530,7 +532,9 @@ var DashCommonOverride = {
 
             availHeight = maxContent.y2 - maxContent.y1;
             availHeight -= iconChildren.length * (buttonHeight - iconHeight) +
-                (iconChildren.length - 1) * spacing;
+                            (iconChildren.length - 1) * spacing +
+                            2 * this._background.get_theme_node().get_vertical_padding();
+
             maxIconSize = Math.min(availWidth, availHeight / iconChildren.length, MAX_ICON_SIZE);
         }
 
