@@ -140,7 +140,7 @@ function activate() {
     if (shellVersion >= 42)
         _injectWsSwitcherPopup();
 
-    // re-layout overview to better serve for vertical orientation
+    // adjust overview layout to better serve vertical workspaces orientation
     _verticalOverrides['SwipeTracker'] = _Util.overrideProto(SwipeTracker.SwipeTracker.prototype, SwipeTrackerOverride);
     _verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxOverride);
     _verticalOverrides['WorkspaceThumbnail'] = _Util.overrideProto(WorkspaceThumbnail.WorkspaceThumbnail.prototype, WorkspaceThumbnailOverride);
@@ -165,7 +165,7 @@ function activate() {
 
     // reverse swipe gestures for enter/leave overview and ws switching
     Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
-    Main.overview._swipeTracker._reset();
+    Main.wm._workspaceAnimation._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
 
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
@@ -227,8 +227,9 @@ function reset() {
     _Util.overrideProto(WindowPreview.WindowPreview.prototype, _verticalOverrides['WindowPreview']);
     _Util.overrideProto(SwipeTracker.SwipeTracker.prototype, _verticalOverrides['SwipeTracker']);
 
+    // original swipeTrackes' orientation
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
-    Main.overview._swipeTracker._reset();
+    Main.wm._workspaceAnimation._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
 
     _verticalOverrides = {}
 
