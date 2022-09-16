@@ -78,6 +78,8 @@ let _wsSwitcherPopupInjections;
 
 let _appDisplayScrollConId;
 let _monitorsChangedSigId;
+let _originalGestureUpdateId;
+let _vwGestureUpdateId;
 let _shellSettings;
 let _watchDockSigId;
 let _resetTimeoutId;
@@ -141,7 +143,6 @@ function activate() {
         _injectWsSwitcherPopup();
 
     // adjust overview layout to better serve vertical workspaces orientation
-    _verticalOverrides['SwipeTracker'] = _Util.overrideProto(SwipeTracker.SwipeTracker.prototype, SwipeTrackerOverride);
     _verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxOverride);
     _verticalOverrides['WorkspaceThumbnail'] = _Util.overrideProto(WorkspaceThumbnail.WorkspaceThumbnail.prototype, WorkspaceThumbnailOverride);
     _verticalOverrides['ControlsManager'] = _Util.overrideProto(OverviewControls.ControlsManager.prototype, ControlsManagerOverride);
@@ -166,6 +167,12 @@ function activate() {
     // reverse swipe gestures for enter/leave overview and ws switching
     Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
     Main.wm._workspaceAnimation._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
+    // overview's updateGesture() function should reflect ws tmb position to match appGrid/ws animation direction
+    // function in connection cannot be overriden in prototype of its class because connected is actually another copy of the original function
+    _originalGestureUpdateId = GObject.signal_handler_find(Main.overview._swipeTracker._touchpadGesture, { signalId: 'update' });
+    Main.overview._swipeTracker._touchpadGesture.block_signal_handler(_originalGestureUpdateId);
+    Main.overview._swipeTracker._updateGesture = SwipeTrackerOverride._updateGesture;
+    _vwGestureUpdateId = Main.overview._swipeTracker._touchpadGesture.connect('update', SwipeTrackerOverride._updateGesture.bind(Main.overview._swipeTracker));
 
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
@@ -225,11 +232,13 @@ function reset() {
     _Util.overrideProto(AppDisplay.BaseAppView.prototype, _verticalOverrides['BaseAppView']);
     _Util.overrideProto(AppDisplay.AppDisplay.prototype, _verticalOverrides['AppDisplay']);
     _Util.overrideProto(WindowPreview.WindowPreview.prototype, _verticalOverrides['WindowPreview']);
-    _Util.overrideProto(SwipeTracker.SwipeTracker.prototype, _verticalOverrides['SwipeTracker']);
 
-    // original swipeTrackes' orientation
+    // original swipeTrackes' orientation and updateGesture function
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
     Main.wm._workspaceAnimation._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
+    Main.overview._swipeTracker._updateGesture = SwipeTracker.SwipeTracker.prototype._updateGesture;
+    Main.overview._swipeTracker._touchpadGesture.disconnect(_vwGestureUpdateId);
+    Main.overview._swipeTracker._touchpadGesture.unblock_signal_handler(_originalGestureUpdateId);
 
     _verticalOverrides = {}
 
@@ -1441,7 +1450,7 @@ var ThumbnailsBoxOverride = {
 // ControlsManager
 
 var ControlsManagerOverride = {
-    // this function overrides Main.overview._overview._controls._update, but in reality the original code is being executed - bug..
+    // this function is used as a callback by a signal handler, needs to be reconnected after modification as the original callback uses a copy of the function
     /*_update: function() {
         ...
     }*/
@@ -2015,7 +2024,6 @@ var SwipeTrackerOverride = {
 
         if ([1, 3].includes(WS_TMB_POSITION))
             delta = -delta;
-
         this._progress += delta / distance;
         this._history.append(time, delta);
 
