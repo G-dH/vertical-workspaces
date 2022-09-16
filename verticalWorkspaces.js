@@ -26,6 +26,7 @@ const Workspace = imports.ui.workspace;
 const OverviewControls = imports.ui.overviewControls;
 const WindowPreview = imports.ui.windowPreview;
 const WorkspaceSwitcherPopup = imports.ui.workspaceSwitcherPopup;
+const SwipeTracker = imports.ui.swipeTracker;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -140,6 +141,7 @@ function activate() {
         _injectWsSwitcherPopup();
 
     // re-layout overview to better serve for vertical orientation
+    _verticalOverrides['SwipeTracker'] = _Util.overrideProto(SwipeTracker.SwipeTracker.prototype, SwipeTrackerOverride);
     _verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxOverride);
     _verticalOverrides['WorkspaceThumbnail'] = _Util.overrideProto(WorkspaceThumbnail.WorkspaceThumbnail.prototype, WorkspaceThumbnailOverride);
     _verticalOverrides['ControlsManager'] = _Util.overrideProto(OverviewControls.ControlsManager.prototype, ControlsManagerOverride);
@@ -223,6 +225,7 @@ function reset() {
     _Util.overrideProto(AppDisplay.BaseAppView.prototype, _verticalOverrides['BaseAppView']);
     _Util.overrideProto(AppDisplay.AppDisplay.prototype, _verticalOverrides['AppDisplay']);
     _Util.overrideProto(WindowPreview.WindowPreview.prototype, _verticalOverrides['WindowPreview']);
+    _Util.overrideProto(SwipeTracker.SwipeTracker.prototype, _verticalOverrides['SwipeTracker']);
 
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
     Main.overview._swipeTracker._reset();
@@ -1512,7 +1515,7 @@ var ControlsManagerOverride = {
             // make sure the workspace orientation stays vertical
             if (global.workspace_manager.layout_rows != -1)
                 global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
-        } else if (this.dash._isAbove && progress < 1 && finalState === ControlsState.HIDDEN) { //
+        } else if (this.dash._isAbove && progress < 1) { //
             // keep dash below for ws transition between the overview and hidden state
             this.dash.get_parent().set_child_below_sibling(this.dash, null);
             this.dash._isAbove = false;
@@ -1547,10 +1550,18 @@ var ControlsManagerLayoutOverride = {
         const dashToDock = dash._isHorizontal !== undefined;
         if (dashToDock) {
             dashHeight = dash.height;
-            // this is compensation for a bug relative to DtD bottom non-inteli hide position
-            // when workspace box width is caluculated well, but output width is bigger, although if you read the width, you get the originally calculated value
-            if (dash._isHorizontal && dash._position === 2) {
+            // compensation for a bug related to Dash to Dock bottom non-auto-hide position
+            // ...when workspace box width is caluculated correctly, but the output width is bigger
+            // ...although if you read the width back from workspaceDisplay, you get the originally calculated value, not the real one
+            if (dash._position === 2 && !dash.get_parent()?.get_parent()?.get_parent()?._intellihideIsEnabled) {
                 height -= dash.height
+            } else if ([1, 3].includes(dash._position)) {
+                // if Dash to Dock reduces workAreaBox, compensate for this
+                Main.layoutManager._trackedActors.forEach((actor) => {
+                    if (actor.affectsStruts && actor.actor.width === dash.width) {
+                        width += dash.width;
+                    }
+                });
             }
         }
 
@@ -1614,7 +1625,7 @@ var ControlsManagerLayoutOverride = {
                     this._xAlignCenter = true;
                 }
 
-                const wsBoxX = startX + xOffset;
+                const wsBoxX = /*startX + */xOffset;
                 wsBoxY = Math.round(startY + yOffset + ((dashHeight && DASH_TOP) ? dashHeight : spacing)/* + (searchHeight ? searchHeight + spacing : 0)*/);
                 workspaceBox.set_origin(Math.round(wsBoxX), Math.round(wsBoxY));
                 workspaceBox.set_size(Math.round(wWidth), Math.round(wHeight));
@@ -1640,8 +1651,8 @@ var ControlsManagerLayoutOverride = {
         const appDisplayX = startX + (CENTER_APP_GRID ? spacing + thumbnailsWidth : (dashPosition === 3 ? dash.width + spacing : 0) + (WS_TMB_LEFT ? thumbnailsWidth : 0) + spacing);
         const appDisplayY = startY + (dashPosition === DashPosition.TOP ? dashHeight + spacing : spacing);
 
-        const adWidth = CENTER_APP_GRID ? width - 2 * (thumbnailsWidth + spacing) : width - ([1, 3].includes(dashPosition) ? dashWidth + 2 * spacing : 2 * spacing) - thumbnailsWidth - spacing;
-        const adHeight = height - ([0, 2].includes(dashPosition) ? dashHeight + 3 * spacing : 2 * spacing);
+        const adWidth = CENTER_APP_GRID ? width - 2 * (thumbnailsWidth + spacing) : width - ([1, 3].includes(dashPosition) ? dashWidth + 2 * spacing : spacing) - thumbnailsWidth - spacing;
+        const adHeight = height - ([0, 2].includes(dashPosition) ? dashHeight + 2 * spacing : 2 * spacing);
         switch (state) {
         case ControlsState.HIDDEN:
         case ControlsState.WINDOW_PICKER:
@@ -1762,10 +1773,10 @@ var ControlsManagerLayoutOverride = {
 
             let wsTmbX;
             if (WS_TMB_RIGHT) {
-                wsTmbX = Math.round(startX + width - (dashPosition === 1 ? dashWidth : 0) - spacing - wsTmbWidth);
+                wsTmbX = Math.round(startX + width - (dashPosition === 1 ? dashWidth : 0) - wsTmbWidth);
                 this._workspacesThumbnails._positionLeft = false;
             } else {
-                wsTmbX = Math.round(startX + (dashPosition === 3 ? dashWidth + spacing : 0) + spacing);
+                wsTmbX = Math.round(startX + (dashPosition === 3 ? dashWidth + spacing : 0) + spacing / 2);
                 this._workspacesThumbnails._positionLeft = true;
             }
 
@@ -1986,5 +1997,28 @@ var AppDisplayOverride = {
 
         const adaptToSize = AppDisplay.BaseAppView.prototype.adaptToSize.bind(this);
         adaptToSize(width, height);
+    }
+}
+
+//---- SwipeTracker -----------------------------------------------------------------------------------
+// switch overview's state gesture direction
+var SwipeTrackerOverride = {
+    _updateGesture: function(gesture, time, delta, distance) {
+        if (this._state !== 1) //State.SCROLLING)
+            return;
+
+        if ((this._allowedModes & Main.actionMode) === 0 || !this.enabled) {
+            this._interrupt();
+            return;
+        }
+
+        if ([1, 3].includes(WS_TMB_POSITION))
+            delta = -delta;
+
+        this._progress += delta / distance;
+        this._history.append(time, delta);
+
+        this._progress = Math.clamp(this._progress, ...this._getBounds(this._initialProgress));
+        this.emit('update', this._progress);
     }
 }
