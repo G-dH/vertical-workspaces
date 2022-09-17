@@ -75,6 +75,7 @@ const DashPosition = {
 let _verticalOverrides;
 let _windowPreviewInjections;
 let _wsSwitcherPopupInjections;
+let _overviewInjections;
 
 let _appDisplayScrollConId;
 let _monitorsChangedSigId;
@@ -116,6 +117,7 @@ function activate() {
     _verticalOverrides = {};
     _windowPreviewInjections = {};
     _wsSwitcherPopupInjections = {};
+    _overviewInjections = {};
     WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
 
     VerticalDash.DashPosition = DashPosition;
@@ -180,6 +182,9 @@ function activate() {
     // set Dash orientation
     _updateDashPosition();
 
+    // replace overview stratup animation
+    _injectStartupAnimation();
+
     // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
     Main.overview._overview._controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
 
@@ -218,6 +223,10 @@ function reset() {
             _Util.removeInjection(WorkspaceSwitcherPopup.WorkspaceSwitcherPopup.prototype, _wsSwitcherPopupInjections, name);
         }
         _wsSwitcherPopupInjections = {};
+    }
+
+    for (let name in _overviewInjections) {
+        _Util.removeInjection(Overview.Overview.prototype, _overviewInjections, name);
     }
 
     _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, _verticalOverrides['WorkspacesView']);
@@ -322,10 +331,10 @@ function _fixUbuntuDock(activate = true) {
     _showingOverviewSigId = Main.overview.connect('showing', () => {
         // workaround for Ubuntu Dock breaking overview allocations after changing position
         const dash = Main.overview.dash;
-         if (_prevDash.dash !== dash || _prevDash.position !== dash._position) {
-             _resetExtensionIfEnabled(0);
-         }
-     });
+        if (_prevDash.dash !== dash || _prevDash.position !== dash._position) {
+            _resetExtensionIfEnabled(0);
+        }
+    });
 }
 
 //*************************************************************************************************
@@ -479,6 +488,73 @@ function _switchPageShortcuts() {
     settings.set_strv(keyMoveDown, moveDown);
 }
 
+//----- Overview --------------------------------------------------------------
+function _injectStartupAnimation() {
+    _overviewInjections['runStartupAnimation'] = _Util.injectToFunction(
+        Overview.Overview.prototype, 'runStartupAnimation', function() {
+            let translation_x;
+            let translation_y;
+            switch (DASH_POSITION) {
+                case 0:
+                    translation_x = 0;
+                    translation_y = - this.dash.height - this.dash.margin_bottom;
+                    break;
+                case 1:
+                    translation_x = this.dash.width;
+                    translation_y = 0;
+                    break;
+                case 2:
+                    translation_x = 0;
+                    translation_y = this.dash.height + this.dash.margin_bottom;
+                    break;
+                case 3:
+                    translation_x = - this.dash.width;
+                    translation_y = 0;
+                    break;
+            }
+
+            // hide dash and ws thumbnails to hide beginning of the original transition
+            this.dash.opacity = 0;
+            const tmbBox = Main.overview._overview._controls._thumbnailsBox;
+            tmbBox.opacity = 0;
+            // this first ease is actually a hack to delay the code because at this time the original transition is not yet active and cannot be removed
+            this.dash.ease({
+                translation_x: 0,
+                delay: Layout.STARTUP_ANIMATION_TIME,
+                duration: 1,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                // this is the new dash and ws thumbnails transition
+                onComplete: () => {
+                    this.dash.remove_all_transitions();
+                    this.dash.translation_x = translation_x;
+                    this.dash.translation_y = translation_y;
+                    this.dash.opacity = 255;
+                    this.dash.ease({
+                        translation_x: 0,
+                        translation_y: 0,
+                        delay: 0,
+                        duration: Layout.STARTUP_ANIMATION_TIME,
+                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                        onComplete: () => Main.layoutManager._startupAnimationComplete(),
+                    });
+
+                    tmbBox.opacity = 255;
+                    tmbBox.translation_x =
+                        [1, 3].includes(WS_TMB_POSITION) ?
+                        tmbBox.width :
+                        - tmbBox.width;
+                    tmbBox.ease({
+                        translation_x: 0,
+                        delay: 0,
+                        duration: Layout.STARTUP_ANIMATION_TIME,
+                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    });
+                }
+            });
+        }
+    );
+}
+
 //----- WorkspaceSwitcherPopup --------------------------------------------------------
 function _injectWsSwitcherPopup() {
     _wsSwitcherPopupInjections['_init'] = _Util.injectToFunction(
@@ -487,7 +563,7 @@ function _injectWsSwitcherPopup() {
                 this._list.vertical = true;
             }
         }
-    )
+    );
 }
 
 //----- WindowPreview ------------------------------------------------------------------
@@ -1450,7 +1526,7 @@ var ThumbnailsBoxOverride = {
 // ControlsManager
 
 var ControlsManagerOverride = {
-    // this function is used as a callback by a signal handler, needs to be reconnected after modification as the original callback uses a copy of the function
+    // this function is used as a callback by a signal handler, needs to be reconnected after modification as the original callback uses a copy of the original function
     /*_update: function() {
         ...
     }*/
@@ -1465,8 +1541,7 @@ var ControlsManagerOverride = {
         const thumbnailsBoxVisible = shouldShow;
         this._thumbnailsBox.visible = thumbnailsBoxVisible;
 
-        // this call should be directly in _update(), but we cannot replace it
-        // _update() overrides Main.overview._overview._controls._update, but in reality the original code is being executed instead
+        // this call should be directly in _update(), but it's used as a callback function and it would require to reconnect the signal
         this._updateWorkspacesDisplay();
     },
 
