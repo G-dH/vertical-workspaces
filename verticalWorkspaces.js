@@ -491,7 +491,20 @@ function _switchPageShortcuts() {
 //----- Overview --------------------------------------------------------------
 function _injectStartupAnimation() {
     _overviewInjections['runStartupAnimation'] = _Util.injectToFunction(
-        Overview.Overview.prototype, 'runStartupAnimation', function() {
+        Overview.Overview.prototype, 'runStartupAnimation', async function() {
+            const tmbBox = Main.overview._overview._controls._thumbnailsBox;
+            tmbBox.translation_x = [1, 3].includes(WS_TMB_POSITION) ? tmbBox.width : - tmbBox.width;
+            tmbBox.ease({
+                translation_x: 0,
+                delay: Layout.STARTUP_ANIMATION_TIME,
+                duration: Layout.STARTUP_ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            });
+
+            // if DtD replaced the original Dash, there is no need to animate it
+            if (Main.overview.dash._isHorizontal !== undefined)
+                return;
+
             let translation_x;
             let translation_y;
             switch (DASH_POSITION) {
@@ -513,17 +526,16 @@ function _injectStartupAnimation() {
                     break;
             }
 
-            // hide dash and ws thumbnails to hide beginning of the original transition
+            // hide dash to hide beginning of the original transition
             this.dash.opacity = 0;
-            const tmbBox = Main.overview._overview._controls._thumbnailsBox;
-            tmbBox.opacity = 0;
+
             // this first ease is actually a hack to delay the code because at this time the original transition is not yet active and cannot be removed
             this.dash.ease({
                 translation_x: 0,
                 delay: Layout.STARTUP_ANIMATION_TIME,
                 duration: 1,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                // this is the new dash and ws thumbnails transition
+                // this is the new dash transition
                 onComplete: () => {
                     this.dash.remove_all_transitions();
                     this.dash.translation_x = translation_x;
@@ -536,18 +548,6 @@ function _injectStartupAnimation() {
                         duration: Layout.STARTUP_ANIMATION_TIME,
                         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                         onComplete: () => Main.layoutManager._startupAnimationComplete(),
-                    });
-
-                    tmbBox.opacity = 255;
-                    tmbBox.translation_x =
-                        [1, 3].includes(WS_TMB_POSITION) ?
-                        tmbBox.width :
-                        - tmbBox.width;
-                    tmbBox.ease({
-                        translation_x: 0,
-                        delay: 0,
-                        duration: Layout.STARTUP_ANIMATION_TIME,
-                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     });
                 }
             });
@@ -1695,7 +1695,7 @@ var ControlsManagerLayoutOverride = {
                 let xOffset = 0;
                 let yOffset = 0;
 
-                yOffset = DASH_TOP ? spacing : (((height - wHeight - (!DASH_VERTICAL ? dashHeight : 0)) / 3));
+                yOffset = DASH_TOP ? spacing : (((height - wHeight - (!DASH_VERTICAL ? dashHeight : 0)) / 2));
 
                 // move the workspace box to the middle of the screen, if possible
                 const centeredBoxX = (width - wWidth) / 2;
@@ -1704,14 +1704,14 @@ var ControlsManagerLayoutOverride = {
 
                 this._xAlignCenter = false;
                 if (xOffset !== centeredBoxX) { // in this case xOffset holds max possible wsBoxX coordinance
-                    xOffset = ((dashPosition === 3 && dash.visible) ? dash.width + spacing : 0) + ((thumbnailsWidth && WS_TMB_LEFT) ? thumbnailsWidth + spacing : 0)
+                    xOffset = ((dashPosition === 3 && dash.visible) ? dash.width + spacing : spacing) + ((thumbnailsWidth && WS_TMB_LEFT) ? thumbnailsWidth /*+ spacing*/ : 0)
                             + (width - wWidth - 2 * spacing - thumbnailsWidth - ((DASH_VERTICAL && dash.visible) ? dash.width + spacing : 0)) / 2;
                 } else {
                     this._xAlignCenter = true;
                 }
 
                 const wsBoxX = /*startX + */xOffset;
-                wsBoxY = Math.round(startY + yOffset + ((dashHeight && DASH_TOP) ? dashHeight : spacing)/* + (searchHeight ? searchHeight + spacing : 0)*/);
+                wsBoxY = Math.round(startY + yOffset + ((dashHeight && DASH_TOP) ? dashHeight : 0)/* + (searchHeight ? searchHeight + spacing : 0)*/);
                 workspaceBox.set_origin(Math.round(wsBoxX), Math.round(wsBoxY));
                 workspaceBox.set_size(Math.round(wWidth), Math.round(wHeight));
             }
@@ -1815,7 +1815,7 @@ var ControlsManagerLayoutOverride = {
                 [, dashWidth] = this._dash.get_preferred_width(height);
                 [, dashHeight] = this._dash.get_preferred_height(dashWidth);
                 dashWidth = Math.min(dashWidth, maxDashWidth);
-                dashHeight = Math.min(dashHeight, height - 2 * spacing);
+                dashHeight = Math.min(dashHeight, height/* - 2 * spacing*/);
 
             } else if (!WS_TMB_FULL_HEIGHT) {
                     this._dash.setMaxSize(width, maxDashHeight);
@@ -1861,7 +1861,7 @@ var ControlsManagerLayoutOverride = {
                 wsTmbX = Math.round(startX + width - (dashPosition === 1 ? dashWidth : 0) - wsTmbWidth);
                 this._workspacesThumbnails._positionLeft = false;
             } else {
-                wsTmbX = Math.round(startX + (dashPosition === 3 ? dashWidth + spacing : 0) + spacing / 2);
+                wsTmbX = Math.round(startX + (dashPosition === 3 ? dashWidth /*+ spacing*/ : 0) + spacing / 2);
                 this._workspacesThumbnails._positionLeft = true;
             }
 
