@@ -49,8 +49,7 @@ function injectToFunction(parent, name, func) {
     parent[name] = function() {
         let ret;
         ret = origin.apply(this, arguments);
-        if (ret === undefined)
-            ret = func.apply(this, arguments);
+        func.apply(this, arguments);
         return ret;
     }
 

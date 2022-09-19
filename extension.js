@@ -24,9 +24,12 @@ function init() {
 }
 
 function enable() {
+    // replace overview stratup animation
+    VerticalWorkspaces._injectStartupAnimation();
+
     _enableTimeoutId = GLib.timeout_add(
         GLib.PRIORITY_DEFAULT,
-        700,
+        400,
         () => {
             VerticalWorkspaces.activate();
             log(`${Me.metadata.name}: enabled`);

@@ -5,7 +5,7 @@
  * @author     GdH <G-dH@github.com>
  * @copyright  2022
  * @license    GPL-3.0
- * used parts of https://github.com/RensAlthuis/vertical-overview extension
+ * contains parts of https://github.com/RensAlthuis/vertical-overview extension
  */
 
 'use strict';
@@ -75,7 +75,7 @@ const DashPosition = {
 let _verticalOverrides;
 let _windowPreviewInjections;
 let _wsSwitcherPopupInjections;
-let _overviewInjections;
+let _controlsManagerInjections;
 
 let _appDisplayScrollConId;
 let _monitorsChangedSigId;
@@ -117,7 +117,7 @@ function activate() {
     _verticalOverrides = {};
     _windowPreviewInjections = {};
     _wsSwitcherPopupInjections = {};
-    _overviewInjections = {};
+    _controlsManagerInjections = {};
     WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
 
     VerticalDash.DashPosition = DashPosition;
@@ -182,9 +182,6 @@ function activate() {
     // set Dash orientation
     _updateDashPosition();
 
-    // replace overview stratup animation
-    _injectStartupAnimation();
-
     // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
     Main.overview._overview._controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
 
@@ -216,18 +213,19 @@ function reset() {
     for (let name in _windowPreviewInjections) {
         _Util.removeInjection(WindowPreview.WindowPreview.prototype, _windowPreviewInjections, name);
     }
-    _windowPreviewInjections = {};
+    _windowPreviewInjections = undefined;
 
     if (shellVersion >= 42) {
         for (let name in _wsSwitcherPopupInjections) {
             _Util.removeInjection(WorkspaceSwitcherPopup.WorkspaceSwitcherPopup.prototype, _wsSwitcherPopupInjections, name);
         }
-        _wsSwitcherPopupInjections = {};
+        _wsSwitcherPopupInjections = undefined;
     }
 
-    for (let name in _overviewInjections) {
-        _Util.removeInjection(Overview.Overview.prototype, _overviewInjections, name);
+    for (let name in _controlsManagerInjections) {
+        _Util.removeInjection(OverviewControls.ControlsManager.prototype, _controlsManagerInjections, name);
     }
+    _controlsManagerInjections = undefined;
 
     _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, _verticalOverrides['WorkspacesView']);
     _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, _verticalOverrides['WorkspacesDisplay']);
@@ -490,10 +488,21 @@ function _switchPageShortcuts() {
 
 //----- Overview --------------------------------------------------------------
 function _injectStartupAnimation() {
-    _overviewInjections['runStartupAnimation'] = _Util.injectToFunction(
-        Overview.Overview.prototype, 'runStartupAnimation', async function() {
+    _controlsManagerInjections = {};
+    _controlsManagerInjections['runStartupAnimation'] = _Util.injectToFunction(
+        OverviewControls.ControlsManager.prototype, 'runStartupAnimation', async function(callback) {
+            // Set the opacity here to avoid a 1-frame flicker
+            this.dash.opacity = 0;
+
+            // We can't run the animation before the first allocation happens
+            await this.layout_manager.ensureAllocation();
+
+            // remove original animation
+            this.dash.remove_all_transitions();
+
             const tmbBox = Main.overview._overview._controls._thumbnailsBox;
-            tmbBox.translation_x = [1, 3].includes(WS_TMB_POSITION) ? tmbBox.width : - tmbBox.width;
+            const offset = tmbBox.width + ([1, 3].includes(DASH_POSITION) ? this.dash.width : 0);
+            tmbBox.translation_x = [1, 3].includes(WS_TMB_POSITION) ? offset : - offset;
             tmbBox.ease({
                 translation_x: 0,
                 delay: Layout.STARTUP_ANIMATION_TIME,
@@ -501,8 +510,10 @@ function _injectStartupAnimation() {
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             });
 
+            this.dash.opacity = 255;
+
             // if DtD replaced the original Dash, there is no need to animate it
-            if (Main.overview.dash._isHorizontal !== undefined)
+            if (Main.overview.dash._isHorizontal !== undefined || !this.dash.visible)
                 return;
 
             let translation_x;
@@ -526,30 +537,16 @@ function _injectStartupAnimation() {
                     break;
             }
 
-            // hide dash to hide beginning of the original transition
-            this.dash.opacity = 0;
-
-            // this first ease is actually a hack to delay the code because at this time the original transition is not yet active and cannot be removed
+            this.dash.translation_x = translation_x;
+            this.dash.translation_y = translation_y;
+            this.dash.opacity = 255;
             this.dash.ease({
                 translation_x: 0,
+                translation_y: 0,
                 delay: Layout.STARTUP_ANIMATION_TIME,
-                duration: 1,
+                duration: Layout.STARTUP_ANIMATION_TIME,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                // this is the new dash transition
-                onComplete: () => {
-                    this.dash.remove_all_transitions();
-                    this.dash.translation_x = translation_x;
-                    this.dash.translation_y = translation_y;
-                    this.dash.opacity = 255;
-                    this.dash.ease({
-                        translation_x: 0,
-                        translation_y: 0,
-                        delay: 0,
-                        duration: Layout.STARTUP_ANIMATION_TIME,
-                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                        onComplete: () => Main.layoutManager._startupAnimationComplete(),
-                    });
-                }
+                onComplete: () => callback(),
             });
         }
     );
@@ -1861,7 +1858,7 @@ var ControlsManagerLayoutOverride = {
                 wsTmbX = Math.round(startX + width - (dashPosition === 1 ? dashWidth : 0) - wsTmbWidth);
                 this._workspacesThumbnails._positionLeft = false;
             } else {
-                wsTmbX = Math.round(startX + (dashPosition === 3 ? dashWidth /*+ spacing*/ : 0) + spacing / 2);
+                wsTmbX = Math.round((dashPosition === 3 ? dashWidth : 0) + spacing / 2);
                 this._workspacesThumbnails._positionLeft = true;
             }
 
