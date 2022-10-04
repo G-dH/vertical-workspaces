@@ -131,7 +131,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Center Horizontal Dash to Workspace'),
-            _('If position Top or Bottom is selected, Dash position will be calculated relative to the workspace preview instead of the screen. Works only with default Dash.'),
+            _('If the Dash Position is set to Top or Bottom, the position will be recalculated relative to the workspace preview instead of the screen. Works only with the default Dash.'),
             itemFactory.newSwitch(),
             'centerDashToWs',
         )
@@ -149,7 +149,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Fine Tune Dash Position'),
-            _('Adjust position of the dock on chosen axis. Works only with default Dash.'),
+            _('Adjusts position of the dock on chosen axis. Works only with the default Dash.'),
             dashPositionScale,
             'dashPositionAdjust'
         )
@@ -158,7 +158,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Show Apps Icon Position'),
-            _('The Apps icon in Dash'),
+            _('Sets the position of the "Show Applications" icon in the Dash.'),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'showAppsIconPosition',
@@ -302,6 +302,15 @@ function _getLayoutOptionList() {
             _('Search view will be centered to the display instead of the available space. If needed workspace thumbnails will be temporarilly scaled down to fit the search box. This option has bigger impact for narrower and small resolution displays.'),
             itemFactory.newSwitch(),
             'centerSearch',
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Allways Show Search Entry'),
+            _('If disabled, the search entry field will be hidden when not in use, so the workspace preview and app grid may take up more space.'),
+            itemFactory.newSwitch(),
+            'showSearchEntry',
         )
     );
 

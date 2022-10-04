@@ -31,6 +31,9 @@
     <key type="b" name="center-dash-to-ws">
       <default>false</default>
     </key>
+    <key type="b" name="show-search-entry">
+      <default>false</default>
+    </key>
     <key type="b" name="center-search">
       <default>false</default>
     </key>

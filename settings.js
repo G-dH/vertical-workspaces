@@ -56,6 +56,7 @@ var Options = class Options {
             centerDashToWs: ['boolean', 'center-dash-to-ws'],
             showAppsIconPosition: ['int', 'show-app-icon-position'],
             wsThumbnailScale: ['int', 'ws-thumbnail-scale'],
+            showSearchEntry: ['boolean', 'show-search-entry'],
             centerSearch: ['boolean', 'center-search'],
             centerAppGrid: ['boolean', 'center-app-grid'],
             dashBgOpacity: ['int', 'dash-bg-opacity'],

@@ -103,6 +103,7 @@ let SHOW_WST_LABELS;
 let DASH_POSITION;
 let DASH_POSITION_ADJUSTMENT;
 let CENTER_DASH_WS;
+let SHOW_SEARCH_ENTRY;
 let CENTER_SEARCH_VIEW;
 let CENTER_APP_GRID;
 let APP_GRID_ANIMATION;
@@ -161,7 +162,8 @@ function activate() {
 
     _moveDashAppGridIcon();
 
-    Main.overview.searchEntry.visible = false;
+    //Main.overview.searchEntry.visible = true;
+    _updateSearchEntryVisibility();
     _searchControllerSigId =  Main.overview._overview.controls._searchController.connect('notify::search-active', _updateSearchEntryVisibility);
 
     _setAppDisplayOrientation(true);
@@ -369,6 +371,7 @@ function _updateSettings(settings, key) {
 
     CENTER_APP_GRID = gOptions.get('centerAppGrid', true);
 
+    SHOW_SEARCH_ENTRY = gOptions.get('showSearchEntry', true);
     CENTER_SEARCH_VIEW = gOptions.get('centerSearch', true);
     APP_GRID_ANIMATION = gOptions.get('appGridAnimation', true);
     if (APP_GRID_ANIMATION === 4) APP_GRID_ANIMATION = (!(WS_TMB_POSITION % 2) || !SHOW_WS_TMB) ? 1 : 2;
@@ -376,6 +379,7 @@ function _updateSettings(settings, key) {
 
     WIN_PREVIEW_ICON_SIZE = [64, 48, 32, 22, 8][gOptions.get('winPreviewIconSize', true)];
 
+    _updateSearchEntryVisibility();
     _switchPageShortcuts();
     if (key === 'fix-ubuntu-dock')
         _fixUbuntuDock(gOptions.get('fixUbuntuDock', true));
@@ -410,6 +414,11 @@ function _updateDashPosition() {
 }
 
 function _updateSearchEntryVisibility() {
+    if (SHOW_SEARCH_ENTRY) {
+        Main.overview.searchEntry.visible = true;
+        Main.overview.searchEntry.opacity = 255;
+        return;
+    }
     // show search entry only if the user starts typing, and hide it when leaving the search mode
     const searchActive = Main.overview._overview.controls._searchController._searchActive;
     Main.overview.searchEntry.ease({
@@ -1620,7 +1629,7 @@ var ControlsManagerOverride = {
 //-------ControlsManagerLayout-----------------------------
 
 var ControlsManagerLayoutOverride = {
-    _computeWorkspacesBoxForState: function(state, box, workAreaBox, dashHeight, thumbnailsWidth) {
+    _computeWorkspacesBoxForState: function(state, box, workAreaBox, dashHeight, thumbnailsWidth, searchHeight) {
         const workspaceBox = box.copy();
         let [width, height] = workspaceBox.get_size();
         const { x1: startX, y1: startY } = workAreaBox;
@@ -1669,6 +1678,7 @@ var ControlsManagerLayoutOverride = {
                 workspaceBox.set_size(...this._workspacesThumbnails.get_size());
             } else {
                 dashHeight = dash.visible ? dashHeight : 0;
+                searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
                 wWidth = width
                             - spacing
                             - (DASH_VERTICAL ? dash.width + spacing : spacing)
@@ -1676,6 +1686,7 @@ var ControlsManagerLayoutOverride = {
                             - 2 * spacing;
                 wHeight = height
                             - (DASH_VERTICAL ? 4 * spacing : (dashHeight ? dashHeight + spacing : 4 * spacing))
+                            - searchHeight
                             - 3 * spacing;
                 const ratio = width / height;
                 let wRatio = wWidth / wHeight;
@@ -1692,7 +1703,7 @@ var ControlsManagerLayoutOverride = {
                 let xOffset = 0;
                 let yOffset = 0;
 
-                yOffset = DASH_TOP ? spacing : (((height - wHeight - (!DASH_VERTICAL ? dashHeight : 0)) / 2));
+                yOffset = searchHeight + (DASH_TOP ? spacing : (((height - wHeight - searchHeight - (!DASH_VERTICAL ? dashHeight : 0)) / 2)));
 
                 // move the workspace box to the middle of the screen, if possible
                 const centeredBoxX = (width - wWidth) / 2;
@@ -1717,7 +1728,7 @@ var ControlsManagerLayoutOverride = {
         return workspaceBox;
     },
 
-    _getAppDisplayBoxForState: function(state, box, workAreaBox, /*searchHeight,*/ dashWidth, dashHeight, appGridBox, thumbnailsWidth) {
+    _getAppDisplayBoxForState: function(state, box, workAreaBox, searchHeight, dashWidth, dashHeight, appGridBox, thumbnailsWidth) {
         const [width] = box.get_size();
         const { x1: startX } = workAreaBox;
         const { y1: startY } = workAreaBox;
@@ -1729,12 +1740,13 @@ var ControlsManagerLayoutOverride = {
         const WS_TMB_LEFT = this._workspacesThumbnails._positionLeft;
         const dash = Main.overview.dash;
         const dashPosition = dash._position;
+        searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
 
         const appDisplayX = startX + (CENTER_APP_GRID ? spacing + thumbnailsWidth : (dashPosition === 3 ? dash.width + spacing : 0) + (WS_TMB_LEFT ? thumbnailsWidth : 0) + spacing);
-        const appDisplayY = startY + (dashPosition === DashPosition.TOP ? dashHeight + spacing : spacing);
+        const appDisplayY = startY + searchHeight + (dashPosition === DashPosition.TOP ? dashHeight + spacing : spacing);
 
         const adWidth = CENTER_APP_GRID ? width - 2 * (thumbnailsWidth + spacing) : width - ([1, 3].includes(dashPosition) ? dashWidth + 2 * spacing : spacing) - thumbnailsWidth - spacing;
-        const adHeight = height - ([0, 2].includes(dashPosition) ? dashHeight + 2 * spacing : 2 * spacing);
+        const adHeight = height - searchHeight - ([0, 2].includes(dashPosition) ? dashHeight + 2 * spacing : 2 * spacing);
         switch (state) {
         case ControlsState.HIDDEN:
         case ControlsState.WINDOW_PICKER:
@@ -1895,11 +1907,11 @@ var ControlsManagerLayoutOverride = {
                 dashY = startY + height - dashHeight;
 
             if (!DASH_VERTICAL) {
-                offset = (width - ((WS_TMB_FULL_HEIGHT || DASH_CENTER_WS) ? wsTmbWidth + spacing : 0) - dashWidth) / 2;
+                offset = (width - (((WS_TMB_FULL_HEIGHT || DASH_CENTER_WS) && !this._xAlignCenter) ? wsTmbWidth + spacing : 0) - dashWidth) / 2;
                 offset = offset - DASH_POSITION_ADJUSTMENT * offset;
                 dashX = offset;
 
-                if (WS_TMB_FULL_HEIGHT || DASH_CENTER_WS) {
+                if ((WS_TMB_FULL_HEIGHT || DASH_CENTER_WS) && !this._xAlignCenter) {
                     if (WS_TMB_RIGHT) {
                         dashX = Math.min(dashX, width - spacing - dashWidth - (wsTmbWidth ? wsTmbWidth + 2 * spacing : spacing));
                     } else {
@@ -1925,8 +1937,10 @@ var ControlsManagerLayoutOverride = {
 
         availableHeight -= (DASH_VERTICAL ? 0 : dashHeight + spacing);
 
+        let [searchHeight] = this._searchEntry.get_preferred_height(width - wsTmbWidth);
+
         // Workspaces
-        let params = [box, workAreaBox, dashHeight, wsTmbWidth];
+        let params = [box, workAreaBox, dashHeight, wsTmbWidth, searchHeight];
         const transitionParams = this._stateAdjustment.getStateTransitionParams();
 
         // Update cached boxes
@@ -1947,26 +1961,27 @@ var ControlsManagerLayoutOverride = {
         this._workspacesDisplay.allocate(workspacesBox);
 
         // Search entry
-        const searchXoffset = spacing + (WS_TMB_RIGHT ? 0 : wsTmbWidth + spacing);
-        let [searchHeight] = this._searchEntry.get_preferred_height(width - wsTmbWidth);
+        const searchXoffset = (DASH_POSITION === 3 ? dashWidth : 0) + spacing + (WS_TMB_RIGHT ? 0 : wsTmbWidth + spacing);
+        //let [searchHeight] = this._searchEntry.get_preferred_height(width - wsTmbWidth);
 
         // Y possition under top Dash
         let searchEntryX, searchEntryY;
         if (DASH_TOP) {
-            searchEntryY = startY + (DASH_VERTICAL ? spacing : dashHeight - spacing);
+            searchEntryY = startY + dashHeight - spacing;
         } else {
-            searchEntryY = startY + spacing;
+            searchEntryY = startY;
         }
 
-        searchEntryX = Math.round(startX + searchXoffset);
-        const searchEntryWidth = this._xAlignCenter ? width : width - 2 * spacing - wsTmbWidth; // xAlignCenter is given by wsBox
+        searchEntryX = searchXoffset;
+        let searchWidth = width - 2 * spacing - wsTmbWidth - (DASH_VERTICAL ? dashWidth : 0); // xAlignCenter is given by wsBox
+        searchWidth = this._xAlignCenter ? width - 2 * (wsTmbWidth + spacing) : searchWidth;
 
         if (CENTER_SEARCH_VIEW) {
             childBox.set_origin(0, searchEntryY);
             childBox.set_size(width, searchHeight);
         } else {
             childBox.set_origin(this._xAlignCenter ? 0 : searchEntryX, searchEntryY);
-            childBox.set_size(this._xAlignCenter ? width : searchEntryWidth, searchHeight);
+            childBox.set_size(this._xAlignCenter ? width : searchWidth - spacing, searchHeight);
         }
 
         this._searchEntry.allocate(childBox);
@@ -1978,7 +1993,7 @@ var ControlsManagerLayoutOverride = {
             const workspaceAppGridBox =
                 this._cachedWorkspaceBoxes.get(ControlsState.WINDOW_PICKER);
 
-            params = [box, workAreaBox, /*searchHeight,*/ dashWidth, dashHeight, workspaceAppGridBox, wsTmbWidth];
+            params = [box, workAreaBox, searchHeight, dashWidth, dashHeight, workspaceAppGridBox, wsTmbWidth];
             let appDisplayBox;
             if (!transitionParams.transitioning) {
                 appDisplayBox =
@@ -1995,12 +2010,12 @@ var ControlsManagerLayoutOverride = {
         }
 
         // Search
-        let searchWidth = width;
         if (CENTER_SEARCH_VIEW) {
-            childBox.set_origin(0, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight);
+            searchWidth = width - 2 * wsTmbWidth;
+            childBox.set_origin(wsTmbWidth, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight);
         } else {
-            childBox.set_origin(this._xAlignCenter ? 0 : searchXoffset, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight);
-            searchWidth = this._xAlignCenter ? width : width - 2 * spacing - wsTmbWidth;
+            childBox.set_origin(this._xAlignCenter ? wsTmbWidth + spacing : searchXoffset, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight);
+            //searchWidth = this._xAlignCenter ? width : width - 2 * spacing - wsTmbWidth - (DASH_VERTICAL ? dashWidth : 0);
         }
 
         childBox.set_size(searchWidth, availableHeight);
