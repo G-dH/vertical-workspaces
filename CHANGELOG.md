@@ -1,4 +1,18 @@
 ## Changelog:
+### v13 (not released yet)
+**Added:**
+- Horizontal 3 finger gesture automatically changes its direction depending on the workspace thumbnails position to match direction of the transition animation.
+- Vertically oriented Dash items can be selected and activated even with the pointer at the edge of the screen.
+- Option `Startup State` allows to change GNOME Shell's startup state from Overview to Desktop.
+- Option `Always Show Search Entry` now allows showing the search entry even if the search is not active.
+
+**Fixed**
+- 3 finger gestures not having proper orientation when used for the first time after enabling the extension.
+- Dash overlaping workspace during transition between normal view and overview when using a 3 finger gesture.
+- Dash icons can get out of border when dash size reach its maximum.
+- Smaller workspace preview size if DtD set to auto-hide.
+- Dash startup animation doesn't respect Dash position, workspace thumbnails don't animate at all.
+
 ### v12 2022-09-04
 **Fixed:**
 - Dash to Dock compatibility issue when original Dash set to vertical position
