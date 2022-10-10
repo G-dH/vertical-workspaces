@@ -109,6 +109,7 @@ let CENTER_APP_GRID;
 let APP_GRID_ANIMATION;
 let WS_ANIMATION;
 let WIN_PREVIEW_ICON_SIZE;
+let STARTUP_STATE;
 
 let _enabled = false;
 
@@ -379,6 +380,8 @@ function _updateSettings(settings, key) {
 
     WIN_PREVIEW_ICON_SIZE = [64, 48, 32, 22, 8][gOptions.get('winPreviewIconSize', true)];
 
+    STARTUP_STATE = gOptions.get('startupState', true);
+
     _updateSearchEntryVisibility();
     _switchPageShortcuts();
     if (key === 'fix-ubuntu-dock')
@@ -500,6 +503,7 @@ function _injectStartupAnimation() {
     _controlsManagerInjections = {};
     _controlsManagerInjections['runStartupAnimation'] = _Util.injectToFunction(
         OverviewControls.ControlsManager.prototype, 'runStartupAnimation', async function(callback) {
+            const STARTUP_ANIMATION_TIME = Layout.STARTUP_ANIMATION_TIME;
             // Set the opacity here to avoid a 1-frame flicker
             this.dash.opacity = 0;
 
@@ -514,8 +518,8 @@ function _injectStartupAnimation() {
             tmbBox.translation_x = [1, 3].includes(WS_TMB_POSITION) ? offset : - offset;
             tmbBox.ease({
                 translation_x: 0,
-                delay: Layout.STARTUP_ANIMATION_TIME,
-                duration: Layout.STARTUP_ANIMATION_TIME,
+                delay: STARTUP_ANIMATION_TIME,
+                duration: STARTUP_ANIMATION_TIME,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             });
 
@@ -552,10 +556,15 @@ function _injectStartupAnimation() {
             this.dash.ease({
                 translation_x: 0,
                 translation_y: 0,
-                delay: Layout.STARTUP_ANIMATION_TIME,
-                duration: Layout.STARTUP_ANIMATION_TIME,
+                delay: STARTUP_ANIMATION_TIME,
+                duration: STARTUP_ANIMATION_TIME,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                onComplete: () => callback(),
+                onComplete: () => {
+                    callback();
+                    if (STARTUP_STATE) {
+                        Main.overview.toggle();
+                    }
+                },
             });
         }
     );
@@ -2015,7 +2024,6 @@ var ControlsManagerLayoutOverride = {
             childBox.set_origin(wsTmbWidth, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight);
         } else {
             childBox.set_origin(this._xAlignCenter ? wsTmbWidth + spacing : searchXoffset, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight);
-            //searchWidth = this._xAlignCenter ? width : width - 2 * spacing - wsTmbWidth - (DASH_VERTICAL ? dashWidth : 0);
         }
 
         childBox.set_size(searchWidth, availableHeight);

@@ -441,6 +441,19 @@ function _getAdjustmentsOptionList() {
         )
     );
 
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Startup State'),
+            _('Allows to change the state in which GNOME Shell starts a session.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'startupState',
+            [   [_('Overview'), 0],
+                [_('Desktop'), 1],
+            ]
+        )
+    );
+
     return optionList;
 }
 

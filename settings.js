@@ -66,7 +66,8 @@ var Options = class Options {
             appGridAnimation: ['int', 'app-grid-animation'],
             workspaceAnimation: ['int', 'workspace-animation'],
             fixUbuntuDock: ['boolean', 'fix-ubuntu-dock'],
-            winPreviewIconSize: ['int', 'win-preview-icon-size']
+            winPreviewIconSize: ['int', 'win-preview-icon-size'],
+            startupState: ['int', 'startup-state']
         }
         this.cachedOptions = {};
     }
