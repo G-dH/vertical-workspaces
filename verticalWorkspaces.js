@@ -38,7 +38,7 @@ const VerticalDash = Me.imports.dash;
 const _Util = Me.imports.util;
 
 
-// touching modul properties defined by const/let for the first time returns undefined in GS 42, so we touch it here before we use it
+// touching module properties defined by const/let for the first time returns undefined in GS 42, so we touch it here before we use it
 WorkspacesView.SecondaryMonitorDisplay;
 WorkspacesView.SECONDARY_WORKSPACE_SCALE;
 WindowPreview.ICON_SIZE;
@@ -173,7 +173,7 @@ function activate() {
     Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
     Main.wm._workspaceAnimation._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
     // overview's updateGesture() function should reflect ws tmb position to match appGrid/ws animation direction
-    // function in connection cannot be overriden in prototype of its class because connected is actually another copy of the original function
+    // function in connection cannot be overridden in prototype of its class because connected is actually another copy of the original function
     _originalGestureUpdateId = GObject.signal_handler_find(Main.overview._swipeTracker._touchpadGesture, { signalId: 'update' });
     Main.overview._swipeTracker._touchpadGesture.block_signal_handler(_originalGestureUpdateId);
     Main.overview._swipeTracker._updateGesture = SwipeTrackerOverride._updateGesture;
@@ -623,7 +623,7 @@ function _injectWindowPreview() {
 
             const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
             const iconOverlap = WIN_PREVIEW_ICON_SIZE * ICON_OVERLAP;
-            // we cannot get propper title height before it gets to the stage, so 35 is estimated height + spacing
+            // we cannot get proper title height before it gets to the stage, so 35 is estimated height + spacing
             this._title.get_constraints()[1].offset = scaleFactor * (- iconOverlap - 35);
             this.set_child_above_sibling(this._title, null);
         }
@@ -814,7 +814,7 @@ var WorkspacesViewOverride = {
             //const scale = Util.lerp(1, 1, scaleProgress);//Util.lerp(WORKSPACE_INACTIVE_SCALE, 1, scaleProgress);
             //w.set_scale(scale, scale);
 
-            // if we disable inactive workspaces, ws animation will be noticably smoother
+            // if we disable inactive workspaces, ws animation will be noticeably smoother
             // the only drawback is, that windows on inactive workspaces will be spread with the first ws switching in the overview
             // so you'll see the spread animation during the first workspace switching animation
             w.visible = scaleProgress ? true : false;
@@ -1103,7 +1103,7 @@ var SecondaryMonitorDisplayOverride = {
 var WorkspaceThumbnailOverride = {
     after__init: function () {
 
-        //radius of ws thumbnail backgroung
+        //radius of ws thumbnail background
         this.add_style_class_name('ws-tmb');
 
         // add workspace thumbnails labels if enabled
@@ -1599,7 +1599,7 @@ var ControlsManagerOverride = {
         this._appDisplay.opacity = 255 - opacity;
 
         // workspacesDisplay needs to go off screen in APP_GRID state, otherwise it blocks DND operations within the App Display
-        // but the 'visibile' property ruins transition animation and breakes workspace control
+        // but the 'visibile' property ruins transition animation and breaks workspace control
         // scale_y = 0 hides the object but without collateral damage
         this._workspacesDisplay.scale_y = (progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
         this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
@@ -1651,7 +1651,7 @@ var ControlsManagerLayoutOverride = {
         if (dashToDock) {
             dashHeight = dash.height;
             // compensation for a bug related to Dash to Dock bottom non-auto-hide position
-            // ...when workspace box width is caluculated correctly, but the output width is bigger
+            // ...when workspace box width is calculated correctly, but the output width is bigger
             // ...although if you read the width back from workspaceDisplay, you get the originally calculated value, not the real one
             if (dash._position === 2 && !dash.get_parent()?.get_parent()?.get_parent()?._intellihideIsEnabled) {
                 height -= dash.height
@@ -1816,7 +1816,7 @@ var ControlsManagerLayoutOverride = {
         this._dash._position = dashPosition;
 
         let DASH_VERTICAL = [1, 3].includes(dashPosition);
-        // dash cloud be overriden by the Dash to Dock clone
+        // dash cloud be overridden by the Dash to Dock clone
         // Dash to Dock has property _isHorizontal
         const dash = Main.overview.dash;
         if (dash._isHorizontal !== undefined) {
@@ -1973,7 +1973,7 @@ var ControlsManagerLayoutOverride = {
         const searchXoffset = (DASH_POSITION === 3 ? dashWidth : 0) + spacing + (WS_TMB_RIGHT ? 0 : wsTmbWidth + spacing);
         //let [searchHeight] = this._searchEntry.get_preferred_height(width - wsTmbWidth);
 
-        // Y possition under top Dash
+        // Y position under top Dash
         let searchEntryX, searchEntryY;
         if (DASH_TOP) {
             searchEntryY = startY + dashHeight - spacing;

@@ -1,6 +1,6 @@
 // Vertical Workspaces
 // GPL v3 ©G-dH@Github.com
-// Credits - modified util modul from https://github.com/RensAlthuis/vertical-overview
+// Credits - modified util module from https://github.com/RensAlthuis/vertical-overview
 'use strict';
 
 const Gi = imports._gi;

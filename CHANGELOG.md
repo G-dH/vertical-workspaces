@@ -8,7 +8,7 @@
 
 **Fixed**
 - 3 finger gestures not having proper orientation when used for the first time after enabling the extension.
-- Dash overlaping workspace during transition between normal view and overview when using a 3 finger gesture.
+- Dash overlapping workspace during transition between normal view and overview when using a 3 finger gesture.
 - Dash icons can get out of border when dash size reach its maximum.
 - Smaller workspace preview size if DtD set to auto-hide.
 - Dash startup animation doesn't respect Dash position, workspace thumbnails don't animate at all.
@@ -60,7 +60,7 @@
 
 ### v6 22-07-23
 **Added:**
-- Option `Auto` to App Grid Animation menu, changes animation direction acording to workspace switcher position and visibility.
+- Option `Auto` to App Grid Animation menu, changes animation direction according to workspace switcher position and visibility.
 - Option `Fix for Dash to Dock` helps to keep VW consistent when DtD updates its position and while updating monitors configuration.
 
 **Fixed:**
