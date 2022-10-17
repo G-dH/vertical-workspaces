@@ -299,7 +299,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Center Search View'),
-            _('Search view will be centered to the display instead of the available space. If needed workspace thumbnails will be temporarilly scaled down to fit the search box. This option has bigger impact for narrower and small resolution displays.'),
+            _('Search view will be centered to the display instead of the available space. If needed workspace thumbnails will be temporarily scaled down to fit the search box. This option has bigger impact for narrower and small resolution displays.'),
             itemFactory.newSwitch(),
             'centerSearch',
         )
@@ -373,7 +373,7 @@ function _getAdjustmentsOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Show Wallpaper in Workspace Thumbnails'),
-            _('Workspace thumbnails will include the current desktop backgroud.'),
+            _('Workspace thumbnails will include the current desktop background.'),
             itemFactory.newSwitch(),
             'showWsSwitcherBg',
         )
@@ -526,7 +526,7 @@ function _getAboutOptionList() {
     ));
 
     optionList.push(itemFactory.getRowWidget(
-        _('Gome Extensions'),
+        _('Gnome Extensions'),
         _('Rate and comment the extension on GNOME Extensions site.'),
         itemFactory.newLinkButton('https://extensions.gnome.org/extension/5177'),
     ));

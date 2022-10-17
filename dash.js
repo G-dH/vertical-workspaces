@@ -5,7 +5,7 @@
  * @author     GdH <G-dH@github.com>
  * @copyright  2022
  * @license    GPL-3.0
- * modified dash modul of https://github.com/RensAlthuis/vertical-overview extension
+ * modified dash module of https://github.com/RensAlthuis/vertical-overview extension
  */
 
 const { Clutter, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
@@ -346,7 +346,7 @@ var DashOverride = {
         const nFavorites = Object.keys(favorites).length;
         const nIcons = children.length + addedItems.length - removedActors.length;
         if (nFavorites > 0 && nFavorites < nIcons) {
-            // destroy the horizontal seperator if it exists.
+            // destroy the horizontal separator if it exists.
             // this is incredibly janky, but I can't think of a better way atm.
             if (this._separator && this._separator.height !== 1) {
                 this._separator.destroy();

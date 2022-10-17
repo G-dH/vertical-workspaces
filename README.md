@@ -24,7 +24,7 @@ Install the extension (`--force` switch needs to be used only if some version of
     gnome-extensions install --force vertical-workspaces@G-dH.github.com.zip
 
 ### Installation from GitHub repository
-The most recent version in the repository is the one I'm currently using and developing on my own systems, problems may occure, but usually nothing serious.
+The most recent version in the repository is the one I'm currently using and developing on my own systems, problems may occur, but usually nothing serious.
 You may need to install `git`, `gettext` and `glib2.0` for successful installation.
 Navigate to the directory you want to download the source code and execute following commands in the terminal:
 
