@@ -1,5 +1,5 @@
 ## Changelog:
-### v13 (not released yet)
+### v13 (2022-10-20)
 **Added:**
 - Horizontal 3 finger gesture automatically changes its direction depending on the workspace thumbnails position to match direction of the transition animation.
 - Vertically oriented Dash items can be selected and activated even with the pointer at the edge of the screen.
