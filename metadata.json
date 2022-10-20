@@ -1,7 +1,7 @@
 {
   "name": "Vertical Workspaces",
   "uuid": "vertical-workspaces@G-dH.github.com",
-  "description": "Vertical workspace orientation for GNOME 40+ that adds options to customize Activities overview layout and content.",
+  "description": "Vertical orientation of workspaces and options to customize Activities overview layout and content for GNOME 40+.",
   "shell-version": [
     "40",
     "41",
@@ -10,5 +10,5 @@
   ],
   "url": "https://github.com/G-dH/vertical-workspaces",
   "gettext-domain": "vertical-workspaces",
-  "version": 12.5
+  "version": 13
 }
