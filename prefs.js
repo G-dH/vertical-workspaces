@@ -307,7 +307,7 @@ function _getLayoutOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Allways Show Search Entry'),
+            _('Always Show Search Entry'),
             _('If disabled, the search entry field will be hidden when not in use, so the workspace preview and app grid may take up more space.'),
             itemFactory.newSwitch(),
             'showSearchEntry',
