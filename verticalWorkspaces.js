@@ -646,7 +646,7 @@ function _setAppDisplayOrientation(vertical = false) {
         appDisplay._scrollView.set_policy(St.PolicyType.NEVER, St.PolicyType.EXTERNAL);
 
         // move and change orientation of page indicators
-        // needs corrections in appgrid page calculations, e.g. appDisplay.adaptToSoze() fnc,
+        // needs corrections in appgrid page calculations, e.g. appDisplay.adaptToSize() fnc,
         // which complicates use of super call inside the function
         const pageIndicators = appDisplay._pageIndicators;
         pageIndicators.vertical = true;
@@ -656,10 +656,14 @@ function _setAppDisplayOrientation(vertical = false) {
         pageIndicators.x_align = Clutter.ActorAlign.START;
 
         // remove touch friendly side navigation bars / arrows
-        // clicking on this area still switches pages
-        // needs to update allocation calculations and _pageForCoords()
         const scrollContainer = appDisplay._scrollView.get_parent();
-        appDisplay._hintContainer && scrollContainer.remove_child(appDisplay._hintContainer);
+        if (shellVersion < 43) {
+            appDisplay._hintContainer && scrollContainer.remove_child(appDisplay._hintContainer);
+        } else {
+            appDisplay._nextPageIndicator.style_class = 'nextPageIndicator';
+            appDisplay._prevPageIndicator.style_class = 'prevPageIndicator';
+        }
+
         // setting their x_scale to 0 removes the arrows and avoid allocation issues compared to .hide() them
         appDisplay._nextPageArrow.scale_x = 0;
         appDisplay._prevPageArrow.scale_x = 0;
