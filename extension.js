@@ -29,9 +29,10 @@ function enable() {
 
     _enableTimeoutId = GLib.timeout_add(
         GLib.PRIORITY_DEFAULT,
-        400,
+        500,
         () => {
             VerticalWorkspaces.activate();
+            global.verticalWorkspacesEnabled = true;
             log(`${Me.metadata.name}: enabled`);
             _enableTimeoutId = 0;
             return GLib.SOURCE_REMOVE;
@@ -46,5 +47,6 @@ function disable() {
     } else {
         VerticalWorkspaces.reset();
     }
+    global.verticalWorkspacesEnabled = undefined;
     log(`${Me.metadata.name}: disabled`);
 }
