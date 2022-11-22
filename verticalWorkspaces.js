@@ -433,7 +433,7 @@ function _updateSearchEntryVisibility() {
 }
 
 function _switchPageShortcuts() {
-    if (!gOptions.get('enablePageShortcuts'))
+    if (!gOptions.get('enablePageShortcuts', true))
         return;
 
     const vertical = global.workspaceManager.layout_rows === -1;
@@ -655,11 +655,13 @@ function _setAppDisplayOrientation(vertical = false) {
         pageIndicators.y_align = Clutter.ActorAlign.CENTER;
         pageIndicators.x_align = Clutter.ActorAlign.START;
 
-        // remove touch friendly side navigation bars / arrows
         const scrollContainer = appDisplay._scrollView.get_parent();
         if (shellVersion < 43) {
+            // remove touch friendly side navigation bars / arrows
             appDisplay._hintContainer && scrollContainer.remove_child(appDisplay._hintContainer);
         } else {
+            // moving these bars needs more patching of the appDisplay's code
+            // for now we just change bars style to be more like vertically oriented arrows indicating direction to prev/next page
             appDisplay._nextPageIndicator.style_class = 'nextPageIndicator';
             appDisplay._prevPageIndicator.style_class = 'prevPageIndicator';
         }
