@@ -1,4 +1,16 @@
 ## Changelog:
+### v14 (not released yet)
+**Added:**
+- Option `Show Static Background` allows keep background wallpaper in the Activities overview.
+- Slider `Blur Static Background` allows add blur to the static background image.
+- Search result style - added bit of transparency to look better with static background.
+
+**Fixed:**
+- Option `Override Page Up/Down Shortcuts` doesn't work reliably.
+
+**Other changes:**
+- Next/Prev page indicators in GS43 are hard to switch from horizontal orientation to vertical, so for now I added style that makes them look more like vertical arrows indicating direction to the prev/next page.
+
 ### v13 (2022-10-20)
 **Added:**
 - Horizontal 3 finger gesture automatically changes its direction depending on the workspace thumbnails position to match direction of the transition animation.

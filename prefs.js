@@ -382,11 +382,37 @@ function _getAdjustmentsOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Show Workspace Preview Background'),
-            _('Allows you to hide workspace preview background wallpaper in the Activities overview.'),
+            _('Allows you to hide the scaling background of the workspace preview.'),
             itemFactory.newSwitch(),
             'showWsPreviewBg',
         )
     );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Show Static Background'),
+            _('Show static background wallpaper instead of the solid grey color.'),
+            itemFactory.newSwitch(),
+            'showBgInOverview',
+        )
+    );
+
+    const blurBgAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: 0,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const bgBlurScale = itemFactory.newScale(blurBgAdjustment);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Blur Static Background'),
+            _('Blur the background wallpaper (if enabled) in the overview. Even if you set the value to 0, the wallpaper will be blurred in the App Grid view for better readability.'),
+            bgBlurScale,
+            'overviewBgBlurSigma'
+        )
+    );    
 
     optionList.push(
         itemFactory.getRowWidget(

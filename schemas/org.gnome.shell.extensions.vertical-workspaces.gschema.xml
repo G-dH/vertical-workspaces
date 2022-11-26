@@ -58,6 +58,12 @@
     <key type="b" name="show-ws-preview-bg">
       <default>true</default>
     </key>
+    <key type="b" name="show-bg-in-overview">
+      <default>false</default>
+    </key>
+    <key type="i" name="overview-bg-blur-sigma">
+      <default>20</default>
+    </key>
     <key type="i" name="app-grid-animation">
       <default>4</default>
     </key>

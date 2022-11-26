@@ -24,6 +24,7 @@ function init() {
 }
 
 function enable() {
+    global.verticalWorkspacesEnabled = true;
     // replace overview stratup animation
     VerticalWorkspaces._injectStartupAnimation();
 
@@ -32,7 +33,6 @@ function enable() {
         500,
         () => {
             VerticalWorkspaces.activate();
-            global.verticalWorkspacesEnabled = true;
             log(`${Me.metadata.name}: enabled`);
             _enableTimeoutId = 0;
             return GLib.SOURCE_REMOVE;

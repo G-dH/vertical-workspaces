@@ -104,3 +104,12 @@
 	border-radius: 0px 0px 100px 100px;
 
 }
+
+.search-section-content {
+	background-color: rgba(20, 20, 20, 0.7);
+	color: white;
+}
+
+.transparent-panel {
+	background-color: transparent;
+}
