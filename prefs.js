@@ -552,6 +552,11 @@ function _getAboutOptionList() {
     ));
 
     optionList.push(itemFactory.getRowWidget(
+        _('Changelog'),
+        _("See what's changed."),
+    ));
+
+    optionList.push(itemFactory.getRowWidget(
         _('Gnome Extensions'),
         _('Rate and comment the extension on GNOME Extensions site.'),
         itemFactory.newLinkButton('https://extensions.gnome.org/extension/5177'),
