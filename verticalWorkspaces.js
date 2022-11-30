@@ -114,11 +114,12 @@ let STARTUP_STATE;
 let SHOW_BG_IN_OVERVIEW;
 let OVERVIEW_BG_BLUR_SIGMA;
 
-let _enabled = 0;
+let _enabled;
+let _startupTime = Date.now();
 
 
 function activate() {
-    _enabled = Date.now();
+    _enabled = true;
     _verticalOverrides = {};
     _windowPreviewInjections = {};
     _wsSwitcherPopupInjections = {};
@@ -202,12 +203,6 @@ function activate() {
 
     _updateStaticBgInOverview();
     _monitorsChangedSigId = Main.layoutManager.connect('monitors-changed', () => _resetExtension(3000));
-
-    // remove any position offsets from dash and ws thumbnails
-    dash.translation_x = 0;
-    dash.translation_y = 0;
-    Main.overview._overview._controls._thumbnailsBox.translation_x = 0;
-    Main.overview._overview._controls._thumbnailsBox.translation_y = 0;
 }
 
 function reset() {
@@ -292,6 +287,12 @@ function reset() {
     gOptions = null;
 
     _updateStaticBgInOverview(reset);
+
+    // remove any position offsets from dash and ws thumbnails
+    Main.overview.dash.translation_x = 0;
+    Main.overview.dash.translation_y = 0;
+    Main.overview._overview._controls._thumbnailsBox.translation_x = 0;
+    Main.overview._overview._controls._thumbnailsBox.translation_y = 0;
 }
 
 function _resetExtension(timeout = 200) {
@@ -1664,7 +1665,7 @@ var ControlsManagerOverride = {
         const tmbBox = this._thumbnailsBox;
         const dash = this.dash;
         // this dash transition collides with startup animation and freezes GS for good, that's why the delay
-        const enabled = (Date.now() - _enabled) > 5000;
+        const enabled = (Date.now() - _startupTime) > 5000;
         if (!SHOW_WS_PREVIEW_BG && enabled) {
             let tmbTranslation_x, dashTranslation_x, dashTranslation_y;
             if (!tmbBox._translationOriginal) {
