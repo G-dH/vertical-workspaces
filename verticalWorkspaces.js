@@ -201,7 +201,7 @@ function activate() {
         _fixUbuntuDock(gOptions.get('fixUbuntuDock'));
     }
 
-    _updateStaticBgInOverview();
+    _setStaticBackground();
     _monitorsChangedSigId = Main.layoutManager.connect('monitors-changed', () => _resetExtension(3000));
 }
 
@@ -286,7 +286,7 @@ function reset() {
     gOptions.destroy();
     gOptions = null;
 
-    _updateStaticBgInOverview(reset);
+    _setStaticBackground(reset);
 
     // remove any position offsets from dash and ws thumbnails
     Main.overview.dash.translation_x = 0;
@@ -304,13 +304,18 @@ function _resetExtension(timeout = 200) {
         () => {
             if (!_enabled)
                 return;
+
             const dash = Main.overview.dash;
-            //if ( _prevDash.dash && dash !== _prevDash.dash) {
-            //    _prevDash.dash = dash;
+            if (!timeout && _prevDash.dash && dash !== _prevDash.dash) { // !timeout means DtD workaround callback
+                _prevDash.dash = dash;
+                log(`[${Me.metadata.name}]: Dash has been replaced, resetting...`);
+                reset();
+                activate();
+            } else if (timeout) {
                 log(`[${Me.metadata.name}]: resetting...`);
                 reset();
                 activate();
-           // }
+            }
             _resetTimeoutId = 0;
             return GLib.SOURCE_REMOVE;
         }
@@ -369,7 +374,8 @@ function _updateSettings(settings, key) {
     CENTER_DASH_WS = gOptions.get('centerDashToWs', true);
 
     VerticalDash.MAX_ICON_SIZE = VerticalDash.baseIconSizes[gOptions.get('dashMaxIconSize', true)];
-    Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
+    if (Main.overview.dash._isHorizontal === undefined) // DtD has its own opacity control
+        Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
 
     WS_TMB_POSITION = gOptions.get('workspaceThumbnailsPosition', true);
     SHOW_WS_TMB = WS_TMB_POSITION !== 4; // 4 - disable
@@ -401,7 +407,7 @@ function _updateSettings(settings, key) {
 
     _updateSearchEntryVisibility();
     _switchPageShortcuts();
-    _updateStaticBgInOverview();
+    _setStaticBackground();
     if (key === 'fix-ubuntu-dock')
         _fixUbuntuDock(gOptions.get('fixUbuntuDock', true));
     if (key === 'show-app-icon-position')
@@ -544,8 +550,9 @@ function _injectStartupAnimation() {
             this.dash.opacity = 255;
 
             // if DtD replaced the original Dash, there is no need to animate it
-            if (Main.overview.dash._isHorizontal !== undefined || !this.dash.visible)
+            if (Main.overview.dash._isHorizontal !== undefined || !this.dash.visible) {
                 return;
+            }
 
             let translation_x;
             let translation_y;
@@ -731,6 +738,9 @@ function _setAppDisplayOrientation(vertical = false) {
 function _moveDashAppGridIcon(reset = false) {
     // move dash app grid icon to the front
     const dash = Main.overview.dash;
+    // don't touch DtD
+    if (dash._isHorizontal !== undefined)
+        return;
     if (reset || gOptions.get('showAppsIconPosition', true))
         dash._dashContainer.set_child_at_index(dash._showAppsIcon, 1);
     else
@@ -1654,6 +1664,23 @@ var ControlsManagerOverride = {
 
         let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
 
+        if (searchActive && _bgManagers.length) {
+            _updateStaticBackground(_bgManagers[0], 2);
+        } else if (_bgManagers.length) {
+            _updateStaticBackground(_bgManagers[0], 1);
+        }
+
+        // improve transition from search results to desktop
+        if (finalState === 0 && this._searchController._searchResults.visible) {
+            this._searchController.hide();
+        }
+
+        /*if (finalState === 1) {
+            this._searchEntry.opacity = progress * 255;
+        } else if (finalState === 0) {
+            this._searchEntry.opacity = (1 - progress) * 255;
+        }*/
+
         if ((WS_ANIMATION !== 1) || !SHOW_WS_TMB) {
             this._workspacesDisplay.opacity = opacity;
         } else if (!SHOW_WS_TMB_BG) {
@@ -1664,7 +1691,9 @@ var ControlsManagerOverride = {
         // if ws preview background is disabled, animate tmb box and dash
         const tmbBox = this._thumbnailsBox;
         const dash = this.dash;
+        const searchEntryBin = this._searchEntryBin;
         // this dash transition collides with startup animation and freezes GS for good, that's why the delay
+        const skipDash = Main.overview.dash._isHorizontal !== undefined;
         const enabled = (Date.now() - _startupTime) > 5000;
         if (!SHOW_WS_PREVIEW_BG && enabled) {
             let tmbTranslation_x, dashTranslation_x, dashTranslation_y;
@@ -1672,27 +1701,37 @@ var ControlsManagerOverride = {
                 [tmbTranslation_x, dashTranslation_x, dashTranslation_y] = _getOverviewTranslations(tmbBox);
                 tmbBox._translationOriginal = tmbTranslation_x;
                 dash._translationOriginal = [dashTranslation_x, dashTranslation_y];
+                searchEntryBin._translationOriginal = - searchEntryBin.height - searchEntryBin.y;
             }
             if (finalState === 0 || initialState === 0) {
                 const prg = Math.abs((finalState == 0 ? 0 : 1) - progress);
                 tmbBox.translation_x = Math.round(prg * tmbBox._translationOriginal);
-                dash.translation_x = Math.round(prg * dash._translationOriginal[0]);
-                dash.translation_y = Math.round(prg * dash._translationOriginal[1]);
+                if (!skipDash) {
+                    dash.translation_x = Math.round(prg * dash._translationOriginal[0]);
+                    dash.translation_y = Math.round(prg * dash._translationOriginal[1]);
+                }
+                searchEntryBin.translation_y = Math.round(prg * searchEntryBin._translationOriginal);
             }
             if (progress === 1) {
                 tmbBox._translationOriginal = 0;
-                dash._translationOriginal = 0;
+                if (!skipDash) {
+                    dash._translationOriginal = 0;
+                }
+                searchEntryBin._translationOriginal = 0;
             }
         } else if (enabled && tmbBox.translation_x) {
             tmbBox.translation_x = 0;
-            dash.translation_x = 0;
-            dash.translation_y = 0;
+            if (!skipDash) {
+                dash.translation_x = 0;
+                dash.translation_y = 0;
+            }
+            searchEntryBin.translation_y = 0;
         }
 
         this._appDisplay.opacity = 255 - opacity;
 
         // workspacesDisplay needs to go off screen in APP_GRID state, otherwise it blocks DND operations within the App Display
-        // but the 'visibile' property ruins transition animation and breaks workspace control
+        // but the 'visible' property ruins transition animation and breaks workspace control
         // scale_y = 0 hides the object but without collateral damage
         this._workspacesDisplay.scale_y = (progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
         this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
@@ -1712,16 +1751,9 @@ var ControlsManagerOverride = {
             // keep dash below for ws transition between the overview and hidden state
             this.dash.get_parent().set_child_below_sibling(this.dash, null);
             this.dash._isAbove = false;
+            this._appDisplay.get_parent().set_child_below_sibling(this._appDisplay, null);
         }
 
-        // make panel transparent in the overview
-        /*if (finalState > ControlsState.HIDDEN && !Main.panel._transparent) {
-            Main.panel.add_style_class_name('transparent-panel');
-            Main.panel._transparent = true;
-        } else if (finalState === ControlsState.HIDDEN && Main.panel._transparent) {
-            Main.panel.remove_style_class_name('transparent-panel');
-            Main.panel._transparent = false;
-        }*/
     },
 
     // fix for upstream bug - appGrid.visible after transition from APP_GRID to HIDDEN
@@ -2262,7 +2294,7 @@ var SwipeTrackerOverride = {
     }
 }
 
-function _updateStaticBgInOverview(reset = false) {
+function _setStaticBackground(reset = false) {
     _bgManagers.forEach((bg)=> {
         Main.overview._overview._controls._stateAdjustment.disconnect(bg._fadeSignal);
         bg.destroy();
@@ -2279,55 +2311,82 @@ function _updateStaticBgInOverview(reset = false) {
 			container: Main.layoutManager.overviewGroup,
 			vignette: true,
 		});
+
         bgManager.backgroundActor.content.vignette_sharpness = 0;
         bgManager.backgroundActor.content.brightness = 1;
 
 
         bgManager._fadeSignal = Main.overview._overview._controls._stateAdjustment.connect('notify::value', (v) => {
-            if (!SHOW_BG_IN_OVERVIEW && !SHOW_WS_PREVIEW_BG) {
-                // if no bg shown in the overview, fade out the wallpaper
-                bgManager.backgroundActor.opacity = Util.lerp(255, 0, Math.min(v.value, 1));
-            } else {
-                let effect = bgManager.backgroundActor.get_effect('blur');
-                if (!effect) {
-                    const effect = new Shell.BlurEffect({
-                        brightness: 1,
-                        sigma: OVERVIEW_BG_BLUR_SIGMA,
-                        mode: Shell.BlurMode.ACTOR,
-                    })
-                    bgManager.backgroundActor.add_effect_with_name('blur',effect);
-                    bgManager.backgroundActor.content.vignette_sharpness = 0.4;
-                    bgManager.backgroundActor.content.brightness = 0.85;
-                }
-
-                if (SHOW_WS_PREVIEW_BG && v.value <= 1) // no need to animate transition, unless appgrid state is involved
-                    return;
-
-                const VIGNETTE = 0.6;
-                const BRIGHTNESS = 0.85;
-                let vignetteInit, brightnessInit, sigmaInit;
-                if (SHOW_BG_IN_OVERVIEW && SHOW_WS_PREVIEW_BG) {
-                    vignetteInit = VIGNETTE;
-                    brightnessInit = BRIGHTNESS;
-                    sigmaInit = OVERVIEW_BG_BLUR_SIGMA;
-                } else {
-                    vignetteInit = 0;
-                    brightnessInit = 1;
-                    sigmaInit = 0
-                }
-				bgManager.backgroundActor.content.vignette_sharpness = Util.lerp(vignetteInit, VIGNETTE, Math.min(v.value, 1));
-				bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, Math.min(v.value, 1));
-                if (OVERVIEW_BG_BLUR_SIGMA && !(v.value > 1  && bgManager._monitorIndex !== global.display.get_primary_monitor())) {
-                    bgManager.backgroundActor.get_effect('blur').sigma = Util.lerp(sigmaInit, OVERVIEW_BG_BLUR_SIGMA, v.value / 2);
-                } else {
-                    // even if user set blur to 0, add some blur in the app grid view for better readability
-                    // but only on the primary monitor where the app grid displays
-                    if (bgManager._monitorIndex === global.display.get_primary_monitor())
-                        bgManager.backgroundActor.get_effect('blur').sigma = Util.lerp(sigmaInit, 30, Math.max(v.value - 1, 0));
-                }
-            }
+            _updateStaticBackground(bgManager, v.value);
 		});
 
-        _bgManagers.push(bgManager);
+        if (monitor.index === global.display.get_primary_monitor()) {
+            bgManager._primary = true;
+            _bgManagers.unshift(bgManager); // primary monitor first
+        } else {
+            bgManager._primary = false;
+            _bgManagers.push(bgManager);
+        }
+    }
+}
+
+function _updateStaticBackground(bgManager, stateValue) {
+    if (!SHOW_BG_IN_OVERVIEW && !SHOW_WS_PREVIEW_BG) {
+        // if no bg shown in the overview, fade out the wallpaper
+        bgManager.backgroundActor.opacity = Util.lerp(255, 0, Math.min(stateValue, 1));
+    } else {
+        const VIGNETTE = 0.4;
+        const BRIGHTNESS = 0.85;
+
+        let blurEffect = bgManager.backgroundActor.get_effect('blur');
+        if (!blurEffect) {
+            blurEffect = new Shell.BlurEffect({
+                brightness: 1,
+                sigma: OVERVIEW_BG_BLUR_SIGMA,
+                mode: Shell.BlurMode.ACTOR,
+            })
+            bgManager.backgroundActor.add_effect_with_name('blur',blurEffect);
+        }
+
+        bgManager.backgroundActor.content.vignette_sharpness = VIGNETTE;
+        bgManager.backgroundActor.content.brightness = BRIGHTNESS;
+
+        if (SHOW_WS_PREVIEW_BG && stateValue <= 1) // no need to animate transition, unless appgrid state is involved, static bg is covered by ws preview bg
+            return;
+
+        let vignetteInit, brightnessInit, sigmaInit;
+        if (SHOW_BG_IN_OVERVIEW && SHOW_WS_PREVIEW_BG) {
+            vignetteInit = VIGNETTE;
+            brightnessInit = BRIGHTNESS;
+            sigmaInit = OVERVIEW_BG_BLUR_SIGMA;
+        } else {
+            vignetteInit = 0;
+            brightnessInit = 1;
+            sigmaInit = 0
+        }
+
+        bgManager.backgroundActor.content.vignette_sharpness = Util.lerp(vignetteInit, VIGNETTE, Math.min(stateValue, 1));
+        bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, Math.min(stateValue, 1));
+
+        if (OVERVIEW_BG_BLUR_SIGMA && !(stateValue > 1  && bgManager._primary)) {
+            //blurEffect.sigma = Util.lerp(sigmaInit, OVERVIEW_BG_BLUR_SIGMA, stateValue / 2);
+            blurEffect.sigma = OVERVIEW_BG_BLUR_SIGMA;
+            blurEffect._active = true;
+        } else if (bgManager._primary) {
+            // even if user set blur to 0, add some blur in the app grid view for better readability
+            // but only on the primary monitor where the app grid displays
+            const dSigma = 30;
+            if (stateValue > 1.5 && !blurEffect._active) {
+                //blurEffect.sigma = Util.lerp(sigmaInit, 30, Math.max(stateValue - 1, 0));
+                blurEffect.sigma = dSigma;
+                blurEffect._active = true;
+            } else if (blurEffect._active && stateValue < 1.5) {
+                blurEffect.sigma = 0;
+                blurEffect._active = false;
+            }
+        } else {
+            blurEffect.sigma = 0;
+            blurEffect._active = false;
+        }
     }
 }
