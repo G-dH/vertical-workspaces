@@ -1,5 +1,10 @@
 ## Changelog:
-### v15
+### v16 (2022-12-05)
+**Fixed:**
+- Dash to Dock compatibility.
+- Improved static background transitions.
+
+### v15 (2022-12-01)
 **Fixed:**
 - Dash / ws thumbnails shifted after disable, if ws preview background is disabled.
 - Delayed dash / ws thumbnails animation after screen unlocks.
