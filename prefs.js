@@ -554,6 +554,7 @@ function _getAboutOptionList() {
     optionList.push(itemFactory.getRowWidget(
         _('Changelog'),
         _("See what's changed."),
+        itemFactory.newLinkButton('https://github.com/G-dH/vertical-workspaces/blob/main/CHANGELOG.md'),
     ));
 
     optionList.push(itemFactory.getRowWidget(
