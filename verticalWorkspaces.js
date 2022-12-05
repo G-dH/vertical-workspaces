@@ -2372,7 +2372,7 @@ function _updateStaticBackground(bgManager, stateValue) {
             //blurEffect.sigma = Util.lerp(sigmaInit, OVERVIEW_BG_BLUR_SIGMA, stateValue / 2);
             blurEffect.sigma = OVERVIEW_BG_BLUR_SIGMA;
             blurEffect._active = true;
-        } else if (bgManager._primary) {
+        } else if (!OVERVIEW_BG_BLUR_SIGMA && bgManager._primary) {
             // even if user set blur to 0, add some blur in the app grid view for better readability
             // but only on the primary monitor where the app grid displays
             const dSigma = 30;
@@ -2384,7 +2384,7 @@ function _updateStaticBackground(bgManager, stateValue) {
                 blurEffect.sigma = 0;
                 blurEffect._active = false;
             }
-        } else {
+        } else if (!OVERVIEW_BG_BLUR_SIGMA) {
             blurEffect.sigma = 0;
             blurEffect._active = false;
         }
