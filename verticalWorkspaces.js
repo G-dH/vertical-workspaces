@@ -113,10 +113,12 @@ let WIN_PREVIEW_ICON_SIZE;
 let STARTUP_STATE;
 let SHOW_BG_IN_OVERVIEW;
 let OVERVIEW_BG_BLUR_SIGMA;
+let APP_GRID_BG_BLUR_SIGMA;
+let SMOOTH_BLUR_TRANSITIONS;
 
 let _enabled;
-let _startupTime = Date.now();
-
+let _staticBgAnimationEnabled = false;
+let _overviewHiddenSigId;
 
 function activate() {
     _enabled = true;
@@ -203,6 +205,10 @@ function activate() {
 
     _setStaticBackground();
     _monitorsChangedSigId = Main.layoutManager.connect('monitors-changed', () => _resetExtension(3000));
+
+    // static bg animations conflict with startup animation
+    // enable it on first hiding from the overview and disconnect the signal
+    _overviewHiddenSigId = Main.overview.connect('hiding', _enableStaticBgAnimation);
 }
 
 function reset() {
@@ -293,6 +299,16 @@ function reset() {
     Main.overview.dash.translation_y = 0;
     Main.overview._overview._controls._thumbnailsBox.translation_x = 0;
     Main.overview._overview._controls._thumbnailsBox.translation_y = 0;
+
+    if (_overviewHiddenSigId) {
+        Main.overview.disconnect(_overviewHiddenSigId);
+    }
+}
+
+function _enableStaticBgAnimation() {
+    _staticBgAnimationEnabled = true;
+    Main.overview.disconnect(_overviewHiddenSigId);
+    _overviewHiddenSigId = 0;
 }
 
 function _resetExtension(timeout = 200) {
@@ -404,6 +420,8 @@ function _updateSettings(settings, key) {
     STARTUP_STATE = gOptions.get('startupState', true);
     SHOW_BG_IN_OVERVIEW = gOptions.get('showBgInOverview', true);
     OVERVIEW_BG_BLUR_SIGMA = gOptions.get('overviewBgBlurSigma', true);
+    APP_GRID_BG_BLUR_SIGMA = gOptions.get('appGridBgBlurSigma', true);
+    SMOOTH_BLUR_TRANSITIONS = gOptions.get('smoothBlurTransitions', true);
 
     _updateSearchEntryVisibility();
     _switchPageShortcuts();
@@ -1694,8 +1712,8 @@ var ControlsManagerOverride = {
         const searchEntryBin = this._searchEntryBin;
         // this dash transition collides with startup animation and freezes GS for good, that's why the delay
         const skipDash = Main.overview.dash._isHorizontal !== undefined;
-        const enabled = (Date.now() - _startupTime) > 5000;
-        if (!SHOW_WS_PREVIEW_BG && enabled) {
+        //const enabled = (Date.now() - _startupTime) > 8000;
+        if (!SHOW_WS_PREVIEW_BG && _staticBgAnimationEnabled) {
             let tmbTranslation_x, dashTranslation_x, dashTranslation_y;
             if (!tmbBox._translationOriginal) {
                 [tmbTranslation_x, dashTranslation_x, dashTranslation_y] = _getOverviewTranslations(tmbBox);
@@ -1719,7 +1737,7 @@ var ControlsManagerOverride = {
                 }
                 searchEntryBin._translationOriginal = 0;
             }
-        } else if (enabled && tmbBox.translation_x) {
+        } else if (_staticBgAnimationEnabled && tmbBox.translation_x) {
             tmbBox.translation_x = 0;
             if (!skipDash) {
                 dash.translation_x = 0;
@@ -2368,25 +2386,30 @@ function _updateStaticBackground(bgManager, stateValue) {
         bgManager.backgroundActor.content.vignette_sharpness = Util.lerp(vignetteInit, VIGNETTE, Math.min(stateValue, 1));
         bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, Math.min(stateValue, 1));
 
-        if (OVERVIEW_BG_BLUR_SIGMA && !(stateValue > 1  && bgManager._primary)) {
-            //blurEffect.sigma = Util.lerp(sigmaInit, OVERVIEW_BG_BLUR_SIGMA, stateValue / 2);
-            blurEffect.sigma = OVERVIEW_BG_BLUR_SIGMA;
-            blurEffect._active = true;
-        } else if (!OVERVIEW_BG_BLUR_SIGMA && bgManager._primary) {
-            // even if user set blur to 0, add some blur in the app grid view for better readability
-            // but only on the primary monitor where the app grid displays
-            const dSigma = 30;
-            if (stateValue > 1.5 && !blurEffect._active) {
-                //blurEffect.sigma = Util.lerp(sigmaInit, 30, Math.max(stateValue - 1, 0));
-                blurEffect.sigma = dSigma;
-                blurEffect._active = true;
-            } else if (blurEffect._active && stateValue < 1.5) {
+        if (SMOOTH_BLUR_TRANSITIONS && (OVERVIEW_BG_BLUR_SIGMA || APP_GRID_BG_BLUR_SIGMA)) {
+            if (stateValue <= 1) {
+                blurEffect.sigma = Util.lerp(0, OVERVIEW_BG_BLUR_SIGMA, stateValue);  
+            } else if (stateValue > 1  && bgManager._primary) {
+                blurEffect.sigma = Util.lerp(OVERVIEW_BG_BLUR_SIGMA, APP_GRID_BG_BLUR_SIGMA, stateValue - 1);
+            } else if (stateValue === 1) {
+                blurEffect.sigma = OVERVIEW_BG_BLUR_SIGMA;
+            } else if (stateValue === 0) {
                 blurEffect.sigma = 0;
-                blurEffect._active = false;
             }
-        } else if (!OVERVIEW_BG_BLUR_SIGMA) {
-            blurEffect.sigma = 0;
-            blurEffect._active = false;
+        } else if (OVERVIEW_BG_BLUR_SIGMA || APP_GRID_BG_BLUR_SIGMA) {
+            if (stateValue <= 1 && blurEffect._active !== 1) {
+                blurEffect.sigma = OVERVIEW_BG_BLUR_SIGMA;
+                blurEffect._active = 1;
+            } else if (blurEffect._active !== 2 && bgManager._primary && stateValue > 1.5) {
+                blurEffect.sigma = APP_GRID_BG_BLUR_SIGMA;
+                blurEffect._active = 2;
+            } else if (blurEffect._active !== 1 && stateValue < 1.5) {
+                blurEffect.sigma = OVERVIEW_BG_BLUR_SIGMA;
+                blurEffect._active = 1;
+            } else if (blurEffect._active === 1 && stateValue === 0) {
+                blurEffect.sigma = 0;
+                blurEffect._active = 0;
+            }
         }
     }
 }

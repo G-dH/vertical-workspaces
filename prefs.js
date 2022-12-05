@@ -407,12 +407,38 @@ function _getAdjustmentsOptionList() {
     const bgBlurScale = itemFactory.newScale(blurBgAdjustment);
     optionList.push(
         itemFactory.getRowWidget(
-            _('Blur Static Background'),
-            _('Blur the background wallpaper (if enabled) in the overview. Even if you set the value to 0, the wallpaper will be blurred in the App Grid view for better readability.'),
+            _('Blur Window Picker Static Background'),
+            _('Blur background wallpaper (if enabled) in the overview window picker page.'),
             bgBlurScale,
             'overviewBgBlurSigma'
         )
-    );    
+    );
+
+    const blurAppBgAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: 0,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const bgAppBlurScale = itemFactory.newScale(blurAppBgAdjustment);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Blur App Grid Static Background'),
+            _('Blur background wallpaper (if enabled) in the app grid and search results overview pages.'),
+            bgAppBlurScale,
+            'appGridBgBlurSigma'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Smooth Blur Transitions'),
+            _('Makes blur transitions smoother but can impact overall smoothness of overview animations.'),
+            itemFactory.newSwitch(),
+            'smoothBlurTransitions',
+        )
+    );
 
     optionList.push(
         itemFactory.getRowWidget(

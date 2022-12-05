@@ -65,6 +65,8 @@ var Options = class Options {
             showWsPreviewBg: ['boolean', 'show-ws-preview-bg'],
             showBgInOverview: ['boolean', 'show-bg-in-overview'],
             overviewBgBlurSigma: ['int', 'overview-bg-blur-sigma'],
+            appGridBgBlurSigma: ['int', 'app-grid-bg-blur-sigma'],
+            smoothBlurTransitions: ['boolean', 'smooth-blur-transitions'],
             appGridAnimation: ['int', 'app-grid-animation'],
             workspaceAnimation: ['int', 'workspace-animation'],
             fixUbuntuDock: ['boolean', 'fix-ubuntu-dock'],
