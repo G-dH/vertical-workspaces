@@ -1,4 +1,18 @@
 ## Changelog:
+### v17, v18
+**Added:**
+- Separate scales for blur amount in overview window picker and app grid/search results.
+- Option `Smooth Blur Transitions` allows to disable smooth blur transitions on slower hw.
+
+**Fixed:**
+- Startup animation can freeze Shell if `Show Workspace Preview Background` option disabled.
+- Secondary workspace thumbnails not visible in overview after starting GS.
+- Dash, WS thumbnails and Search entry animations exceptions.
+- App grid animates over the Dash instead below it.
+
+**Other changes:**
+- Default Dash background opacity set to 40.
+
 ### v16 (2022-12-05)
 **Fixed:**
 - Dash to Dock compatibility.
