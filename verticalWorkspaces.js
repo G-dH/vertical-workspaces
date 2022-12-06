@@ -558,14 +558,38 @@ function _injectStartupAnimation() {
             this.dash.remove_all_transitions();
 
             const tmbBox = Main.overview._overview._controls._thumbnailsBox;
-            const offset = tmbBox.width + ([1, 3].includes(DASH_POSITION) ? this.dash.width : 0);
-            tmbBox.translation_x = [1, 3].includes(WS_TMB_POSITION) ? offset : - offset;
-            tmbBox.ease({
-                translation_x: 0,
-                delay: STARTUP_ANIMATION_TIME,
-                duration: STARTUP_ANIMATION_TIME,
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-            });
+            if (tmbBox.visible) {
+                const offset = tmbBox.width + ([1, 3].includes(DASH_POSITION) ? this.dash.width : 0);
+                tmbBox.translation_x = [1, 3].includes(WS_TMB_POSITION) ? offset : - offset;
+                tmbBox.ease({
+                    translation_x: 0,
+                    delay: STARTUP_ANIMATION_TIME,
+                    duration: STARTUP_ANIMATION_TIME,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                });
+            }
+
+            // upstream bug - following animation will be cancelled, probably due to recreation of the widget
+            // needs further investigation
+            const  workspacesViews = this._workspacesDisplay._workspacesViews;
+            if (workspacesViews.length > 1) {
+                for (const view of workspacesViews) {
+                    if (view._monitorIndex !== global.display.get_primary_monitor() && view._thumbnails.visible) {
+                        const tmbBox = view._thumbnails;
+                        // 2 - default, 0 - left, 1 - right
+                        let position = SEC_WS_TMB_POSITION;
+                        if (position === 2) // default - copy primary monitor option
+                            position = WS_TMB_POSITION % 2; // 0,2 - left, 1,3 right
+                        tmbBox.translation_x = tmbBox.width * (position === 1 ? 1 : -1);
+                        tmbBox.ease({
+                            translation_x: 0,
+                            delay: STARTUP_ANIMATION_TIME,
+                            duration: STARTUP_ANIMATION_TIME,
+                            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                        });
+                    }
+                }
+            }
 
             this.dash.opacity = 255;
 
@@ -1101,7 +1125,6 @@ var SecondaryMonitorDisplayOverride = {
             childBox.set_origin(Math.round(wsTmbX), Math.round(wsTmbY));
             childBox.set_size(thumbnailsWidth, thumbnailsHeight);
             this._thumbnails.allocate(childBox);
-
         }
 
         const {
@@ -1143,6 +1166,12 @@ var SecondaryMonitorDisplayOverride = {
     },
 
     _updateThumbnailParams: function() {
+        // workaround for upstream bug - secondary thumbnails boxes don't catch 'showing' signal on the shell startup and don't populate the box with thumbnails
+        // the tmbBox contents is also destroyed when overview state adjustment gets above 1 when swiping gesture from window picker to app grid
+        if (!this._thumbnails._thumbnails.length) {
+            this._thumbnails._createThumbnails();
+        }
+
         if (!this._thumbnails.visible)
             return;
 
@@ -1238,14 +1267,13 @@ var WorkspaceThumbnailOverride = {
             }
             this._wsLabel = new St.Label({
                 text: label,
-                style_class: /*'window-caption',//*/ 'ws-tmb-label',
-                x_align: Clutter.ActorAlign.CENTER,
+                style_class: 'ws-tmb-label',
+                x_align: Clutter.ActorAlign.FILL,
                 y_align: Clutter.ActorAlign.END,
                 x_expand: true,
                 y_expand: true,
             });
-            //this.connect('destroy', () => this._wsLabel.destroy());
-            //this._wsLabel.set_style('padding-top: 5px; padding-bottom: 5px;');
+
             this._wsLabel._maxOpacity = 255;
             this._wsLabel.opacity = this._wsLabel._maxOpacity;
 
@@ -1632,7 +1660,7 @@ var ThumbnailsBoxOverride = {
 
         this._shouldShow = shouldShow;
         this.notify('should-show');
-    },
+    }
 }
 
 //------- overviewControls --------------------------------
@@ -2400,7 +2428,7 @@ function _updateStaticBackground(bgManager, stateValue) {
 
         if (SMOOTH_BLUR_TRANSITIONS && (OVERVIEW_BG_BLUR_SIGMA || APP_GRID_BG_BLUR_SIGMA)) {
             if (stateValue <= 1) {
-                blurEffect.sigma = Util.lerp(0, OVERVIEW_BG_BLUR_SIGMA, stateValue);  
+                blurEffect.sigma = Util.lerp(0, OVERVIEW_BG_BLUR_SIGMA, stateValue);
             } else if (stateValue > 1  && bgManager._primary) {
                 blurEffect.sigma = Util.lerp(OVERVIEW_BG_BLUR_SIGMA, APP_GRID_BG_BLUR_SIGMA, stateValue - 1);
             } else if (stateValue === 1) {
