@@ -299,6 +299,8 @@ function reset() {
     Main.overview.dash.translation_y = 0;
     Main.overview._overview._controls._thumbnailsBox.translation_x = 0;
     Main.overview._overview._controls._thumbnailsBox.translation_y = 0;
+    Main.overview._overview._controls._searchEntryBin.translation_y = 0;
+
 
     if (_overviewHiddenSigId) {
         Main.overview.disconnect(_overviewHiddenSigId);
@@ -1043,13 +1045,16 @@ var SecondaryMonitorDisplayOverride = {
         case ControlsState.APP_GRID:
             let wsbX;
             if (this._thumbnails._positionLeft) {
-                wsbX = 2 * spacing + thumbnailsWidth;
+                wsbX = Math.round(2 * spacing + thumbnailsWidth);
             } else {
                 wsbX = spacing;
             }
-            const wWidth = width - thumbnailsWidth - 5 * spacing;
-            const wHeight = Math.min(wWidth / (width / height), height - 1.7 * padding);
-            workspaceBox.set_origin(wsbX, (height - wHeight) / 2);
+
+            const wWidth = Math.round(width - thumbnailsWidth - 5 * spacing);
+            const wHeight = Math.round(Math.min(wWidth / (width / height), height - 1.7 * padding));
+            const wsbY = Math.round((height - wHeight) / 2);
+
+            workspaceBox.set_origin(wsbX, wsbY);
             workspaceBox.set_size(wWidth, wHeight);
             break;
         }
@@ -1096,6 +1101,7 @@ var SecondaryMonitorDisplayOverride = {
             childBox.set_origin(Math.round(wsTmbX), Math.round(wsTmbY));
             childBox.set_size(thumbnailsWidth, thumbnailsHeight);
             this._thumbnails.allocate(childBox);
+
         }
 
         const {
@@ -1710,16 +1716,15 @@ var ControlsManagerOverride = {
         const tmbBox = this._thumbnailsBox;
         const dash = this.dash;
         const searchEntryBin = this._searchEntryBin;
-        // this dash transition collides with startup animation and freezes GS for good, that's why the delay
+        // this dash transition collides with startup animation and freezes GS for good, needs to be delayed (first Main.overview 'hiding' event enables it)
         const skipDash = Main.overview.dash._isHorizontal !== undefined;
-        //const enabled = (Date.now() - _startupTime) > 8000;
         if (!SHOW_WS_PREVIEW_BG && _staticBgAnimationEnabled) {
-            let tmbTranslation_x, dashTranslation_x, dashTranslation_y;
-            if (!tmbBox._translationOriginal) {
-                [tmbTranslation_x, dashTranslation_x, dashTranslation_y] = _getOverviewTranslations(tmbBox);
+            if (!tmbBox._translationOriginal || Math.abs(tmbBox._translationOriginal) > 500) { // swipe gesture can call this calculation before tmbBox is finalized, giving nonsense width
+                let tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y;
+                [tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _getOverviewTranslations(tmbBox, searchEntryBin);
                 tmbBox._translationOriginal = tmbTranslation_x;
                 dash._translationOriginal = [dashTranslation_x, dashTranslation_y];
-                searchEntryBin._translationOriginal = - searchEntryBin.height - searchEntryBin.y;
+                searchEntryBin._translationOriginal = searchTranslation_y;
             }
             if (finalState === 0 || initialState === 0) {
                 const prg = Math.abs((finalState == 0 ? 0 : 1) - progress);
@@ -1787,37 +1792,44 @@ var ControlsManagerOverride = {
     }
 }
 
-function _getOverviewTranslations(tmbBox) {
+function _getOverviewTranslations(tmbBox, searchEntryBin) {
     //const tmbBox = Main.overview._overview._controls._thumbnailsBox;
-    const offset = tmbBox.width + ([1, 3].includes(DASH_POSITION) ? Main.overview.dash.width : 0);
-    const tmbTranslation_x = [1, 3].includes(WS_TMB_POSITION) ? offset : - offset;
-
-    // if DtD replaced the original Dash, there is no need to animate it
-    /*if (Main.overview.dash._isHorizontal !== undefined || !this.dash.visible)
-        return;*/
-
-    let translation_x;
-    let translation_y;
-    switch (DASH_POSITION) {
-        case 0:
-            translation_x = 0;
-            translation_y = - Main.overview.dash.height - Main.overview.dash.margin_bottom;
-            break;
-        case 1:
-            translation_x = Main.overview.dash.width;
-            translation_y = 0;
-            break;
-        case 2:
-            translation_x = 0;
-            translation_y = Main.overview.dash.height + Main.overview.dash.margin_bottom;
-            break;
-        case 3:
-            translation_x = - Main.overview.dash.width;
-            translation_y = 0;
-            break;
+    let tmbTranslation_x = 0;
+    if (tmbBox?.visible) {
+        const offset = (Main.overview.dash?.visible && [1, 3].includes(DASH_POSITION)) ? Main.overview.dash.width : 0;
+        tmbTranslation_x = [1, 3].includes(WS_TMB_POSITION) ? tmbBox.width + offset : - tmbBox.width - offset;
     }
 
-    return [tmbTranslation_x, translation_x, translation_y];
+    let searchTranslation_y = 0;
+    if (searchEntryBin?.visible) {
+        const offset = (Main.overview.dash?.visible && ([0, 2].includes(DASH_POSITION)) ? Main.overview.dash.height : 0);
+        searchTranslation_y = - searchEntryBin.height - offset - 10;
+    }
+
+    let dashTranslation_x = 0;
+    let dashTranslation_y = 0;
+    if (Main.overview.dash?.visible) {
+        switch (DASH_POSITION) {
+            case 0:
+                dashTranslation_x = 0;
+                dashTranslation_y = - Main.overview.dash.height - Main.overview.dash.margin_bottom;
+                break;
+            case 1:
+                dashTranslation_x = Main.overview.dash.width;
+                dashTranslation_y = 0;
+                break;
+            case 2:
+                dashTranslation_x = 0;
+                dashTranslation_y = Main.overview.dash.height + Main.overview.dash.margin_bottom;
+                break;
+            case 3:
+                dashTranslation_x = - Main.overview.dash.width;
+                dashTranslation_y = 0;
+                break;
+        }
+    }
+
+    return [tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y];
 }
 
 //-------ControlsManagerLayout-----------------------------
