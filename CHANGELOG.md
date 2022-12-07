@@ -12,6 +12,7 @@
 
 **Other changes:**
 - Default Dash background opacity set to 40.
+- Workspace thumbnail caption style.
 
 ### v16 (2022-12-05)
 **Fixed:**
