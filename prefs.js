@@ -47,10 +47,16 @@ function init() {
             optionList: _getLayoutOptionList()
         },
         {
-            name: 'adjustments',
-            title: _('Adjustments'),
+            name: 'appearance',
+            title: _('Appearance'),
+            iconName: 'view-reveal-symbolic',
+            optionList: _getAppearanceOptionList()
+        },
+        {
+            name: 'behavior',
+            title: _('Behavior'),
             iconName: 'preferences-other-symbolic',
-            optionList: _getAdjustmentsOptionList()
+            optionList: _getBehaviorOptionList()
         },
         {
             name: 'misc',
@@ -317,7 +323,7 @@ function _getLayoutOptionList() {
     return optionList;
 }
 
-function _getAdjustmentsOptionList() {
+function _getAppearanceOptionList() {
     const optionList = [];
     // options item format:
     // [text, caption, widget, settings-variable, options for combo]
@@ -325,7 +331,7 @@ function _getAdjustmentsOptionList() {
     //----------------------------------------------------------------
     optionList.push(
         itemFactory.getRowWidget(
-            _('Appearance'),
+            _('Dash'),
         )
     );
 
@@ -343,6 +349,12 @@ function _getAdjustmentsOptionList() {
             _('Adjusts opacity of the default background (%).'),
             dashBgOpacityScale,
             'dashBgOpacity'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Thumbnails'),
         )
     );
 
@@ -381,10 +393,45 @@ function _getAdjustmentsOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Workspace Preview'),
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Show Workspace Preview Background'),
             _('Allows you to hide the scaling background of the workspace preview.'),
             itemFactory.newSwitch(),
             'showWsPreviewBg',
+        )
+    );
+
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Window Preview'),
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Window Preview App Icon Size'),
+            _('Default size is 64.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'winPreviewIconSize',
+            [   [_('64'), 0],
+                [_('48'), 1],
+                [_('32'), 2],
+                [_('22'), 3],
+                [_('Disable'), 4]
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Background'),
         )
     );
 
@@ -440,34 +487,57 @@ function _getAdjustmentsOptionList() {
         )
     );
 
+    return optionList;
+}
+    //----------------------------------------------------------------
+
+function _getBehaviorOptionList() {
+    const optionList = [];
+
     optionList.push(
         itemFactory.getRowWidget(
-            _('Window Preview App Icon Size'),
-            _('Default size is 64.'),
+            _('Overview'),
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Overview Mode'),
+            _('The Expose Windows on Hover mode do not expose the workspace preview windows until the mouse pointer enters any window.\nThe Static Workspace mode does not scale the workspace preview, it only shows Dash and workspace thumbnails over the workspace. Clicking on a workspace thumbnail scales the ws preview and exposes its windows like in the default overview mode.'),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
-            'winPreviewIconSize',
-            [   [_('64'), 0],
-                [_('48'), 1],
-                [_('32'), 2],
-                [_('22'), 3],
-                [_('Disable'), 4]
+            'overviewMode',
+            [   [_('Default'), 0],
+                [_('Expose Windows on Hover'), 1],
+                [_('Static Workspace'), 2]
             ]
         )
     );
 
-    //----------------------------------------------------------------
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Behavior'),
+            _('Startup State'),
+            _('Allows to change the state in which GNOME Shell starts a session.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'startupState',
+            [   [_('Overview'), 0],
+                [_('Desktop'), 1],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Animations'),
         )
     );
 
     optionList.push(
         itemFactory.getRowWidget(
             _('App Grid Animation'),
-            _(`When entering the App Grid view, the app grid animates from the edge of the screen (defaultly from the right edge to follow the three fingers trackpad gesture). You can choose other direction or disable the animation if you don't like it.`),
+            _(`When entering the App Grid view, the app grid animates from the edge of the screen (by default from the right edge to follow the three fingers trackpad gesture). You can choose other direction or disable the animation if you don't like it.`),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'appGridAnimation',
@@ -489,19 +559,6 @@ function _getAdjustmentsOptionList() {
             'workspaceAnimation',
             [   [_('Disable'), 0],
                 [_('Enable'), 1],
-            ]
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Startup State'),
-            _('Allows to change the state in which GNOME Shell starts a session.'),
-            itemFactory.newComboBox(),
-            //itemFactory.newDropDown(),
-            'startupState',
-            [   [_('Overview'), 0],
-                [_('Desktop'), 1],
             ]
         )
     );
@@ -584,7 +641,7 @@ function _getAboutOptionList() {
     ));
 
     optionList.push(itemFactory.getRowWidget(
-        _('Gnome Extensions'),
+        _('GNOME Extensions'),
         _('Rate and comment the extension on GNOME Extensions site.'),
         itemFactory.newLinkButton('https://extensions.gnome.org/extension/5177'),
     ));

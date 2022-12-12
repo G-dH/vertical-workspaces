@@ -115,6 +115,8 @@ let SHOW_BG_IN_OVERVIEW;
 let OVERVIEW_BG_BLUR_SIGMA;
 let APP_GRID_BG_BLUR_SIGMA;
 let SMOOTH_BLUR_TRANSITIONS;
+let OVERVIEW_MODE;
+let WORKSPACE_MODE;
 
 let _enabled;
 let _staticBgAnimationEnabled = false;
@@ -425,6 +427,9 @@ function _updateSettings(settings, key) {
     APP_GRID_BG_BLUR_SIGMA = gOptions.get('appGridBgBlurSigma', true);
     SMOOTH_BLUR_TRANSITIONS = gOptions.get('smoothBlurTransitions', true);
 
+    OVERVIEW_MODE = gOptions.get('overviewMode', true);
+    WORKSPACE_MODE = OVERVIEW_MODE ? 0 : 1;
+
     _updateSearchEntryVisibility();
     _switchPageShortcuts();
     _setStaticBackground();
@@ -558,6 +563,7 @@ function _injectStartupAnimation() {
             this.dash.remove_all_transitions();
 
             const tmbBox = Main.overview._overview._controls._thumbnailsBox;
+
             if (tmbBox.visible) {
                 const offset = tmbBox.width + ([1, 3].includes(DASH_POSITION) ? this.dash.width : 0);
                 tmbBox.translation_x = [1, 3].includes(WS_TMB_POSITION) ? offset : - offset;
@@ -695,6 +701,23 @@ function _injectWindowPreview() {
             // we cannot get proper title height before it gets to the stage, so 35 is estimated height + spacing
             this._title.get_constraints()[1].offset = scaleFactor * (- iconOverlap - 35);
             this.set_child_above_sibling(this._title, null);
+            this._title.opacity = 0;
+            this._icon.scale_x = 0;
+            this._icon.scale_y = 0;
+
+            if (OVERVIEW_MODE === 1/* && !WORKSPACE_MODE*/) {
+                this.connect('enter-event', () => {
+                    if (!WORKSPACE_MODE && !Main.overview._animationInProgress) {
+                        WORKSPACE_MODE = 1;
+                        const adjustment = Main.overview._overview.controls._workspacesDisplay._workspacesViews[0]._workspaces[this.metaWindow.get_workspace().index()].stateAdjustment;
+                        adjustment.value = 0;
+                        adjustment.ease(1, {
+                            duration: 200,
+                            mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                        });
+                    }
+                });
+            }
         }
     );
 }
@@ -852,7 +875,7 @@ var WorkspacesViewOverride = {
         return _getFitModeForState(state);
     },
 
-    // mormal view 0, spread windows 1
+    // normal view 0, spread windows 1
     _getWorkspaceModeForOverviewState: function(state) {
         const { ControlsState } = OverviewControls;
 
@@ -860,9 +883,9 @@ var WorkspacesViewOverride = {
         case ControlsState.HIDDEN:
             return 0;
         case ControlsState.WINDOW_PICKER:
-            return 1;
+            return WORKSPACE_MODE;
         case ControlsState.APP_GRID:
-            return ((this._monitorIndex !== global.display.get_primary_monitor()) || WS_ANIMATION === 0) ? 1 : 0;
+            return ((this._monitorIndex !== global.display.get_primary_monitor() || (WS_ANIMATION === 0)) && !OVERVIEW_MODE) ? 1 : 0;
         }
 
         return 0;
@@ -873,7 +896,7 @@ var WorkspacesViewOverride = {
         const adj = this._scrollAdjustment;
         const fitMode = this._fitModeAdjustment.value;
 
-        const { initialState, finalState, progress } =
+        let { initialState, finalState, progress } =
             this._overviewAdjustment.getStateTransitionParams();
 
         const workspaceMode = (1 - fitMode) * Util.lerp(
@@ -898,7 +921,7 @@ var WorkspacesViewOverride = {
             w.visible = scaleProgress ? true : false;
 
             // hide workspace background
-            if (!SHOW_WS_PREVIEW_BG) {
+            if (!SHOW_WS_PREVIEW_BG/* && !OVERVIEW_MODE*/) {
                 w._background.opacity = 0;
 
                 /*if (finalState === 0 || initialState === 0) {
@@ -959,7 +982,7 @@ function _getFitModeForState(state) {
     case ControlsState.WINDOW_PICKER:
         return WorkspacesView.FitMode.SINGLE;
     case ControlsState.APP_GRID:
-        if ((WS_ANIMATION === 1) && SHOW_WS_TMB)
+        if (WS_ANIMATION === 1 && SHOW_WS_TMB)
             return WorkspacesView.FitMode.ALL;
         else
             return WorkspacesView.FitMode.SINGLE;
@@ -994,6 +1017,10 @@ var WindowPreviewOverride = {
             scale = 0;
         }
 
+        /*if (OVERVIEW_MODE === 2 && !WORKSPACE_MODE) {
+            scale = 0;
+        }*/
+
         this._icon.set({
             scale_x: scale,
             scale_y: scale,
@@ -1001,7 +1028,7 @@ var WindowPreviewOverride = {
 
         // if titles are in 'always show' mode (set by another extension), we need to add transition between visible/invisible state
         this._title.set({
-            opacity: scale * 255
+            opacity: Math.round(scale * 255)
         });
 
         /*this._closeButton.set({
@@ -1021,7 +1048,7 @@ var SecondaryMonitorDisplayOverride = {
             opacity = 255;
             scale = 1;
             translation_x = 0;
-            if (!SHOW_WS_PREVIEW_BG) {
+            if (!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE === 2) {
                 // 2 - default, 0 - left, 1 - right
                 let position = SEC_WS_TMB_POSITION;
                 if (position === 2) // default - copy primary monitor option
@@ -1067,6 +1094,9 @@ var SecondaryMonitorDisplayOverride = {
             break;
         case ControlsState.WINDOW_PICKER:
         case ControlsState.APP_GRID:
+            if (OVERVIEW_MODE === 2) {
+                break;
+            }
             let wsbX;
             if (this._thumbnails._positionLeft) {
                 wsbX = Math.round(2 * spacing + thumbnailsWidth);
@@ -1147,6 +1177,10 @@ var SecondaryMonitorDisplayOverride = {
     },
 
     _updateThumbnailVisibility: function() {
+        if (OVERVIEW_MODE === 2) {
+            this.set_child_above_sibling(this._thumbnails, null);
+        }
+
         const visible = !(this._settings.get_boolean('workspaces-only-on-primary') ||
                          SEC_WS_TMB_POSITION === 3); // 3 - disabled
 
@@ -1315,7 +1349,7 @@ var WorkspaceThumbnailOverride = {
             this._bgManager.backgroundActor.opacity = 220;
 
             // this all is just for the small border radius...
-            const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
+            /*const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
             const cornerRadius = scaleFactor * BACKGROUND_CORNER_RADIUS_PIXELS;
             const backgroundContent = this._bgManager.backgroundActor.content;
             backgroundContent.rounded_clip_radius = cornerRadius;
@@ -1327,7 +1361,33 @@ var WorkspaceThumbnailOverride = {
             rect.size.width = this._viewport.width;
             rect.size.height = this._viewport.height;
 
-            this._bgManager.backgroundActor.content.set_rounded_clip_bounds(rect);
+            this._bgManager.backgroundActor.content.set_rounded_clip_bounds(rect);*/
+        }
+    },
+
+    activate: function(time) {
+        if (this.state > WorkspaceThumbnail.ThumbnailState.NORMAL)
+            return;
+
+        // if Static Workspace overview mode active, a click on the already active workspace should activate the window picker mode
+        const wsIndex = this.metaWorkspace.index();
+        const lastWsIndex = global.display.get_workspace_manager().get_n_workspaces() - 1;
+        if (OVERVIEW_MODE === 2 && !WORKSPACE_MODE && wsIndex < lastWsIndex) {
+            WORKSPACE_MODE = 1;
+            if (this.metaWorkspace.active) {
+                const adjustment = Main.overview._overview.controls._workspacesDisplay._workspacesViews[0]._workspaces[wsIndex].stateAdjustment;
+                adjustment.value = 0;
+                adjustment.ease(1, {
+                    duration: 200,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                });
+            }
+            this.metaWorkspace.activate(time);
+        // a click on the already current workspace should go back to the main view
+        } else if (this.metaWorkspace.active) {
+            Main.overview.hide();
+        } else {
+            this.metaWorkspace.activate(time);
         }
     }
 }
@@ -1338,8 +1398,9 @@ var ThumbnailsBoxOverride = {
         const [r_, x, y] = this.transform_stage_point(stageX, stageY);
 
         const thumbnail = this._thumbnails.find(t => y >= t.y && y <= t.y + t.height);
-        if (thumbnail)
+        if (thumbnail) {
             thumbnail.activate(time);
+        }
     },
 
     _getPlaceholderTarget: function(index, spacing, rtl) {
@@ -1727,6 +1788,10 @@ var ControlsManagerOverride = {
             this._searchController.hide();
         }
 
+        // reset Static Workspace window picker mode
+        if (finalState === 0 && progress === 1 && OVERVIEW_MODE && WORKSPACE_MODE) {
+            WORKSPACE_MODE = 0;
+        }
         /*if (finalState === 1) {
             this._searchEntry.opacity = progress * 255;
         } else if (finalState === 0) {
@@ -1746,7 +1811,7 @@ var ControlsManagerOverride = {
         const searchEntryBin = this._searchEntryBin;
         // this dash transition collides with startup animation and freezes GS for good, needs to be delayed (first Main.overview 'hiding' event enables it)
         const skipDash = Main.overview.dash._isHorizontal !== undefined;
-        if (!SHOW_WS_PREVIEW_BG && _staticBgAnimationEnabled) {
+        if ((!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE === 2) && _staticBgAnimationEnabled) {
             if (!tmbBox._translationOriginal || Math.abs(tmbBox._translationOriginal) > 500) { // swipe gesture can call this calculation before tmbBox is finalized, giving nonsense width
                 let tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y;
                 [tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _getOverviewTranslations(tmbBox, searchEntryBin);
@@ -1770,7 +1835,7 @@ var ControlsManagerOverride = {
                 }
                 searchEntryBin._translationOriginal = 0;
             }
-        } else if (_staticBgAnimationEnabled && tmbBox.translation_x) {
+        } else if (_staticBgAnimationEnabled && tmbBox.translation_x && _staticBgAnimationEnabled) {
             tmbBox.translation_x = 0;
             if (!skipDash) {
                 dash.translation_x = 0;
@@ -1787,9 +1852,13 @@ var ControlsManagerOverride = {
         this._workspacesDisplay.scale_y = (progress == 1 && finalState == ControlsState.APP_GRID) ? 0 : 1;
         this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
 
-        if (!this.dash._isAbove && progress === 1 && finalState > ControlsState.HIDDEN) {
+        if (!this.dash._isAbove && progress > 0 && OVERVIEW_MODE === 2) {
+            this.set_child_below_sibling(this._workspacesDisplay, null);
+            //this.set_child_above_sibling(this.dash, null);
+            //this.set_child_above_sibling(this._thumbnailsBox, null);
+        } else if (!this.dash._isAbove && progress === 1 && finalState > ControlsState.HIDDEN) {
             // set dash above workspace in the overview
-            this.dash.get_parent().set_child_above_sibling(this.dash, null);
+            this.set_child_above_sibling(this.dash, null);
             this.dash._isAbove = true;
 
             // update max tmb scale in case some other extension changed it
@@ -1800,11 +1869,11 @@ var ControlsManagerOverride = {
                 global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
         } else if (this.dash._isAbove && progress < 1) { //
             // keep dash below for ws transition between the overview and hidden state
-            this.dash.get_parent().set_child_below_sibling(this.dash, null);
+            this.set_child_above_sibling(this._workspacesDisplay, null);
+            //this.dash.get_parent().set_child_below_sibling(this.dash, null);
             this.dash._isAbove = false;
-            this._appDisplay.get_parent().set_child_below_sibling(this._appDisplay, null);
+            //this._appDisplay.get_parent().set_child_below_sibling(this._appDisplay, null);
         }
-
     },
 
     // fix for upstream bug - appGrid.visible after transition from APP_GRID to HIDDEN
@@ -1824,7 +1893,7 @@ function _getOverviewTranslations(tmbBox, searchEntryBin) {
     //const tmbBox = Main.overview._overview._controls._thumbnailsBox;
     let tmbTranslation_x = 0;
     if (tmbBox?.visible) {
-        const offset = (Main.overview.dash?.visible && [1, 3].includes(DASH_POSITION)) ? Main.overview.dash.width : 0;
+        const offset = 10 + ((Main.overview.dash?.visible && [1, 3].includes(DASH_POSITION)) ? Main.overview.dash.width : 0);
         tmbTranslation_x = [1, 3].includes(WS_TMB_POSITION) ? tmbBox.width + offset : - tmbBox.width - offset;
     }
 
@@ -1907,9 +1976,12 @@ var ControlsManagerLayoutOverride = {
             break;
         case ControlsState.WINDOW_PICKER:
         case ControlsState.APP_GRID:
-            if ((WS_ANIMATION === 1) && SHOW_WS_TMB && state === ControlsState.APP_GRID) {
+            if (WS_ANIMATION === 1 && SHOW_WS_TMB && state === ControlsState.APP_GRID) {
                 workspaceBox.set_origin(...this._workspacesThumbnails.get_position());
                 workspaceBox.set_size(...this._workspacesThumbnails.get_size());
+            } else if (OVERVIEW_MODE === 2 && !WORKSPACE_MODE) {
+                workspaceBox.set_origin(...workAreaBox.get_origin());
+                workspaceBox.set_size(...workAreaBox.get_size());
             } else {
                 dashHeight = dash.visible ? dashHeight : 0;
                 searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
@@ -2427,7 +2499,7 @@ function _updateStaticBackground(bgManager, stateValue) {
         bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, Math.min(stateValue, 1));
 
         if (SMOOTH_BLUR_TRANSITIONS && (OVERVIEW_BG_BLUR_SIGMA || APP_GRID_BG_BLUR_SIGMA)) {
-            if (stateValue <= 1) {
+            if (stateValue <= 1 && OVERVIEW_MODE < 2) {
                 blurEffect.sigma = Util.lerp(0, OVERVIEW_BG_BLUR_SIGMA, stateValue);
             } else if (stateValue > 1  && bgManager._primary) {
                 blurEffect.sigma = Util.lerp(OVERVIEW_BG_BLUR_SIGMA, APP_GRID_BG_BLUR_SIGMA, stateValue - 1);

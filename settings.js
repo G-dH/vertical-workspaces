@@ -19,8 +19,8 @@ var   shellVersion = parseFloat(Config.PACKAGE_VERSION);
 
 const Gettext = imports.gettext.domain(Me.metadata['gettext-domain']);
 var _ = Gettext.gettext;
+const _schema = Me.metadata['settings-schema'];
 
-const _schema = 'org.gnome.shell.extensions.vertical-workspaces';
 
 var Options = class Options {
     constructor() {
@@ -71,7 +71,8 @@ var Options = class Options {
             workspaceAnimation: ['int', 'workspace-animation'],
             fixUbuntuDock: ['boolean', 'fix-ubuntu-dock'],
             winPreviewIconSize: ['int', 'win-preview-icon-size'],
-            startupState: ['int', 'startup-state']
+            startupState: ['int', 'startup-state'],
+            overviewMode: ['int', 'overview-mode']
         }
         this.cachedOptions = {};
     }
