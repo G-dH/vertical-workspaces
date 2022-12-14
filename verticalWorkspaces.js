@@ -820,6 +820,10 @@ function _moveDashAppGridIcon(reset = false) {
 // WorkspaceBackground
 var WorkspaceBackgroundOverride = {
     _updateBorderRadius: function(value = false) {
+        // don't round already rounded corners during exposing windows
+        if (value === false && OVERVIEW_MODE === 1) {
+            return;
+        }
         const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
         const cornerRadius = scaleFactor * Workspace.BACKGROUND_CORNER_RADIUS_PIXELS;
 
@@ -937,8 +941,8 @@ var WorkspacesViewOverride = {
             w.visible = scaleProgress ? true : false;
 
 
-            if (SHOW_WS_PREVIEW_BG && OVERVIEW_MODE === 1 && scaleProgress) {
-                w._background._updateBorderRadius(scaleProgress);
+            if (SHOW_WS_PREVIEW_BG && OVERVIEW_MODE === 1 && scaleProgress === 1) {
+                w._background._updateBorderRadius(w._overviewAdjustment.value);
             }
 
             // hide workspace background
@@ -1063,7 +1067,7 @@ var SecondaryMonitorDisplayOverride = {
             opacity = 255;
             scale = 1;
             translation_x = 0;
-            if (!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE === 2) {
+            if (_staticBgAnimationEnabled && (!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE === 2)) {
                 // 2 - default, 0 - left, 1 - right
                 let position = SEC_WS_TMB_POSITION;
                 if (position === 2) // default - copy primary monitor option
@@ -1826,7 +1830,7 @@ var ControlsManagerOverride = {
         const searchEntryBin = this._searchEntryBin;
         // this dash transition collides with startup animation and freezes GS for good, needs to be delayed (first Main.overview 'hiding' event enables it)
         const skipDash = Main.overview.dash._isHorizontal !== undefined;
-        if ((!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE === 2) && _staticBgAnimationEnabled) {
+        if (_staticBgAnimationEnabled && (!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE === 2)) {
             if (!tmbBox._translationOriginal || Math.abs(tmbBox._translationOriginal) > 500) { // swipe gesture can call this calculation before tmbBox is finalized, giving nonsense width
                 let tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y;
                 [tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _getOverviewTranslations(tmbBox, searchEntryBin);
