@@ -164,6 +164,7 @@ function activate() {
     _verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
     _verticalOverrides['AppDisplay'] = _Util.overrideProto(AppDisplay.AppDisplay.prototype, AppDisplayOverride);
     _verticalOverrides['WindowPreview'] = _Util.overrideProto(WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
+    _verticalOverrides['WorkspaceBackground'] = _Util.overrideProto(Workspace.WorkspaceBackground.prototype, WorkspaceBackgroundOverride);
 
     _prevDash = {};
     const dash = Main.overview.dash;
@@ -262,6 +263,7 @@ function reset() {
     _Util.overrideProto(AppDisplay.BaseAppView.prototype, _verticalOverrides['BaseAppView']);
     _Util.overrideProto(AppDisplay.AppDisplay.prototype, _verticalOverrides['AppDisplay']);
     _Util.overrideProto(WindowPreview.WindowPreview.prototype, _verticalOverrides['WindowPreview']);
+    _Util.overrideProto(Workspace.WorkspaceBackground.prototype, _verticalOverrides['WorkspaceBackground']);
 
     // original swipeTrackes' orientation and updateGesture function
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
@@ -814,6 +816,23 @@ function _moveDashAppGridIcon(reset = false) {
         dash._dashContainer.set_child_at_index(dash._showAppsIcon, 0);
 }
 
+// ---- workspace ---------------------------------------------
+// WorkspaceBackground
+var WorkspaceBackgroundOverride = {
+    _updateBorderRadius: function(value = false) {
+        const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
+        const cornerRadius = scaleFactor * Workspace.BACKGROUND_CORNER_RADIUS_PIXELS;
+
+        const backgroundContent = this._bgManager.backgroundActor.content;
+        value = (value !==false)
+                ? value
+                : this._stateAdjustment.value;
+
+        backgroundContent.rounded_clip_radius =
+            Util.lerp(0, cornerRadius, value);
+    }
+}
+
 // ---- workspacesView ----------------------------------------
 // WorkspacesView
 var WorkspacesViewOverride = {
@@ -904,7 +923,7 @@ var WorkspacesViewOverride = {
             this._getWorkspaceModeForOverviewState(finalState),
             progress);
 
-        // Fade and scale inactive workspaces
+        // Hide inactive workspaces
         this._workspaces.forEach((w, index) => {
             w.stateAdjustment.value = workspaceMode;
 
@@ -912,23 +931,19 @@ var WorkspacesViewOverride = {
 
             const scaleProgress = 1 - Math.clamp(distanceToCurrentWorkspace, 0, 1);
 
-            //const scale = Util.lerp(1, 1, scaleProgress);//Util.lerp(WORKSPACE_INACTIVE_SCALE, 1, scaleProgress);
-            //w.set_scale(scale, scale);
-
             // if we disable inactive workspaces, ws animation will be noticeably smoother
             // the only drawback is, that windows on inactive workspaces will be spread with the first ws switching in the overview
             // so you'll see the spread animation during the first workspace switching animation
             w.visible = scaleProgress ? true : false;
 
-            // hide workspace background
-            if (!SHOW_WS_PREVIEW_BG/* && !OVERVIEW_MODE*/) {
-                w._background.opacity = 0;
 
-                /*if (finalState === 0 || initialState === 0) {
-                    w._background.opacity = Math.abs((finalState == 0 ? 0 : 1) * 255 - progress * 255);
-                } else if (progress === 1 && w.opacity) {
-                    w._background.opacity = 0;
-                }*/
+            if (SHOW_WS_PREVIEW_BG && OVERVIEW_MODE === 1 && scaleProgress) {
+                w._background._updateBorderRadius(scaleProgress);
+            }
+
+            // hide workspace background
+            if (!SHOW_WS_PREVIEW_BG) {
+                w._background.opacity = 0;
             }
         });
     }
