@@ -60,6 +60,7 @@ var Options = class Options {
             centerSearch: ['boolean', 'center-search'],
             centerAppGrid: ['boolean', 'center-app-grid'],
             dashBgOpacity: ['int', 'dash-bg-opacity'],
+            dashBgRadius: ['int', 'dash-bg-radius'],
             enablePageShortcuts: ['boolean', 'enable-page-shortcuts'],
             showWsSwitcherBg: ['boolean', 'show-ws-switcher-bg'],
             showWsPreviewBg: ['boolean', 'show-ws-preview-bg'],

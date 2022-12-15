@@ -151,8 +151,12 @@ function activate() {
     // move titles into window previews
     _injectWindowPreview();
 
-    // GS 42 needs to help with the workspace switcher popup, older versions reflects new orientation automatically
-    if (shellVersion >= 42)
+    // GS 42+ needs to help with the workspace switcher popup, older versions reflects new orientation automatically
+    // avoid the injection is WSM extension is enabled because it brakes the popup
+    const settings = ExtensionUtils.getSettings('org.gnome.shell');
+    const enabled = settings.get_strv('enabled-extensions');
+    const allowWsPopupInjection = !(enabled.includes('workspace-switcher-manager@G-dH.github.com') || enabled.includes('WsSwitcherPopupManager@G-dH.github.com-dev'));
+    if (shellVersion >= 42 && allowWsPopupInjection)
         _injectWsSwitcherPopup();
 
     // adjust overview layout to better serve vertical workspaces orientation
@@ -396,8 +400,16 @@ function _updateSettings(settings, key) {
     CENTER_DASH_WS = gOptions.get('centerDashToWs', true);
 
     VerticalDash.MAX_ICON_SIZE = VerticalDash.baseIconSizes[gOptions.get('dashMaxIconSize', true)];
-    if (Main.overview.dash._isHorizontal === undefined) // DtD has its own opacity control
+    if (Main.overview.dash._isHorizontal === undefined) {// DtD has its own opacity control
         Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
+        const radius = gOptions.get('dashBgRadius', true);
+        if (radius) {
+            Main.overview.dash._background.set_style(`border-radius: ${radius}px;`);
+        } else {
+            Main.overview.dash._background.set_style('');
+        }
+    }
+
 
     WS_TMB_POSITION = gOptions.get('workspaceThumbnailsPosition', true);
     SHOW_WS_TMB = WS_TMB_POSITION !== 4; // 4 - disable
@@ -549,103 +561,6 @@ function _switchPageShortcuts() {
     settings.set_strv(keyMoveDown, moveDown);
 }
 
-//----- Overview --------------------------------------------------------------
-function _injectStartupAnimation() {
-    _controlsManagerInjections = {};
-    _controlsManagerInjections['runStartupAnimation'] = _Util.injectToFunction(
-        OverviewControls.ControlsManager.prototype, 'runStartupAnimation', async function(callback) {
-            const STARTUP_ANIMATION_TIME = Layout.STARTUP_ANIMATION_TIME;
-            // Set the opacity here to avoid a 1-frame flicker
-            this.dash.opacity = 0;
-
-            // We can't run the animation before the first allocation happens
-            await this.layout_manager.ensureAllocation();
-
-            // remove original animation
-            this.dash.remove_all_transitions();
-
-            const tmbBox = Main.overview._overview._controls._thumbnailsBox;
-
-            if (tmbBox.visible) {
-                const offset = tmbBox.width + ([1, 3].includes(DASH_POSITION) ? this.dash.width : 0);
-                tmbBox.translation_x = [1, 3].includes(WS_TMB_POSITION) ? offset : - offset;
-                tmbBox.ease({
-                    translation_x: 0,
-                    delay: STARTUP_ANIMATION_TIME,
-                    duration: STARTUP_ANIMATION_TIME,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                });
-            }
-
-            // upstream bug - following animation will be cancelled, probably due to recreation of the widget
-            // needs further investigation
-            const  workspacesViews = this._workspacesDisplay._workspacesViews;
-            if (workspacesViews.length > 1) {
-                for (const view of workspacesViews) {
-                    if (view._monitorIndex !== global.display.get_primary_monitor() && view._thumbnails.visible) {
-                        const tmbBox = view._thumbnails;
-                        // 2 - default, 0 - left, 1 - right
-                        let position = SEC_WS_TMB_POSITION;
-                        if (position === 2) // default - copy primary monitor option
-                            position = WS_TMB_POSITION % 2; // 0,2 - left, 1,3 right
-                        tmbBox.translation_x = tmbBox.width * (position === 1 ? 1 : -1);
-                        tmbBox.ease({
-                            translation_x: 0,
-                            delay: STARTUP_ANIMATION_TIME,
-                            duration: STARTUP_ANIMATION_TIME,
-                            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                        });
-                    }
-                }
-            }
-
-            this.dash.opacity = 255;
-
-            // if DtD replaced the original Dash, there is no need to animate it
-            if (Main.overview.dash._isHorizontal !== undefined || !this.dash.visible) {
-                return;
-            }
-
-            let translation_x;
-            let translation_y;
-            switch (DASH_POSITION) {
-                case 0:
-                    translation_x = 0;
-                    translation_y = - this.dash.height - this.dash.margin_bottom;
-                    break;
-                case 1:
-                    translation_x = this.dash.width;
-                    translation_y = 0;
-                    break;
-                case 2:
-                    translation_x = 0;
-                    translation_y = this.dash.height + this.dash.margin_bottom;
-                    break;
-                case 3:
-                    translation_x = - this.dash.width;
-                    translation_y = 0;
-                    break;
-            }
-
-            this.dash.translation_x = translation_x;
-            this.dash.translation_y = translation_y;
-            this.dash.opacity = 255;
-            this.dash.ease({
-                translation_x: 0,
-                translation_y: 0,
-                delay: STARTUP_ANIMATION_TIME,
-                duration: STARTUP_ANIMATION_TIME,
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                onComplete: () => {
-                    callback();
-                    if (STARTUP_STATE) {
-                        Main.overview.toggle();
-                    }
-                },
-            });
-        }
-    );
-}
 
 //----- WorkspaceSwitcherPopup --------------------------------------------------------
 function _injectWsSwitcherPopup() {
@@ -1833,7 +1748,7 @@ var ControlsManagerOverride = {
         if (_staticBgAnimationEnabled && (!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE === 2)) {
             if (!tmbBox._translationOriginal || Math.abs(tmbBox._translationOriginal) > 500) { // swipe gesture can call this calculation before tmbBox is finalized, giving nonsense width
                 let tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y;
-                [tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _getOverviewTranslations(tmbBox, searchEntryBin);
+                [tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _getOverviewTranslations(dash, tmbBox, searchEntryBin);
                 tmbBox._translationOriginal = tmbTranslation_x;
                 dash._translationOriginal = [dashTranslation_x, dashTranslation_y];
                 searchEntryBin._translationOriginal = searchTranslation_y;
@@ -1873,25 +1788,23 @@ var ControlsManagerOverride = {
 
         if (!this.dash._isAbove && progress > 0 && OVERVIEW_MODE === 2) {
             this.set_child_below_sibling(this._workspacesDisplay, null);
-            //this.set_child_above_sibling(this.dash, null);
-            //this.set_child_above_sibling(this._thumbnailsBox, null);
         } else if (!this.dash._isAbove && progress === 1 && finalState > ControlsState.HIDDEN) {
             // set dash above workspace in the overview
-            this.set_child_above_sibling(this.dash, null);
-            this.dash._isAbove = true;
+            if (this.dash._isHorizontal === undefined) {
+                this.set_child_above_sibling(this.dash, null);
+                this.dash._isAbove = true;
+            }
 
             // update max tmb scale in case some other extension changed it
             WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = MAX_THUMBNAIL_SCALE;
 
             // make sure the workspace orientation stays vertical
-            if (global.workspace_manager.layout_rows != -1)
-                global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
+            /*if (global.workspace_manager.layout_rows != -1)
+                global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);*/
         } else if (this.dash._isAbove && progress < 1) { //
             // keep dash below for ws transition between the overview and hidden state
             this.set_child_above_sibling(this._workspacesDisplay, null);
-            //this.dash.get_parent().set_child_below_sibling(this.dash, null);
             this.dash._isAbove = false;
-            //this._appDisplay.get_parent().set_child_below_sibling(this._appDisplay, null);
         }
     },
 
@@ -1905,41 +1818,165 @@ var ControlsManagerOverride = {
         this._appDisplay.visible =
             currentState > ControlsState.WINDOW_PICKER &&
             !this._searchController.searchActive;
+    },
+
+    runStartupAnimation: async function(callback) {
+        this._ignoreShowAppsButtonToggle = true;
+
+        this._searchController.prepareToEnterOverview();
+        this._workspacesDisplay.prepareToEnterOverview();
+
+        this._stateAdjustment.value = ControlsState.HIDDEN;
+        this._stateAdjustment.ease(ControlsState.WINDOW_PICKER, {
+            duration: Overview.ANIMATION_TIME,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+        });
+
+        this.dash.showAppsButton.checked = false;
+        this._ignoreShowAppsButtonToggle = false;
+
+        // Set the opacity here to avoid a 1-frame flicker
+        this.opacity = 0;
+
+        // We can't run the animation before the first allocation happens
+        await this.layout_manager.ensureAllocation();
+
+        const { STARTUP_ANIMATION_TIME } = Layout;
+
+        // Opacity
+        this.ease({
+            opacity: 255,
+            duration: STARTUP_ANIMATION_TIME,
+            mode: Clutter.AnimationMode.LINEAR,
+        });
+
+        // Set the opacity here to avoid a 1-frame flicker
+        this.dash.opacity = 0;
+
+
+        const dash = this.dash;
+        const tmbBox = this._thumbnailsBox;
+        const searchEntryBin = this._searchEntryBin;
+        const [tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y] =
+            _getOverviewTranslations(dash, tmbBox, searchEntryBin);
+
+        const onComplete = function() {
+            callback();
+            if (STARTUP_STATE) {
+                Main.overview.hide();
+            }
+        }
+
+        dash.opacity = 255;
+        if (dash.visible) {
+            dash.translation_x = dashTranslation_x;
+            dash.translation_y = dashTranslation_y;
+            dash.opacity = 255;
+            dash.ease({
+                translation_x: 0,
+                translation_y: 0,
+                delay: STARTUP_ANIMATION_TIME,
+                duration: STARTUP_ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                onComplete: () => {
+                    onComplete();
+                },
+            });
+        } else {
+            // this code can be executed only at GS startup if dash is hidden,
+            // there is no chance the timeout will be interrupted by disabling the extension,
+            // since without the onComplete callback Shell will stay irresponsive and executing it again causes other issues, like duplicate connections
+            GLib.timeout_add(
+                GLib.PRIORITY_DEFAULT,
+                STARTUP_ANIMATION_TIME * 2,
+                () => {
+                    onComplete();
+                    return GLib.SOURCE_REMOVE;
+                }
+            );
+        }
+
+        if (searchEntryBin.visible) {
+            searchEntryBin.translation_y = searchTranslation_y;
+            searchEntryBin.ease({
+                translation_y: 0,
+                delay: STARTUP_ANIMATION_TIME,
+                duration: STARTUP_ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            });
+        }
+
+        if (tmbBox.visible) {
+            tmbBox.translation_x = tmbTranslation_x;
+            tmbBox.ease({
+                translation_x: 0,
+                delay: STARTUP_ANIMATION_TIME,
+                duration: STARTUP_ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            });
+        }
+
+        // upstream bug - following animation will be cancelled, probably due to re-creation of the widget
+        // needs further investigation
+        const  workspacesViews = this._workspacesDisplay._workspacesViews;
+        if (workspacesViews.length > 1) {
+            for (const view of workspacesViews) {
+                if (view._monitorIndex !== global.display.get_primary_monitor() && view._thumbnails.visible) {
+                    const tmbBox = view._thumbnails;
+                    // 2 - default, 0 - left, 1 - right
+                    let position = SEC_WS_TMB_POSITION;
+                    if (position === 2) // default - copy primary monitor option
+                        position = WS_TMB_POSITION % 2; // 0,2 - left, 1,3 right
+                    tmbBox.translation_x = tmbBox.width * (position === 1 ? 1 : -1);
+                    tmbBox.ease({
+                        translation_x: 0,
+                        delay: STARTUP_ANIMATION_TIME,
+                        duration: STARTUP_ANIMATION_TIME,
+                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    });
+                }
+            }
+        }
     }
 }
 
-function _getOverviewTranslations(tmbBox, searchEntryBin) {
+function _getOverviewTranslations(dash, tmbBox, searchEntryBin) {
     //const tmbBox = Main.overview._overview._controls._thumbnailsBox;
     let tmbTranslation_x = 0;
     if (tmbBox?.visible) {
-        const offset = 10 + ((Main.overview.dash?.visible && [1, 3].includes(DASH_POSITION)) ? Main.overview.dash.width : 0);
+        const offset = 10 + ((dash?.visible && [1, 3].includes(DASH_POSITION)) ? dash.width : 0);
         tmbTranslation_x = [1, 3].includes(WS_TMB_POSITION) ? tmbBox.width + offset : - tmbBox.width - offset;
     }
 
     let searchTranslation_y = 0;
     if (searchEntryBin?.visible) {
-        const offset = (Main.overview.dash?.visible && ([0, 2].includes(DASH_POSITION)) ? Main.overview.dash.height : 0);
+        const offset = (dash?.visible && ([0, 2].includes(DASH_POSITION)) ? dash.height : 0);
         searchTranslation_y = - searchEntryBin.height - offset - 10;
     }
 
     let dashTranslation_x = 0;
     let dashTranslation_y = 0;
-    if (Main.overview.dash?.visible) {
-        switch (DASH_POSITION) {
+    let position = DASH_POSITION;
+    // if DtD replaced the original Dash, read its position
+    if (dash._isHorizontal !== undefined) {
+        position = dash._position;
+    }
+    if (dash?.visible) {
+        switch (position) {
             case 0:
                 dashTranslation_x = 0;
-                dashTranslation_y = - Main.overview.dash.height - Main.overview.dash.margin_bottom;
+                dashTranslation_y = - dash.height - dash.margin_bottom;
                 break;
             case 1:
-                dashTranslation_x = Main.overview.dash.width;
+                dashTranslation_x = dash.width;
                 dashTranslation_y = 0;
                 break;
             case 2:
                 dashTranslation_x = 0;
-                dashTranslation_y = Main.overview.dash.height + Main.overview.dash.margin_bottom;
+                dashTranslation_y = dash.height + dash.margin_bottom;
                 break;
             case 3:
-                dashTranslation_x = - Main.overview.dash.width;
+                dashTranslation_x = - dash.width;
                 dashTranslation_y = 0;
                 break;
         }

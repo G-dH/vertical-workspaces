@@ -49,6 +49,9 @@
     <key type="i" name="dash-bg-opacity">
       <default>40</default>
     </key>
+    <key type="i" name="dash-bg-radius">
+      <default>0</default>
+    </key>
     <key type="b" name="enable-page-shortcuts">
       <default>false</default>
     </key>

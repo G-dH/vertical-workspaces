@@ -346,9 +346,26 @@ function _getAppearanceOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Dash Background Opacity'),
-            _('Adjusts opacity of the default background (%).'),
+            _('Adjusts the opacity of the dash background.'),
             dashBgOpacityScale,
             'dashBgOpacity'
+        )
+    );
+
+    const dashRadAdjustment = new Gtk.Adjustment({
+        upper: 50,
+        lower: 0,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const dashBgRadiusScale = itemFactory.newScale(dashRadAdjustment);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Dash Background Opacity'),
+            _('Adjusts the border radius of the dash background in pixels. 0 means default value.'),
+            dashBgRadiusScale,
+            'dashBgRadius'
         )
     );
 

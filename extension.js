@@ -24,13 +24,12 @@ function init() {
 }
 
 function enable() {
+    // globally readable flag for other extensions
     global.verticalWorkspacesEnabled = true;
-    // replace overview stratup animation
-    VerticalWorkspaces._injectStartupAnimation();
 
     _enableTimeoutId = GLib.timeout_add(
         GLib.PRIORITY_DEFAULT,
-        500,
+        200,
         () => {
             VerticalWorkspaces.activate();
             log(`${Me.metadata.name}: enabled`);
