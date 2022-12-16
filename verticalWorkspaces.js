@@ -404,7 +404,18 @@ function _updateSettings(settings, key) {
         Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
         const radius = gOptions.get('dashBgRadius', true);
         if (radius) {
-            Main.overview.dash._background.set_style(`border-radius: ${radius}px;`);
+            let style;
+            switch (DASH_POSITION) {
+                case 1:
+                    style = `border-radius: ${radius}px 0 0 ${radius}px;`
+                    break;
+                case 3:
+                    style = `border-radius: 0 ${radius}px ${radius}px 0;`
+                    break;
+                default:
+                    style = `border-radius: ${radius}px;`
+            }
+            Main.overview.dash._background.set_style(style);
         } else {
             Main.overview.dash._background.set_style('');
         }
@@ -622,7 +633,8 @@ function _injectWindowPreview() {
             this._icon.scale_x = 0;
             this._icon.scale_y = 0;
 
-            if (OVERVIEW_MODE === 1/* && !WORKSPACE_MODE*/) {
+            if (OVERVIEW_MODE === 1) {
+                // spread windows on hover
                 this.connect('enter-event', () => {
                     if (!WORKSPACE_MODE && !Main.overview._animationInProgress) {
                         WORKSPACE_MODE = 1;
@@ -634,6 +646,9 @@ function _injectWindowPreview() {
                         });
                     }
                 });
+            } else if (OVERVIEW_MODE === 2) {
+                // show window icon and title on ws windows spread
+                this._workspace.stateAdjustment.connect('notify::value', this._updateIconScale.bind(this));
             }
         }
     );
@@ -928,7 +943,7 @@ function _getFitModeForState(state) {
 // WindowPreview
 var WindowPreviewOverride = {
     _updateIconScale: function() {
-        const { currentState, initialState, finalState } =
+        let { currentState, initialState, finalState } =
             this._overviewAdjustment.getStateTransitionParams();
 
         // Current state - 0 - HIDDEN, 1 - WINDOW_PICKER, 2 - APP_GRID
@@ -944,16 +959,22 @@ var WindowPreviewOverride = {
             ((initialState === ControlsState.WINDOW_PICKER && finalState === ControlsState.APP_GRID) ||
             (initialState === ControlsState.APP_GRID && finalState === ControlsState.WINDOW_PICKER))
             ) {
-
             scale = 1;
         } else if (primaryMonitor && ((initialState === ControlsState.WINDOW_PICKER && finalState === ControlsState.APP_GRID) ||
             initialState === ControlsState.APP_GRID && finalState === ControlsState.HIDDEN)) {
             scale = 0;
         }
 
-        /*if (OVERVIEW_MODE === 2 && !WORKSPACE_MODE) {
-            scale = 0;
-        }*/
+        // in static workspace mode show icon and title on ws windows spread
+        if (OVERVIEW_MODE === 2) {
+            const windowsSpread = this._workspace.stateAdjustment.value;
+            if (currentState === 1) {
+                scale = windowsSpread;
+            } else if (finalState === 1 || (finalState === 0 && !windowsSpread)) {
+                return;
+            }
+        }
+
 
         this._icon.set({
             scale_x: scale,
@@ -962,7 +983,8 @@ var WindowPreviewOverride = {
 
         // if titles are in 'always show' mode (set by another extension), we need to add transition between visible/invisible state
         this._title.set({
-            opacity: Math.round(scale * 255)
+            opacity: Math.round(scale * 255),
+            scale_y: scale,
         });
 
         /*this._closeButton.set({
@@ -1787,6 +1809,8 @@ var ControlsManagerOverride = {
         this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
 
         if (!this.dash._isAbove && progress > 0 && OVERVIEW_MODE === 2) {
+            // move dash above wsTmb for case that dash and wsTmb animate from the same side
+            this.set_child_above_sibling(dash, null);
             this.set_child_below_sibling(this._workspacesDisplay, null);
         } else if (!this.dash._isAbove && progress === 1 && finalState > ControlsState.HIDDEN) {
             // set dash above workspace in the overview
