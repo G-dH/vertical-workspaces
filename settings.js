@@ -70,6 +70,7 @@ var Options = class Options {
             smoothBlurTransitions: ['boolean', 'smooth-blur-transitions'],
             appGridAnimation: ['int', 'app-grid-animation'],
             workspaceAnimation: ['int', 'workspace-animation'],
+            animationSpeedFactor: ['int', 'animation-speed-factor'],
             fixUbuntuDock: ['boolean', 'fix-ubuntu-dock'],
             winPreviewIconSize: ['int', 'win-preview-icon-size'],
             alwaysShowWinTitles: ['int', 'always-show-win-titles'],

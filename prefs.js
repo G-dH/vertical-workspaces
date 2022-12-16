@@ -590,6 +590,24 @@ function _getBehaviorOptionList() {
         )
     );
 
+    const animationSpeedAdjustment = new Gtk.Adjustment({
+        upper: 500,
+        lower: 10,
+        step_increment: 10,
+        page_increment: 100,
+    });
+
+    const animationSpeedScale = itemFactory.newScale(animationSpeedAdjustment);
+    animationSpeedScale.add_mark(100, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Animation Speed'),
+            _('Adjusts global animation speed in %.'),
+            animationSpeedScale,
+            'animationSpeedFactor'
+        )
+    );
+
     return optionList;
 }
 

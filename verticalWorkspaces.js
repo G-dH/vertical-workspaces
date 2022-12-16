@@ -314,6 +314,8 @@ function reset() {
     if (_overviewHiddenSigId) {
         Main.overview.disconnect(_overviewHiddenSigId);
     }
+
+    St.Settings.get().slow_down_factor = 1;
 }
 
 function _enableStaticBgAnimation() {
@@ -456,6 +458,8 @@ function _updateSettings(settings, key) {
 
     OVERVIEW_MODE = gOptions.get('overviewMode', true);
     WORKSPACE_MODE = OVERVIEW_MODE ? 0 : 1;
+
+    St.Settings.get().slow_down_factor = gOptions.get('animationSpeedFactor', true) / 100;
 
     _updateSearchEntryVisibility();
     _switchPageShortcuts();

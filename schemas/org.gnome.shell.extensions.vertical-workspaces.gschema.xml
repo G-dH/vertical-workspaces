@@ -79,6 +79,9 @@
     <key type="i" name="workspace-animation">
       <default>1</default>
     </key>
+    <key type="i" name="animation-speed-factor">
+      <default>100</default>
+    </key>
     <key type="b" name="fix-ubuntu-dock">
       <default>false</default>
     </key>
