@@ -362,7 +362,7 @@ function _getAppearanceOptionList() {
     const dashBgRadiusScale = itemFactory.newScale(dashRadAdjustment);
     optionList.push(
         itemFactory.getRowWidget(
-            _('Dash Background Opacity'),
+            _('Dash Background Radius'),
             _('Adjusts the border radius of the dash background in pixels. 0 means default value.'),
             dashBgRadiusScale,
             'dashBgRadius'
@@ -592,7 +592,7 @@ function _getBehaviorOptionList() {
 
     const animationSpeedAdjustment = new Gtk.Adjustment({
         upper: 500,
-        lower: 10,
+        lower: 1,
         step_increment: 10,
         page_increment: 100,
     });
@@ -602,7 +602,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Animation Speed'),
-            _('Adjusts global animation speed in %.'),
+            _('Adjusts the global animation speed in % of the default duration - higher value means slower animation.'),
             animationSpeedScale,
             'animationSpeedFactor'
         )

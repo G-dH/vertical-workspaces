@@ -118,6 +118,7 @@ let APP_GRID_BG_BLUR_SIGMA;
 let SMOOTH_BLUR_TRANSITIONS;
 let OVERVIEW_MODE;
 let WORKSPACE_MODE;
+let ANIMATION_TIME_FACTOR;
 
 let _enabled;
 let _staticBgAnimationEnabled = false;
@@ -459,7 +460,8 @@ function _updateSettings(settings, key) {
     OVERVIEW_MODE = gOptions.get('overviewMode', true);
     WORKSPACE_MODE = OVERVIEW_MODE ? 0 : 1;
 
-    St.Settings.get().slow_down_factor = gOptions.get('animationSpeedFactor', true) / 100;
+    ANIMATION_TIME_FACTOR = gOptions.get('animationSpeedFactor', true) / 100;
+    St.Settings.get().slow_down_factor = ANIMATION_TIME_FACTOR;
 
     _updateSearchEntryVisibility();
     _switchPageShortcuts();
@@ -1923,7 +1925,8 @@ var ControlsManagerOverride = {
             searchEntryBin.translation_y = 0;
         }
 
-        this._appDisplay.opacity = 255 - opacity;
+        if (!this._startupAnimationInProgress)
+            this._appDisplay.opacity = 255 - opacity;
 
         // workspacesDisplay needs to go off screen in APP_GRID state, otherwise it blocks DND operations within the App Display
         // but the 'visible' property ruins transition animation and breaks workspace control
@@ -1995,11 +1998,14 @@ var ControlsManagerOverride = {
             opacity: 255,
             duration: STARTUP_ANIMATION_TIME,
             mode: Clutter.AnimationMode.LINEAR,
+            onComplete: () => {
+                // part of the workaround for stuttering first app grid animation
+                this._appDisplay.visible = true;
+            }
         });
 
         // Set the opacity here to avoid a 1-frame flicker
         this.dash.opacity = 0;
-
 
         const dash = this.dash;
         const tmbBox = this._thumbnailsBox;
@@ -2009,14 +2015,37 @@ var ControlsManagerOverride = {
 
         const onComplete = function() {
             callback();
-            if (STARTUP_STATE === 1) {
-                Main.overview.hide();
-            } else if (STARTUP_STATE === 2) {
-                this.dash.showAppsButton.checked = true;
-            }
+
+            // force app grid to build before the first visible animation to remove possible stuttering
+            this._appDisplay.opacity = 1;
+
+            const [x, y] = this._appDisplay.get_position();
+            const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
+            const translation_x = geometry.x - x;
+            const translation_y = geometry.y - y;
+            this._appDisplay.translation_x = translation_x;
+            this._appDisplay.translation_y = translation_y;
+
+            // this code will be executed only at GS startup
+            // there is no chance the timeout will be interrupted by disabling the extension
+            GLib.timeout_add(
+                GLib.PRIORITY_DEFAULT,
+                10,
+                () => {
+                    this._appDisplay.translation_x = 0;
+                    this._appDisplay.translation_y = 0;
+                    this._appDisplay.visible = false;
+                    if (STARTUP_STATE === 1) {
+                        Main.overview.hide();
+                    } else if (STARTUP_STATE === 2) {
+                        this._appDisplay.opacity = 255;
+                        this.dash.showAppsButton.checked = true;
+                    }
+                    return GLib.SOURCE_REMOVE;
+                }
+            );
         }.bind(this);
 
-        dash.opacity = 255;
         if (dash.visible) {
             dash.translation_x = dashTranslation_x;
             dash.translation_y = dashTranslation_y;
@@ -2032,12 +2061,12 @@ var ControlsManagerOverride = {
                 },
             });
         } else {
-            // this code can be executed only at GS startup if dash is hidden,
-            // there is no chance the timeout will be interrupted by disabling the extension,
-            // since without the onComplete callback Shell will stay irresponsive and executing it again causes other issues, like duplicate connections
+            // this code will be executed only at GS startup if dash is hidden,
+            // there is no chance the timeout will be interrupted by disabling the extension
             GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
-                STARTUP_ANIMATION_TIME * 2,
+                // delay + animation time
+                STARTUP_ANIMATION_TIME * 2 * ANIMATION_TIME_FACTOR,
                 () => {
                     onComplete();
                     return GLib.SOURCE_REMOVE;
