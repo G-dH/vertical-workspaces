@@ -992,7 +992,7 @@ var WindowPreviewOverride = {
         // if titles are in 'always show' mode, we need to add transition between visible/invisible state
         this._title.set({
             opacity: Math.round(scale * 255),
-            scale_y: scale,
+            //scale_y: scale,
         });
     },
 
@@ -2005,10 +2005,12 @@ var ControlsManagerOverride = {
 
         const onComplete = function() {
             callback();
-            if (STARTUP_STATE) {
+            if (STARTUP_STATE === 1) {
                 Main.overview.hide();
+            } else if (STARTUP_STATE === 2) {
+                this.dash.showAppsButton.checked = true;
             }
-        }
+        }.bind(this);
 
         dash.opacity = 255;
         if (dash.visible) {

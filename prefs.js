@@ -550,6 +550,7 @@ function _getBehaviorOptionList() {
             'startupState',
             [   [_('Overview'), 0],
                 [_('Desktop'), 1],
+                [_('App Grid'), 2],
             ]
         )
     );
