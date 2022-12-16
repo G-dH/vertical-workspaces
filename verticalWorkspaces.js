@@ -110,6 +110,7 @@ let CENTER_APP_GRID;
 let APP_GRID_ANIMATION;
 let WS_ANIMATION;
 let WIN_PREVIEW_ICON_SIZE;
+let ALWAYS_SHOW_WIN_TITLES;
 let STARTUP_STATE;
 let SHOW_BG_IN_OVERVIEW;
 let OVERVIEW_BG_BLUR_SIGMA;
@@ -445,6 +446,7 @@ function _updateSettings(settings, key) {
     WS_ANIMATION = gOptions.get('workspaceAnimation', true);
 
     WIN_PREVIEW_ICON_SIZE = [64, 48, 32, 22, 8][gOptions.get('winPreviewIconSize', true)];
+    ALWAYS_SHOW_WIN_TITLES = gOptions.get('alwaysShowWinTitles', true);
 
     STARTUP_STATE = gOptions.get('startupState', true);
     SHOW_BG_IN_OVERVIEW = gOptions.get('showBgInOverview', true);
@@ -629,9 +631,15 @@ function _injectWindowPreview() {
             // we cannot get proper title height before it gets to the stage, so 35 is estimated height + spacing
             this._title.get_constraints()[1].offset = scaleFactor * (- iconOverlap - 35);
             this.set_child_above_sibling(this._title, null);
-            this._title.opacity = 0;
             this._icon.scale_x = 0;
             this._icon.scale_y = 0;
+            this._title.opacity = 0;
+
+            if (ALWAYS_SHOW_WIN_TITLES) {
+                this._title.show();
+                if (!OVERVIEW_MODE)
+                    this._title.opacity = 255;
+            }
 
             if (OVERVIEW_MODE === 1) {
                 // spread windows on hover
@@ -646,9 +654,10 @@ function _injectWindowPreview() {
                         });
                     }
                 });
-            } else if (OVERVIEW_MODE === 2) {
+            }
+            if (OVERVIEW_MODE) {
                 // show window icon and title on ws windows spread
-                this._workspace.stateAdjustment.connect('notify::value', this._updateIconScale.bind(this));
+                this._stateAdjustmentSigId = this._workspace.stateAdjustment.connect('notify::value', this._updateIconScale.bind(this));
             }
         }
     );
@@ -966,7 +975,7 @@ var WindowPreviewOverride = {
         }
 
         // in static workspace mode show icon and title on ws windows spread
-        if (OVERVIEW_MODE === 2) {
+        if (OVERVIEW_MODE) {
             const windowsSpread = this._workspace.stateAdjustment.value;
             if (currentState === 1) {
                 scale = windowsSpread;
@@ -975,21 +984,131 @@ var WindowPreviewOverride = {
             }
         }
 
-
         this._icon.set({
             scale_x: scale,
             scale_y: scale,
         });
 
-        // if titles are in 'always show' mode (set by another extension), we need to add transition between visible/invisible state
+        // if titles are in 'always show' mode, we need to add transition between visible/invisible state
         this._title.set({
             opacity: Math.round(scale * 255),
             scale_y: scale,
         });
+    },
 
-        /*this._closeButton.set({
-            opacity: scale * 255
-        });*/
+    showOverlay: function(animate) {
+        if (!this._overlayEnabled)
+            return;
+
+        if (this._overlayShown)
+            return;
+
+        this._overlayShown = true;
+        //this._restack();
+
+        // If we're supposed to animate and an animation in our direction
+        // is already happening, let that one continue
+        const ongoingTransition = this._title.get_transition('opacity');
+        if (animate &&
+            ongoingTransition &&
+            ongoingTransition.get_interval().peek_final_value() === 255)
+            return;
+
+        const toShow = this._windowCanClose()
+            ? [this._closeButton]
+            : [];
+
+        if (!ALWAYS_SHOW_WIN_TITLES) {
+            toShow.push(this._title);
+        }
+
+        toShow.forEach(a => {
+            a.opacity = 0;
+            a.show();
+            a.ease({
+                opacity: 255,
+                duration: animate ? WindowPreview.WINDOW_OVERLAY_FADE_TIME : 0,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            });
+        });
+
+        const [width, height] = this.window_container.get_size();
+        const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
+        const activeExtraSize = WindowPreview.WINDOW_ACTIVE_SIZE_INC * 2 * scaleFactor;
+        const origSize = Math.max(width, height);
+        const scale = (origSize + activeExtraSize) / origSize;
+
+        this.window_container.ease({
+            scale_x: scale,
+            scale_y: scale,
+            duration: animate ? WindowPreview.WINDOW_SCALE_TIME : 0,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+        });
+
+        this.emit('show-chrome');
+    },
+
+    hideOverlay: function(animate) {
+        if (!this._overlayShown)
+            return;
+        this._overlayShown = false;
+        //this._restack();
+
+        // If we're supposed to animate and an animation in our direction
+        // is already happening, let that one continue
+        const ongoingTransition = this._title.get_transition('opacity');
+        if (animate &&
+            ongoingTransition &&
+            ongoingTransition.get_interval().peek_final_value() === 0)
+            return;
+
+        const toHide = [this._closeButton];
+
+        if (!ALWAYS_SHOW_WIN_TITLES) {
+            toHide.push(this._title);
+        }
+        toHide.forEach(a => {
+            a.opacity = 255;
+            a.ease({
+                opacity: 0,
+                duration: animate ? WindowPreview.WINDOW_OVERLAY_FADE_TIME : 0,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                onComplete: () => a.hide(),
+            });
+        });
+
+        if (this.window_container) {
+            this.window_container.ease({
+                scale_x: 1,
+                scale_y: 1,
+                duration: animate ? WindowPreview.WINDOW_SCALE_TIME : 0,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            });
+        }
+    },
+
+    _onDestroy() {
+        this.metaWindow._delegate = null;
+        this._delegate = null;
+
+        if (this._longPressLater) {
+            Meta.later_remove(this._longPressLater);
+            delete this._longPressLater;
+        }
+
+        if (this._idleHideOverlayId > 0) {
+            GLib.source_remove(this._idleHideOverlayId);
+            this._idleHideOverlayId = 0;
+        }
+
+        if (this.inDrag) {
+            this.emit('drag-end');
+            this.inDrag = false;
+        }
+
+        if (this._stateAdjustmentSigId) {
+            this._workspace.stateAdjustment.disconnect(this._stateAdjustmentSigId);
+        }
     }
 }
 
@@ -2098,7 +2217,7 @@ var ControlsManagerLayoutOverride = {
 
                 this._xAlignCenter = false;
                 if (xOffset !== centeredBoxX) { // in this case xOffset holds max possible wsBoxX coordinance
-                    xOffset = ((dashPosition === 3 && dash.visible) ? dash.width + spacing : spacing) + ((thumbnailsWidth && WS_TMB_LEFT) ? thumbnailsWidth /*+ spacing*/ : 0)
+                    xOffset = ((dashPosition === 3 && dash.visible) ? dash.width + spacing : spacing) + ((thumbnailsWidth && WS_TMB_LEFT) ? thumbnailsWidth : 0)
                             + (width - wWidth - 2 * spacing - thumbnailsWidth - ((DASH_VERTICAL && dash.visible) ? dash.width + spacing : 0)) / 2;
                 } else {
                     this._xAlignCenter = true;

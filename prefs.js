@@ -448,6 +448,15 @@ function _getAppearanceOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Always Show Window Titles'),
+            _('All windows on the workspace preview will show their titles, not only the one with the mouse pointer.'),
+            itemFactory.newSwitch(),
+            'alwaysShowWinTitles',
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Background'),
         )
     );

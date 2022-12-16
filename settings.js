@@ -72,6 +72,7 @@ var Options = class Options {
             workspaceAnimation: ['int', 'workspace-animation'],
             fixUbuntuDock: ['boolean', 'fix-ubuntu-dock'],
             winPreviewIconSize: ['int', 'win-preview-icon-size'],
+            alwaysShowWinTitles: ['int', 'always-show-win-titles'],
             startupState: ['int', 'startup-state'],
             overviewMode: ['int', 'overview-mode']
         }
