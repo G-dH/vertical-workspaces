@@ -625,7 +625,7 @@ function _getMiscOptionList() {
     optionList.push(
        itemFactory.getRowWidget(
             _('Override Page Up/Down Shortcuts'),
-            _('This option automatically overrides the (Sift +) Super + Page Up/Down keyboard shortcuts for the current workspace orientation. If you encounter any issues, check the configuration in the dconf editor.'),
+            _('This option automatically overrides the (Shift +) Super + Page Up/Down keyboard shortcuts for the current workspace orientation. If you encounter any issues, check the configuration in the dconf editor.'),
             itemFactory.newSwitch(),
             'enablePageShortcuts',
         )
