@@ -1,5 +1,19 @@
 ## Changelog:
-### v17, v18
+### v19
+**Added:**
+- Overview modes `Expose Windows on Hover` and `Static Workspace`
+- Option `Always Show Window Titles`
+- Option `Dash Background Radius`
+- Option `Animation Speed`
+
+**Fixed:**
+- Startup animation can still freeze Shell in certain configuration. Injection replaced by complete override of the *startupAnimation()* function.
+- Workaround for upstream bug - stuttering first animation of App Grid with many icons
+
+**Other changes:**
+- Preferences split into more sections for better readability.
+
+### v17, v18 (2022-12-07)
 **Added:**
 - Separate scales for blur amount in overview window picker and app grid/search results.
 - Option `Smooth Blur Transitions` allows to disable smooth blur transitions on slower hw.
