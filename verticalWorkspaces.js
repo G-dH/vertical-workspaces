@@ -77,19 +77,26 @@ let _windowPreviewInjections;
 let _wsSwitcherPopupInjections;
 let _controlsManagerInjections;
 let _bgManagers;
+let _shellSettings;
 
+let _originalGestureUpdateId;
+
+let _enabled;
+let _resetExtensionIfEnabled;
+let _prevDash;
+let _staticBgAnimationEnabled;
+
+let _overviewHiddenSigId;
 let _appDisplayScrollConId;
 let _monitorsChangedSigId;
-let _originalGestureUpdateId;
 let _vwGestureUpdateId;
-let _shellSettings;
 let _watchDockSigId;
-let _resetTimeoutId;
-let _resetExtensionIfEnabled;
 let _showingOverviewSigId;
 let _searchControllerSigId;
-let _verticalOverview;
-let _prevDash;
+
+let _resetTimeoutId;
+let _startupAnimTimeoutId1;
+let _startupAnimTimeoutId2;
 
 // constants from settings
 let WS_TMB_POSITION;
@@ -120,9 +127,6 @@ let OVERVIEW_MODE;
 let WORKSPACE_MODE;
 let ANIMATION_TIME_FACTOR;
 
-let _enabled;
-let _staticBgAnimationEnabled = false;
-let _overviewHiddenSigId;
 
 function activate() {
     _enabled = true;
@@ -317,6 +321,12 @@ function reset() {
     }
 
     St.Settings.get().slow_down_factor = 1;
+
+    if (_startupAnimTimeoutId1)
+        GLib.source_remove(_startupAnimTimeoutId1);
+
+    if (_startupAnimTimeoutId2)
+        GLib.source_remove(_startupAnimTimeoutId2);
 }
 
 function _enableStaticBgAnimation() {
@@ -2026,9 +2036,8 @@ var ControlsManagerOverride = {
             this._appDisplay.translation_x = translation_x;
             this._appDisplay.translation_y = translation_y;
 
-            // this code will be executed only at GS startup
-            // there is no chance the timeout will be interrupted by disabling the extension
-            GLib.timeout_add(
+            // let the main loop realize previous changes before continuing
+            _startupAnimTimeoutId1 = GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
                 10,
                 () => {
@@ -2041,6 +2050,7 @@ var ControlsManagerOverride = {
                         this._appDisplay.opacity = 255;
                         this.dash.showAppsButton.checked = true;
                     }
+                    _startupAnimTimeoutId1 = 0;
                     return GLib.SOURCE_REMOVE;
                 }
             );
@@ -2061,14 +2071,14 @@ var ControlsManagerOverride = {
                 },
             });
         } else {
-            // this code will be executed only at GS startup if dash is hidden,
-            // there is no chance the timeout will be interrupted by disabling the extension
-            GLib.timeout_add(
-                GLib.PRIORITY_DEFAULT,
+            // if dash is hidden, substitute the ease timeout with GLib.timeout
+            _startupAnimTimeoutId2 = GLib.timeout_add(
+                _startupAnimSourceId2 = GLib.PRIORITY_DEFAULT,
                 // delay + animation time
                 STARTUP_ANIMATION_TIME * 2 * ANIMATION_TIME_FACTOR,
                 () => {
                     onComplete();
+                    _startupAnimTimeoutId2 = 0;
                     return GLib.SOURCE_REMOVE;
                 }
             );
