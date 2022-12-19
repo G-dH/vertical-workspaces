@@ -2073,7 +2073,7 @@ var ControlsManagerOverride = {
         } else {
             // if dash is hidden, substitute the ease timeout with GLib.timeout
             _startupAnimTimeoutId2 = GLib.timeout_add(
-                _startupAnimSourceId2 = GLib.PRIORITY_DEFAULT,
+                GLib.PRIORITY_DEFAULT,
                 // delay + animation time
                 STARTUP_ANIMATION_TIME * 2 * ANIMATION_TIME_FACTOR,
                 () => {
