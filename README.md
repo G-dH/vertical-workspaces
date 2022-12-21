@@ -45,7 +45,8 @@ This extension uses parts of the [Vertical Overview extension](https://github.co
 If you like my extensions and want to keep me motivated, you can also buy me a coffee:
 [buymeacoffee.com/georgdh](https://buymeacoffee.com/georgdh)
 
-![Settings window](screenshots/screenshot.png)
 ![Settings window](screenshots/screenshot1.png)
 ![Settings window](screenshots/screenshot2.png)
 ![Settings window](screenshots/screenshot3.png)
+![Settings window](screenshots/screenshot4.png)
+![Settings window](screenshots/screenshot5.png)
