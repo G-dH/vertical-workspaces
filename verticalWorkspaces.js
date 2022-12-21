@@ -647,9 +647,12 @@ function _injectWindowPreview() {
             // we cannot get proper title height before it gets to the stage, so 35 is estimated height + spacing
             this._title.get_constraints()[1].offset = scaleFactor * (- iconOverlap - 35);
             this.set_child_above_sibling(this._title, null);
-            this._icon.scale_x = 0;
-            this._icon.scale_y = 0;
-            this._title.opacity = 0;
+            // if window is created while the overview is shown, icon and title should visible immediately
+            if (Main.overview._overview._controls._stateAdjustment.value < 1) {
+                this._icon.scale_x = 0;
+                this._icon.scale_y = 0;
+                this._title.opacity = 0;
+            }
 
             if (ALWAYS_SHOW_WIN_TITLES) {
                 this._title.show();
@@ -1464,6 +1467,11 @@ var WorkspaceThumbnailOverride = {
         const wsIndex = this.metaWorkspace.index();
         const lastWsIndex = global.display.get_workspace_manager().get_n_workspaces() - 1;
         if (OVERVIEW_MODE === 2 && !WORKSPACE_MODE && wsIndex < lastWsIndex) {
+            const stateAdjustment = Main.overview._overview.controls._stateAdjustment;
+            if (stateAdjustment.value > 1) {
+                stateAdjustment.value = 1;
+            }
+
             WORKSPACE_MODE = 1;
             if (this.metaWorkspace.active) {
                 const adjustment = Main.overview._overview.controls._workspacesDisplay._workspacesViews[0]._workspaces[wsIndex].stateAdjustment;
@@ -2071,6 +2079,8 @@ var ControlsManagerOverride = {
                 },
             });
         } else {
+            // set dash opacity to make it visible if user enable it later
+            dash.opacity = 255;
             // if dash is hidden, substitute the ease timeout with GLib.timeout
             _startupAnimTimeoutId2 = GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
