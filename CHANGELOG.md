@@ -1,5 +1,5 @@
 ## Changelog:
-### v19
+### v23 (v19, v20, v21, v22) (2022-12-22)
 **Added:**
 - Overview modes `Expose Windows on Hover` and `Static Workspace`
 - Option `Always Show Window Titles`
@@ -8,7 +8,7 @@
 
 **Fixed:**
 - Startup animation can still freeze Shell in certain configuration. Injection replaced by complete override of the *startupAnimation()* function.
-- Workaround for upstream bug - stuttering first animation of App Grid with many icons
+- Workaround for upstream bug - stuttering first animation of App Grid with many icons.
 
 **Other changes:**
 - Preferences split into more sections for better readability.
