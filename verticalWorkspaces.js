@@ -509,19 +509,28 @@ function _updateDashPosition() {
 }
 
 function _updateSearchEntryVisibility() {
+    const searchActive = Main.overview._overview.controls._searchController._searchActive;
     if (SHOW_SEARCH_ENTRY) {
         Main.overview.searchEntry.visible = true;
         Main.overview.searchEntry.opacity = 255;
-        return;
+    } else {
+        // show search entry only if the user starts typing, and hide it when leaving the search mode
+        Main.overview.searchEntry.ease({
+            opacity: searchActive ? 255 : 0,
+            duration: OverviewControls.SIDE_CONTROLS_ANIMATION_TIME,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => (Main.overview.searchEntry.visible = searchActive),
+        });
     }
-    // show search entry only if the user starts typing, and hide it when leaving the search mode
-    const searchActive = Main.overview._overview.controls._searchController._searchActive;
-    Main.overview.searchEntry.ease({
-        opacity: searchActive ? 255 : 0,
-        duration: OverviewControls.SIDE_CONTROLS_ANIMATION_TIME,
-        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-        onComplete: () => (Main.overview.searchEntry.visible = searchActive),
-    });
+
+    // if static background enabled, blur bg of search results with the value for AppGrid
+    if (SHOW_BG_IN_OVERVIEW) {
+        if (searchActive && _bgManagers.length) {
+            _updateStaticBackground(_bgManagers[0], 2);
+        } else if (_bgManagers.length) {
+            _updateStaticBackground(_bgManagers[0], 1);
+        }
+    }
 }
 
 function _switchPageShortcuts() {
@@ -1876,12 +1885,6 @@ var ControlsManagerOverride = {
 
         let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
 
-        if (searchActive && _bgManagers.length) {
-            _updateStaticBackground(_bgManagers[0], 2);
-        } else if (_bgManagers.length) {
-            _updateStaticBackground(_bgManagers[0], 1);
-        }
-
         // improve transition from search results to desktop
         if (finalState === 0 && this._searchController._searchResults.visible) {
             this._searchController.hide();
@@ -1943,8 +1946,13 @@ var ControlsManagerOverride = {
             searchEntryBin.translation_y = 0;
         }
 
-        if (!this._startupAnimationInProgress)
-            this._appDisplay.opacity = 255 - opacity;
+        if (!this._startupAnimationInProgress) {
+            if (initialState === ControlsState.HIDDEN && finalState === ControlsState.APP_GRID) {
+                this._appDisplay.opacity = Math.round(progress * 255);
+            } else {
+                this._appDisplay.opacity = 255 - opacity;
+            }
+        }
 
         // workspacesDisplay needs to go off screen in APP_GRID state, otherwise it blocks DND operations within the App Display
         // but the 'visible' property ruins transition animation and breaks workspace control
@@ -1984,7 +1992,7 @@ var ControlsManagerOverride = {
         const { currentState } = stateTransitionParams;
 
         this._appDisplay.visible =
-            currentState > ControlsState.WINDOW_PICKER &&
+            currentState > ControlsState.HIDDEN &&
             !this._searchController.searchActive;
     },
 
@@ -2726,7 +2734,7 @@ function _updateStaticBackground(bgManager, stateValue) {
         if (!blurEffect) {
             blurEffect = new Shell.BlurEffect({
                 brightness: 1,
-                sigma: OVERVIEW_BG_BLUR_SIGMA,
+                sigma: 0,
                 mode: Shell.BlurMode.ACTOR,
             })
             bgManager.backgroundActor.add_effect_with_name('blur',blurEffect);
@@ -2735,7 +2743,7 @@ function _updateStaticBackground(bgManager, stateValue) {
         bgManager.backgroundActor.content.vignette_sharpness = VIGNETTE;
         bgManager.backgroundActor.content.brightness = BRIGHTNESS;
 
-        if (SHOW_WS_PREVIEW_BG && stateValue <= 1) // no need to animate transition, unless appgrid state is involved, static bg is covered by ws preview bg
+        if (SHOW_WS_PREVIEW_BG && stateValue <= 1) // no need to animate transition, unless appGrid state is involved, static bg is covered by ws preview bg
             return;
 
         let vignetteInit, brightnessInit, sigmaInit;
@@ -2752,29 +2760,24 @@ function _updateStaticBackground(bgManager, stateValue) {
         bgManager.backgroundActor.content.vignette_sharpness = Util.lerp(vignetteInit, VIGNETTE, Math.min(stateValue, 1));
         bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, Math.min(stateValue, 1));
 
-        if (SMOOTH_BLUR_TRANSITIONS && (OVERVIEW_BG_BLUR_SIGMA || APP_GRID_BG_BLUR_SIGMA)) {
-            if (stateValue <= 1 && OVERVIEW_MODE < 2) {
-                blurEffect.sigma = Util.lerp(0, OVERVIEW_BG_BLUR_SIGMA, stateValue);
+        if (OVERVIEW_BG_BLUR_SIGMA || APP_GRID_BG_BLUR_SIGMA) {
+            // reduce number of steps of blur transition to improve performance
+            const step = SMOOTH_BLUR_TRANSITIONS ? 0.05 : 0.2;
+            const progress = stateValue - (stateValue % step);
+            if (stateValue <= 1) {
+                const sigma = Math.round(Util.lerp(0, OVERVIEW_BG_BLUR_SIGMA, progress));
+                if (sigma !== blurEffect.sigma) {
+                    blurEffect.sigma = sigma;
+                }
             } else if (stateValue > 1  && bgManager._primary) {
-                blurEffect.sigma = Util.lerp(OVERVIEW_BG_BLUR_SIGMA, APP_GRID_BG_BLUR_SIGMA, stateValue - 1);
+                const sigma = Math.round(Util.lerp(OVERVIEW_BG_BLUR_SIGMA, APP_GRID_BG_BLUR_SIGMA, progress - 1));
+                if (sigma !== blurEffect.sigma) {
+                    blurEffect.sigma = sigma;
+                }
             } else if (stateValue === 1) {
                 blurEffect.sigma = OVERVIEW_BG_BLUR_SIGMA;
             } else if (stateValue === 0) {
                 blurEffect.sigma = 0;
-            }
-        } else if (OVERVIEW_BG_BLUR_SIGMA || APP_GRID_BG_BLUR_SIGMA) {
-            if (stateValue <= 1 && blurEffect._active !== 1) {
-                blurEffect.sigma = OVERVIEW_BG_BLUR_SIGMA;
-                blurEffect._active = 1;
-            } else if (blurEffect._active !== 2 && bgManager._primary && stateValue > 1.5) {
-                blurEffect.sigma = APP_GRID_BG_BLUR_SIGMA;
-                blurEffect._active = 2;
-            } else if (blurEffect._active !== 1 && stateValue < 1.5) {
-                blurEffect.sigma = OVERVIEW_BG_BLUR_SIGMA;
-                blurEffect._active = 1;
-            } else if (blurEffect._active === 1 && stateValue === 0) {
-                blurEffect.sigma = 0;
-                blurEffect._active = 0;
             }
         }
     }
