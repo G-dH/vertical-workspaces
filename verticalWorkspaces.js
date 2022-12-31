@@ -1116,6 +1116,12 @@ var WindowPreviewOverride = {
     },
 
     _onDestroy() {
+        // fix for upstream bug - hideOverlay is called after windowPreview is destroyed, from the leave event callback
+        // but it still throws:
+        //  clutter_actor_get_preferred_width: assertion 'CLUTTER_IS_ACTOR (self)' failed
+        //  clutter_actor_get_preferred_height: assertion 'CLUTTER_IS_ACTOR (self)' failed
+        this.hideOverlay(false);
+
         this.metaWindow._delegate = null;
         this._delegate = null;
 
@@ -1894,10 +1900,12 @@ var ControlsManagerOverride = {
         if (finalState === 0 && progress === 1 && OVERVIEW_MODE && WORKSPACE_MODE) {
             WORKSPACE_MODE = 0;
         }
-        /*if (finalState === 1) {
-            this._searchEntry.opacity = progress * 255;
+
+        /*if (finalState >= 1) {
+            const pC = Main.panel.get_theme_node().get_color('background-color');
+            Main.panel.set_style(`background-color: rgba(${pC.red}, ${pC.green}, ${pC.blue}, 0);`);
         } else if (finalState === 0) {
-            this._searchEntry.opacity = (1 - progress) * 255;
+            Main.panel.set_style('');
         }*/
 
         if ((WS_ANIMATION !== 1) || !SHOW_WS_TMB) {
