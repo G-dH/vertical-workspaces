@@ -114,6 +114,103 @@ function _getLayoutOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Workspaces - Thumbnails / Orientation'),
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Thumbnails Position / Workspaces Orientation'),
+            _('Position of the workspace thumbnails on the screen also sets an orientation of the workspaces to vertical or horizontal. "Full Height" options allow the workspace thumbnails to use the full height / width of the screen at the expense of the space available for Dash (if the Dash is oriented in a different axis). You also have two options to disable workspace thumbnails, one sets workspaces to the vertical orientation, the second to horizontal.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'workspaceThumbnailsPosition',
+            [   [_('Left - Vertical'), 0],
+                [_('Right - Vertical'), 1],
+                [_('Top - Horizontal'), 5],
+                [_('Bottom - Horizontal'), 6],
+                [_('Left - Full Height'), 2],
+                [_('Right - Full Height'), 3],
+                [_('Top - Full Width'), 7],
+                [_('Bottom - Full Width'), 8],
+                [_('Disable - Set Vertical Orientation'), 4],
+                [_('Disable - Set Horizontal Orientation'), 9],
+            ]
+        )
+    );
+
+    const wstPositionAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: -100,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const wstPositionScale = itemFactory.newScale(wstPositionAdjustment);
+    wstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Fine Tune Workspace Thumbnails Position'),
+            _('Adjusts workspace thumbnails vertical position.'),
+            wstPositionScale,
+            'wsTmbPositionAdjust'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Thumbnails Position on Secondary Monitor'),
+            _('Allows you to place workspace thumbnails of secondary monitors on the opposite side than on the primary monitor.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'secondaryWsThumbnailsPosition',
+            [   [_('Left / Top'), 0],
+                [_('Right / Bottom'), 1],
+                [_('Same as Primary'), 2],
+                [_('Disable'), 3],
+            ]
+        )
+    );
+
+    const SecWstPositionAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: -100,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const SecWstPositionScale = itemFactory.newScale(SecWstPositionAdjustment);
+    SecWstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Fine Tune Secondary Workspace Thumbnails Position'),
+            _('Adjusts secondary monitors workspace thumbnails vertical position.'),
+            SecWstPositionScale,
+            'SecWsTmbPositionAdjust'
+        )
+    );
+
+    const wsThumbnailScaleAdjustment = new Gtk.Adjustment({
+        upper: 30,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const wsThumbnailScale = itemFactory.newScale(wsThumbnailScaleAdjustment);
+    wsThumbnailScale.add_mark(13, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Thumbnails Max Scale'),
+            _('Adjusts maximum size of the workspace thumbnails (% relative to display width).'),
+            wsThumbnailScale,
+            'wsThumbnailScale'
+        )
+    );
+
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Dash'),
         )
     );
@@ -190,96 +287,6 @@ function _getLayoutOptionList() {
         )
     );
 
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Workspace Thumbnails'),
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Workspace Thumbnails Position and Max Height'),
-            _('Position of the workspace thumbnails on the screen. Full-Height options allow the workspace thumbnails to use the full height of the screen at the expense of the space available for Dash.'),
-            itemFactory.newComboBox(),
-            //itemFactory.newDropDown(),
-            'workspaceThumbnailsPosition',
-            [   [_('Left'), 0],
-                [_('Right'), 1],
-                [_('Left - Full-Height'), 2],
-                [_('Right - Full-Height'), 3],
-                [_('Disable'), 4],
-            ]
-        )
-    );
-
-    const wstPositionAdjustment = new Gtk.Adjustment({
-        upper: 100,
-        lower: -100,
-        step_increment: 1,
-        page_increment: 10,
-    });
-
-    const wstPositionScale = itemFactory.newScale(wstPositionAdjustment);
-    wstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Fine Tune Workspace Thumbnails Position'),
-            _('Adjusts workspace thumbnails vertical position.'),
-            wstPositionScale,
-            'wsTmbPositionAdjust'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Workspace Thumbnails Position on Secondary Monitor'),
-            _('Allows you to place workspace thumbnails of the secondary monitor closer to the one on the primary monitor. "Default" option follows position of the primary workspace thumbnails.'),
-            itemFactory.newComboBox(),
-            //itemFactory.newDropDown(),
-            'secondaryWsThumbnailsPosition',
-            [   [_('Left'), 0],
-                [_('Right'), 1],
-                [_('Default'), 2],
-                [_('Disable'), 3],
-            ]
-        )
-    );
-
-    const SecWstPositionAdjustment = new Gtk.Adjustment({
-        upper: 100,
-        lower: -100,
-        step_increment: 1,
-        page_increment: 10,
-    });
-
-    const SecWstPositionScale = itemFactory.newScale(SecWstPositionAdjustment);
-    SecWstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Fine Tune Secondary Workspace Thumbnails Position'),
-            _('Adjusts secondary monitors workspace thumbnails vertical position.'),
-            SecWstPositionScale,
-            'SecWsTmbPositionAdjust'
-        )
-    );
-
-    const wsThumbnailScaleAdjustment = new Gtk.Adjustment({
-        upper: 30,
-        lower: 5,
-        step_increment: 1,
-        page_increment: 1,
-    });
-
-    const wsThumbnailScale = itemFactory.newScale(wsThumbnailScaleAdjustment);
-    wsThumbnailScale.add_mark(13, Gtk.PositionType.TOP, null);
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Workspace Thumbnails Max Scale'),
-            _('Adjusts maximum size of the workspace thumbnails (% relative to display width).'),
-            wsThumbnailScale,
-            'wsThumbnailScale'
-        )
-    );
 
     optionList.push(
         itemFactory.getRowWidget(

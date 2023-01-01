@@ -40,8 +40,6 @@ const _Util = Me.imports.util;
 
 // touching module properties defined by const/let for the first time returns undefined in GS 42, so we touch it here before we use it
 WorkspacesView.SecondaryMonitorDisplay;
-WorkspacesView.SECONDARY_WORKSPACE_SCALE;
-WindowPreview.ICON_SIZE;
 
 let gOptions = null;
 let original_MAX_THUMBNAIL_SCALE;
@@ -99,6 +97,7 @@ let _startupAnimTimeoutId1;
 let _startupAnimTimeoutId2;
 
 // constants from settings
+let ORIENTATION;
 let WS_TMB_POSITION;
 let WS_TMB_POSITION_ADJUSTMENT
 let SEC_WS_TMB_POSITION_ADJUSTMENT;
@@ -146,8 +145,12 @@ function activate() {
     if (Object.keys(_verticalOverrides).length != 0)
         reset();
 
-    // switch internal workspace orientation in GS to vertical
-    global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
+    // switch internal workspace orientation in GS
+    if (ORIENTATION === Clutter.Orientation.VERTICAL) {
+        global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
+    } else {
+        global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, 1, -1);
+    }
 
     // fix overlay base for vertical workspaces
     _verticalOverrides['WorkspaceLayout'] = _Util.overrideProto(Workspace.WorkspaceLayout.prototype, WorkspaceLayoutOverride);
@@ -166,13 +169,18 @@ function activate() {
         _injectWsSwitcherPopup();
 
     // adjust overview layout to better serve vertical workspaces orientation
-    _verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxOverride);
+    if (ORIENTATION === Clutter.Orientation.VERTICAL) {
+        _verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxVerticalOverride);
+        _verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
+        _verticalOverrides['AppDisplay'] = _Util.overrideProto(AppDisplay.AppDisplay.prototype, AppDisplayOverride);
+        _verticalOverrides['SecondaryMonitorDisplay'] = _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayVerticalOverride);
+    } else {
+        _verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxHorizontalOverride);
+        _verticalOverrides['SecondaryMonitorDisplay'] = _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayHorizontalOverride);
+    }
     _verticalOverrides['WorkspaceThumbnail'] = _Util.overrideProto(WorkspaceThumbnail.WorkspaceThumbnail.prototype, WorkspaceThumbnailOverride);
     _verticalOverrides['ControlsManager'] = _Util.overrideProto(OverviewControls.ControlsManager.prototype, ControlsManagerOverride);
     _verticalOverrides['ControlsManagerLayout'] = _Util.overrideProto(OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutOverride);
-    _verticalOverrides['SecondaryMonitorDisplay'] = _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayOverride);
-    _verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
-    _verticalOverrides['AppDisplay'] = _Util.overrideProto(AppDisplay.AppDisplay.prototype, AppDisplayOverride);
     _verticalOverrides['WindowPreview'] = _Util.overrideProto(WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
     _verticalOverrides['WorkspaceBackground'] = _Util.overrideProto(Workspace.WorkspaceBackground.prototype, WorkspaceBackgroundOverride);
 
@@ -187,7 +195,7 @@ function activate() {
     _updateSearchEntryVisibility();
     _searchControllerSigId =  Main.overview._overview.controls._searchController.connect('notify::search-active', _updateSearchEntryVisibility);
 
-    _setAppDisplayOrientation(true);
+    _setAppDisplayOrientation(ORIENTATION === Clutter.Orientation.VERTICAL);
 
     // reverse swipe gestures for enter/leave overview and ws switching
     Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
@@ -348,11 +356,11 @@ function _resetExtension(timeout = 200) {
             const dash = Main.overview.dash;
             if (!timeout && _prevDash.dash && dash !== _prevDash.dash) { // !timeout means DtD workaround callback
                 _prevDash.dash = dash;
-                log(`[${Me.metadata.name}]: Dash has been replaced, resetting...`);
+                log(`[${Me.metadata.name}]: Dash has been replaced, resetting extension...`);
                 reset();
                 activate();
             } else if (timeout) {
-                log(`[${Me.metadata.name}]: resetting...`);
+                log(`[${Me.metadata.name}]: resetting extension...`);
                 reset();
                 activate();
             }
@@ -437,7 +445,8 @@ function _updateSettings(settings, key) {
 
 
     WS_TMB_POSITION = gOptions.get('workspaceThumbnailsPosition', true);
-    SHOW_WS_TMB = WS_TMB_POSITION !== 4; // 4 - disable
+    ORIENTATION = WS_TMB_POSITION > 4 ? Clutter.Orientation.HORIZONTAL : Clutter.Orientation.VERTICAL;
+    SHOW_WS_TMB = ![4, 9].includes(WS_TMB_POSITION); // 4, 8 - disable
     WS_TMB_POSITION_ADJUSTMENT = gOptions.get('wsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
     SEC_WS_TMB_POSITION = gOptions.get('secondaryWsThumbnailsPosition', true);
     SEC_WS_TMB_POSITION_ADJUSTMENT = gOptions.get('SecWsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
@@ -455,7 +464,13 @@ function _updateSettings(settings, key) {
     SHOW_SEARCH_ENTRY = gOptions.get('showSearchEntry', true);
     CENTER_SEARCH_VIEW = gOptions.get('centerSearch', true);
     APP_GRID_ANIMATION = gOptions.get('appGridAnimation', true);
-    if (APP_GRID_ANIMATION === 4) APP_GRID_ANIMATION = (!(WS_TMB_POSITION % 2) || !SHOW_WS_TMB) ? 1 : 2;
+    if (APP_GRID_ANIMATION === 4) {
+        if (ORIENTATION === Clutter.Orientation.VERTICAL) {
+            APP_GRID_ANIMATION = (!(WS_TMB_POSITION % 2) || !SHOW_WS_TMB) ? 1 : 2;
+        } else {
+            APP_GRID_ANIMATION = 3; // bottom
+        }
+    }
     WS_ANIMATION = gOptions.get('workspaceAnimation', true);
 
     WIN_PREVIEW_ICON_SIZE = [64, 48, 32, 22, 8][gOptions.get('winPreviewIconSize', true)];
@@ -484,6 +499,10 @@ function _updateSettings(settings, key) {
         _updateDashPosition();
     if (key === 'dash-max-icon-size')
         Main.overview.dash._redisplay();
+    if (key === 'ws-thumbnails-position') {
+        reset();
+        activate();
+    }
 }
 
 function _updateDashPosition() {
@@ -528,7 +547,8 @@ function _updateSearchEntryVisibility() {
         if (searchActive && _bgManagers.length) {
             _updateStaticBackground(_bgManagers[0], 2);
         } else if (_bgManagers.length) {
-            _updateStaticBackground(_bgManagers[0], 1);
+            // when search view is hidden update the blur according the current overview state
+            _updateStaticBackground(_bgManagers[0], Main.overview._overview._controls._stateAdjustment.value);
         }
     }
 }
@@ -671,15 +691,17 @@ function _injectWindowPreview() {
 
             if (OVERVIEW_MODE === 1) {
                 // spread windows on hover
-                this.connect('enter-event', () => {
-                    if (!WORKSPACE_MODE && !Main.overview._animationInProgress) {
+                this._wsStateConId = this.connect('enter-event', () => {
+                    const adjustment = this._workspace._background._stateAdjustment;
+                    if (!adjustment.value && !Main.overview._animationInProgress) {
                         WORKSPACE_MODE = 1;
-                        const adjustment = Main.overview._overview.controls._workspacesDisplay._workspacesViews[0]._workspaces[this.metaWindow.get_workspace().index()].stateAdjustment;
-                        adjustment.value = 0;
-                        adjustment.ease(1, {
-                            duration: 200,
-                            mode: Clutter.AnimationMode.EASE_OUT_QUAD
-                        });
+                        if (adjustment.value === 0) {
+                            adjustment.value = 0;
+                            adjustment.ease(1, {
+                                duration: 200,
+                                mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                            });
+                        }
                     }
                 });
             }
@@ -723,8 +745,8 @@ function _setAppDisplayOrientation(vertical = false) {
         } else {
             // moving these bars needs more patching of the appDisplay's code
             // for now we just change bars style to be more like vertically oriented arrows indicating direction to prev/next page
-            appDisplay._nextPageIndicator.style_class = 'nextPageIndicator';
-            appDisplay._prevPageIndicator.style_class = 'prevPageIndicator';
+            appDisplay._nextPageIndicator.add_style_class_name('nextPageIndicator');
+            appDisplay._prevPageIndicator.add_style_class_name('prevPageIndicator');
         }
 
         // setting their x_scale to 0 removes the arrows and avoid allocation issues compared to .hide() them
@@ -750,6 +772,9 @@ function _setAppDisplayOrientation(vertical = false) {
         appDisplay._hintContainer && scrollContainer.add_child(appDisplay._hintContainer);
         appDisplay._nextPageArrow.scale_x = 1;
         appDisplay._prevPageArrow.scale_x = 1;
+
+        appDisplay._nextPageIndicator.remove_style_class_name('nextPageIndicator');
+        appDisplay._prevPageIndicator.remove_style_class_name('prevPageIndicator');
     }
 
     // value for page indicator is calculated from scroll adjustment, horizontal needs to be replaced by vertical
@@ -786,13 +811,13 @@ function _moveDashAppGridIcon(reset = false) {
 // ---- workspace ---------------------------------------------
 // WorkspaceBackground
 var WorkspaceBackgroundOverride = {
-    _updateBorderRadius: function(value = false) {
+    _updateBorderRadius: function(value = true) {
         // don't round already rounded corners during exposing windows
         if (value === false && OVERVIEW_MODE === 1) {
             return;
         }
         const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
-        const cornerRadius = scaleFactor * Workspace.BACKGROUND_CORNER_RADIUS_PIXELS;
+        const cornerRadius = scaleFactor * BACKGROUND_CORNER_RADIUS_PIXELS;
 
         const backgroundContent = this._bgManager.backgroundActor.content;
         value = (value !==false)
@@ -850,13 +875,14 @@ var WorkspacesViewOverride = {
             availableSpace = height;
         } else {
             [, workspaceSize] = workspace.get_preferred_width(height);
-            availableSpace = (width - workspaceSize) / 2;
+            availableSpace = width;
         }
 
         const spacing = (availableSpace - workspaceSize * 0.4) * (1 - fitMode);
         const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
 
-        return Math.clamp(spacing, WORKSPACE_MIN_SPACING * scaleFactor,
+        return Math.clamp(spacing,
+            WORKSPACE_MIN_SPACING * scaleFactor,
             WORKSPACE_MAX_SPACING * scaleFactor);
     },
 
@@ -1146,8 +1172,9 @@ var WindowPreviewOverride = {
     }
 }
 
-//  SecondaryMonitorDisplay
-var SecondaryMonitorDisplayOverride = {
+//  SecondaryMonitorDisplay Vertical
+
+var SecondaryMonitorDisplayVerticalOverride = {
     _getThumbnailParamsForState: function(state) {
         const { ControlsState } = OverviewControls;
 
@@ -1233,7 +1260,7 @@ var SecondaryMonitorDisplayOverride = {
         const [width, height] = contentBox.get_size();
         const { expandFraction } = this._thumbnails;
         const spacing = themeNode.get_length('spacing') * expandFraction;
-        const padding = Math.round((1 - WorkspacesView.SECONDARY_WORKSPACE_SCALE) * height / 2);
+        const padding = Math.round(0.1 * height);
 
         let thumbnailsWidth = this._getThumbnailsWidth(contentBox, spacing);
         let [, thumbnailsHeight] = this._thumbnails.get_preferred_custom_height(thumbnailsWidth);
@@ -1248,10 +1275,10 @@ var SecondaryMonitorDisplayOverride = {
 
             let wsTmbX;
             if (wsTmbPosition) { // left
-                wsTmbX = width - spacing - thumbnailsWidth;
+                wsTmbX = Math.round(width - spacing / 4 - thumbnailsWidth);
                 this._thumbnails._positionLeft = false;
             } else {
-                wsTmbX = spacing;
+                wsTmbX = Math.round(spacing / 4);
                 this._thumbnails._positionLeft = true;
             }
 
@@ -1368,9 +1395,230 @@ var SecondaryMonitorDisplayOverride = {
     }
 }
 
+//  SecondaryMonitorDisplay Horizontal
+
+var SecondaryMonitorDisplayHorizontalOverride = {
+    _getThumbnailParamsForState: function(state) {
+        const { ControlsState } = OverviewControls;
+
+        let opacity, scale, translation_y;
+        switch (state) {
+        case ControlsState.HIDDEN:
+            opacity = 255;
+            scale = 1;
+            translation_y = 0;
+            if (_staticBgAnimationEnabled && (!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE === 2)) {
+                // 2 - default, 0 - left/top, 1 - right/bottom
+                let position = SEC_WS_TMB_POSITION;
+                if (position === 2) {// default - copy primary monitor option
+                    if (position = [5, 7].includes(WS_TMB_POSITION)) {; // TOP
+                        translation_y = - this._thumbnails.height + 12;
+                    } else if (position = [6, 8].includes(WS_TMB_POSITION)) {
+                        translation_y = this._thumbnails.height + 12;
+                    }
+                }
+            }
+            break;
+        case ControlsState.WINDOW_PICKER:
+        case ControlsState.APP_GRID:
+            opacity = 255;
+            scale = 1;
+            translation_y = 0;
+            break;
+        default:
+            opacity = 255;
+            scale = 1;
+            translation_y = 0;
+            break;
+        }
+
+        return { opacity, scale, translation_y };
+    },
+
+    _getWorkspacesBoxForState: function(state, box, padding, thumbnailsHeight, spacing) {
+        const { ControlsState } = OverviewControls;
+        const workspaceBox = box.copy();
+        const [width, height] = workspaceBox.get_size();
+
+        switch (state) {
+        case ControlsState.HIDDEN:
+            break;
+        case ControlsState.WINDOW_PICKER:
+        case ControlsState.APP_GRID:
+            if (OVERVIEW_MODE === 2) {
+                break;
+            }
+            let wsbY;
+            if (this._thumbnails._positionTop) {
+                wsbY = Math.round(spacing + thumbnailsHeight);
+            } else {
+                wsbY = spacing;
+            }
+
+            const wHeight = Math.round(Math.min(height - thumbnailsHeight - 5 * spacing));
+            const wWidth = Math.round(Math.min(wHeight * (width / height), width - 1.7 * padding));
+            const wsbX = Math.round((width - wWidth) / 2);
+
+            workspaceBox.set_origin(wsbX, wsbY);
+            workspaceBox.set_size(wWidth, wHeight);
+            break;
+        }
+
+        return workspaceBox;
+    },
+
+    vfunc_allocate: function(box) {
+        this.set_allocation(box);
+
+        const themeNode = this.get_theme_node();
+        const contentBox = themeNode.get_content_box(box);
+        const [width, height] = contentBox.get_size();
+        const { expandFraction } = this._thumbnails;
+        const spacing = themeNode.get_length('spacing') * expandFraction;
+        const padding = Math.round(0.1 * height);
+
+        let thumbnailsHeight = this._getThumbnailsHeight(contentBox);
+        let [, thumbnailsWidth] = this._thumbnails.get_preferred_custom_width(thumbnailsHeight);
+        thumbnailsWidth = Math.min(thumbnailsWidth, width - 2 * spacing);
+
+        this._thumbnails.visible = SHOW_WS_TMB;
+        if (this._thumbnails.visible) {
+            // 2 - default, 5,7 - top, 6,8 - bottom
+            let wsTmbPosition = SEC_WS_TMB_POSITION;
+            if (wsTmbPosition === 2) {// default - copy primary monitor option
+                if ([5, 7].includes(WS_TMB_POSITION)) {
+                    wsTmbPosition = 0;
+                } else if ([6, 8].includes(WS_TMB_POSITION)) {
+                    wsTmbPosition = 1;
+                }
+            }
+            let wsTmbY;
+            if (wsTmbPosition) {
+                wsTmbY = Math.round(height - spacing / 4 - thumbnailsHeight);
+                this._thumbnails._positionTop = false;
+            } else {
+                wsTmbY = Math.round(spacing / 4);
+                this._thumbnails._positionTop = true;
+            }
+
+            const childBox = new Clutter.ActorBox();
+            const availSpace = width - thumbnailsWidth - 2 * spacing;
+
+            let wsTmbX = availSpace / 2;
+            wsTmbX -= SEC_WS_TMB_POSITION_ADJUSTMENT * wsTmbX - spacing;
+
+            childBox.set_origin(Math.round(wsTmbX), Math.round(wsTmbY));
+            childBox.set_size(thumbnailsWidth, thumbnailsHeight);
+            this._thumbnails.allocate(childBox);
+        }
+
+        const {
+            currentState, initialState, finalState, transitioning, progress,
+        } = this._overviewAdjustment.getStateTransitionParams();
+
+        let workspacesBox;
+        const workspaceParams = [contentBox, padding, thumbnailsHeight, spacing];
+        if (!transitioning) {
+            workspacesBox =
+                this._getWorkspacesBoxForState(currentState, ...workspaceParams);
+        } else {
+            const initialBox =
+                this._getWorkspacesBoxForState(initialState, ...workspaceParams);
+            const finalBox =
+                this._getWorkspacesBoxForState(finalState, ...workspaceParams);
+            workspacesBox = initialBox.interpolate(finalBox, progress);
+        }
+        this._workspacesView.allocate(workspacesBox);
+    },
+
+    _updateThumbnailVisibility: function() {
+        if (OVERVIEW_MODE === 2) {
+            this.set_child_above_sibling(this._thumbnails, null);
+        }
+
+        const visible = !(this._settings.get_boolean('workspaces-only-on-primary') ||
+                         SEC_WS_TMB_POSITION === 3); // 3 - disabled
+
+        if (this._thumbnails.visible === visible)
+            return;
+
+        this._thumbnails.show();
+        this._updateThumbnailParams();
+        this._thumbnails.ease_property('expand-fraction', visible ? 1 : 0, {
+            duration: OverviewControls.SIDE_CONTROLS_ANIMATION_TIME,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => {
+                this._thumbnails.visible = visible;
+                this._thumbnails._indicator.visible = visible;
+            },
+        });
+    },
+
+    _updateThumbnailParams: function() {
+        // workaround for upstream bug - secondary thumbnails boxes don't catch 'showing' signal on the shell startup and don't populate the box with thumbnails
+        // the tmbBox contents is also destroyed when overview state adjustment gets above 1 when swiping gesture from window picker to app grid
+        if (!this._thumbnails._thumbnails.length) {
+            this._thumbnails._createThumbnails();
+        }
+
+        if (!this._thumbnails.visible)
+            return;
+
+        const { initialState, finalState, progress } =
+            this._overviewAdjustment.getStateTransitionParams();
+
+        const initialParams = this._getThumbnailParamsForState(initialState);
+        const finalParams = this._getThumbnailParamsForState(finalState);
+
+        const opacity =
+            Util.lerp(initialParams.opacity, finalParams.opacity, progress);
+        const scale =
+            Util.lerp(initialParams.scale, finalParams.scale, progress);
+        const translation_y =
+            Util.lerp(initialParams.translation_y, finalParams.translation_y, progress);
+
+        this._thumbnails.set({
+            opacity,
+            scale_x: scale,
+            scale_y: scale,
+            translation_y,
+        });
+    },
+
+    _updateWorkspacesView: function() {
+        if (this._workspacesView)
+            this._workspacesView.destroy();
+
+        if (this._settings.get_boolean('workspaces-only-on-primary')) {
+            this._workspacesView = new WorkspacesView.ExtraWorkspaceView(
+                this._monitorIndex,
+                this._overviewAdjustment);
+        } else {
+            this._workspacesView = new WorkspacesView.WorkspacesView(
+                this._monitorIndex,
+                this._controls,
+                this._scrollAdjustment,
+                // Secondary monitors don't need FitMode.ALL since there is workspace switcher always visible
+                //this._fitModeAdjustment,
+                new St.Adjustment({
+                    actor: this,
+                    value: 0,//FitMode.SINGLE,
+                    lower: 0,//FitMode.SINGLE,
+                    upper: 0,//FitMode.SINGLE,
+                }),
+                //secondaryOverviewAdjustment);
+                this._overviewAdjustment);
+        }
+        this.add_child(this._workspacesView);
+        this._thumbnails.opacity = 0;
+    }
+}
+
 //------workspaceThumbnail------------------------------------------------------------------------
 //Background.FADE_ANIMATION_TIME = 0;
+
 // WorkspaceThumbnail
+
 var WorkspaceThumbnailOverride = {
     after__init: function () {
 
@@ -1379,7 +1627,7 @@ var WorkspaceThumbnailOverride = {
 
         // add workspace thumbnails labels if enabled
         if (SHOW_WST_LABELS) { // 0 - disable
-            // layout manager allows aligning widget childs
+            // layout manager allows aligning widget children
             this.layout_manager = new Clutter.BinLayout();
             // adding layout manager to tmb widget breaks wallpaper background aligning and rounded corners
             // unless border is removed
@@ -1397,7 +1645,7 @@ var WorkspaceThumbnailOverride = {
                     label += `: ${wsLabels[wsIndex]}`;
                 }
             } else if (SHOW_WST_LABELS === 3) { // 3- index + app name
-                // global.display.get_tab_list affers workspace filtering using the second argument, but...
+                // global.display.get_tab_list offers workspace filtering using the second argument, but...
                 // ... it sometimes includes windows from other workspaces, like minimized VBox machines, after Shell restarts
                 const metaWin = global.display.get_tab_list(0, null).filter(
                     w => w.get_monitor() === this.monitorIndex && w.get_workspace().index() === wsIndex
@@ -1506,8 +1754,9 @@ var WorkspaceThumbnailOverride = {
     }
 }
 
-// ThumbnailsBox
-var ThumbnailsBoxOverride = {
+// ThumbnailsBox Vertical
+
+var ThumbnailsBoxVerticalOverride = {
     _activateThumbnailAtPoint: function(stageX, stageY, time) {
         const [r_, x, y] = this.transform_stage_point(stageX, stageY);
 
@@ -1666,6 +1915,8 @@ var ThumbnailsBoxOverride = {
         return [totalSpacing, naturalheight];
     },
 
+    // removes extra space (extraWidth in the original function), we need the box as accurate as possible
+    // for precise app grid transition animation
     vfunc_allocate: function(box) {
         this.set_allocation(box);
 
@@ -1838,6 +2089,203 @@ var ThumbnailsBoxOverride = {
     }
 }
 
+// ThumbnailsBox Horizontal
+
+var ThumbnailsBoxHorizontalOverride = {
+    get_preferred_custom_width: function(_forHeight) {
+        // Note that for getPreferredHeight/Width we cheat a bit and skip propagating
+        // the size request to our children because we know how big they are and know
+        // that the actors aren't depending on the virtual functions being called.
+        let themeNode = this.get_theme_node();
+
+        let spacing = themeNode.get_length('spacing');
+        let nWorkspaces = this._thumbnails.length;
+        let totalSpacing = (nWorkspaces - 1) * spacing;
+
+        const ratio = this._porthole.height / this._porthole.width;
+        const tmbWidth = (_forHeight - 2 * spacing) / ratio;
+
+        const naturalWidth = this._thumbnails.reduce((accumulator, thumbnail, index) => {
+            const progress = 1 - thumbnail.collapse_fraction;
+            const width = tmbWidth * progress;
+            return accumulator + width;
+        }, 0);
+
+        return themeNode.adjust_preferred_width(totalSpacing, naturalWidth);
+    },
+
+    vfunc_allocate(box) {
+        this.set_allocation(box);
+
+        let rtl = Clutter.get_default_text_direction() == Clutter.TextDirection.RTL;
+
+        if (this._thumbnails.length == 0) // not visible
+            return;
+
+        let themeNode = this.get_theme_node();
+        box = themeNode.get_content_box(box);
+
+        const portholeWidth = this._porthole.width;
+        const portholeHeight = this._porthole.height;
+        const spacing = themeNode.get_length('spacing');
+
+        const nWorkspaces = this._thumbnails.length;
+
+        // Compute the scale we'll need once everything is updated,
+        // unless we are currently transitioning
+        if (this._expandFraction === 1) {
+            const totalSpacing = (nWorkspaces - 1) * spacing;
+            const availableWidth = (box.get_width() - totalSpacing) / nWorkspaces;
+
+            const hScale = availableWidth / portholeWidth;
+            const vScale = box.get_height() / portholeHeight;
+            const newScale = Math.min(hScale, vScale);
+
+            if (newScale !== this._targetScale) {
+                if (this._targetScale > 0) {
+                    // We don't ease immediately because we need to observe the
+                    // ordering in queueUpdateStates - if workspaces have been
+                    // removed we need to slide them out as the first thing.
+                    this._targetScale = newScale;
+                    this._pendingScaleUpdate = true;
+                } else {
+                    this._targetScale = this._scale = newScale;
+                }
+
+                this._queueUpdateStates();
+            }
+        }
+
+        const ratio = portholeWidth / portholeHeight;
+        const thumbnailFullHeight = Math.round(portholeHeight * this._scale);
+        const thumbnailWidth = Math.round(thumbnailFullHeight * ratio);
+        const thumbnailHeight = thumbnailFullHeight * this._expandFraction;
+        const roundedVScale = thumbnailHeight / portholeHeight;
+
+        let indicatorValue = this._scrollAdjustment.value;
+        let indicatorUpperWs = Math.ceil(indicatorValue);
+        let indicatorLowerWs = Math.floor(indicatorValue);
+
+        let indicatorLowerX1 = 0;
+        let indicatorLowerX2 = 0;
+        let indicatorUpperX1 = 0;
+        let indicatorUpperX2 = 0;
+
+        let indicatorThemeNode = this._indicator.get_theme_node();
+        let indicatorTopFullBorder = indicatorThemeNode.get_padding(St.Side.TOP) + indicatorThemeNode.get_border_width(St.Side.TOP);
+        let indicatorBottomFullBorder = indicatorThemeNode.get_padding(St.Side.BOTTOM) + indicatorThemeNode.get_border_width(St.Side.BOTTOM);
+        let indicatorLeftFullBorder = indicatorThemeNode.get_padding(St.Side.LEFT) + indicatorThemeNode.get_border_width(St.Side.LEFT);
+        let indicatorRightFullBorder = indicatorThemeNode.get_padding(St.Side.RIGHT) + indicatorThemeNode.get_border_width(St.Side.RIGHT);
+
+        let x = box.x1;
+
+        if (this._dropPlaceholderPos == -1) {
+            this._dropPlaceholder.allocate_preferred_size(
+                ...this._dropPlaceholder.get_position());
+
+            Meta.later_add(Meta.LaterType.BEFORE_REDRAW, () => {
+                this._dropPlaceholder.hide();
+            });
+        }
+
+        let childBox = new Clutter.ActorBox();
+
+        for (let i = 0; i < this._thumbnails.length; i++) {
+            const thumbnail = this._thumbnails[i];
+            if (i > 0)
+                x += spacing - Math.round(thumbnail.collapse_fraction * spacing);
+
+            const y1 = box.y1;
+            const y2 = y1 + thumbnailHeight;
+
+            if (i === this._dropPlaceholderPos) {
+                const [, placeholderWidth] = this._dropPlaceholder.get_preferred_width(-1);
+                childBox.y1 = y1;
+                childBox.y2 = y2;
+
+                if (rtl) {
+                    childBox.x2 = box.x2 - Math.round(x);
+                    childBox.x1 = box.x2 - Math.round(x + placeholderWidth);
+                } else {
+                    childBox.x1 = Math.round(x);
+                    childBox.x2 = Math.round(x + placeholderWidth);
+                }
+
+                this._dropPlaceholder.allocate(childBox);
+
+                Meta.later_add(Meta.LaterType.BEFORE_REDRAW, () => {
+                    this._dropPlaceholder.show();
+                });
+                x += placeholderWidth + spacing;
+            }
+
+            // We might end up with thumbnailWidth being something like 99.33
+            // pixels. To make this work and not end up with a gap at the end,
+            // we need some thumbnails to be 99 pixels and some 100 pixels width;
+            // we compute an actual scale separately for each thumbnail.
+            const x1 = Math.round(x);
+            const x2 = Math.round(x + thumbnailWidth);
+            const roundedHScale = (x2 - x1) / portholeWidth;
+
+            // Allocating a scaled actor is funny - x1/y1 correspond to the origin
+            // of the actor, but x2/y2 are increased by the *unscaled* size.
+            if (rtl) {
+                childBox.x2 = box.x2 - x1;
+                childBox.x1 = box.x2 - (x1 + thumbnailWidth);
+            } else {
+                childBox.x1 = x1;
+                childBox.x2 = x1 + thumbnailWidth;
+            }
+            childBox.y1 = y1;
+            childBox.y2 = y1 + thumbnailHeight;
+
+            thumbnail.setScale(roundedHScale, roundedVScale);
+            thumbnail.allocate(childBox);
+
+            if (i === indicatorUpperWs) {
+                indicatorUpperX1 = childBox.x1;
+                indicatorUpperX2 = childBox.x2;
+            }
+            if (i === indicatorLowerWs) {
+                indicatorLowerX1 = childBox.x1;
+                indicatorLowerX2 = childBox.x2;
+            }
+
+            // We round the collapsing portion so that we don't get thumbnails resizing
+            // during an animation due to differences in rounded, but leave the uncollapsed
+            // portion unrounded so that non-animating we end up with the right total
+            x += thumbnailWidth - Math.round(thumbnailWidth * thumbnail.collapse_fraction);
+        }
+
+        childBox.y1 = box.y1;
+        childBox.y2 = box.y1 + thumbnailHeight;
+
+        const indicatorX1 = indicatorLowerX1 +
+            (indicatorUpperX1 - indicatorLowerX1) * (indicatorValue % 1);
+        const indicatorX2 = indicatorLowerX2 +
+            (indicatorUpperX2 - indicatorLowerX2) * (indicatorValue % 1);
+
+        childBox.x1 = indicatorX1 - indicatorLeftFullBorder;
+        childBox.x2 = indicatorX2 + indicatorRightFullBorder;
+        childBox.y1 -= indicatorTopFullBorder;
+        childBox.y2 += indicatorBottomFullBorder;
+        this._indicator.allocate(childBox);
+    },
+
+    _updateShouldShow: function() {
+        // set current workspace indicator border radius
+        // here just 'cause it's easier than adding to init
+        this._indicator.add_style_class_name('ws-tmb');
+
+        const shouldShow = SHOW_WS_TMB;
+        if (this._shouldShow === shouldShow)
+            return;
+
+        this._shouldShow = shouldShow;
+        this.notify('should-show');
+    }
+}
+
 //------- overviewControls --------------------------------
 
 // ControlsManager
@@ -1923,15 +2371,15 @@ var ControlsManagerOverride = {
         const skipDash = Main.overview.dash._isHorizontal !== undefined;
         if (_staticBgAnimationEnabled && (!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE === 2)) {
             if (!tmbBox._translationOriginal || Math.abs(tmbBox._translationOriginal) > 500) { // swipe gesture can call this calculation before tmbBox is finalized, giving nonsense width
-                let tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y;
-                [tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _getOverviewTranslations(dash, tmbBox, searchEntryBin);
-                tmbBox._translationOriginal = tmbTranslation_x;
+                const [tmbTranslation_x, tmbTranslation_y, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _getOverviewTranslations(dash, tmbBox, searchEntryBin);
+                tmbBox._translationOriginal = [tmbTranslation_x, tmbTranslation_y];
                 dash._translationOriginal = [dashTranslation_x, dashTranslation_y];
                 searchEntryBin._translationOriginal = searchTranslation_y;
             }
             if (finalState === 0 || initialState === 0) {
                 const prg = Math.abs((finalState == 0 ? 0 : 1) - progress);
-                tmbBox.translation_x = Math.round(prg * tmbBox._translationOriginal);
+                tmbBox.translation_x = Math.round(prg * tmbBox._translationOriginal[0]);
+                tmbBox.translation_y = Math.round(prg * tmbBox._translationOriginal[1]);
                 if (!skipDash) {
                     dash.translation_x = Math.round(prg * dash._translationOriginal[0]);
                     dash.translation_y = Math.round(prg * dash._translationOriginal[1]);
@@ -2044,7 +2492,7 @@ var ControlsManagerOverride = {
         const dash = this.dash;
         const tmbBox = this._thumbnailsBox;
         const searchEntryBin = this._searchEntryBin;
-        const [tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y] =
+        const [tmbTranslation_x, tmbTranslation_y, dashTranslation_x, dashTranslation_y, searchTranslation_y] =
             _getOverviewTranslations(dash, tmbBox, searchEntryBin);
 
         const onComplete = function() {
@@ -2054,9 +2502,8 @@ var ControlsManagerOverride = {
             this._appDisplay.opacity = 1;
 
             const [x, y] = this._appDisplay.get_position();
-            const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
-            const translation_x = geometry.x - x;
-            const translation_y = geometry.y - y;
+            const translation_x = - x;
+            const translation_y = - y;
             this._appDisplay.translation_x = translation_x;
             this._appDisplay.translation_y = translation_y;
 
@@ -2122,8 +2569,10 @@ var ControlsManagerOverride = {
 
         if (tmbBox.visible) {
             tmbBox.translation_x = tmbTranslation_x;
+            tmbBox.translation_y = tmbTranslation_y;
             tmbBox.ease({
                 translation_x: 0,
+                translation_y: 0,
                 delay: STARTUP_ANIMATION_TIME,
                 duration: STARTUP_ANIMATION_TIME,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
@@ -2156,16 +2605,43 @@ var ControlsManagerOverride = {
 
 function _getOverviewTranslations(dash, tmbBox, searchEntryBin) {
     //const tmbBox = Main.overview._overview._controls._thumbnailsBox;
-    let tmbTranslation_x = 0;
-    if (tmbBox?.visible) {
-        const offset = 10 + ((dash?.visible && [1, 3].includes(DASH_POSITION)) ? dash.width : 0);
-        tmbTranslation_x = [1, 3].includes(WS_TMB_POSITION) ? tmbBox.width + offset : - tmbBox.width - offset;
-    }
-
     let searchTranslation_y = 0;
     if (searchEntryBin?.visible) {
-        const offset = (dash?.visible && ([0, 2].includes(DASH_POSITION)) ? dash.height : 0);
+        const offset = (dash?.visible && ([0, 2].includes(DASH_POSITION)) ? dash.height : 0)
+            + tmbBox?.visible ? tmbBox.height + 20 : 0;
         searchTranslation_y = - searchEntryBin.height - offset - 10;
+    }
+
+    let tmbTranslation_x = 0;
+    let tmbTranslation_y = 0;
+    let offset;
+    if (tmbBox?.visible) {
+        switch (WS_TMB_POSITION) {
+            case 0:
+            case 2:
+                offset = 10 + ((dash?.visible && DASH_POSITION === 3) ? dash.width : 0);
+                tmbTranslation_x = - tmbBox.width - offset;
+                tmbTranslation_y = 0;
+                break;
+            case 1:
+            case 3:
+                offset = 10 + ((dash?.visible && DASH_POSITION === 1) ? dash.width : 0);
+                tmbTranslation_x = tmbBox.width + offset;
+                tmbTranslation_y = 0;
+                break;
+            case 5:
+            case 7:
+                offset = 10 + ((dash?.visible && DASH_POSITION === 0) ? dash.height : 0);
+                tmbTranslation_x = 0;
+                tmbTranslation_y = - tmbBox.height - offset;
+                break;
+            case 6:
+            case 8:
+                offset = 10 + ((dash?.visible && DASH_POSITION === 2) ? dash.height : 0);
+                tmbTranslation_x = 0;
+                tmbTranslation_y = tmbBox.height + offset;
+                break;
+        }
     }
 
     let dashTranslation_x = 0;
@@ -2196,13 +2672,20 @@ function _getOverviewTranslations(dash, tmbBox, searchEntryBin) {
         }
     }
 
-    return [tmbTranslation_x, dashTranslation_x, dashTranslation_y, searchTranslation_y];
+    return [tmbTranslation_x, tmbTranslation_y, dashTranslation_x, dashTranslation_y, searchTranslation_y];
 }
 
 //-------ControlsManagerLayout-----------------------------
 
 var ControlsManagerLayoutOverride = {
-    _computeWorkspacesBoxForState: function(state, box, workAreaBox, dashHeight, thumbnailsWidth, searchHeight) {
+    _computeWorkspacesBoxForState: function(...args) {
+        if (ORIENTATION === Clutter.Orientation.VERTICAL)
+            return this._computeWorkspacesBoxForStateVertical(...args);
+        else
+            return this._computeWorkspacesBoxForStateHorizontal(...args);
+    },
+
+    _computeWorkspacesBoxForStateVertical: function(state, box, workAreaBox, dashWidth, dashHeight, thumbnailsWidth, thumbnailsHeight, searchHeight) {
         const workspaceBox = box.copy();
         let [width, height] = workspaceBox.get_size();
         const { x1: startX, y1: startY } = workAreaBox;
@@ -2304,7 +2787,126 @@ var ControlsManagerLayoutOverride = {
         return workspaceBox;
     },
 
-    _getAppDisplayBoxForState: function(state, box, workAreaBox, searchHeight, dashWidth, dashHeight, appGridBox, thumbnailsWidth) {
+    _computeWorkspacesBoxForStateHorizontal: function(state, box, workAreaBox, dashWidth, dashHeight, thumbnailsWidth, thumbnailsHeight, searchHeight) {
+        const workspaceBox = box.copy();
+        let [width, height] = workspaceBox.get_size();
+        const { x1: startX, y1: startY } = workAreaBox;
+        const { spacing } = this;
+        //const { expandFraction } = this._workspacesThumbnails;
+
+        const dash = Main.overview.dash;
+        let dashPosition = DASH_POSITION;
+        // including Dash to Dock and clones properties for compatibility
+        const dashToDock = dash._isHorizontal !== undefined;
+        if (dashToDock) {
+            dashPosition = dash._position;
+            dashHeight = dash.height;
+            dashWidth = dash.width;
+            // compensation for a bug related to Dash to Dock bottom non-auto-hide position
+            // ...when workspace box width is calculated correctly, but the output width is bigger
+            // ...although if you read the width back from workspaceDisplay, you get the originally calculated value, not the real one
+            if (dash._position === 2 && !dash.get_parent()?.get_parent()?.get_parent()?._intellihideIsEnabled) {
+                height -= dash.height
+            } else if ([1, 3].includes(dash._position)) {
+                // if Dash to Dock reduces workAreaBox, compensate for this
+                Main.layoutManager._trackedActors.forEach((actor) => {
+                    if (actor.affectsStruts && actor.actor.width === dash.width) {
+                        width += dash.width;
+                    }
+                });
+            }
+        }
+
+        const DASH_VERTICAL = [1, 3].includes(dashPosition);
+        const DASH_TOP = dash.visible && dashPosition === 0;
+
+        let wWidth;
+        let wHeight;
+        let wsBoxY;
+
+        switch (state) {
+        case ControlsState.HIDDEN:
+            workspaceBox.set_origin(...workAreaBox.get_origin());
+            workspaceBox.set_size(...workAreaBox.get_size());
+            break;
+        case ControlsState.WINDOW_PICKER:
+        case ControlsState.APP_GRID:
+            if (WS_ANIMATION === 1 && SHOW_WS_TMB && state === ControlsState.APP_GRID) {
+                workspaceBox.set_origin(...this._workspacesThumbnails.get_position());
+                workspaceBox.set_size(...this._workspacesThumbnails.get_size());
+            } else if (OVERVIEW_MODE === 2 && !WORKSPACE_MODE) {
+                workspaceBox.set_origin(...workAreaBox.get_origin());
+                workspaceBox.set_size(...workAreaBox.get_size());
+            } else {
+                dashWidth = dash.visible ? dashWidth : 0;
+                dashHeight = dash.visible ? dashHeight : 0;
+                searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
+                wWidth = width
+                            - spacing
+                            - (DASH_VERTICAL ? dashWidth + spacing : spacing)
+                            - 2 * spacing;
+                wHeight = height
+                            - (DASH_VERTICAL ? spacing : (dashHeight ? dashHeight + spacing : spacing))
+                            - (thumbnailsHeight ? thumbnailsHeight + spacing : 0)
+                            - searchHeight
+                            - 3 * spacing;
+                const ratio = width / height;
+                let wRatio = wWidth / wHeight;
+                let scale = ratio / wRatio;
+
+                if (scale > 1) {
+                    wHeight = wHeight / scale;
+                    wWidth = wHeight * ratio;
+                } else {
+                    wWidth = wWidth * scale;
+                    wHeight = wWidth / ratio;
+                }
+
+                let xOffset = 0;
+                let yOffset = 0;
+
+                const yOffsetDash = DASH_TOP ? dashHeight + spacing : 0;
+                const yOffsetWsTmb = [5, 7].includes(WS_TMB_POSITION) ? thumbnailsHeight + spacing : 0;
+                const yAvailableSpace = height - wHeight - (DASH_VERTICAL ? 0 : dashHeight) - thumbnailsHeight - searchHeight - spacing;
+                yOffset = yOffsetDash + yOffsetWsTmb + searchHeight + yAvailableSpace / 2;
+
+                const xOffsetDash = DASH_POSITION === 3 ? dashWidth + spacing : spacing;
+                const xAvailableSpace = width - wWidth - 2 * spacing - (DASH_VERTICAL ? dashWidth + spacing : 0);
+                xOffset = xOffsetDash + xAvailableSpace / 2;
+
+                // move the workspace box to the middle of the screen, if possible
+                const centeredBoxX = (width - wWidth) / 2;
+
+                if (dashPosition === DashPosition.LEFT)
+                    xOffset = Math.max(centeredBoxX, xOffsetDash + xAvailableSpace / 2);
+                else if (dashPosition === DashPosition.RIGHT)
+                    xOffset = Math.min(centeredBoxX, xOffsetDash + xAvailableSpace / 2);
+
+                this._xAlignCenter = false;
+                if (xOffset !== centeredBoxX) { // in this case xOffset holds max possible wsBoxX coordinate
+
+                } else {
+                    this._xAlignCenter = true;
+                }
+
+                const wsBoxX = /*startX + */xOffset;
+                wsBoxY = Math.round(startY + yOffset) //* + (searchHeight ? searchHeight + spacing : 0)*/);
+                workspaceBox.set_origin(Math.round(wsBoxX), Math.round(wsBoxY));
+                workspaceBox.set_size(Math.round(wWidth), Math.round(wHeight));
+            }
+        }
+
+        return workspaceBox;
+    },
+
+    _getAppDisplayBoxForState: function(...args) {
+        if (ORIENTATION === Clutter.Orientation.VERTICAL)
+            return this._getAppDisplayBoxForStateVertical(...args);
+        else
+            return this._getAppDisplayBoxForStateHorizontal(...args);
+    },
+
+    _getAppDisplayBoxForStateVertical: function(state, box, workAreaBox, searchHeight, dashWidth, dashHeight, appGridBox, thumbnailsWidth) {
         const [width] = box.get_size();
         const { x1: startX } = workAreaBox;
         const { y1: startY } = workAreaBox;
@@ -2351,7 +2953,59 @@ var ControlsManagerLayoutOverride = {
         return appDisplayBox;
     },
 
+    _getAppDisplayBoxForStateHorizontal: function(state, box, workAreaBox, searchHeight, dashWidth, dashHeight, appGridBox, thumbnailsHeight) {
+        const [width] = box.get_size();
+        const { x1: startX } = workAreaBox;
+        const { y1: startY } = workAreaBox;
+        const height = workAreaBox.get_height();
+        const appDisplayBox = new Clutter.ActorBox();
+        const { spacing } = this;
+
+        const dash = Main.overview.dash;
+        const dashPosition = dash._position;
+        searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
+
+        const appDisplayX = startX + (CENTER_APP_GRID ? spacing + thumbnailsWidth : (dashPosition === 3 ? dash.width + spacing : 0));
+        const appDisplayY = startY + searchHeight + (dashPosition === DashPosition.TOP ? dashHeight + spacing : spacing) + ([6, 8].includes(WS_TMB_POSITION) ? 0 : thumbnailsHeight + spacing);
+
+        const adWidth = CENTER_APP_GRID ? width : width - ([1, 3].includes(dashPosition) ? dashWidth + 2 * spacing : spacing);
+        const adHeight = height - searchHeight - ([0, 2].includes(dashPosition) ? dashHeight + 2 * spacing : 2 * spacing) - thumbnailsHeight;
+        switch (state) {
+        case ControlsState.HIDDEN:
+        case ControlsState.WINDOW_PICKER:
+            // 1 - left, 2 - right, 3 - bottom
+            switch (APP_GRID_ANIMATION) {
+            case 0:
+                appDisplayBox.set_origin(appDisplayX, appDisplayY);
+                break;
+            case 1:
+                appDisplayBox.set_origin(startX + width, appDisplayY);
+                break;
+            case 2:
+                appDisplayBox.set_origin(startX - adWidth, appDisplayY);
+                break;
+            case 3:
+                appDisplayBox.set_origin(appDisplayX, workAreaBox.y2);
+                break;
+            }
+            break;
+        case ControlsState.APP_GRID:
+            appDisplayBox.set_origin(appDisplayX, appDisplayY);
+            break;
+        }
+
+        appDisplayBox.set_size(adWidth, adHeight);
+        return appDisplayBox;
+    },
+
     vfunc_allocate: function(container, box) {
+        if (ORIENTATION === Clutter.Orientation.VERTICAL)
+            this._allocate_vertical(container, box);
+        else
+            this._allocate_horizontal(container, box);
+    },
+
+    _allocate_vertical: function(container, box) {
         const childBox = new Clutter.ActorBox();
 
         const { spacing } = this;
@@ -2416,18 +3070,18 @@ var ControlsManagerLayoutOverride = {
 
         // Workspace Thumbnails
         let wsTmbWidth = 0;
-        let thumbnailsHeight = 0;
+        let wsTmbHeight = 0;
 
         if (this._workspacesThumbnails.visible) {
             const REDUCE_WS_TMB_IF_NEEDED = this._searchController._searchActive && CENTER_SEARCH_VIEW;
 
             const { expandFraction } = this._workspacesThumbnails;
             const dashHeightReservation = !WS_TMB_FULL_HEIGHT ? dashHeight : 0;
-            thumbnailsHeight = WS_TMB_FULL_HEIGHT
+            wsTmbHeight = WS_TMB_FULL_HEIGHT
                                 ? height - 2 * spacing
                                 : height - 3 * spacing - (DASH_VERTICAL ? 0 : dashHeightReservation + spacing);
 
-            wsTmbWidth = this._workspacesThumbnails.get_preferred_custom_width(thumbnailsHeight)[0];
+            wsTmbWidth = this._workspacesThumbnails.get_preferred_custom_width(wsTmbHeight)[0];
             wsTmbWidth = Math.round(Math.min(
                 wsTmbWidth * expandFraction,
                 width * MAX_THUMBNAIL_SCALE
@@ -2439,7 +3093,7 @@ var ControlsManagerLayoutOverride = {
                 wsTmbWidth = Math.clamp((width - searchWidth) / 2 - spacing, width * 0.05, wsTmbWidth);
             }
 
-            thumbnailsHeight = Math.round(Math.min(this._workspacesThumbnails.get_preferred_custom_height(wsTmbWidth)[1], thumbnailsHeight));
+            wsTmbHeight = Math.round(Math.min(this._workspacesThumbnails.get_preferred_custom_height(wsTmbWidth)[1], wsTmbHeight));
 
             let wsTmbX;
             if (WS_TMB_RIGHT) {
@@ -2450,12 +3104,12 @@ var ControlsManagerLayoutOverride = {
                 this._workspacesThumbnails._positionLeft = true;
             }
 
-            let wstOffset = (height - spacing - thumbnailsHeight - spacing - (DASH_VERTICAL ? 0 : dashHeightReservation)) / 2;
+            let wstOffset = (height - spacing - wsTmbHeight - spacing - (DASH_VERTICAL ? 0 : dashHeightReservation)) / 2;
             wstOffset = wstOffset - WS_TMB_POSITION_ADJUSTMENT * wstOffset;
             let wsTmbY = Math.round(startY + ((dashHeightReservation && DASH_TOP) ? dashHeight + spacing : spacing) + wstOffset);
 
             childBox.set_origin(wsTmbX, wsTmbY);
-            childBox.set_size(wsTmbWidth, thumbnailsHeight);
+            childBox.set_size(wsTmbWidth, wsTmbHeight);
 
             this._workspacesThumbnails.allocate(childBox);
         }
@@ -2516,7 +3170,7 @@ var ControlsManagerLayoutOverride = {
         let [searchHeight] = this._searchEntry.get_preferred_height(width - wsTmbWidth);
 
         // Workspaces
-        let params = [box, workAreaBox, dashHeight, wsTmbWidth, searchHeight];
+        let params = [box, workAreaBox, dashWidth, dashHeight, wsTmbWidth, wsTmbHeight, searchHeight];
         const transitionParams = this._stateAdjustment.getStateTransitionParams();
 
         // Update cached boxes
@@ -2591,6 +3245,255 @@ var ControlsManagerLayoutOverride = {
             childBox.set_origin(wsTmbWidth, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight);
         } else {
             childBox.set_origin(this._xAlignCenter ? wsTmbWidth + spacing : searchXoffset, startY + (DASH_TOP ? dashHeight + spacing : spacing) + searchHeight);
+        }
+
+        childBox.set_size(searchWidth, availableHeight);
+        this._searchController.allocate(childBox);
+
+        this._runPostAllocation();
+    },
+
+    _allocate_horizontal: function(container, box) {
+        const childBox = new Clutter.ActorBox();
+
+        const { spacing } = this;
+
+        const monitor = Main.layoutManager.findMonitorForActor(this._container);
+        const workArea = Main.layoutManager.getWorkAreaForMonitor(monitor.index);
+        const startX = workArea.x - monitor.x;
+        const startY = workArea.y - monitor.y;
+        const workAreaBox = new Clutter.ActorBox();
+        workAreaBox.set_origin(startX, startY);
+        workAreaBox.set_size(workArea.width, workArea.height);
+        box.y1 += startY;
+        box.x1 += startX;
+        const [width, height] = box.get_size();
+        let availableHeight = height;
+
+        // Dash
+        const maxDashHeight = Math.round(box.get_height() * DASH_MAX_SIZE_RATIO);
+        const maxDashWidth = maxDashHeight * 0.8;
+        let dashHeight = 0;
+        let dashWidth = 0;
+
+        const wsTmbPosition = this._workspacesThumbnails.visible && WS_TMB_POSITION;
+        const WS_TMB_FULL_WIDTH = [7, 8].includes(wsTmbPosition);
+
+        let dashPosition = DASH_POSITION;
+        const DASH_CENTER_WS = CENTER_DASH_WS;
+        let DASH_TOP = dashPosition === 0;
+        this._dash._position = dashPosition;
+
+        let DASH_VERTICAL = [1, 3].includes(dashPosition);
+        // dash cloud be overridden by the Dash to Dock clone
+        // Dash to Dock has property _isHorizontal
+        const dash = Main.overview.dash;
+        if (dash._isHorizontal !== undefined) {
+            dashHeight = dash.height;
+            dashWidth = dash.width;
+            dashPosition = dash._position;
+            DASH_TOP = dash._position === 0;
+            DASH_VERTICAL = [1, 3].includes(dashPosition);
+            this._dash.allocate(childBox);
+        } else if (this._dash.visible) {
+            // default dock
+            if (!DASH_VERTICAL) {
+                this._dash.setMaxSize(width, maxDashHeight);
+                [, dashHeight] = this._dash.get_preferred_height(width);
+                [, dashWidth] = this._dash.get_preferred_width(dashHeight);
+                dashHeight = Math.min(dashHeight, maxDashHeight);
+                dashWidth = Math.min(dashWidth, width);
+
+            } else if (!WS_TMB_FULL_WIDTH) {
+                this._dash.setMaxSize(maxDashWidth, height);
+                [, dashWidth] = this._dash.get_preferred_width(height);
+                [, dashHeight] = this._dash.get_preferred_height(dashWidth);
+                dashHeight = Math.min(dashHeight, height - 2 * spacing);
+                dashWidth = Math.min(dashWidth, width);
+            }
+        }
+
+        // 5 - top, 6 - bottom, 7 - top hull-width, 8 - bottom full-width
+        const WS_TMB_BOTTOM = [6, 8].includes(wsTmbPosition);
+
+        // Workspace Thumbnails
+        let wsTmbWidth = 0;
+        let wsTmbHeight = 0;
+
+        if (this._workspacesThumbnails.visible) {
+            const REDUCE_WS_TMB_IF_NEEDED = this._searchController._searchActive && CENTER_SEARCH_VIEW;
+
+            const { expandFraction } = this._workspacesThumbnails;
+            const dashWidthReservation = (!WS_TMB_FULL_WIDTH && DASH_VERTICAL) ? dashWidth : 0;
+
+            wsTmbWidth = WS_TMB_FULL_WIDTH
+                                ? width - 2 * spacing
+                                : width - 3 * spacing - (DASH_VERTICAL ? 0 : dashWidthReservation + spacing);
+
+            wsTmbHeight = this._workspacesThumbnails.get_preferred_height(wsTmbWidth)[0];
+            wsTmbHeight = Math.round(Math.min(
+                wsTmbHeight * expandFraction,
+                height * MAX_THUMBNAIL_SCALE
+            ));
+
+            /*if (REDUCE_WS_TMB_IF_NEEDED) {
+                const searchAllocation = this._searchController._searchResults._content.allocation;
+                const searchHeight = searchAllocation.y2 - searchAllocation.y1;
+                wsTmbHeight = Math.clamp((height - searchHeight) / 2 - spacing, height * 0.05, wsTmbHeight);
+            }*/
+
+            wsTmbWidth = Math.round(Math.min(this._workspacesThumbnails.get_preferred_custom_width(wsTmbHeight)[1], wsTmbWidth));
+
+            let wsTmbY;
+            if (WS_TMB_BOTTOM) {
+                wsTmbY = Math.round(startY + height - (dashPosition === 2 ? dashHeight : 0) - wsTmbHeight);
+                this._workspacesThumbnails._positionLeft = false;
+            } else {
+                wsTmbY = Math.round(startY + (dashPosition === 0 ? dashHeight : spacing / 2));
+                this._workspacesThumbnails._positionLeft = true;
+            }
+
+            let wstOffset = (width - spacing - wsTmbWidth) / 2;
+            wstOffset = wstOffset - WS_TMB_POSITION_ADJUSTMENT * wstOffset;
+            let wsTmbX = Math.max(Math.round(startX + wstOffset), startX + dashWidthReservation + spacing);
+
+            childBox.set_origin(wsTmbX, wsTmbY);
+            childBox.set_size(wsTmbWidth, wsTmbHeight);
+
+            this._workspacesThumbnails.allocate(childBox);
+
+            availableHeight -= wsTmbHeight + spacing;
+        }
+
+
+        if (this._dash.visible) {
+            const wMaxHeight = height - spacing - wsTmbHeight - 2 * spacing - (DASH_VERTICAL ? 0 : dashHeight + spacing);
+            if (WS_TMB_FULL_WIDTH && DASH_VERTICAL) {
+                this._dash.setMaxSize(maxDashWidth, wMaxHeight);
+                [, dashWidth] = this._dash.get_preferred_custom_width(wMaxHeight);
+                [, dashHeight] = this._dash.get_preferred_height(dashWidth);
+                dashWidth = Math.round(Math.min(dashWidth, maxDashWidth));
+                dashHeight = Math.round(Math.min(dashHeight, wMaxHeight));
+            }
+
+            let dashX, dashY, offset;
+            if (dashPosition === DashPosition.RIGHT) {
+                dashX = width - dashWidth;
+            } else if (dashPosition === DashPosition.LEFT) {
+                dashX = 0;
+            } else if (dashPosition === DashPosition.TOP) {
+                dashY = startY;
+            } else {
+                dashY = startY + height - dashHeight;
+            }
+
+            if (DASH_VERTICAL) {
+                if (WS_TMB_FULL_WIDTH) {
+                    offset = (height - dashHeight - wsTmbHeight - 2 * spacing) / 2;
+                    if ([5, 7].includes(WS_TMB_POSITION)) { // TOP
+                        offset = offset - DASH_POSITION_ADJUSTMENT * offset;
+                        dashY = startY + offset + wsTmbHeight + 3 * spacing;
+                        dashY = Math.max(dashY, wsTmbHeight + 3 * spacing);
+                    } else {
+                        offset = offset - DASH_POSITION_ADJUSTMENT * offset;
+                        dashY = startY + offset;
+                        dashY = Math.max(dashY, height - wsTmbHeight - dashHeight - 3 * spacing);
+                    }
+                } else {
+                    offset = (height - dashHeight) / 2;
+                    offset = offset - DASH_POSITION_ADJUSTMENT * offset;
+                    dashY = startY + offset;
+                }
+            } else {
+                offset = (width - dashWidth) / 2;
+                dashX = startX + ((offset - DASH_POSITION_ADJUSTMENT * offset));
+            }
+
+            childBox.set_origin(Math.round(startX + dashX), Math.round(dashY));
+            childBox.set_size(dashWidth, dashHeight);
+            this._dash.allocate(childBox);
+        }
+
+        availableHeight -= (DASH_VERTICAL ? 0 : dashHeight + spacing);
+
+        let [searchHeight] = this._searchEntry.get_preferred_height(width);
+
+        // Workspaces
+        let params = [box, workAreaBox, dashWidth, dashHeight, wsTmbWidth, wsTmbHeight, searchHeight];
+        const transitionParams = this._stateAdjustment.getStateTransitionParams();
+
+        // Update cached boxes
+        for (const state of Object.values(ControlsState)) {
+            this._cachedWorkspaceBoxes.set(
+                state, this._computeWorkspacesBoxForState(state, ...params));
+        }
+
+        let workspacesBox;
+        if (!transitionParams.transitioning) {
+            workspacesBox = this._cachedWorkspaceBoxes.get(transitionParams.currentState);
+        } else {
+            const initialBox = this._cachedWorkspaceBoxes.get(transitionParams.initialState);
+            const finalBox = this._cachedWorkspaceBoxes.get(transitionParams.finalState);
+            workspacesBox = initialBox.interpolate(finalBox, transitionParams.progress);
+        }
+
+        this._workspacesDisplay.allocate(workspacesBox);
+
+        // Search entry
+        const searchXoffset = (DASH_POSITION === 3 ? dashWidth : 0) + spacing;
+        //let [searchHeight] = this._searchEntry.get_preferred_height(width - wsTmbWidth);
+
+        // Y position under top Dash
+        let searchEntryX, searchEntryY;
+        if (DASH_TOP) {
+            searchEntryY = startY + ([5, 7].includes(WS_TMB_POSITION) ? wsTmbHeight : 0) + dashHeight - spacing;
+        } else {
+            searchEntryY = startY + ([5, 7].includes(WS_TMB_POSITION) ? wsTmbHeight + spacing : 0);
+        }
+
+        searchEntryX = searchXoffset;
+        let searchWidth = width - 2 * spacing - (DASH_VERTICAL ? dashWidth : 0); // xAlignCenter is given by wsBox
+        searchWidth = this._xAlignCenter ? width : searchWidth;
+
+        if (CENTER_SEARCH_VIEW) {
+            childBox.set_origin(0, searchEntryY);
+            childBox.set_size(width, searchHeight);
+        } else {
+            childBox.set_origin(this._xAlignCenter ? 0 : searchEntryX, searchEntryY);
+            childBox.set_size(this._xAlignCenter ? width : searchWidth - spacing, searchHeight);
+        }
+
+        this._searchEntry.allocate(childBox);
+
+        availableHeight -= searchHeight + spacing;
+
+        // AppDisplay - state, box, workAreaBox, searchHeight, dashHeight, appGridBox, wsTmbWidth
+        if (this._appDisplay.visible) {
+            const workspaceAppGridBox =
+                this._cachedWorkspaceBoxes.get(ControlsState.WINDOW_PICKER);
+
+            params = [box, workAreaBox, searchHeight, dashWidth, dashHeight, workspaceAppGridBox, wsTmbHeight];
+            let appDisplayBox;
+            if (!transitionParams.transitioning) {
+                appDisplayBox =
+                    this._getAppDisplayBoxForState(transitionParams.currentState, ...params);
+            } else {
+                const initialBox =
+                    this._getAppDisplayBoxForState(transitionParams.initialState, ...params);
+                const finalBox =
+                    this._getAppDisplayBoxForState(transitionParams.finalState, ...params);
+
+                appDisplayBox = initialBox.interpolate(finalBox, transitionParams.progress);
+            }
+            this._appDisplay.allocate(appDisplayBox);
+        }
+
+        // Search
+        if (CENTER_SEARCH_VIEW) {
+            searchWidth = width;
+            childBox.set_origin(0, startY + (DASH_TOP ? dashHeight + spacing : spacing) + ([5, 7].includes(WS_TMB_POSITION) ? wsTmbHeight + spacing : 0) + searchHeight);
+        } else {
+            childBox.set_origin(this._xAlignCenter ? spacing : searchXoffset, startY + (DASH_TOP ? dashHeight + spacing : spacing) + ([5, 7].includes(WS_TMB_POSITION) ? wsTmbHeight + spacing : 0) + searchHeight);
         }
 
         childBox.set_size(searchWidth, availableHeight);
