@@ -335,6 +335,8 @@ function reset() {
 
     if (_startupAnimTimeoutId2)
         GLib.source_remove(_startupAnimTimeoutId2);
+
+    Main.overview._hideDone = Overview.Overview.prototype._hideDone;
 }
 
 function _enableStaticBgAnimation() {
@@ -1412,10 +1414,16 @@ var SecondaryMonitorDisplayHorizontalOverride = {
                 let position = SEC_WS_TMB_POSITION;
                 if (position === 2) {// default - copy primary monitor option
                     if (position = [5, 7].includes(WS_TMB_POSITION)) {; // TOP
-                        translation_y = - this._thumbnails.height + 12;
+                        position = 0;
                     } else if (position = [6, 8].includes(WS_TMB_POSITION)) {
-                        translation_y = this._thumbnails.height + 12;
+                        position = 1
                     }
+                }
+
+                if (position === 0) {
+                    translation_y = - this._thumbnails.height + 12;
+                } else {
+                    translation_y = this._thumbnails.height + 12;
                 }
             }
             break;
@@ -1465,6 +1473,18 @@ var SecondaryMonitorDisplayHorizontalOverride = {
         }
 
         return workspaceBox;
+    },
+
+    _getThumbnailsHeight: function(box) {
+        if (!this._thumbnails.visible)
+            return 0;
+
+        const [width, height] = box.get_size();
+        const { expandFraction } = this._thumbnails;
+        const [thumbnailsHeight] = this._thumbnails.get_preferred_height(width);
+        return Math.min(
+            thumbnailsHeight * expandFraction,
+            height * MAX_THUMBNAIL_SCALE);
     },
 
     vfunc_allocate: function(box) {
@@ -2349,13 +2369,6 @@ var ControlsManagerOverride = {
             WORKSPACE_MODE = 0;
         }
 
-        /*if (finalState >= 1) {
-            const pC = Main.panel.get_theme_node().get_color('background-color');
-            Main.panel.set_style(`background-color: rgba(${pC.red}, ${pC.green}, ${pC.blue}, 0);`);
-        } else if (finalState === 0) {
-            Main.panel.set_style('');
-        }*/
-
         if ((WS_ANIMATION !== 1) || !SHOW_WS_TMB) {
             this._workspacesDisplay.opacity = opacity;
         } else if (!SHOW_WS_TMB_BG) {
@@ -2486,11 +2499,16 @@ var ControlsManagerOverride = {
             }
         });
 
-        // Set the opacity here to avoid a 1-frame flicker
-        this.dash.opacity = 0;
-
         const dash = this.dash;
         const tmbBox = this._thumbnailsBox;
+
+        // Set the opacity here to avoid a 1-frame flicker
+        dash.opacity = 0;
+        for (const view of this._workspacesDisplay._workspacesViews) {
+            if (view._monitorIndex !== global.display.get_primary_monitor())
+                view._thumbnails.opacity = 0;
+        }
+
         const searchEntryBin = this._searchEntryBin;
         const [tmbTranslation_x, tmbTranslation_y, dashTranslation_x, dashTranslation_y, searchTranslation_y] =
             _getOverviewTranslations(dash, tmbBox, searchEntryBin);
@@ -2586,13 +2604,22 @@ var ControlsManagerOverride = {
             for (const view of workspacesViews) {
                 if (view._monitorIndex !== global.display.get_primary_monitor() && view._thumbnails.visible) {
                     const tmbBox = view._thumbnails;
-                    // 2 - default, 0 - left, 1 - right
+
+                    // 2 - default, 0 - left/top, 1 - right/bottom
                     let position = SEC_WS_TMB_POSITION;
-                    if (position === 2) // default - copy primary monitor option
-                        position = WS_TMB_POSITION % 2; // 0,2 - left, 1,3 right
-                    tmbBox.translation_x = tmbBox.width * (position === 1 ? 1 : -1);
+                    if (position === 2) {// default - copy primary monitor option
+                        if (position = [5, 7].includes(WS_TMB_POSITION)) {;
+                            position = 0;  // TOP
+                        } else if (position = [6, 8].includes(WS_TMB_POSITION)) {
+                            position = 1;  // BOTTOM
+                        }
+                    }
+
+                    tmbBox.translation_y = (tmbBox.height + 12) * (position ? 1 : -1);
+                    tmbBox.opacity = 255;
+
                     tmbBox.ease({
-                        translation_x: 0,
+                        translation_y: 0,
                         delay: STARTUP_ANIMATION_TIME,
                         duration: STARTUP_ANIMATION_TIME,
                         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
