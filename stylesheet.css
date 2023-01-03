@@ -48,6 +48,21 @@
 	padding: 8px 4px 8px 12px;
 }
 
+/* default horizontal dash */
+.dash-background {
+	padding: 6px;
+	border-radius: 17px;
+}
+
+.app-well-app {
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+.app-well-app-running-dot {
+	margin-bottom: 6px;
+}
+
 /*adujtment for the vertical ws switcher indicator popup*/
 .ws-switcher-indicator {
 	padding: 3px;

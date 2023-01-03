@@ -487,8 +487,8 @@ function _getAppearanceOptionList() {
     const bgBlurScale = itemFactory.newScale(blurBgAdjustment);
     optionList.push(
         itemFactory.getRowWidget(
-            _('Blur Window Picker Static Background'),
-            _('Blur background wallpaper (if enabled) in the overview window picker page.'),
+            _('Blur Window Picker Background'),
+            _('Blur background wallpaper (if enabled) in the window picker view.'),
             bgBlurScale,
             'overviewBgBlurSigma'
         )
@@ -504,8 +504,8 @@ function _getAppearanceOptionList() {
     const bgAppBlurScale = itemFactory.newScale(blurAppBgAdjustment);
     optionList.push(
         itemFactory.getRowWidget(
-            _('Blur App Grid Static Background'),
-            _('Blur background wallpaper (if enabled) in the app grid and search results overview pages.'),
+            _('Blur Apps/Search Background'),
+            _('Blur background wallpaper (if enabled) in the app grid and search results views.'),
             bgAppBlurScale,
             'appGridBgBlurSigma'
         )
@@ -579,6 +579,7 @@ function _getBehaviorOptionList() {
                 [_('From Right'), 1],
                 [_('From Left'), 2],
                 [_('From Bottom'), 3],
+                [_('From Top'), 5],
                 [_('Auto'), 4]
             ]
         )
