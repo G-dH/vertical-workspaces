@@ -114,27 +114,23 @@ function _getLayoutOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Workspaces - Thumbnails / Orientation'),
+            _('Workspaces Thumbnails / Orientation'),
         )
     );
 
     optionList.push(
         itemFactory.getRowWidget(
             _('Thumbnails Position / Workspaces Orientation'),
-            _('Position of the workspace thumbnails on the screen also sets an orientation of the workspaces to vertical or horizontal. "Full Height" options allow the workspace thumbnails to use the full height / width of the screen at the expense of the space available for Dash (if the Dash is oriented in a different axis). You also have two options to disable workspace thumbnails, one sets workspaces to the vertical orientation, the second to horizontal.'),
+            _('Position of the workspaces thumbnails on the screen also sets orientation of the workspaces to vertical or horizontal. You have two options to disable workspaces thumbnails, one sets workspaces to the vertical orientation, the second one to horizontal.'),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'workspaceThumbnailsPosition',
-            [   [_('Left - Vertical'), 0],
-                [_('Right - Vertical'), 1],
-                [_('Top - Horizontal'), 5],
-                [_('Bottom - Horizontal'), 6],
-                [_('Left - Full Height'), 2],
-                [_('Right - Full Height'), 3],
-                [_('Top - Full Width'), 7],
-                [_('Bottom - Full Width'), 8],
-                [_('Disable - Set Vertical Orientation'), 4],
-                [_('Disable - Set Horizontal Orientation'), 9],
+            [   [_('Left       \t Vertical Orientation'), 0],
+                [_('Right      \t Vertical Orientation'), 1],
+                [_('Disable    \t Set Vertical Orientation'), 4],
+                [_('Top        \t Horizontal Orientation'), 5],
+                [_('Bottom     \t Horizontal Orientation'), 6],
+                [_('Disable    \t Set Horizontal Orientation'), 9],
             ]
         )
     );
@@ -150,8 +146,8 @@ function _getLayoutOptionList() {
     wstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
-            _('Fine Tune Workspace Thumbnails Position'),
-            _('Adjusts workspace thumbnails vertical position.'),
+            _('Fine Tune Workspaces Thumbnails Position'),
+            _('Adjusts workspaces thumbnails vertical position.'),
             wstPositionScale,
             'wsTmbPositionAdjust'
         )
@@ -159,8 +155,17 @@ function _getLayoutOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Workspace Thumbnails Position on Secondary Monitor'),
-            _('Allows you to place workspace thumbnails of secondary monitors on the opposite side than on the primary monitor.'),
+            _('Reserve Full Screen Height/Width for Thumbnails'),
+            _('The whole screen height/width will be reserved for workspaces thumbnails at the expense of space available for Dash (if the Dash is oriented in a different axis).'),
+            itemFactory.newSwitch(),
+            'WsThumbnailsFull',
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspaces Thumbnails Position on Secondary Monitor'),
+            _('Allows you to place workspaces thumbnails of secondary monitors on the opposite side than on the primary monitor.'),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'secondaryWsThumbnailsPosition',
@@ -183,8 +188,8 @@ function _getLayoutOptionList() {
     SecWstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
-            _('Fine Tune Secondary Workspace Thumbnails Position'),
-            _('Adjusts secondary monitors workspace thumbnails vertical position.'),
+            _('Fine Tune Secondary Workspaces Thumbnails Position'),
+            _('Adjusts secondary monitors workspaces thumbnails vertical position.'),
             SecWstPositionScale,
             'SecWsTmbPositionAdjust'
         )
@@ -201,10 +206,53 @@ function _getLayoutOptionList() {
     wsThumbnailScale.add_mark(13, Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
-            _('Workspace Thumbnails Max Scale'),
-            _('Adjusts maximum size of the workspace thumbnails (% relative to display width).'),
+            _('Workspaces Thumbnails Max Scale'),
+            _('Adjusts maximum size of the workspaces thumbnails (% relative to display width).'),
             wsThumbnailScale,
             'wsThumbnailScale'
+        )
+    );
+
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Preview'),
+        )
+    );
+
+    const wsScaleAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: 30,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const wsScaleScale = itemFactory.newScale(wsScaleAdjustment);
+    wsScaleScale.add_mark(100, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspaces Scale'),
+            _('Scales down workspaces preview so you can fit more of the adjacent workspaces on the screen. Default size is calculated to use all available space.'),
+            wsScaleScale,
+            'wsPreviewScale'
+        )
+    );
+
+    const wsSpacingAdjustment = new Gtk.Adjustment({
+        upper: 1000,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const wsSpacingScale = itemFactory.newScale(wsSpacingAdjustment);
+    wsSpacingScale.add_mark(350, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspaces Spacing'),
+            _('Adjusts spacing between workspaces previews so you can control how much of the adjacent workspaces overlap to the current workspace overview. Default value should set the adjacent workspaces out of the screen.'),
+            wsSpacingScale,
+            'wsMaxSpacing'
         )
     );
 
@@ -283,6 +331,8 @@ function _getLayoutOptionList() {
                 [_('32'), 2],
                 [_('48'), 3],
                 [_('64'), 4],
+                [_('96'), 5],
+                [_('128'), 6],
             ]
         )
     );
@@ -297,7 +347,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Center App Grid'),
-            _('App grid in app view page will be centered to the display instead of the available space. This option may have impact on the size of the grid, more for narrower and small resolution displays, especially if workspace thumbnails are bigger.'),
+            _('App grid in app view page will be centered to the display instead of the available space. This option may have impact on the size of the grid, more for narrower and small resolution displays, especially if workspaces thumbnails are bigger.'),
             itemFactory.newSwitch(),
             'centerAppGrid',
         )
@@ -312,7 +362,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Center Search View'),
-            _('Search view will be centered to the display instead of the available space. If needed workspace thumbnails will be temporarily scaled down to fit the search box. This option has bigger impact for narrower and small resolution displays.'),
+            _('Search view will be centered to the display instead of the available space. If needed, workspaces thumbnails will be temporarily scaled down to fit the search box. This option has bigger impact for narrower and small resolution displays.'),
             itemFactory.newSwitch(),
             'centerSearch',
         )
@@ -378,14 +428,14 @@ function _getAppearanceOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Workspace Thumbnails'),
+            _('Workspaces Thumbnails'),
         )
     );
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Show Workspace Thumbnails Labels'),
-            _('Each workspace thumbnail can show its index and name (if defined in the system settings) or name of its most recently used app.'),
+            _('Show Workspaces Thumbnails Labels'),
+            _('Each workspace thumbnails can show its index and name (if defined in the system settings) or name of its most recently used app.'),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'showWsTmbLabels',
@@ -408,8 +458,8 @@ function _getAppearanceOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Show Wallpaper in Workspace Thumbnails'),
-            _('Workspace thumbnails will include the current desktop background.'),
+            _('Show Wallpaper in Workspaces Thumbnails'),
+            _('All workspace thumbnails will include the current desktop background.'),
             itemFactory.newSwitch(),
             'showWsSwitcherBg',
         )
@@ -536,7 +586,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Overview Mode'),
-            _('The Expose Windows on Hover mode do not expose the workspace preview windows until the mouse pointer enters any window.\nThe Static Workspace mode does not scale the workspace preview, it only shows Dash and workspace thumbnails over the workspace. Clicking on a workspace thumbnail scales the ws preview and exposes its windows like in the default overview mode.'),
+            _('The Expose Windows on Hover mode do not expose the workspace preview windows until the mouse pointer enters any window.\nThe Static Workspace mode does not scale the workspace preview, it only shows Dash and workspaces thumbnails over the desktop. Clicking on a workspace thumbnail scales the ws preview and exposes its windows like in the default overview mode.'),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'overviewMode',
@@ -588,7 +638,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Animation'),
-            _(`When entering / leaving the App Grid view, the workspace can animate to/from workspace thumbnails. The animation can be choppy if you have many workspaces with many windows and weak hw.`),
+            _(`When entering / leaving the App Grid view, the workspace can animate to/from workspace thumbnail.`),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'workspaceAnimation',

@@ -4,8 +4,17 @@
     <key type="i" name="ws-thumbnails-position">
       <default>0</default>
     </key>
+    <key type="b" name="ws-thumbnails-full">
+      <default>false</default>
+    </key>
     <key type="i" name="secondary-ws-thumbnails-position">
       <default>2</default>
+    </key>
+    <key type="i" name="ws-max-spacing">
+      <default>350</default>
+    </key>
+    <key type="i" name="ws-preview-scale">
+      <default>100</default>
     </key>
     <key type="i" name="dash-position">
       <default>0</default>
@@ -20,7 +29,7 @@
       <default>0</default>
     </key>
     <key type="i" name="show-wst-labels">
-      <default>1</default>
+      <default>3</default>
     </key>
     <key type="b" name="show-wst-labels-on-hover">
       <default>false</default>
@@ -44,7 +53,7 @@
       <default>13</default>
     </key>
     <key type="i" name="dash-max-icon-size">
-      <default>4</default>
+      <default>3</default>
     </key>
     <key type="i" name="dash-bg-opacity">
       <default>40</default>
@@ -59,19 +68,19 @@
       <default>true</default>
     </key>
     <key type="b" name="show-ws-preview-bg">
-      <default>true</default>
-    </key>
-    <key type="b" name="show-bg-in-overview">
       <default>false</default>
     </key>
+    <key type="b" name="show-bg-in-overview">
+      <default>true</default>
+    </key>
     <key type="i" name="overview-bg-blur-sigma">
-      <default>20</default>
+      <default>0</default>
     </key>
     <key type="i" name="app-grid-bg-blur-sigma">
-      <default>20</default>
+      <default>40</default>
     </key>
     <key type="b" name="smooth-blur-transitions">
-      <default>true</default>
+      <default>false</default>
     </key>
     <key type="i" name="app-grid-animation">
       <default>4</default>
@@ -83,16 +92,16 @@
       <default>100</default>
     </key>
     <key type="b" name="fix-ubuntu-dock">
-      <default>false</default>
+      <default>true</default>
     </key>
     <key type="i" name="win-preview-icon-size">
-      <default>0</default>
+      <default>1</default>
     </key>
     <key type="b" name="always-show-win-titles">
-      <default>false</default>
+      <default>true</default>
     </key>
     <key type="i" name="startup-state">
-      <default>0</default>
+      <default>2</default>
     </key>
     <key type="i" name="overview-mode">
       <default>0</default>

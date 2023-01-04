@@ -25,11 +25,16 @@ let verticalOverrides = {};
 let _origWorkId;
 let _newWorkId;
 
-var baseIconSizes = [16, 24, 32, 48, 64];
+var BaseIconSizes = [16, 24, 32, 48, 64, 96, 128];
 var MAX_ICON_SIZE = 64;
-var DASH_POSITION = 0;
-var DashPosition = {};
+
+var DASH_LEFT;
+var DASH_RIGHT;
+var DASH_TOP;
+var DASH_BOTTOM;
+
 const DASH_ITEM_LABEL_SHOW_TIME = 150;
+
 
 function override(horizonatal = false) {
     if (verticalOverrides !== {})
@@ -100,7 +105,7 @@ function set_to_vertical() {
     dash._separator = null;
     dash._queueRedisplay();
 
-    dash.add_style_class_name(DASH_POSITION === DashPosition.LEFT ? 'vertical-overview-left' : 'vertical-overview-right');
+    dash.add_style_class_name(DASH_LEFT ? 'vertical-overview-left' : 'vertical-overview-right');
 }
 
 function set_to_horizontal() {
@@ -382,7 +387,7 @@ var DashOverride = {
         let appIcon = new DashIcon(app);
 
         let indicator = appIcon._dot;
-        indicator.x_align = DASH_POSITION === 3 ? Clutter.ActorAlign.START : Clutter.ActorAlign.END;
+        indicator.x_align = DASH_LEFT ? Clutter.ActorAlign.START : Clutter.ActorAlign.END;
         indicator.y_align = Clutter.ActorAlign.CENTER;
 
         appIcon.connect('menu-state-changed',
@@ -428,15 +433,15 @@ var DashItemContainerOverride = {
         let node = this.label.get_theme_node();
         let y;
 
-        if (DASH_POSITION === DashPosition.TOP) {
+        if (DASH_TOP) {
             const yOffset = itemHeight - labelHeight + 3 * node.get_length('-y-offset');
             y = stageY + yOffset;
 
-        } else  if (DASH_POSITION === DashPosition.BOTTOM) {
+        } else  if (DASH_BOTTOM) {
             const yOffset = node.get_length('-y-offset');
             y = stageY - this.label.height - yOffset;
 
-        } else if (DASH_POSITION === DashPosition.RIGHT) {
+        } else if (DASH_RIGHT) {
             const yOffset = Math.floor((itemHeight - labelHeight) / 2);
 
             const xOffset = 4;
@@ -444,7 +449,7 @@ var DashItemContainerOverride = {
             x = stageX - xOffset - this.label.width;
             y = Math.clamp(stageY + yOffset, 0, global.stage.height - labelHeight);
 
-        } if (DASH_POSITION === DashPosition.LEFT) {
+        } if (DASH_LEFT) {
             const yOffset = Math.floor((itemHeight - labelHeight) / 2);
 
             const xOffset = 4;
@@ -487,7 +492,7 @@ var DashCommonOverride = {
         if (this._maxWidth === -1 || this._maxHeight === -1)
             return;
 
-        const dashHorizontal = [0, 2].includes(DASH_POSITION);
+        const dashHorizontal = DASH_TOP || DASH_BOTTOM;
 
         const themeNode = this.get_theme_node();
         const maxAllocation = new Clutter.ActorBox({
@@ -539,12 +544,12 @@ var DashCommonOverride = {
         }
 
         let scaleFactor = St.ThemeContext.get_for_stage(global.stage).scale_factor;
-        let iconSizes = baseIconSizes.map(s => s * scaleFactor);
+        let iconSizes = BaseIconSizes.map(s => s * scaleFactor);
 
-        let newIconSize = baseIconSizes[0];
+        let newIconSize = BaseIconSizes[0];
         for (let i = 0; i < iconSizes.length; i++) {
             if (iconSizes[i] <= maxIconSize)
-                newIconSize = baseIconSizes[i];
+                newIconSize = BaseIconSizes[i];
         }
 
         if (newIconSize == this.iconSize)

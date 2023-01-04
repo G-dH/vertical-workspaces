@@ -30,6 +30,8 @@
 
 #dash.vertical-overview .app-well-app-running-dot {
 	margin: 4px 0px;
+	width: 2px;
+	height: 18px;
 }
 
 #dash.vertical-overview .dash-background {
@@ -55,12 +57,18 @@
 }
 
 .app-well-app {
-	margin-left: 0px;
-	margin-right: 0px;
+	margin-left: 1px;
+	margin-right: 1px;
 }
 
 .app-well-app-running-dot {
 	margin-bottom: 6px;
+	width: 18px;
+	height: 2px;
+}
+
+.search-entry {
+	padding: 2px;
 }
 
 /*adujtment for the vertical ws switcher indicator popup*/

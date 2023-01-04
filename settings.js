@@ -45,6 +45,9 @@ var Options = class Options {
         });
         this.options = {
             workspaceThumbnailsPosition: ['int', 'ws-thumbnails-position'],
+            wsMaxSpacing: ['int', 'ws-max-spacing'],
+            wsPreviewScale: ['int', 'ws-preview-scale'],
+            WsThumbnailsFull: ['bool', 'ws-thumbnails-full'],
             secondaryWsThumbnailsPosition: ['int', 'secondary-ws-thumbnails-position'],
             dashPosition: ['int', 'dash-position'],
             dashPositionAdjust: ['int', 'dash-position-adjust'],
