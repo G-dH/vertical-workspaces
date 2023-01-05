@@ -31,7 +31,7 @@
 #dash.vertical-overview .app-well-app-running-dot {
 	margin: 4px 0px;
 	width: 2px;
-	height: 18px;
+	height: 16px;
 }
 
 #dash.vertical-overview .dash-background {
@@ -63,7 +63,7 @@
 
 .app-well-app-running-dot {
 	margin-bottom: 6px;
-	width: 18px;
+	width: 16px;
 	height: 2px;
 }
 

@@ -980,6 +980,7 @@ var WorkspacesViewOverride = {
             this._getWorkspaceModeForOverviewState(finalState),
             progress);
 
+        const currentMonitor = Main.layoutManager.primaryMonitor.index;
         // Hide inactive workspaces
         this._workspaces.forEach((w, index) => {
             w.stateAdjustment.value = workspaceMode;
@@ -999,7 +1000,7 @@ var WorkspacesViewOverride = {
             // in order to keep animations as smooth as possible, hide all ws that cannot/shouldn't be visible at the given time
             } else {
                 //
-                w.visible = scaleProgress || (!WS_ANIMATION && distanceToCurrentWorkspace < NUMBER_OF_VISIBLE_NEIGHBORS)
+                w.visible = w.monitorIndex !== currentMonitor || scaleProgress || (!WS_ANIMATION && distanceToCurrentWorkspace < NUMBER_OF_VISIBLE_NEIGHBORS)
                     || (distanceToCurrentWorkspace < NUMBER_OF_VISIBLE_NEIGHBORS && currentState <= ControlsState.WINDOW_PICKER
                         && ((initialState < ControlsState.APP_GRID && finalState < ControlsState.APP_GRID))
                 );
@@ -1007,13 +1008,13 @@ var WorkspacesViewOverride = {
                 // after transition from APP_GRID to WINDOW_PICKER state,
                 // adjacent workspaces are hidden and we need them to show up
                 // make them visible during animation can impact smoothness of the animation
-                // so we show them after the animation finished
+                // so we show them after the animation finished, scaling animation will make impression that they move in from outside the monitor
                 if (!w.visible && distanceToCurrentWorkspace <= NUMBER_OF_VISIBLE_NEIGHBORS && currentState === ControlsState.WINDOW_PICKER) {
-                    w.opacity = 0;
+                    w.scale_x = 0.1;
                     w.visible = true;
                     w.ease({
                         duration: 200,
-                        opacity: 255,
+                        scale_x: 1,
                         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     });
                 }
