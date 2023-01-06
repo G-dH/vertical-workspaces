@@ -585,7 +585,7 @@ function _updateSearchEntryVisibility() {
 
     const state = Main.overview._overview._controls._stateAdjustment.value;
     // for some reason app grid gets visible in win picker on leaving search. should be solved on another place... todo!
-    //Main.overview._overview._controls._appDisplay.opacity = (state === 2 && !searchActive) ? 255 : 0;
+    Main.overview._overview._controls._appDisplay.opacity = (state === 2 && !searchActive) ? 255 : 0;
 
     // if static background enabled, blur bg of search results with the value for AppGrid
     if (SHOW_BG_IN_OVERVIEW) {
