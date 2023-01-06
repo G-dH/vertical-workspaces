@@ -184,6 +184,16 @@ function activate() {
         _verticalOverrides['AppDisplay'] = _Util.overrideProto(AppDisplay.AppDisplay.prototype, AppDisplayOverride);
         _verticalOverrides['SecondaryMonitorDisplay'] = _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayVerticalOverride);
         _verticalOverrides['ControlsManagerLayout'] = _Util.overrideProto(OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutVerticalOverride);
+
+        // reverse swipe gestures for enter/leave overview and ws switching
+        Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
+        Main.wm._workspaceAnimation._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
+        // overview's updateGesture() function should reflect ws tmb position to match appGrid/ws animation direction
+        // function in connection cannot be overridden in prototype of its class because connected is actually another copy of the original function
+        _originalGestureUpdateId = GObject.signal_handler_find(Main.overview._swipeTracker._touchpadGesture, { signalId: 'update' });
+        Main.overview._swipeTracker._touchpadGesture.block_signal_handler(_originalGestureUpdateId);
+        Main.overview._swipeTracker._updateGesture = SwipeTrackerOverride._updateGesture;
+        _vwGestureUpdateId = Main.overview._swipeTracker._touchpadGesture.connect('update', SwipeTrackerOverride._updateGesture.bind(Main.overview._swipeTracker));
     } else {
         _verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxHorizontalOverride);
         _verticalOverrides['SecondaryMonitorDisplay'] = _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayHorizontalOverride);
@@ -207,16 +217,6 @@ function activate() {
 
     _setAppDisplayOrientation(ORIENTATION === Clutter.Orientation.VERTICAL);
 
-    // reverse swipe gestures for enter/leave overview and ws switching
-    Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
-    Main.wm._workspaceAnimation._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
-    // overview's updateGesture() function should reflect ws tmb position to match appGrid/ws animation direction
-    // function in connection cannot be overridden in prototype of its class because connected is actually another copy of the original function
-    _originalGestureUpdateId = GObject.signal_handler_find(Main.overview._swipeTracker._touchpadGesture, { signalId: 'update' });
-    Main.overview._swipeTracker._touchpadGesture.block_signal_handler(_originalGestureUpdateId);
-    Main.overview._swipeTracker._updateGesture = SwipeTrackerOverride._updateGesture;
-    _vwGestureUpdateId = Main.overview._swipeTracker._touchpadGesture.connect('update', SwipeTrackerOverride._updateGesture.bind(Main.overview._swipeTracker));
-
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
 
@@ -224,6 +224,7 @@ function activate() {
     _updateDashPosition();
 
     // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
+    // this only works if the command is executed with a little delay (here delayed in extension.js)
     Main.overview._overview._controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
 
     // if Dash to Dock detected force enable "Fix for DtD" option
@@ -293,7 +294,7 @@ function reset() {
     _Util.overrideProto(WindowPreview.WindowPreview.prototype, _verticalOverrides['WindowPreview']);
     _Util.overrideProto(Workspace.WorkspaceBackground.prototype, _verticalOverrides['WorkspaceBackground']);
 
-    // original swipeTrackes' orientation and updateGesture function
+    // original swipeTrackers' orientation and updateGesture function
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
     Main.wm._workspaceAnimation._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
     Main.overview._swipeTracker._updateGesture = SwipeTracker.SwipeTracker.prototype._updateGesture;
