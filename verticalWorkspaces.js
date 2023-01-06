@@ -2661,7 +2661,7 @@ var ControlsManagerOverride = {
 
                     _getOverviewTranslations(dash, tmbBox, searchEntryBin);
                     if (SEC_WS_TMB_LEFT) {
-                        tmbBox.translation_x = - (tmbBox.width + 12);
+                        tmbBox.translation_x = - (tmbBox.width + 12); // compensate for padding
                     } else if (SEC_WS_TMB_RIGHT) {
                         tmbBox.translation_x = (tmbBox.width + 12);
                     } else if (SEC_WS_TMB_TOP) {
@@ -2738,12 +2738,12 @@ function _getOverviewTranslations(dash, tmbBox, searchEntryBin) {
                 tmbTranslation_y = 0;
                 break;
             case 0: // top
-                offset = 10 + ((dash?.visible && DASH_TOP) ? dash.height : 0);
+                offset = 10 + ((dash?.visible && DASH_TOP) ? dash.height : 0) + Main.panel.height;
                 tmbTranslation_x = 0;
                 tmbTranslation_y = - tmbBox.height - offset;
                 break;
             case 2: // bottom
-                offset = 10 + ((dash?.visible && DASH_BOTTOM) ? dash.height : 0);
+                offset = 10 + ((dash?.visible && DASH_BOTTOM) ? dash.height : 0) + Main.panel.height;  // just for case the panel is at bottom
                 tmbTranslation_x = 0;
                 tmbTranslation_y = tmbBox.height + offset;
                 break;
@@ -2759,19 +2759,19 @@ function _getOverviewTranslations(dash, tmbBox, searchEntryBin) {
     }
     if (dash?.visible) {
         switch (position) {
-            case 0:
+            case 0: // top
                 dashTranslation_x = 0;
-                dashTranslation_y = - dash.height - dash.margin_bottom;
+                dashTranslation_y = - dash.height - dash.margin_bottom - Main.panel.height;
                 break;
-            case 1:
+            case 1: // right
                 dashTranslation_x = dash.width;
                 dashTranslation_y = 0;
                 break;
-            case 2:
+            case 2: // bottom
                 dashTranslation_x = 0;
-                dashTranslation_y = dash.height + dash.margin_bottom;
+                dashTranslation_y = dash.height + dash.margin_bottom + Main.panel.height;
                 break;
-            case 3:
+            case 3: // left
                 dashTranslation_x = - dash.width;
                 dashTranslation_y = 0;
                 break;
