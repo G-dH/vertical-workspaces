@@ -239,8 +239,8 @@ function _getLayoutOptionList() {
     );
 
     const wsSpacingAdjustment = new Gtk.Adjustment({
-        upper: 1000,
-        lower: 5,
+        upper: 500,
+        lower: 10,
         step_increment: 1,
         page_increment: 10,
     });
@@ -315,6 +315,7 @@ function _getLayoutOptionList() {
             'showAppsIconPosition',
             [   [_('Start'), 0],
                 [_('End'), 1],
+                [_('Hide'), 2],
             ]
         )
     );
@@ -331,8 +332,9 @@ function _getLayoutOptionList() {
                 [_('32'), 2],
                 [_('48'), 3],
                 [_('64'), 4],
-                [_('96'), 5],
-                [_('128'), 6],
+                [_('80'), 5],
+                [_('96'), 6],
+                [_('128'), 7],
             ]
         )
     );

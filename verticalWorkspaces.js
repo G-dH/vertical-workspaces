@@ -843,10 +843,15 @@ function _moveDashAppGridIcon(reset = false) {
     // don't touch DtD
     if (dash._isHorizontal !== undefined)
         return;
-    if (reset || gOptions.get('showAppsIconPosition', true))
-        dash._dashContainer.set_child_at_index(dash._showAppsIcon, 1);
-    else
+
+    const appIconPosition = gOptions.get('showAppsIconPosition', true);
+    dash._showAppsIcon.visible = true;
+    if (reset || appIconPosition === 0) // 0 - start
         dash._dashContainer.set_child_at_index(dash._showAppsIcon, 0);
+    if (!reset && appIconPosition === 1) // 1 - end
+        dash._dashContainer.set_child_at_index(dash._showAppsIcon, 1);
+    if (!reset && appIconPosition === 2) // 2 - disable
+        dash._showAppsIcon.visible = false;
 }
 
 // ---- workspace ---------------------------------------------
@@ -981,6 +986,16 @@ var WorkspacesViewOverride = {
             progress);
 
         const currentMonitor = Main.layoutManager.primaryMonitor.index;
+
+        // define the transition values here to save time in each ws
+        let scaleX, scaleY;
+        if (ORIENTATION) { //vertical 1 / horizontal 0
+            scaleX = 1;
+            scaleY = 0.1;
+        } else {
+            scaleX = 0.1;
+            scaleY = 1;
+        }
         // Hide inactive workspaces
         this._workspaces.forEach((w, index) => {
             w.stateAdjustment.value = workspaceMode;
@@ -991,9 +1006,9 @@ var WorkspacesViewOverride = {
 
             // if we disable workspaces that we can't or don't need to see, transition animations will be noticeably smoother
 
-            // vertical orientation - only the current ws needs to be visible during overview transition animations
+            // only the current ws needs to be visible during overview transition animations
             //                        and only current and adjacent ws when switching ws
-            if (ORIENTATION) { // vertical 1 / horizontal 0
+            if (WORKSPACE_MAX_SPACING > 340) { // large spacing - only one workspace needs to be visible at once in the overview
                 w.visible = scaleProgress || ((currentState % 1) && !distanceToCurrentWorkspace);
 
             // horizontal orientation - 2 adjacent workspaces can be visible on the screen with the current one
@@ -1010,11 +1025,13 @@ var WorkspacesViewOverride = {
                 // make them visible during animation can impact smoothness of the animation
                 // so we show them after the animation finished, scaling animation will make impression that they move in from outside the monitor
                 if (!w.visible && distanceToCurrentWorkspace <= NUMBER_OF_VISIBLE_NEIGHBORS && currentState === ControlsState.WINDOW_PICKER) {
-                    w.scale_x = 0.1;
+                    w.scale_x = scaleX;
+                    w.scale_y = scaleY;
                     w.visible = true;
                     w.ease({
-                        duration: 200,
+                        duration: 100,
                         scale_x: 1,
+                        scale_y: 1,
                         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     });
                 }
@@ -1794,18 +1811,20 @@ var WorkspaceThumbnailOverride = {
                 if (stateAdjustment.value > 1) {
                     stateAdjustment.value = 1;
                 }
-
-                WORKSPACE_MODE = 1;
+                // spread windows
                 if (this.metaWorkspace.active) {
+                    WORKSPACE_MODE = 1;
                     const adjustment = Main.overview._overview.controls._workspacesDisplay._workspacesViews[0]._workspaces[wsIndex].stateAdjustment;
                     adjustment.value = 0;
                     adjustment.ease(1, {
                         duration: 200,
                         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     });
+                } else {
+                    // switch ws
+                    this.metaWorkspace.activate(time);
                 }
-                this.metaWorkspace.activate(time);
-            // a click on the already current workspace should go back to the main view
+            // a click on the current workspace should go back to the main view
             } else if (this.metaWorkspace.active) {
                 Main.overview.hide();
             } else {
@@ -1962,7 +1981,7 @@ var ThumbnailsBoxVerticalOverride = {
         const tmbHeight = _forWidth / ratio;
 
         const naturalheight = this._thumbnails.reduce((accumulator, thumbnail, index) => {
-            let workspaceSpacing = 0;
+            //let workspaceSpacing = 0;
 
             const progress = 1 - thumbnail.collapse_fraction;
             //const height = (this._porthole.height * MAX_THUMBNAIL_SCALE + workspaceSpacing) * progress;
