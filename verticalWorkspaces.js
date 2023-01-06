@@ -154,31 +154,17 @@ function activate() {
     if (Object.keys(_verticalOverrides).length != 0)
         reset();
 
-    // switch internal workspace orientation in GS
-    if (ORIENTATION === Clutter.Orientation.VERTICAL) {
-        global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
-    } else {
-        global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, 1, -1);
-    }
-
-    // fix overlay base for vertical workspaces
-    _verticalOverrides['WorkspaceLayout'] = _Util.overrideProto(Workspace.WorkspaceLayout.prototype, WorkspaceLayoutOverride);
+    // common adjustments
     _verticalOverrides['WorkspacesView'] = _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, WorkspacesViewOverride);
     _verticalOverrides['WorkspacesDisplay'] = _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, workspacesDisplayOverride);
 
-    // move titles into window previews
-    _injectWindowPreview();
-
-    // GS 42+ needs to help with the workspace switcher popup, older versions reflects new orientation automatically
-    // avoid the injection is WSM extension is enabled because it brakes the popup
-    const settings = ExtensionUtils.getSettings('org.gnome.shell');
-    const enabled = settings.get_strv('enabled-extensions');
-    const allowWsPopupInjection = !(enabled.includes('workspace-switcher-manager@G-dH.github.com') || enabled.includes('WsSwitcherPopupManager@G-dH.github.com-dev'));
-    if (shellVersion >= 42 && allowWsPopupInjection)
-        _injectWsSwitcherPopup();
-
     // adjust overview layout to better serve vertical workspaces orientation
     if (ORIENTATION === Clutter.Orientation.VERTICAL) {
+        // switch internal workspace orientation in GS
+        global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
+
+        // fix overlay base for Vertical Workspaces
+        _verticalOverrides['WorkspaceLayout'] = _Util.overrideProto(Workspace.WorkspaceLayout.prototype, WorkspaceLayoutOverride);
         _verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxVerticalOverride);
         _verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
         _verticalOverrides['AppDisplay'] = _Util.overrideProto(AppDisplay.AppDisplay.prototype, AppDisplayOverride);
@@ -194,7 +180,20 @@ function activate() {
         Main.overview._swipeTracker._touchpadGesture.block_signal_handler(_originalGestureUpdateId);
         Main.overview._swipeTracker._updateGesture = SwipeTrackerOverride._updateGesture;
         _vwGestureUpdateId = Main.overview._swipeTracker._touchpadGesture.connect('update', SwipeTrackerOverride._updateGesture.bind(Main.overview._swipeTracker));
+
+
+        // GS 42+ needs to help with the workspace switcher popup, older versions reflects new orientation automatically
+        // avoid the injection is WSM extension is enabled because it brakes the popup
+        const settings = ExtensionUtils.getSettings('org.gnome.shell');
+        const enabled = settings.get_strv('enabled-extensions');
+        const allowWsPopupInjection = !(enabled.includes('workspace-switcher-manager@G-dH.github.com') || enabled.includes('WsSwitcherPopupManager@G-dH.github.com-dev'));
+        if (shellVersion >= 42 && allowWsPopupInjection)
+            _injectWsSwitcherPopup();
+
     } else {
+        // switch internal workspace orientation in GS
+        global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, 1, -1);
+
         _verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxHorizontalOverride);
         _verticalOverrides['SecondaryMonitorDisplay'] = _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayHorizontalOverride);
         _verticalOverrides['ControlsManagerLayout'] = _Util.overrideProto(OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutHorizontalOverride);
@@ -208,6 +207,9 @@ function activate() {
     const dash = Main.overview.dash;
     _prevDash.dash = dash;
     _prevDash.position = dash.position;
+
+    // move titles into window previews
+    _injectWindowPreview();
 
     _moveDashAppGridIcon();
 
@@ -571,16 +573,20 @@ function _updateDashPosition() {
 
 function _updateSearchEntryVisibility() {
     const searchActive = Main.overview._overview.controls._searchController._searchActive;
+    const entry = Main.overview.searchEntry;
     if (SHOW_SEARCH_ENTRY) {
-        Main.overview.searchEntry.visible = true;
-        Main.overview.searchEntry.opacity = 255;
+        entry.visible = true;
+        entry.opacity = 255;
     } else {
+        const state = Main.overview._overview._controls._stateAdjustment.value;
+        // for some reason app grid gets visible in win picker on leaving search. should be solved on another place... todo!
+        Main.overview._overview._controls._appDisplay.opacity = state === 2 && !entry.visible ? 255 : 0;
         // show search entry only if the user starts typing, and hide it when leaving the search mode
-        Main.overview.searchEntry.ease({
+        entry.ease({
             opacity: searchActive ? 255 : 0,
             duration: OverviewControls.SIDE_CONTROLS_ANIMATION_TIME,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-            onComplete: () => (Main.overview.searchEntry.visible = searchActive),
+            onComplete: () => (entry.visible = searchActive),
         });
     }
 
@@ -2829,7 +2835,7 @@ var ControlsManagerLayoutVerticalOverride = {
                 workspaceBox.set_origin(...workAreaBox.get_origin());
                 workspaceBox.set_size(...workAreaBox.get_size());
             } else {
-                dashHeight = dash.visible ? dashHeight : 0;
+                //dashHeight = dash.visible ? dashHeight : 0;
                 searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
                 wWidth = width
                             - spacing
@@ -3208,6 +3214,7 @@ var ControlsManagerLayoutHorizontalOverride = {
                 workspaceBox.set_origin(...workAreaBox.get_origin());
                 workspaceBox.set_size(...workAreaBox.get_size());
             } else {
+                searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
                 wWidth = width
                             - spacing
                             - (DASH_VERTICAL ? dashWidth + spacing : spacing)
@@ -3316,7 +3323,6 @@ var ControlsManagerLayoutHorizontalOverride = {
         appDisplayBox.set_size(adWidth, adHeight);
         return appDisplayBox;
     },
-
 
     vfunc_allocate: function(container, box) {
         const childBox = new Clutter.ActorBox();
