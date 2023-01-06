@@ -225,10 +225,6 @@ function activate() {
     // set Dash orientation
     _updateDashPosition();
 
-    // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
-    // this only works if the command is executed with a little delay (here delayed in extension.js)
-    Main.overview._overview._controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
-
     // if Dash to Dock detected force enable "Fix for DtD" option
     if (Main.overview.dash._isHorizontal !== undefined) {
         gOptions.set('fixUbuntuDock', true);
@@ -578,9 +574,6 @@ function _updateSearchEntryVisibility() {
         entry.visible = true;
         entry.opacity = 255;
     } else {
-        const state = Main.overview._overview._controls._stateAdjustment.value;
-        // for some reason app grid gets visible in win picker on leaving search. should be solved on another place... todo!
-        Main.overview._overview._controls._appDisplay.opacity = state === 2 && !entry.visible ? 255 : 0;
         // show search entry only if the user starts typing, and hide it when leaving the search mode
         entry.ease({
             opacity: searchActive ? 255 : 0,
@@ -589,6 +582,10 @@ function _updateSearchEntryVisibility() {
             onComplete: () => (entry.visible = searchActive),
         });
     }
+
+    const state = Main.overview._overview._controls._stateAdjustment.value;
+    // for some reason app grid gets visible in win picker on leaving search. should be solved on another place... todo!
+    //Main.overview._overview._controls._appDisplay.opacity = (state === 2 && !searchActive) ? 255 : 0;
 
     // if static background enabled, blur bg of search results with the value for AppGrid
     if (SHOW_BG_IN_OVERVIEW) {
@@ -2523,6 +2520,8 @@ var ControlsManagerOverride = {
     },
 
     runStartupAnimation: async function(callback) {
+        // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
+        this._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
         this._ignoreShowAppsButtonToggle = true;
 
         this._searchController.prepareToEnterOverview();
