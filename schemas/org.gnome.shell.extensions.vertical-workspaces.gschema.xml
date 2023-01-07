@@ -88,6 +88,9 @@
     <key type="i" name="workspace-animation">
       <default>1</default>
     </key>
+    <key type="i" name="workspace-switcher-animation">
+      <default>1</default>
+    </key>
     <key type="i" name="animation-speed-factor">
       <default>100</default>
     </key>

@@ -639,8 +639,8 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Workspace Animation'),
-            _(`When entering / leaving the App Grid view, the workspace can animate to/from workspace thumbnail.`),
+            _('Workspace Preview Animation'),
+            _(`When entering / leaving the App Grid view, the workspace preview can animate to/from workspace thumbnail.`),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'workspaceAnimation',
@@ -656,6 +656,19 @@ function _getBehaviorOptionList() {
         step_increment: 10,
         page_increment: 100,
     });
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Switcher Animation'),
+            _('Allows you to disable movement of the desktop background during workspace switcher animation outside of the overview.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'workspaceSwitcherAnimation',
+            [   [_('Default'), 0],
+                [_('Static Background'), 1],
+            ]
+        )
+    );
 
     const animationSpeedScale = itemFactory.newScale(animationSpeedAdjustment);
     animationSpeedScale.add_mark(100, Gtk.PositionType.TOP, null);

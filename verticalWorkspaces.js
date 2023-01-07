@@ -27,6 +27,7 @@ const OverviewControls = imports.ui.overviewControls;
 const WindowPreview = imports.ui.windowPreview;
 const WorkspaceSwitcherPopup = imports.ui.workspaceSwitcherPopup;
 const SwipeTracker = imports.ui.swipeTracker;
+const WorkspaceAnimation = imports.ui.workspaceAnimation;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -67,6 +68,7 @@ let _verticalOverrides;
 let _windowPreviewInjections;
 let _wsSwitcherPopupInjections;
 let _controlsManagerInjections;
+let _workspaceAnimationInjections;
 let _bgManagers;
 let _shellSettings;
 
@@ -135,6 +137,7 @@ let SMOOTH_BLUR_TRANSITIONS;
 let OVERVIEW_MODE;
 let WORKSPACE_MODE;
 let ANIMATION_TIME_FACTOR;
+let STATIC_WS_SWITCHER_BG;
 
 
 function activate() {
@@ -143,6 +146,7 @@ function activate() {
     _windowPreviewInjections = {};
     _wsSwitcherPopupInjections = {};
     _controlsManagerInjections = {};
+    _workspaceAnimationInjections = {};
     _bgManagers = [];
     WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
 
@@ -239,6 +243,9 @@ function activate() {
     // static bg animations conflict with startup animation
     // enable it on first hiding from the overview and disconnect the signal
     _overviewHiddenSigId = Main.overview.connect('hiding', _enableStaticBgAnimation);
+
+    // allow static bg during switching ws
+    _injectWorkspaceAnimation();
 }
 
 function reset() {
@@ -277,6 +284,10 @@ function reset() {
         _Util.removeInjection(OverviewControls.ControlsManager.prototype, _controlsManagerInjections, name);
     }
     _controlsManagerInjections = undefined;
+
+    for (let name in _workspaceAnimationInjections) {
+        _Util.removeInjection(WorkspaceAnimation.WorkspaceAnimationController.prototype, _workspaceAnimationInjections, name);
+    }
 
     _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, _verticalOverrides['WorkspacesView']);
     _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, _verticalOverrides['WorkspacesDisplay']);
@@ -524,6 +535,8 @@ function _updateSettings(settings, key) {
 
     OVERVIEW_MODE = gOptions.get('overviewMode', true);
     WORKSPACE_MODE = OVERVIEW_MODE ? 0 : 1;
+
+    STATIC_WS_SWITCHER_BG = gOptions.get('workspaceSwitcherAnimation', true);
 
     ANIMATION_TIME_FACTOR = gOptions.get('animationSpeedFactor', true) / 100;
     St.Settings.get().slow_down_factor = ANIMATION_TIME_FACTOR;
@@ -3770,4 +3783,58 @@ function _updateStaticBackground(bgManager, stateValue) {
             }
         }
     }
+}
+
+WorkspaceAnimation.MonitorGroup
+function _injectWorkspaceAnimation() {
+    _workspaceAnimationInjections['_init'] = _Util.injectToFunction(
+        WorkspaceAnimation.MonitorGroup.prototype, '_init', function() {
+            if (!STATIC_WS_SWITCHER_BG) return;
+
+            // we have two options to implement static bg feature
+            // one is adding background to monitorGroup
+            // but this one has disadvantage - sticky windows will be always on top of animated windows
+            // which is bad for conky, for example, that window should be always below
+            /*this._bgManager = new Background.BackgroundManager({
+                container: this,
+                monitorIndex: this._monitor.index,
+                controlPosition: false,
+            });*/
+
+            // the second option is to make background of the monitorGroup transparent so the real desktop content will stay visible,
+            // hide windows that should be animated and keep only sticky windows
+            // we can keep certain sticky windows bellow and also extensions like DING (icons on desktop) will stay visible
+            this.set_style('background-color: transparent;');
+            // stickyGroup holds the Always on Visible Workspace windows to keep them static and above other windows during animation
+            const stickyGroup = this.get_children()[1];
+            stickyGroup._windowRecords.forEach((r, index) => {
+                const metaWin = r.windowActor.metaWindow;
+                // conky is sticky but should never get above other windows during ws animation
+                // so we hide it from the overlay group, we will see the original if not covered by other windows
+                if (metaWin.wm_class == 'conky') {
+                    r.clone.opacity = 0;
+                }
+            })
+            this._hiddenWindows = [];
+            // remove (hide) background wallpaper from the animation, we will see the original one
+            this._workspaceGroups.forEach(w => w._background.opacity = 0);
+            // hide (scale to 0) all non-sticky windows, their clones will be animated
+            global.display.get_tab_list(0, null).forEach((w) => {
+                if (w.get_monitor() === this._monitor.index/* && !w.is_on_all_workspaces()*/) {
+                    // hide original window. we cannot use opacity since it also affects clones.
+                    // scaling them to 0 works well
+                    w.get_compositor_private().scale_x = 0;
+                    this._hiddenWindows.push(w);
+                }
+            });
+
+
+            // restore all hidden windows at the end of animation
+            this.connect('destroy', () =>{
+                this._hiddenWindows.forEach((w) => {
+                    w.get_compositor_private().scale_x = 1;
+                });
+            });
+        }
+    );
 }

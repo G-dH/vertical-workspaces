@@ -78,7 +78,8 @@ var Options = class Options {
             winPreviewIconSize: ['int', 'win-preview-icon-size'],
             alwaysShowWinTitles: ['int', 'always-show-win-titles'],
             startupState: ['int', 'startup-state'],
-            overviewMode: ['int', 'overview-mode']
+            overviewMode: ['int', 'overview-mode'],
+            workspaceSwitcherAnimation: ['int', 'workspace-switcher-animation'],
         }
         this.cachedOptions = {};
     }
