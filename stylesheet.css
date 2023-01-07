@@ -68,7 +68,9 @@
 }
 
 .search-entry {
-	padding: 2px;
+	padding: 3px;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
 /*adujtment for the vertical ws switcher indicator popup*/

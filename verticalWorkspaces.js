@@ -2834,7 +2834,6 @@ var ControlsManagerLayoutVerticalOverride = {
                 workspaceBox.set_origin(...workAreaBox.get_origin());
                 workspaceBox.set_size(...workAreaBox.get_size());
             } else {
-                //dashHeight = dash.visible ? dashHeight : 0;
                 searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
                 wWidth = width
                             - spacing
@@ -2845,9 +2844,6 @@ var ControlsManagerLayoutVerticalOverride = {
                             - (DASH_VERTICAL ? 4 * spacing : (dashHeight ? dashHeight + spacing : 4 * spacing))
                             - searchHeight
                             - 3 * spacing;
-
-                // height decides the actual size, ratio is given by the workarea
-                wHeight *= WS_PREVIEW_SCALE;
 
                 const ratio = width / height;
                 let wRatio = wWidth / wHeight;
@@ -2861,26 +2857,30 @@ var ControlsManagerLayoutVerticalOverride = {
                     wHeight = wWidth / ratio;
                 }
 
+                wHeight *= WS_PREVIEW_SCALE;
+                wWidth *= WS_PREVIEW_SCALE;
+
                 let xOffset = 0;
                 let yOffset = 0;
 
-                yOffset = searchHeight + (DASH_TOP ? spacing : (((height - wHeight - searchHeight - (!DASH_VERTICAL ? dashHeight : 0)) / 2)));
+                yOffset = searchHeight + (DASH_TOP ? dashHeight + spacing : spacing);
+                yOffset = yOffset + ((height - wHeight - searchHeight - (!DASH_VERTICAL ? dashHeight + spacing : 0)) / 2);
 
-                // move the workspace box to the middle of the screen, if possible
                 const centeredBoxX = (width - wWidth) / 2;
-                xOffset = Math.min(centeredBoxX, width - wWidth - thumbnailsWidth - 2 * spacing -
-                    (((DASH_BOTTOM && WS_TMB_RIGHT) || (DASH_LEFT && WS_TMB_LEFT)) ? dash.width + spacing : 0));
+
+                const xOffsetL = (DASH_LEFT ? dashWidth : 0) + (WS_TMB_LEFT ? thumbnailsWidth : 0) + 2 * spacing;
+                const xOffsetR = (DASH_RIGHT ? dashWidth : 0) + (WS_TMB_RIGHT ? thumbnailsWidth : 0) + 2 * spacing;
 
                 this._xAlignCenter = false;
-                if (xOffset !== centeredBoxX) { // in this case xOffset holds max possible wsBoxX coordinate
-                    xOffset = ((DASH_LEFT && dash.visible) ? dash.width + spacing : spacing) + ((thumbnailsWidth && WS_TMB_LEFT) ? thumbnailsWidth : 0)
-                            + (width - wWidth - 2 * spacing - thumbnailsWidth - ((DASH_VERTICAL && dash.visible) ? dash.width + spacing : 0)) / 2;
+                if (centeredBoxX < Math.max(xOffsetL, xOffsetR)) {
+                    xOffset = xOffsetL + spacing + (width - xOffsetL - wWidth - xOffsetR - 2 * spacing) / 2;
                 } else {
+                    xOffset = centeredBoxX;
                     this._xAlignCenter = true;
                 }
 
                 const wsBoxX = /*startX + */xOffset;
-                wsBoxY = Math.round(startY + yOffset + ((dashHeight && DASH_TOP) ? dashHeight : 0)/* + (searchHeight ? searchHeight + spacing : 0)*/);
+                wsBoxY = Math.round(startY + yOffset);
                 workspaceBox.set_origin(Math.round(wsBoxX), Math.round(wsBoxY));
                 workspaceBox.set_size(Math.round(wWidth), Math.round(wHeight));
             }
@@ -3237,37 +3237,31 @@ var ControlsManagerLayoutHorizontalOverride = {
                 }
 
                 // height decides the actual size, ratio is given by the workarea
-                wHeight *= WS_PREVIEW_SCALE
+                wHeight *= WS_PREVIEW_SCALE;
+                wWidth *= WS_PREVIEW_SCALE;
 
                 let xOffset = 0;
                 let yOffset = 0;
 
-                const yOffsetDash = DASH_TOP ? dashHeight : 0;
-                const yOffsetWsTmb = WS_TMB_TOP ? thumbnailsHeight + spacing : 0;
-                const yAvailableSpace = height - wHeight - (DASH_VERTICAL ? 0 : dashHeight) - thumbnailsHeight - searchHeight - spacing;
-                yOffset = yOffsetDash + yOffsetWsTmb + searchHeight + yAvailableSpace / 2;
+                const yOffsetT = (DASH_TOP ? dashHeight : 0) + (WS_TMB_TOP ? thumbnailsHeight : 0) + spacing;
+                const yOffsetB = (DASH_BOTTOM ? dashHeight : 0) + (WS_TMB_BOTTOM ? thumbnailsHeight + spacing : 0) + spacing;
+                const yAvailableSpace = (height - yOffsetT - wHeight - yOffsetB) / 2;
+                yOffset = yOffsetT + yAvailableSpace;
 
-                const xOffsetDash = DASH_LEFT ? dashWidth + spacing : spacing;
-                const xAvailableSpace = width - wWidth - 2 * spacing - (DASH_VERTICAL ? dashWidth + spacing : 0);
-                xOffset = xOffsetDash + xAvailableSpace / 2;
-
-                // move the workspace box to the middle of the screen, if possible
+                const xOffsetL = (DASH_LEFT ? dashWidth : 0) + spacing;
+                const xOffsetR = (DASH_RIGHT ? dashWidth : 0) + spacing;
                 const centeredBoxX = (width - wWidth) / 2;
 
-                if (DASH_LEFT)
-                    xOffset = Math.max(centeredBoxX, xOffsetDash + xAvailableSpace / 2);
-                else if (DASH_RIGHT)
-                    xOffset = Math.min(centeredBoxX, xOffsetDash + xAvailableSpace / 2);
-
                 this._xAlignCenter = false;
-                if (xOffset !== centeredBoxX) { // in this case xOffset holds max possible wsBoxX coordinate
-
+                if (centeredBoxX < Math.max(xOffsetL, xOffsetR)) {
+                    xOffset = xOffsetL + spacing + (width - xOffsetL - wWidth - xOffsetR - 2 * spacing) / 2;
                 } else {
+                    xOffset = centeredBoxX;
                     this._xAlignCenter = true;
                 }
 
                 wsBoxX = /*startX + */xOffset;
-                wsBoxY = Math.round(startY + yOffset) //* + (searchHeight ? searchHeight + spacing : 0)*/);
+                wsBoxY = Math.round(startY + yOffset)
                 workspaceBox.set_origin(Math.round(wsBoxX), Math.round(wsBoxY));
                 workspaceBox.set_size(Math.round(wWidth), Math.round(wHeight));
             }
