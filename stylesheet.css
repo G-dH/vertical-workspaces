@@ -67,10 +67,16 @@
 	height: 2px;
 }
 
+/* add shadow to the app grid app label to be readable if it overlaps light icon below */
+.overview-icon-with-label {
+    text-shadow: 1px 1px 3px rgba(33, 33, 33, 1);
+}
+
 .search-entry {
 	padding: 3px;
 	padding-left: 5px;
 	padding-right: 5px;
+	background-color: rgba(255,255,255,0.8);
 }
 
 /*adujtment for the vertical ws switcher indicator popup*/
