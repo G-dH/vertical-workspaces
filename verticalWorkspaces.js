@@ -31,7 +31,6 @@ const WorkspaceAnimation = imports.ui.workspaceAnimation;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-//const WindowSearchProvider = Me.imports.windowSearchProvider;
 const Settings = Me.imports.settings;
 const shellVersion = Settings.shellVersion;
 
@@ -89,6 +88,7 @@ let _watchDockSigId;
 let _showingOverviewSigId;
 let _searchControllerSigId;
 let _originalSearchControllerSigId;
+let _showAppsIconBtnPressId;
 
 let _resetTimeoutId;
 let _startupAnimTimeoutId1;
@@ -248,7 +248,7 @@ function activate() {
     // allow static bg during switching ws
     _injectWorkspaceAnimation();
 
-    //WindowSearchProvider.enable(gOptions);
+    _connectShowAppsIcon();
 
     _replaceOnSearchChanged();
 }
@@ -348,7 +348,6 @@ function reset() {
     Main.overview._overview._controls._thumbnailsBox.translation_y = 0;
     Main.overview._overview._controls._searchEntryBin.translation_y = 0;
 
-
     if (_overviewHiddenSigId) {
         Main.overview.disconnect(_overviewHiddenSigId);
     }
@@ -366,7 +365,7 @@ function reset() {
 
     _replaceOnSearchChanged(reset);
 
-    //WindowSearchProvider.disable();
+    _connectShowAppsIcon(reset);
 }
 
 function _replaceOnSearchChanged(reset = false) {
@@ -605,6 +604,63 @@ function _updateDashPosition() {
         VerticalDash.reset();
     }
     Main.overview.dash._redisplay();
+}
+
+function _connectShowAppsIcon(reset = false) {
+    if (!reset) {
+        if (_showAppsIconBtnPressId) {
+            // button is already connected
+            return;
+        }
+
+        Main.overview.dash._showAppsIcon.reactive = true;
+        _showAppsIconBtnPressId = Main.overview.dash._showAppsIcon.connect('button-press-event', (actor, event) => {
+            if (event.get_button() === Clutter.BUTTON_MIDDLE) {
+                _openPreferences();
+            } else {
+                return Clutter.EVENT_PROPAGATE;
+            }
+        });
+    } else {
+        if (_showAppsIconBtnPressId) {
+            Main.overview.dash._showAppsIcon.disconnect(_showAppsIconBtnPressId);
+            _showAppsIconBtnPressId = 0;
+        }
+        Main.overview.dash._showAppsIcon.reactive = false;
+    }
+}
+
+function _openPreferences() {
+    const windows = global.display.get_tab_list(Meta.TabList.NORMAL_ALL, null);
+    let tracker = Shell.WindowTracker.get_default();
+    let metaWin, isVW = null;
+    for (let win of windows) {
+        const app = tracker.get_window_app(win);
+        if (win.get_title().includes(Me.metadata.name) && app.name === 'Extensions') {
+            metaWin = win;
+            isVW = true;
+        } else if (win.wm_class.includes('org.gnome.Shell.Extensions')) {
+            metaWin = win;
+            isVW = false;
+        }
+    }
+
+    // if prefs window already exist, move it to the current WS and activate it
+    if (metaWin) {
+        if (!isVW) {
+            metaWin.delete(global.get_current_time());
+        } else {
+            metaWin.change_workspace(global.workspace_manager.get_active_workspace());
+            metaWin.activate(global.get_current_time());
+            return;
+        }
+    }
+
+    try {
+        Main.extensionManager.openExtensionPrefs(Me.metadata.uuid, '', {});
+    } catch (e) {
+        log(e);
+    }
 }
 
 function _switchPageShortcuts() {
