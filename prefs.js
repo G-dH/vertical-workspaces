@@ -623,16 +623,17 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('App Grid Animation'),
-            _(`When entering the App Grid view, the app grid animates from the edge of the screen (by default from the right edge to follow the three fingers trackpad gesture). You can choose other direction or disable the animation if you don't like it.`),
+            _(`When entering the App Grid view, the app grid animates from the edge of the screen. You can choose direction, keep it Default (direction will be chosen automatically) or disable the animation if you don't like it.`),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'appGridAnimation',
-            [   [_('Disable'), 0],
+            [
+                [_('Default'), 4]
+                [_('Disable'), 0],
                 [_('From Right'), 1],
                 [_('From Left'), 2],
                 [_('From Bottom'), 3],
                 [_('From Top'), 5],
-                [_('Auto'), 4]
             ]
         )
     );
