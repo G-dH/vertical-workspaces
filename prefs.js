@@ -628,7 +628,7 @@ function _getBehaviorOptionList() {
             //itemFactory.newDropDown(),
             'appGridAnimation',
             [
-                [_('Default'), 4]
+                [_('Default'), 4],
                 [_('Disable'), 0],
                 [_('From Right'), 1],
                 [_('From Left'), 2],
