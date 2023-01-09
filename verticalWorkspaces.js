@@ -580,6 +580,7 @@ function _updateSettings(settings, key) {
     ANIMATION_TIME_FACTOR = gOptions.get('animationSpeedFactor', true) / 100;
     St.Settings.get().slow_down_factor = ANIMATION_TIME_FACTOR;
 
+    _updateOverviewTranslations();
     _switchPageShortcuts();
     _setStaticBackground();
     if (key === 'fix-ubuntu-dock')
@@ -2905,6 +2906,19 @@ var ControlsManagerOverride = {
 
         this._ignoreShowAppsButtonToggle = false;
     },
+}
+
+function _updateOverviewTranslations(dash = null, tmbBox = null, searchEntryBin = null) {
+    dash = dash ?? Main.overview.dash;
+    tmbBox = tmbBox ?? Main.overview._overview._controls._thumbnailsBox;
+    searchEntryBin = searchEntryBin ?? Main.overview._overview._controls._searchEntryBin;
+
+    const [tmbTranslation_x, tmbTranslation_y, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _getOverviewTranslations(dash, tmbBox, searchEntryBin);
+    tmbBox.translation_x = tmbTranslation_x;
+    tmbBox.translation_y = tmbTranslation_y;
+    dash.translation_x = dashTranslation_x;
+    dash.translation_y = dashTranslation_y;
+    searchEntryBin.translation_y = searchTranslation_y;
 }
 
 function _getOverviewTranslations(dash, tmbBox, searchEntryBin) {
