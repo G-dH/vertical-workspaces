@@ -312,10 +312,16 @@ function reset() {
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
     Main.wm._workspaceAnimation._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
     Main.overview._swipeTracker._updateGesture = SwipeTracker.SwipeTracker.prototype._updateGesture;
-    Main.overview._swipeTracker._touchpadGesture.disconnect(_vwGestureUpdateId);
-    Main.overview._swipeTracker._touchpadGesture.unblock_signal_handler(_originalGestureUpdateId);
-
+    if (_vwGestureUpdateId) {
+        Main.overview._swipeTracker._touchpadGesture.disconnect(_vwGestureUpdateId);
+        _vwGestureUpdateId = 0;
+    }
+    if (_originalGestureUpdateId) {
+        Main.overview._swipeTracker._touchpadGesture.unblock_signal_handler(_originalGestureUpdateId);
+        _originalGestureUpdateId = 0;
+    }
     _verticalOverrides = {}
+
 
     _setAppDisplayOrientation(false);
 
@@ -348,6 +354,8 @@ function reset() {
     Main.overview._overview._controls._thumbnailsBox.translation_y = 0;
     Main.overview._overview._controls._searchEntryBin.translation_y = 0;
 
+    Main.overview._overview._controls.set_child_above_sibling(Main.overview._overview._controls._workspacesDisplay, null);
+
     if (_overviewHiddenSigId) {
         Main.overview.disconnect(_overviewHiddenSigId);
     }
@@ -373,17 +381,21 @@ function _replaceOnSearchChanged(reset = false) {
     if (reset) {
         if (_searchControllerSigId) {
             searchController.disconnect(_searchControllerSigId);
+            _searchControllerSigId = 0;
         }
         if (_originalSearchControllerSigId) {
             searchController.unblock_signal_handler(_originalSearchControllerSigId);
+            _originalSearchControllerSigId = 0;
         }
+    } else {
+        // reconnect signal to use custom function (callbacks cannot be overridden in class prototype, they are already in memory as a copy for the given callback)
+        _originalSearchControllerSigId = GObject.signal_handler_find(searchController, { signalId: 'notify', detail: 'search-active' });
+        if (_originalSearchControllerSigId) {
+            searchController.block_signal_handler(_originalSearchControllerSigId);
+        }
+        _searchControllerSigId = searchController.connect('notify::search-active', ControlsManagerOverride._onSearchChanged.bind(Main.overview._overview.controls));
     }
 
-    _originalSearchControllerSigId = GObject.signal_handler_find(searchController, { signalId: 'notify', detail: 'search-active' });
-    if (_originalSearchControllerSigId) {
-        searchController.block_signal_handler(_originalSearchControllerSigId);
-    }
-    _searchControllerSigId = searchController.connect('notify::search-active', ControlsManagerOverride._onSearchChanged.bind(Main.overview._overview.controls));
 }
 
 function _enableStaticBgAnimation() {
@@ -634,32 +646,36 @@ function _openPreferences() {
     const windows = global.display.get_tab_list(Meta.TabList.NORMAL_ALL, null);
     let tracker = Shell.WindowTracker.get_default();
     let metaWin, isVW = null;
+
     for (let win of windows) {
         const app = tracker.get_window_app(win);
-        if (win.get_title().includes(Me.metadata.name) && app.name === 'Extensions') {
+        if (win.get_title().includes(Me.metadata.name) && app.get_name() === 'Extensions') {
+            // this is our existing window
             metaWin = win;
             isVW = true;
+            break;
         } else if (win.wm_class.includes('org.gnome.Shell.Extensions')) {
+            // this is prefs window of another extension
             metaWin = win;
             isVW = false;
         }
     }
 
-    // if prefs window already exist, move it to the current WS and activate it
-    if (metaWin) {
-        if (!isVW) {
-            metaWin.delete(global.get_current_time());
-        } else {
-            metaWin.change_workspace(global.workspace_manager.get_active_workspace());
-            metaWin.activate(global.get_current_time());
-            return;
-        }
+    if (metaWin && !isVW) {
+        // other prefs window blocks opening another prefs window, so close it
+        metaWin.delete(global.get_current_time());
+    } else if (metaWin && isVW) {
+        // if prefs window already exist, move it to the current WS and activate it
+        metaWin.change_workspace(global.workspace_manager.get_active_workspace());
+        metaWin.activate(global.get_current_time());
     }
 
-    try {
-        Main.extensionManager.openExtensionPrefs(Me.metadata.uuid, '', {});
-    } catch (e) {
-        log(e);
+    if (!metaWin || (metaWin && !isVW)) {
+        try {
+            Main.extensionManager.openExtensionPrefs(Me.metadata.uuid, '', {});
+        } catch (e) {
+            log(e);
+        }
     }
 }
 
@@ -879,7 +895,7 @@ function _setAppDisplayOrientation(vertical = false) {
 
         // put back touch friendly navigation bars/buttons
         const scrollContainer = appDisplay._scrollView.get_parent();
-        appDisplay._hintContainer && scrollContainer.add_child(appDisplay._hintContainer);
+        appDisplay._hintContainer && appDisplay._hintContainer.get_parent() == null && scrollContainer.add_child(appDisplay._hintContainer);
         appDisplay._nextPageArrow.scale_x = 1;
         appDisplay._prevPageArrow.scale_x = 1;
 
@@ -2493,12 +2509,12 @@ var ControlsManagerOverride = {
         }
 
         // reset Static Workspace window picker mode
-        if (finalState === 0 && progress === 1 && OVERVIEW_MODE && WORKSPACE_MODE) {
+        if (currentState === 0/*finalState === 0 && progress === 1*/ && OVERVIEW_MODE && WORKSPACE_MODE) {
             WORKSPACE_MODE = 0;
         }
 
-        if ((!WS_ANIMATION) || !SHOW_WS_TMB) {
-            this._workspacesDisplay.opacity = opacity;
+        if (!WS_ANIMATION || !SHOW_WS_TMB) {
+            //this._workspacesDisplay.opacity = opacity;
         } else if (!SHOW_WS_TMB_BG) {
             // fade out ws wallpaper during transition to ws switcher if ws switcher background disabled
             this._workspacesDisplay._workspacesViews[global.display.get_primary_monitor()]._workspaces[this._workspaceAdjustment.value]._background.opacity = opacity;
@@ -2510,7 +2526,11 @@ var ControlsManagerOverride = {
         const searchEntryBin = this._searchEntryBin;
         // this dash transition collides with startup animation and freezes GS for good, needs to be delayed (first Main.overview 'hiding' event enables it)
         const skipDash = Main.overview.dash._isHorizontal !== undefined;
-        if (_staticBgAnimationEnabled && ((!SHOW_WS_PREVIEW_BG && !OVERVIEW_MODE === 2) || (OVERVIEW_MODE === 2 && !(finalState === 1 && WORKSPACE_MODE)))) {
+
+        // OVERVIEW_MODE 2 should animate dash and wsTmbBox only if WORKSPACE_MODE === 0 (windows not spread)
+        const animateOverviewMode2 = OVERVIEW_MODE === 2 && !(finalState === 1 && WORKSPACE_MODE);
+
+        if (_staticBgAnimationEnabled && ((!SHOW_WS_PREVIEW_BG && !(OVERVIEW_MODE === 2)) || animateOverviewMode2)) {
             if (!tmbBox._translationOriginal || Math.abs(tmbBox._translationOriginal) > 500) { // swipe gesture can call this calculation before tmbBox is finalized, giving nonsense width
                 const [tmbTranslation_x, tmbTranslation_y, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _getOverviewTranslations(dash, tmbBox, searchEntryBin);
                 tmbBox._translationOriginal = [tmbTranslation_x, tmbTranslation_y];
@@ -2566,6 +2586,7 @@ var ControlsManagerOverride = {
             // move dash above wsTmb for case that dash and wsTmb animate from the same side
             this.set_child_above_sibling(dash, null);
             this.set_child_below_sibling(this._workspacesDisplay, null);
+            this.set_child_below_sibling(this._appDisplay, null);
         } else if (!this.dash._isAbove && progress === 1 && finalState > ControlsState.HIDDEN) {
             // set dash above workspace in the overview
             if (this.dash._isHorizontal === undefined) {
@@ -2591,9 +2612,12 @@ var ControlsManagerOverride = {
 
         const { currentState } = stateTransitionParams;
 
+        // if !APP_GRID_ANIMATION appGrid needs to be hidden in WINDOW_PICKER mode (1)
+        // but needs to be visible for transition from HIDDEN (0) to APP_GRID (2)
         this._appDisplay.visible =
             currentState > ControlsState.HIDDEN &&
-            !this._searchController.searchActive;
+            !this._searchController.searchActive &&
+            !(currentState === 1 && !APP_GRID_ANIMATION);
     },
 
     _onSearchChanged: function() {
@@ -2611,11 +2635,9 @@ var ControlsManagerOverride = {
         this._updateThumbnailsBox(true);
 
         const state = this._stateAdjustment.value;
-        // app grid gets visible in win picker on leaving search
-        //this._appDisplay.opacity = (state === 2 && !searchActive) ? 255 : 0;
 
         this._appDisplay.ease({
-            opacity: searchActive ? 0 : 255,
+            opacity: (searchActive || state < 2) ? 0 : 255,
             duration: SIDE_CONTROLS_ANIMATION_TIME,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => this._updateAppDisplayVisibility(),
@@ -3279,7 +3301,9 @@ var ControlsManagerLayoutVerticalOverride = {
 
         // Y position under top Dash
         let searchEntryX, searchEntryY;
-        if (DASH_TOP) {
+        if (OVERVIEW_MODE === 2 && !DASH_TOP && !WS_TMB_TOP) {
+            searchEntryY = 7;
+        } else if (DASH_TOP) {
             searchEntryY = startY + dashHeight - spacing;
         } else {
             searchEntryY = startY;
@@ -3302,7 +3326,7 @@ var ControlsManagerLayoutVerticalOverride = {
         availableHeight -= searchHeight + spacing;
 
         // AppDisplay - state, box, workAreaBox, searchHeight, dashHeight, appGridBox, wsTmbWidth
-        if (this._appDisplay.visible) {
+        //if (this._appDisplay.visible) {
             const workspaceAppGridBox =
                 this._cachedWorkspaceBoxes.get(ControlsState.WINDOW_PICKER);
 
@@ -3320,7 +3344,7 @@ var ControlsManagerLayoutVerticalOverride = {
                 appDisplayBox = initialBox.interpolate(finalBox, transitionParams.progress);
             }
             this._appDisplay.allocate(appDisplayBox);
-        }
+        //}
 
         // Search
         if (CENTER_SEARCH_VIEW) {
@@ -3689,7 +3713,9 @@ var ControlsManagerLayoutHorizontalOverride = {
 
         // Y position under top Dash
         let searchEntryX, searchEntryY;
-        if (DASH_TOP) {
+        if (OVERVIEW_MODE === 2 && !DASH_TOP && !WS_TMB_TOP) {
+            searchEntryY = 7;
+        } else if (DASH_TOP) {
             searchEntryY = startY + (WS_TMB_TOP ? wsTmbHeight : 0) + dashHeight - spacing;
         } else {
             searchEntryY = startY + (WS_TMB_TOP ? wsTmbHeight + spacing : 0);
@@ -3712,7 +3738,7 @@ var ControlsManagerLayoutHorizontalOverride = {
         availableHeight -= searchHeight + spacing;
 
         // AppDisplay - state, box, workAreaBox, searchHeight, dashHeight, appGridBox, wsTmbWidth
-        if (this._appDisplay.visible) {
+        //if (this._appDisplay.visible) {
             const workspaceAppGridBox =
                 this._cachedWorkspaceBoxes.get(ControlsState.WINDOW_PICKER);
 
@@ -3730,7 +3756,7 @@ var ControlsManagerLayoutHorizontalOverride = {
                 appDisplayBox = initialBox.interpolate(finalBox, transitionParams.progress);
             }
             this._appDisplay.allocate(appDisplayBox);
-        }
+        //}
 
         // Search
         if (CENTER_SEARCH_VIEW) {
@@ -3887,8 +3913,21 @@ function _updateStaticBackground(bgManager, stateValue) {
         if (Main.overview._overview._controls._searchController._searchActive) {
             stateValue = 2;
         }
-        const VIGNETTE = 0.4;
-        const BRIGHTNESS = 0.85;
+
+        let VIGNETTE, BRIGHTNESS, bgValue;
+        if (OVERVIEW_MODE === 2 && stateValue <= 1 && !WORKSPACE_MODE) {
+            VIGNETTE = 0;
+            BRIGHTNESS = 1;
+            bgValue = stateValue;
+        } else {
+            VIGNETTE = 0.4;
+            BRIGHTNESS = 0.85;
+            if (OVERVIEW_MODE === 2 && stateValue > 1 && !WORKSPACE_MODE) {
+                bgValue = stateValue - 1;
+            } else {
+                bgValue = stateValue;
+            }
+        }
 
         let blurEffect = bgManager.backgroundActor.get_effect('blur');
         if (!blurEffect) {
@@ -3914,8 +3953,10 @@ function _updateStaticBackground(bgManager, stateValue) {
             sigmaInit = 0
         }
 
-        bgManager.backgroundActor.content.vignette_sharpness = Util.lerp(vignetteInit, VIGNETTE, Math.min(stateValue, 1));
-        bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, Math.min(stateValue, 1));
+        //bgManager.backgroundActor.content.vignette_sharpness = Util.lerp(vignetteInit, VIGNETTE, Math.min(stateValue, 1));
+        //bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, Math.min(stateValue, 1));
+        bgManager.backgroundActor.content.vignette_sharpness = Util.lerp(vignetteInit, VIGNETTE, bgValue);
+        bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, bgValue);
 
         if (OVERVIEW_BG_BLUR_SIGMA || APP_GRID_BG_BLUR_SIGMA) {
             // reduce number of steps of blur transition to improve performance
@@ -3977,24 +4018,21 @@ function _injectWorkspaceAnimation() {
             // remove (hide) background wallpaper from the animation, we will see the original one
             this._workspaceGroups.forEach(w => w._background.opacity = 0);
             // hide (scale to 0) all non-sticky windows, their clones will be animated
-            global.display.get_tab_list(0, null).forEach((w) => {
-                if (w.get_monitor() === this._monitor.index/* && !w.is_on_all_workspaces()*/) {
+            global.get_window_actors().forEach(actor => {
+                const metaWin = actor.metaWindow;
+                if (metaWin?.get_monitor() === this._monitor.index && !(metaWin?.wm_class == 'conky' && metaWin?.is_on_all_workspaces())) { //* && !w.is_on_all_workspaces()*/) {
                     // hide original window. we cannot use opacity since it also affects clones.
                     // scaling them to 0 works well
-                    const actor = w.get_compositor_private();
-                    if (actor)
-                        actor.scale_x = 0;
-                    this._hiddenWindows.push(w);
+                    actor.scale_x = 0;
+                    this._hiddenWindows.push(actor);
                 }
             });
 
 
             // restore all hidden windows at the end of animation
             this.connect('destroy', () =>{
-                this._hiddenWindows.forEach((w) => {
-                    const actor = w.get_compositor_private();
-                    if (actor)
-                        actor.scale_x = 1;
+                this._hiddenWindows.forEach(actor => {
+                    actor.scale_x = 1;
                 });
             });
         }

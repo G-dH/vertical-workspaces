@@ -469,22 +469,6 @@ function _getAppearanceOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Workspace Preview'),
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Show Workspace Preview Background'),
-            _('Allows you to hide the scaling background of the workspace preview.'),
-            itemFactory.newSwitch(),
-            'showWsPreviewBg',
-        )
-    );
-
-
-    optionList.push(
-        itemFactory.getRowWidget(
             _('Window Preview'),
         )
     );
@@ -513,6 +497,23 @@ function _getAppearanceOptionList() {
             'alwaysShowWinTitles',
         )
     );
+
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Preview'),
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Show Workspace Preview Background'),
+            _('Allows you to hide the scaling background of the workspace preview.'),
+            itemFactory.newSwitch(),
+            'showWsPreviewBg',
+        )
+    );
+
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -630,10 +631,10 @@ function _getBehaviorOptionList() {
             [
                 [_('Default'), 4],
                 [_('Disable'), 0],
-                [_('From Right'), 1],
-                [_('From Left'), 2],
-                [_('From Bottom'), 3],
-                [_('From Top'), 5],
+                [_('Right to Left'), 1],
+                [_('Left to Right'), 2],
+                [_('Bottom to Top'), 3],
+                [_('Top to Bottom'), 5],
             ]
         )
     );
