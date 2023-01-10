@@ -1082,9 +1082,14 @@ var WorkspacesViewOverride = {
             scaleX = 0.1;
             scaleY = 1;
         }
+
+        const secondaryMonitor = this._monitorIndex !== global.display.get_primary_monitor();
+        const blockSecondaryAppGrid = OVERVIEW_MODE && currentState >= 1;
         // Hide inactive workspaces
         this._workspaces.forEach((w, index) => {
-            w.stateAdjustment.value = workspaceMode;
+            if (!(blockSecondaryAppGrid && secondaryMonitor))
+                w.stateAdjustment.value = workspaceMode;
+            //w.stateAdjustment.value = workspaceMode;
 
             const distanceToCurrentWorkspace = Math.abs(adj.value - index);
 
@@ -1125,7 +1130,7 @@ var WorkspacesViewOverride = {
 
             // force ws preview bg corner radiuses where GS doesn't do it
             if (SHOW_WS_PREVIEW_BG && OVERVIEW_MODE === 1 && distanceToCurrentWorkspace < 2) {
-                w._background._updateBorderRadius(w._overviewAdjustment.value);
+                w._background._updateBorderRadius(Math.min(1, w._overviewAdjustment.value));
             }
 
             // hide workspace background
@@ -1419,15 +1424,20 @@ var SecondaryMonitorDisplayVerticalOverride = {
             if (OVERVIEW_MODE === 2) {
                 break;
             }
+
+            let wWidth = Math.round(width - thumbnailsWidth - 5 * spacing);
+            let wHeight = Math.round(Math.min(wWidth / (width / height), height - 1.7 * padding));
+            wWidth *= WS_PREVIEW_SCALE;
+            wHeight *= WS_PREVIEW_SCALE;
+
             let wsbX;
-            if (this._thumbnails._positionLeft) {
-                wsbX = Math.round(2 * spacing + thumbnailsWidth);
+            let offset = Math.round(width - thumbnailsWidth - wWidth) / 2;
+            if (SEC_WS_TMB_LEFT) {
+                wsbX = thumbnailsWidth + offset;
             } else {
-                wsbX = spacing;
+                wsbX = offset;
             }
 
-            const wWidth = Math.round(width - thumbnailsWidth - 5 * spacing);
-            const wHeight = Math.round(Math.min(wWidth / (width / height), height - 1.7 * padding));
             const wsbY = Math.round((height - wHeight) / 2);
 
             workspaceBox.set_origin(wsbX, wsbY);
@@ -1621,15 +1631,20 @@ var SecondaryMonitorDisplayHorizontalOverride = {
             if (OVERVIEW_MODE === 2 && !WORKSPACE_MODE) {
                 break;
             }
+
+            let wHeight = Math.round(Math.min(height - thumbnailsHeight - 5 * spacing));
+            let wWidth = Math.round(Math.min(wHeight * (width / height), width - 1.7 * padding));
+            wWidth *= WS_PREVIEW_SCALE;
+            wHeight *= WS_PREVIEW_SCALE;
+
             let wsbY;
+            let offset = Math.round((height - thumbnailsHeight - wHeight) / 2);
             if (WS_TMB_TOP) {
-                wsbY = Math.round(spacing + thumbnailsHeight);
+                wsbY = thumbnailsHeight + offset;
             } else {
-                wsbY = spacing;
+                wsbY = offset;
             }
 
-            const wHeight = Math.round(Math.min(height - thumbnailsHeight - 5 * spacing));
-            const wWidth = Math.round(Math.min(wHeight * (width / height), width - 1.7 * padding));
             const wsbX = Math.round((width - wWidth) / 2);
 
             workspaceBox.set_origin(wsbX, wsbY);
