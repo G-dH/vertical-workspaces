@@ -1,9 +1,25 @@
-# Vertical Workspaces
+# Vertical Workspaces  - Now also horizontal!
 
-GNOME Shell extension that changes the horizontal layout of workspaces to vertical and adds customization of the Activities overview layout. See options on screenshots below.
-This extension also offers vertical Dash orientation and is also compatible with *Dash to Dock* / *Ubuntu Dock* extensions and their forks.
+A GNOME Shell extension that allows you to customize your desktop interface to fit your workflow and eye. You can change the horizontal stacking of workspaces to vertical, but also change layout, content, appearance and behavior of Activities overview and workspace switcher.
 
-Supported GNOME versions: 40, 41, 42, 43.
+Supported GNOME versions: 42, 43 (dropped support for 40, 41  - not tested).
+
+## Features (mostly related to the Activities overview)
+- Vertically or horizontally stacked workspaces.
+- Position, orientation, size and visibility of dash and workspaces thumbnails.
+- Support for secondary monitors, workspaces thumbnails can be placed on the opposite side relative to primary monitor. Removes unnecessary transitions.
+- Scale, spacing and background visibility of workspaces previews.
+- Static background in with blur adjustments.
+- 2 overview modes with static windows that spread on hover / click on workspace thumbnail.
+- More efficient and visually appealing (compared to the original Shell) transition animations that can be customized or disabled.
+- Better performance on slower system (compared to original Shell).
+- Size adjustments of dash icons and window preview icons.
+- Adjustment of dash background transparency and corner radius.
+- Workspace thumbnails can show background wallpaper and labels (always or on mouse hover) with combination of workspace index, name of the current application and workspace name.
+- Title captions of window previews moves into the preview (originally beneath the preview) and can be set as always visible.
+- Static background in workspace switcher (outside overview).
+- Animation/transition speed adjustment.
+
 
 [<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
 
@@ -39,7 +55,7 @@ After installation you need to enable the extension and access its settings.
 - Now you should see *Vertical Workspaces* extension in *Extensions* application (re-open the app if needed to load new data), where you can enable it and access its Preferences window by pressing `Settings` button.
 
 ## Credits
-This extension uses parts of the [Vertical Overview extension](https://github.com/RensAlthuis/vertical-overview).
+This extension uses customized utils and dash modules of the [Vertical Overview extension](https://github.com/RensAlthuis/vertical-overview).
 
 ## Buy me a coffee
 If you like my extensions and want to keep me motivated, you can also buy me a coffee:
