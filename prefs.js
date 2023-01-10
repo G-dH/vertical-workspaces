@@ -114,6 +114,89 @@ function _getLayoutOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Dash'),
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Dash Position'),
+            null,
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'dashPosition',
+            [   [_('Top'), 0],
+                [_('Right'), 1],
+                [_('Bottom'), 2],
+                [_('Left'), 3],
+                [_('Disable'), 4],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Center Horizontal Dash to Workspace'),
+            _('If the Dash Position is set to Top or Bottom, the position will be recalculated relative to the workspace preview instead of the screen. Works only with the default Dash.'),
+            itemFactory.newSwitch(),
+            'centerDashToWs',
+        )
+    );
+
+    const dashPositionAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: -100,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const dashPositionScale = itemFactory.newScale(dashPositionAdjustment);
+    dashPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Fine Tune Dash Position'),
+            _('Adjusts position of the dock on chosen axis. Works only with the default Dash.'),
+            dashPositionScale,
+            'dashPositionAdjust'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Show Apps Icon Position'),
+            _('Sets the position of the "Show Applications" icon in the Dash.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'showAppsIconPosition',
+            [   [_('Start'), 0],
+                [_('End'), 1],
+                [_('Hide'), 2],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Dash Max Icon Size'),
+            _('Maximum size of Dash icons in pixels. Works only with default Dash.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'dashMaxIconSize',
+            [   [_('16'), 0],
+                [_('24'), 1],
+                [_('32'), 2],
+                [_('48'), 3],
+                [_('64'), 4],
+                [_('80'), 5],
+                [_('96'), 6],
+                [_('128'), 7],
+            ]
+        )
+    );
+
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Workspaces Thumbnails / Orientation'),
         )
     );
@@ -253,89 +336,6 @@ function _getLayoutOptionList() {
             _('Adjusts spacing between workspaces previews so you can control how much of the adjacent workspaces overlap to the current workspace overview. Default value should set the adjacent workspaces out of the screen.'),
             wsSpacingScale,
             'wsMaxSpacing'
-        )
-    );
-
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Dash'),
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Dash Position'),
-            null,
-            itemFactory.newComboBox(),
-            //itemFactory.newDropDown(),
-            'dashPosition',
-            [   [_('Top'), 0],
-                [_('Right'), 1],
-                [_('Bottom'), 2],
-                [_('Left'), 3],
-                [_('Disable'), 4],
-            ]
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Center Horizontal Dash to Workspace'),
-            _('If the Dash Position is set to Top or Bottom, the position will be recalculated relative to the workspace preview instead of the screen. Works only with the default Dash.'),
-            itemFactory.newSwitch(),
-            'centerDashToWs',
-        )
-    );
-
-    const dashPositionAdjustment = new Gtk.Adjustment({
-        upper: 100,
-        lower: -100,
-        step_increment: 1,
-        page_increment: 10,
-    });
-
-    const dashPositionScale = itemFactory.newScale(dashPositionAdjustment);
-    dashPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Fine Tune Dash Position'),
-            _('Adjusts position of the dock on chosen axis. Works only with the default Dash.'),
-            dashPositionScale,
-            'dashPositionAdjust'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Show Apps Icon Position'),
-            _('Sets the position of the "Show Applications" icon in the Dash.'),
-            itemFactory.newComboBox(),
-            //itemFactory.newDropDown(),
-            'showAppsIconPosition',
-            [   [_('Start'), 0],
-                [_('End'), 1],
-                [_('Hide'), 2],
-            ]
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Dash Max Icon Size'),
-            _('Maximum size of Dash icons in pixels. Works only with default Dash.'),
-            itemFactory.newComboBox(),
-            //itemFactory.newDropDown(),
-            'dashMaxIconSize',
-            [   [_('16'), 0],
-                [_('24'), 1],
-                [_('32'), 2],
-                [_('48'), 3],
-                [_('64'), 4],
-                [_('80'), 5],
-                [_('96'), 6],
-                [_('128'), 7],
-            ]
         )
     );
 
