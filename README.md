@@ -9,7 +9,7 @@ Supported GNOME versions: 42, 43 (dropped support for 40, 41  - not tested).
 - Position, orientation, size and visibility of dash and workspaces thumbnails.
 - Support for secondary monitors, workspaces thumbnails can be placed on the opposite side relative to primary monitor. Removes unnecessary transitions.
 - Scale, spacing and background visibility of workspaces previews.
-- Static background in with blur adjustments.
+- Static background with blur adjustments.
 - 2 overview modes with static windows that spread on hover / click on workspace thumbnail.
 - More efficient and visually appealing (compared to the original Shell) transition animations that can be customized or disabled.
 - Better performance on slower system (compared to original Shell).
@@ -17,7 +17,7 @@ Supported GNOME versions: 42, 43 (dropped support for 40, 41  - not tested).
 - Adjustment of dash background transparency and corner radius.
 - Workspace thumbnails can show background wallpaper and labels (always or on mouse hover) with combination of workspace index, name of the current application and workspace name.
 - Title captions of window previews moves into the preview (originally beneath the preview) and can be set as always visible.
-- Static background in workspace switcher (outside overview).
+- Static background in workspace switcher (outside overview). Keeps Conky below, DING desktop icons stay visible (if not covered by windows).
 - Animation/transition speed adjustment.
 
 
