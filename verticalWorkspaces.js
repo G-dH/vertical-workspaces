@@ -936,7 +936,7 @@ function _moveDashAppGridIcon(reset = false) {
     // move dash app grid icon to the front
     const dash = Main.overview.dash;
     // don't touch non default dash
-    if (!_dashNotDefault())
+    if (_dashNotDefault())
         return;
 
     const appIconPosition = gOptions.get('showAppsIconPosition', true);
@@ -2539,7 +2539,9 @@ var ControlsManagerOverride = {
             //this._workspacesDisplay.opacity = opacity;
         } else if (!SHOW_WS_TMB_BG) {
             // fade out ws wallpaper during transition to ws switcher if ws switcher background disabled
-            this._workspacesDisplay._workspacesViews[global.display.get_primary_monitor()]._workspaces[this._workspaceAdjustment.value]._background.opacity = opacity;
+            const ws = this._workspacesDisplay._workspacesViews[global.display.get_primary_monitor()]._workspaces[this._workspaceAdjustment.value]
+            if (ws)
+                ws._background.opacity = opacity;
         }
 
         // if ws preview background is disabled, animate tmb box and dash
