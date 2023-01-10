@@ -1825,8 +1825,7 @@ var WorkspaceThumbnailOverride = {
                 // global.display.get_tab_list offers workspace filtering using the second argument, but...
                 // ... it sometimes includes windows from other workspaces, like minimized VBox machines, after Shell restarts
                 const metaWin = global.display.get_tab_list(0, null).filter(
-                    w => w.get_monitor() === this.monitorIndex && w.get_workspace().index() === wsIndex
-                )[0];
+                    w => w.get_monitor() === this.monitorIndex && w.get_workspace().index() === wsIndex)[0];
 
                 if (metaWin) {
                     let tracker = Shell.WindowTracker.get_default();
@@ -3063,14 +3062,13 @@ var ControlsManagerLayoutVerticalOverride = {
             } else {
                 searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
                 wWidth = width
-                            - spacing
-                            - (DASH_VERTICAL ? dash.width + spacing : spacing)
-                            - (thumbnailsWidth ? thumbnailsWidth + spacing : 0)
-                            - 2 * spacing;
+                            - (DASH_VERTICAL ? dash.width : 0)
+                            - (thumbnailsWidth)
+                            - 4 * spacing
                 wHeight = height
-                            - (DASH_VERTICAL ? 4 * spacing : (dashHeight ? dashHeight + spacing : 4 * spacing))
+                            - (DASH_VERTICAL ? 0 : dashHeight)
                             - searchHeight
-                            - 3 * spacing;
+                            - 4 * spacing;
 
                 const ratio = width / height;
                 let wRatio = wWidth / wHeight;
@@ -3449,13 +3447,13 @@ var ControlsManagerLayoutHorizontalOverride = {
                 searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
                 wWidth = width
                             - spacing
-                            - (DASH_VERTICAL ? dashWidth + spacing : spacing)
-                            - 2 * spacing;
+                            - (DASH_VERTICAL ? dashWidth : 0)
+                            - 4 * spacing;
                 wHeight = height
-                            - (DASH_VERTICAL ? spacing : (dashHeight ? dashHeight + spacing : spacing))
-                            - (thumbnailsHeight ? thumbnailsHeight + spacing : 0)
+                            - (DASH_VERTICAL ? spacing : (dashHeight ? dashHeight : 0))
+                            - (thumbnailsHeight ? thumbnailsHeight : 0)
                             - searchHeight
-                            - 2 * spacing;
+                            - 4 * spacing;
 
                 const ratio = width / height;
                 let wRatio = wWidth / wHeight;
@@ -3477,7 +3475,7 @@ var ControlsManagerLayoutHorizontalOverride = {
                 let yOffset = 0;
 
                 const yOffsetT = (DASH_TOP ? dashHeight : 0) + (WS_TMB_TOP ? thumbnailsHeight : 0) + searchHeight;
-                const yOffsetB = (DASH_BOTTOM ? dashHeight : 0) + (WS_TMB_BOTTOM ? thumbnailsHeight + spacing : 0);
+                const yOffsetB = (DASH_BOTTOM ? dashHeight : 0) + (WS_TMB_BOTTOM ? thumbnailsHeight : 0);
                 const yAvailableSpace = (height - yOffsetT - wHeight - yOffsetB) / 2;
                 yOffset = yOffsetT + yAvailableSpace;
 
@@ -3487,7 +3485,7 @@ var ControlsManagerLayoutHorizontalOverride = {
 
                 this._xAlignCenter = false;
                 if (centeredBoxX < Math.max(xOffsetL, xOffsetR)) {
-                    xOffset = xOffsetL + spacing + (width - xOffsetL - wWidth - xOffsetR - 2 * spacing) / 2;
+                    xOffset = xOffsetL + spacing + (width - xOffsetL - wWidth - xOffsetR) / 2;
                 } else {
                     xOffset = centeredBoxX;
                     this._xAlignCenter = true;
