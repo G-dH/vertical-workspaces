@@ -934,18 +934,15 @@ function _setAppDisplayOrientation(vertical = false) {
 
 function _moveDashAppGridIcon(reset = false) {
     // move dash app grid icon to the front
-    const dash = Main.overview.dash;
-    // don't touch non default dash
-    if (_dashNotDefault())
-        return;
+    const dash = Main.overview._overview._controls.layoutManager._dash;
 
     const appIconPosition = gOptions.get('showAppsIconPosition', true);
     dash._showAppsIcon.visible = true;
-    if (reset || appIconPosition === 0) // 0 - start
+    if (!reset && appIconPosition === 0) // 0 - start
         dash._dashContainer.set_child_at_index(dash._showAppsIcon, 0);
-    if (!reset && appIconPosition === 1) // 1 - end
+    if (reset || appIconPosition === 1) // 1 - end
         dash._dashContainer.set_child_at_index(dash._showAppsIcon, 1);
-    if (!reset && appIconPosition === 2) // 2 - disable
+    if (!reset && appIconPosition === 2) // 2 - hide
         dash._showAppsIcon.visible = false;
 }
 
