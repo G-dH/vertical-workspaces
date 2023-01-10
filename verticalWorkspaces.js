@@ -141,6 +141,13 @@ let WORKSPACE_MODE;
 let ANIMATION_TIME_FACTOR;
 let STATIC_WS_SWITCHER_BG;
 
+function _dashNotDefault() {
+    return Main.overview.dash !== Main.overview._overview._controls.layoutManager._dash;
+}
+
+function _dashIsDashToDock() {
+    return Main.overview.dash._isHorizontal !== undefined;
+}
 
 function activate() {
     _enabled = true;
@@ -231,7 +238,7 @@ function activate() {
     _updateDashPosition();
 
     // if Dash to Dock detected force enable "Fix for DtD" option
-    if (Main.overview.dash._isHorizontal !== undefined) {
+    if (_dashIsDashToDock) {
         gOptions.set('fixUbuntuDock', true);
         _fixUbuntuDock(true);
     } else {
@@ -348,8 +355,10 @@ function reset() {
     _setStaticBackground(reset);
 
     // remove any position offsets from dash and ws thumbnails
-    Main.overview.dash.translation_x = 0;
-    Main.overview.dash.translation_y = 0;
+    if (!_dashNotDefault()) {
+        Main.overview.dash.translation_x = 0;
+        Main.overview.dash.translation_y = 0;
+    }
     Main.overview._overview._controls._thumbnailsBox.translation_x = 0;
     Main.overview._overview._controls._thumbnailsBox.translation_y = 0;
     Main.overview._overview._controls._searchEntryBin.translation_y = 0;
@@ -471,7 +480,7 @@ function _fixUbuntuDock(activate = true) {
 
 function _updateSettings(settings, key) {
     const dash = Main.overview.dash;
-    if (dash._isHorizontal !== undefined) {
+    if (_dashIsDashToDock()) {
         DASH_POSITION = dash._position;
     } else {
         DASH_POSITION = gOptions.get('dashPosition', true);
@@ -493,7 +502,7 @@ function _updateSettings(settings, key) {
     VerticalDash.DASH_LEFT = DASH_LEFT;
     VerticalDash.MAX_ICON_SIZE = VerticalDash.BaseIconSizes[gOptions.get('dashMaxIconSize', true)];
 
-    if (Main.overview.dash._isHorizontal === undefined) {// DtD has its own opacity control
+    if (!_dashIsDashToDock()) {// DtD has its own opacity control
         Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
         const radius = gOptions.get('dashBgRadius', true);
         if (radius) {
@@ -610,7 +619,7 @@ function _updateDashPosition() {
     case 1: // RIGHT
         VerticalDash.gOptions = gOptions;
         // avoid conflict with DtD extension
-        if (Main.overview.dash._isHorizontal === undefined)
+        if (!_dashIsDashToDock())
             VerticalDash.override();
         break;
     default:
@@ -621,8 +630,8 @@ function _updateDashPosition() {
 
 function _connectShowAppsIcon(reset = false) {
     if (!reset) {
-        if (_showAppsIconBtnPressId) {
-            // button is already connected
+        if (_showAppsIconBtnPressId || _dashIsDashToDock()) {
+            // button is already connected || dash is Dash to Dock
             return;
         }
 
@@ -638,8 +647,8 @@ function _connectShowAppsIcon(reset = false) {
         if (_showAppsIconBtnPressId) {
             Main.overview.dash._showAppsIcon.disconnect(_showAppsIconBtnPressId);
             _showAppsIconBtnPressId = 0;
+            Main.overview.dash._showAppsIcon.reactive = false;
         }
-        Main.overview.dash._showAppsIcon.reactive = false;
     }
 }
 
@@ -926,8 +935,8 @@ function _setAppDisplayOrientation(vertical = false) {
 function _moveDashAppGridIcon(reset = false) {
     // move dash app grid icon to the front
     const dash = Main.overview.dash;
-    // don't touch DtD
-    if (dash._isHorizontal !== undefined)
+    // don't touch non default dash
+    if (!_dashNotDefault())
         return;
 
     const appIconPosition = gOptions.get('showAppsIconPosition', true);
@@ -1686,10 +1695,8 @@ var SecondaryMonitorDisplayHorizontalOverride = {
             let wsTmbY;
             if (SEC_WS_TMB_TOP) {
                 wsTmbY = Math.round(spacing / 4);
-                this._thumbnails._positionTop = true;
             } else {
                 wsTmbY = Math.round(height - spacing / 4 - thumbnailsHeight);
-                this._thumbnails._positionTop = false;
             }
 
             const childBox = new Clutter.ActorBox();
@@ -2541,7 +2548,7 @@ var ControlsManagerOverride = {
         const dash = this.dash;
         const searchEntryBin = this._searchEntryBin;
         // this dash transition collides with startup animation and freezes GS for good, needs to be delayed (first Main.overview 'hiding' event enables it)
-        const skipDash = Main.overview.dash._isHorizontal !== undefined;
+        const skipDash = _dashNotDefault();
 
         // OVERVIEW_MODE 2 should animate dash and wsTmbBox only if WORKSPACE_MODE === 0 (windows not spread)
         const animateOverviewMode2 = OVERVIEW_MODE === 2 && !(finalState === 1 && WORKSPACE_MODE);
@@ -2605,7 +2612,7 @@ var ControlsManagerOverride = {
             this.set_child_below_sibling(this._appDisplay, null);
         } else if (!this.dash._isAbove && progress === 1 && finalState > ControlsState.HIDDEN) {
             // set dash above workspace in the overview
-            if (this.dash._isHorizontal === undefined) {
+            if (!_dashNotDefault()) {
                 this.set_child_above_sibling(this._searchEntryBin, null);
                 this.set_child_above_sibling(this.dash, null);
                 this.dash._isAbove = true;
@@ -2809,7 +2816,7 @@ var ControlsManagerOverride = {
             );
         }.bind(this);
 
-        if (dash.visible) {
+        if (dash.visible && !_dashNotDefault()) {
             dash.translation_x = dashTranslation_x;
             dash.translation_y = dashTranslation_y;
             dash.opacity = 255;
@@ -2931,8 +2938,10 @@ function _updateOverviewTranslations(dash = null, tmbBox = null, searchEntryBin 
     const [tmbTranslation_x, tmbTranslation_y, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _getOverviewTranslations(dash, tmbBox, searchEntryBin);
     tmbBox.translation_x = tmbTranslation_x;
     tmbBox.translation_y = tmbTranslation_y;
-    dash.translation_x = dashTranslation_x;
-    dash.translation_y = dashTranslation_y;
+    if (!_dashNotDefault()) { // only if dash is not dash to dock
+        dash.translation_x = dashTranslation_x;
+        dash.translation_y = dashTranslation_y;
+    }
     searchEntryBin.translation_y = searchTranslation_y;
 }
 
@@ -2941,7 +2950,7 @@ function _getOverviewTranslations(dash, tmbBox, searchEntryBin) {
     let searchTranslation_y = 0;
     if (searchEntryBin.visible) {
         const offset = (dash.visible && (!DASH_VERTICAL ? dash.height + 12 : 0))
-            + (tmbBox._positionTop ? tmbBox.height + 12 : 0);
+            + (WS_TMB_TOP ? tmbBox.height + 12 : 0);
         searchTranslation_y = - searchEntryBin.height - offset - 30;
     }
 
@@ -2977,7 +2986,7 @@ function _getOverviewTranslations(dash, tmbBox, searchEntryBin) {
     let dashTranslation_y = 0;
     let position = DASH_POSITION;
     // if DtD replaced the original Dash, read its position
-    if (dash._isHorizontal !== undefined) {
+    if (_dashIsDashToDock()) {
         position = dash._position;
     }
     if (dash?.visible) {
@@ -3007,31 +3016,31 @@ function _getOverviewTranslations(dash, tmbBox, searchEntryBin) {
 //-------ControlsManagerLayout-----------------------------
 
 var ControlsManagerLayoutVerticalOverride = {
-    _computeWorkspacesBoxForState: function(state, box, workAreaBox, dashWidth, dashHeight, thumbnailsWidth, thumbnailsHeight, searchHeight) {
+    _computeWorkspacesBoxForState: function(state, box, workAreaBox, dashWidth, dashHeight, thumbnailsWidth, searchHeight, startY) {
         const workspaceBox = box.copy();
         let [width, height] = workspaceBox.get_size();
-        const { x1: startX, y1: startY } = workAreaBox;
+        const { x1: startX,/* y1: startY*/ } = workAreaBox;
         const { spacing } = this;
         //const { expandFraction } = this._workspacesThumbnails;
 
         const dash = Main.overview.dash;
         // including Dash to Dock and clones properties for compatibility
-        const dashToDock = dash._isHorizontal !== undefined;
-        if (dashToDock) {
-            dashHeight = dash.height;
-            // compensation for a bug related to Dash to Dock bottom non-auto-hide position
-            // ...when workspace box width is calculated correctly, but the output width is bigger
-            // ...although if you read the width back from workspaceDisplay, you get the originally calculated value, not the real one
-            if (dash._position === 2 && !dash.get_parent()?.get_parent()?.get_parent()?._intellihideIsEnabled) {
-                height -= dash.height
-            } else if ([1, 3].includes(dash._position)) {
-                // if Dash to Dock reduces workAreaBox, compensate for this
-                Main.layoutManager._trackedActors.forEach((actor) => {
-                    if (actor.affectsStruts && actor.actor.width === dash.width) {
+
+        if (_dashIsDashToDock()) {
+            // Dash to Dock also always affects workAreaBox
+            Main.layoutManager._trackedActors.forEach((actor) => {
+                if (actor.affectsStruts && actor.actor.width === dash.width) {
+                    if (dash._isHorizontal) {
+                        // disabled inteli-hide don't needs compensation
+                        // startY needs to be corrected in allocate()
+                        if (dash.get_parent()?.get_parent()?.get_parent()?._intellihideIsEnabled) {
+                            height += dash.height;
+                        }
+                    } else {
                         width += dash.width;
                     }
-                });
-            }
+                }
+            });
         }
 
         let wWidth;
@@ -3107,10 +3116,10 @@ var ControlsManagerLayoutVerticalOverride = {
         return workspaceBox;
     },
 
-    _getAppDisplayBoxForState: function(state, box, workAreaBox, searchHeight, dashWidth, dashHeight, appGridBox, thumbnailsWidth) {
+    _getAppDisplayBoxForState: function(state, box, workAreaBox, searchHeight, dashWidth, dashHeight, thumbnailsWidth, startY) {
         const [width] = box.get_size();
         const { x1: startX } = workAreaBox;
-        const { y1: startY } = workAreaBox;
+        //const { y1: startY } = workAreaBox;
         const height = workAreaBox.get_height();
         const appDisplayBox = new Clutter.ActorBox();
         const { spacing } = this;
@@ -3162,7 +3171,7 @@ var ControlsManagerLayoutVerticalOverride = {
         const monitor = Main.layoutManager.findMonitorForActor(this._container);
         const workArea = Main.layoutManager.getWorkAreaForMonitor(monitor.index);
         const startX = workArea.x - monitor.x;
-        const startY = workArea.y - monitor.y;
+        let startY = workArea.y - monitor.y;
         const workAreaBox = new Clutter.ActorBox();
         workAreaBox.set_origin(startX, startY);
         workAreaBox.set_size(workArea.width, workArea.height);
@@ -3180,7 +3189,12 @@ var ControlsManagerLayoutVerticalOverride = {
         // dash cloud be overridden by the Dash to Dock clone
         // Dash to Dock has property _isHorizontal
         const dash = Main.overview.dash;
-        if (dash._isHorizontal !== undefined) {
+        if (_dashIsDashToDock()) {
+            // if Dash to Dock replaced the default dash and its inteli-hide id disabled we need to compensate for affected startY
+            if (!Main.overview.dash.get_parent()?.get_parent()?.get_parent()?._intellihideIsEnabled) {
+                if (Main.panel.y === monitor.y)
+                    startY = Main.panel.height + spacing;
+            }
             dashHeight = dash.height;
             dashWidth = dash.width;
             DASH_VERTICAL = [1, 3].includes(dash._position);
@@ -3207,7 +3221,6 @@ var ControlsManagerLayoutVerticalOverride = {
         let wsTmbWidth = 0;
         let wsTmbHeight = 0;
 
-        this._workspacesThumbnails._positionTop = false;
         if (this._workspacesThumbnails.visible) {
             const REDUCE_WS_TMB_IF_NEEDED = this._searchController._searchActive && CENTER_SEARCH_VIEW;
 
@@ -3304,7 +3317,7 @@ var ControlsManagerLayoutVerticalOverride = {
         let [searchHeight] = this._searchEntry.get_preferred_height(width - wsTmbWidth);
 
         // Workspaces
-        let params = [box, workAreaBox, dashWidth, dashHeight, wsTmbWidth, wsTmbHeight, searchHeight];
+        let params = [box, workAreaBox, dashWidth, dashHeight, wsTmbWidth, searchHeight, startY];
         const transitionParams = this._stateAdjustment.getStateTransitionParams();
 
         // Update cached boxes
@@ -3356,10 +3369,8 @@ var ControlsManagerLayoutVerticalOverride = {
 
         // AppDisplay - state, box, workAreaBox, searchHeight, dashHeight, appGridBox, wsTmbWidth
         //if (this._appDisplay.visible) {
-            const workspaceAppGridBox =
-                this._cachedWorkspaceBoxes.get(ControlsState.WINDOW_PICKER);
 
-            params = [box, workAreaBox, searchHeight, dashWidth, dashHeight, workspaceAppGridBox, wsTmbWidth];
+            params = [box, workAreaBox, searchHeight, dashWidth, dashHeight, wsTmbWidth, startY]; // send startY, can be compensated
             let appDisplayBox;
             if (!transitionParams.transitioning) {
                 appDisplayBox =
@@ -3391,30 +3402,32 @@ var ControlsManagerLayoutVerticalOverride = {
 }
 
 var ControlsManagerLayoutHorizontalOverride = {
-    _computeWorkspacesBoxForState: function(state, box, workAreaBox, dashWidth, dashHeight, thumbnailsWidth, thumbnailsHeight, searchHeight) {
+    _computeWorkspacesBoxForState: function(state, box, workAreaBox, dashWidth, dashHeight, thumbnailsHeight, searchHeight, startY) {
         const workspaceBox = box.copy();
         let [width, height] = workspaceBox.get_size();
-        const { x1: startX, y1: startY } = workAreaBox;
+        let { x1: startX/*, y1: startY*/ } = workAreaBox;
         const { spacing } = this;
         //const { expandFraction } = this._workspacesThumbnails;
 
         const dash = Main.overview.dash;
         // including Dash to Dock and clones properties for compatibility
-        const dashToDock = dash._isHorizontal !== undefined;
-        if (dashToDock) {
-            // compensation for a bug related to Dash to Dock bottom non-auto-hide position
-            // ...when workspace box width is calculated correctly, but the output width is bigger
-            // ...although if you read the width back from workspaceDisplay, you get the originally calculated value, not the real one
-            if (dash._position === 2 && !dash.get_parent()?.get_parent()?.get_parent()?._intellihideIsEnabled) {
-                height -= dash.height
-            } else if ([1, 3].includes(dash._position)) {
-                // if Dash to Dock reduces workAreaBox, compensate for this
-                Main.layoutManager._trackedActors.forEach((actor) => {
-                    if (actor.affectsStruts && actor.actor.width === dash.width) {
+        if (_dashIsDashToDock()) {
+            // Dash to Dock always affects workAreaBox
+            Main.layoutManager._trackedActors.forEach((actor) => {
+                if (actor.affectsStruts && actor.actor.width === dash.width) {
+                    if (dash._isHorizontal) {
+                        // disabled inteli-hide don't need compensation
+                        // startY needs to be corrected in allocate()
+                        if (dash.get_parent()?.get_parent()?.get_parent()?._intellihideIsEnabled) {
+                            height += dash.height;
+                        } else if (DASH_TOP) {
+                            height += dash.height;
+                        }
+                    } else {
                         width += dash.width;
                     }
-                });
-            }
+                }
+            });
         }
 
         let wWidth, wHeight, wsBoxY, wsBoxX;
@@ -3490,10 +3503,10 @@ var ControlsManagerLayoutHorizontalOverride = {
         return workspaceBox;
     },
 
-    _getAppDisplayBoxForState: function(state, box, workAreaBox, searchHeight, dashWidth, dashHeight, appGridBox, thumbnailsHeight) {
+    _getAppDisplayBoxForState: function(state, box, workAreaBox, searchHeight, dashWidth, dashHeight, thumbnailsHeight, startY) {
         const [width] = box.get_size();
         const { x1: startX } = workAreaBox;
-        const { y1: startY } = workAreaBox;
+        //const { y1: startY } = workAreaBox;
         const height = workAreaBox.get_height();
         const appDisplayBox = new Clutter.ActorBox();
         const { spacing } = this;
@@ -3545,7 +3558,7 @@ var ControlsManagerLayoutHorizontalOverride = {
         const monitor = Main.layoutManager.findMonitorForActor(this._container);
         const workArea = Main.layoutManager.getWorkAreaForMonitor(monitor.index);
         const startX = workArea.x - monitor.x;
-        const startY = workArea.y - monitor.y;
+        let startY = workArea.y - monitor.y;
         const workAreaBox = new Clutter.ActorBox();
         workAreaBox.set_origin(startX, startY);
         workAreaBox.set_size(workArea.width, workArea.height);
@@ -3561,9 +3574,13 @@ var ControlsManagerLayoutHorizontalOverride = {
         let dashWidth = 0;
 
         // dash cloud be overridden by the Dash to Dock clone
-        // Dash to Dock has property _isHorizontal
         const dash = Main.overview.dash;
-        if (dash._isHorizontal !== undefined) {
+        if (_dashIsDashToDock()) {
+            // if Dash to Dock replaced the default dash and its inteli-hide is disabled we need to compensate for affected startY
+            if (!Main.overview.dash.get_parent()?.get_parent()?.get_parent()?._intellihideIsEnabled) {
+                if (Main.panel.y === monitor.y)
+                    startY = Main.panel.height + spacing;
+            }
             dashHeight = dash.height;
             dashWidth = dash.width;
             DASH_TOP = dash._position === 0;
@@ -3640,10 +3657,9 @@ var ControlsManagerLayoutHorizontalOverride = {
             let wsTmbY;
             if (WS_TMB_TOP) {
                 wsTmbY = Math.round(startY + /*searchHeight + */(DASH_TOP ? dashHeight : spacing / 2));
-                this._workspacesThumbnails._positionTop = true;
             } else {
-                wsTmbY = Math.round(startY + height - (DASH_BOTTOM ? dashHeight : 0) - /*searchHeight - */wsTmbHeight);
-                this._workspacesThumbnails._positionTop = false;
+                const boxY = workArea.y - monitor.y; // startY might be compensated
+                wsTmbY = Math.round(boxY + height - (DASH_BOTTOM ? dashHeight : 0) - wsTmbHeight);
             }
 
             let wstOffset = (width - wsTmbWidth) / 2;
@@ -3716,7 +3732,7 @@ var ControlsManagerLayoutHorizontalOverride = {
         /*let [searchHeight] = this._searchEntry.get_preferred_height(width);*/
 
         // Workspaces
-        let params = [box, workAreaBox, dashWidth, dashHeight, wsTmbWidth, wsTmbHeight, searchHeight];
+        let params = [box, workAreaBox, dashWidth, dashHeight, wsTmbHeight, searchHeight, startY];
         const transitionParams = this._stateAdjustment.getStateTransitionParams();
 
         // Update cached boxes
@@ -3768,10 +3784,7 @@ var ControlsManagerLayoutHorizontalOverride = {
 
         // AppDisplay - state, box, workAreaBox, searchHeight, dashHeight, appGridBox, wsTmbWidth
         //if (this._appDisplay.visible) {
-            const workspaceAppGridBox =
-                this._cachedWorkspaceBoxes.get(ControlsState.WINDOW_PICKER);
-
-            params = [box, workAreaBox, searchHeight, dashWidth, dashHeight, workspaceAppGridBox, wsTmbHeight];
+            params = [box, workAreaBox, searchHeight, dashWidth, dashHeight, wsTmbHeight, startY];
             let appDisplayBox;
             if (!transitionParams.transitioning) {
                 appDisplayBox =
