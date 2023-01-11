@@ -69,6 +69,7 @@ let _windowPreviewInjections;
 let _wsSwitcherPopupInjections;
 let _controlsManagerInjections;
 let _workspaceAnimationInjections;
+let _workspaceLayoutInjections;
 let _bgManagers;
 let _shellSettings;
 
@@ -156,6 +157,7 @@ function activate() {
     _wsSwitcherPopupInjections = {};
     _controlsManagerInjections = {};
     _workspaceAnimationInjections = {};
+    _workspaceLayoutInjections = {};
     _bgManagers = [];
     WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
 
@@ -223,6 +225,9 @@ function activate() {
 
     // move titles into window previews
     _injectWindowPreview();
+
+    // fix window scaling in workspace state 0
+    _injectWorkspaceLayout();
 
     _moveDashAppGridIcon();
 
@@ -300,6 +305,11 @@ function reset() {
     for (let name in _workspaceAnimationInjections) {
         _Util.removeInjection(WorkspaceAnimation.WorkspaceAnimationController.prototype, _workspaceAnimationInjections, name);
     }
+
+    for (let name in _workspaceLayoutInjections) {
+        _Util.removeInjection(Workspace.WorkspaceLayout.prototype, _workspaceLayoutInjections, name);
+    }
+    _workspaceAnimationInjections = undefined;
 
     _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, _verticalOverrides['WorkspacesView']);
     _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, _verticalOverrides['WorkspacesDisplay']);
@@ -3814,6 +3824,33 @@ var ControlsManagerLayoutHorizontalOverride = {
 
 
 // ------ Workspace -----------------------------------------------------------------
+
+// workaround for upstream bug (that is not that invisible in default shell)
+// smaller window cannot be scaled below 0.95 (WINDOW_PREVIEW_MAXIMUM_SCALE)
+// when its target scale for spread windows view (workspace state 1) is bigger then the scale needed for ws state 0.
+// in workspace state 0 where windows are not spread and window scale should follow workspace scale,
+// this window follows proper top left corner position, but doesn't scale with the workspace
+// so it looks bad and the window can exceed border of the workspace
+// extremely annoying in OVERVIEW_MODE > 0 with single smaller window on the workspace, also affects transition animation
+function _injectWorkspaceLayout() {
+    _workspaceLayoutInjections['_init'] = _Util.injectToFunction(
+        Workspace.WorkspaceLayout.prototype, '_init', function() {
+            this._stateAdjustment.connect('notify::value', () => {
+                // scale 0.1 for window state 0 just needs to be smaller then possible scale of any window in spread view
+                const scale = this._stateAdjustment.value ? 0.95 : 0.1;
+                if (scale !== Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE) {
+                    // when transition to ws state 1 begins, replace the constant with the original one
+                    // disadvantage - the value changes for all workspaces, so one affects others
+                    // that can be visible in certain situations but not a big deal.
+                    Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = scale;
+                    // and force recalculation of the target layout, so the transition will be smooth
+                    this._needsLayout = true;
+                }
+            });
+        }
+    );
+}
+
 var WorkspaceLayoutOverride = {
     // this fixes wrong size and position calculation of window clones while moving overview to the next (+1) workspace if vertical ws orintation is enabled in GS
     _adjustSpacingAndPadding: function(rowSpacing, colSpacing, containerBox) {
