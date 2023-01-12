@@ -1,4 +1,22 @@
 ## Changelog:
+
+### v24 (not released yet)
+**Added:**
+- Support for horizontally stacked workspaces, available through `Workspaces Thumbnails Position` option.
+- Options `Workspaces Scale` and `Workspaces Spacing` adjustments for workspace preview.
+- Options `App Search Icon Size` with reduced spacing between icons and `Search Results Width`.
+- Option `Workspace Switcher Animation` / `Static Backgroud` for static background while switching workspaces outside of the overview.
+- Open preferences by middle click on *Show Applications button* in the dash (default dash only).
+- Text shadow in labels of app grid view icons for better visibility on lighter backgrounds, in case you use `Show Static Background` option for the overview.
+
+**Fixed:**
+- Improved blur effect transitions performance
+- Smaller single windows not properly scaling with workspace preview in `Expose Windows on Hover` mode.
+- (upstream bug) Closing windows in the overview fills log with "access to destroyed" object errors.
+
+**Other changes:**
+
+
 ### v23 (v19, v20, v21, v22) (2022-12-22)
 **Added:**
 - Overview modes `Expose Windows on Hover` and `Static Workspace`
