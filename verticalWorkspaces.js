@@ -633,7 +633,7 @@ function _updateSettings(settings, key) {
 
     SEARCH_ICON_SIZE = gOptions.get('searchIconSize', true);
     SEARCH_VIEW_SCALE = gOptions.get('searchViewScale', true) / 100;
-    
+
     _updateSearchViewWidth();
     _updateOverviewTranslations();
     _switchPageShortcuts();
@@ -3169,14 +3169,18 @@ var ControlsManagerLayoutVerticalOverride = {
         const appDisplayBox = new Clutter.ActorBox();
         const { spacing } = this;
 
-        const dash = Main.overview.dash;
         searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
 
-        const appDisplayX = startX + (CENTER_APP_GRID ? spacing + thumbnailsWidth : (DASH_LEFT ? dash.width + spacing : 0) + (WS_TMB_LEFT ? thumbnailsWidth : 0) + spacing);
-        const appDisplayY = startY + searchHeight + (DASH_TOP ? dashHeight + spacing : spacing);
+        const xOffsetL = (WS_TMB_LEFT ? thumbnailsWidth : 0) + (DASH_LEFT ? dashWidth : 0);
+        const xOffsetR = (WS_TMB_RIGHT ? thumbnailsWidth : 0) + (DASH_RIGHT ? dashWidth : 0);
+        const yOffsetT = (DASH_TOP ? dashHeight : 0) + searchHeight;
+        const yOffsetB = (DASH_BOTTOM ? dashHeight : 0);
+        const adWidth = CENTER_APP_GRID ? (width - 2 * Math.max (xOffsetL, xOffsetR) - 4 * spacing) : (width - xOffsetL - xOffsetR - 4 * spacing);
+        const adHeight = height - yOffsetT - yOffsetB - 4 * spacing;
 
-        const adWidth = CENTER_APP_GRID ? width - 2 * (thumbnailsWidth + spacing) : width - ((DASH_LEFT || DASH_RIGHT) ? dashWidth + 2 * spacing : spacing) - thumbnailsWidth - spacing;
-        const adHeight = height - searchHeight - ((DASH_TOP || DASH_BOTTOM) ? dashHeight + 2 * spacing : 2 * spacing);
+        const appDisplayX = CENTER_APP_GRID ? ((width - adWidth) / 2) : (xOffsetL + 2 * spacing);
+        const appDisplayY = startY + yOffsetT + 2 * spacing;
+
         switch (state) {
         case ControlsState.HIDDEN:
         case ControlsState.WINDOW_PICKER:
@@ -3267,7 +3271,7 @@ var ControlsManagerLayoutVerticalOverride = {
         let wsTmbHeight = 0;
 
         if (this._workspacesThumbnails.visible) {
-            const REDUCE_WS_TMB_IF_NEEDED = this._searchController._searchActive && CENTER_SEARCH_VIEW;
+            const REDUCE_WS_TMB_IF_NEEDED = (this._searchController._searchActive && CENTER_SEARCH_VIEW) || CENTER_APP_GRID;
 
             const { expandFraction } = this._workspacesThumbnails;
             const dashHeightReservation = (!WS_TMB_FULL && !DASH_VERTICAL) ? dashHeight : 0;
@@ -3556,14 +3560,16 @@ var ControlsManagerLayoutHorizontalOverride = {
         const appDisplayBox = new Clutter.ActorBox();
         const { spacing } = this;
 
-        const dash = Main.overview.dash;
-        searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
+        const yOffsetT = (WS_TMB_TOP ? thumbnailsHeight : 0) + (DASH_TOP ? dashHeight : 0) + searchHeight;
+        const yOffsetB = (WS_TMB_BOTTOM ? thumbnailsHeight : 0) + (DASH_BOTTOM ? dashHeight : 0);
+        const xOffsetL = (DASH_LEFT ? dashWidth : 0);
+        const xOffsetR = (DASH_RIGHT ? dashWidth : 0);
+        const adWidth = CENTER_APP_GRID ? (width - 2 * Math.max (xOffsetL, xOffsetR) - 4 * spacing) : (width - xOffsetL - xOffsetR - 4 * spacing);
+        const adHeight = height - yOffsetT - yOffsetB - 4 * spacing;
 
-        const appDisplayX = startX + (CENTER_APP_GRID ? spacing + thumbnailsWidth : (DASH_LEFT ? dash.width + spacing : 0));
-        const appDisplayY = startY + searchHeight + (DASH_TOP ? dashHeight + spacing : spacing) + (WS_TMB_BOTTOM ? 0 : thumbnailsHeight + spacing);
+        const appDisplayX = CENTER_APP_GRID ? ((width - adWidth) / 2) : (xOffsetL + 2 * spacing);
+        const appDisplayY = startY + yOffsetT + 2 * spacing;
 
-        const adWidth = CENTER_APP_GRID ? width : width - ((DASH_LEFT || DASH_RIGHT) ? dashWidth + 2 * spacing : spacing);
-        const adHeight = height - searchHeight - ((DASH_TOP || DASH_BOTTOM) ? dashHeight + 2 * spacing : 2 * spacing) - thumbnailsHeight;
         switch (state) {
         case ControlsState.HIDDEN:
         case ControlsState.WINDOW_PICKER:
