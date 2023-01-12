@@ -1,6 +1,6 @@
 # Vertical Workspaces  - Now also horizontal!
 
-A GNOME Shell extension that allows you to customize your desktop interface to fit your workflow and eye. You can change the horizontal stacking of workspaces to vertical, but also change layout, content, appearance and behavior of Activities overview and workspace switcher.
+A GNOME Shell extension that allows you to customize your desktop interface to suit your workflow and eyes. You can change the horizontal stacking of workspaces to vertical, but also change layout, content, appearance and behavior of Activities overview and workspace switcher.
 
 Supported GNOME versions: 42, 43 (dropped support for 40, 41  - not tested).
 

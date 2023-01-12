@@ -1,10 +1,8 @@
 {
   "name": "Vertical Workspaces",
   "uuid": "vertical-workspaces@G-dH.github.com",
-  "description": "Vertical orientation of workspaces and options to customize Activities overview layout and content for GNOME 40+.",
+  "description": "A extension that allows you to customize your desktop interface to suit your workflow and eyes. You can change the horizontal stacking of workspaces to vertical, but also change layout, content, appearance and behavior of Activities overview and workspace switcher.",
   "shell-version": [
-    "40",
-    "41",
     "42",
     "43"
   ],
