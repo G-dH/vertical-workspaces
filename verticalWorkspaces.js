@@ -2579,7 +2579,7 @@ var ControlsManagerOverride = {
         }
 
         if (!WS_ANIMATION || !SHOW_WS_TMB) {
-            //this._workspacesDisplay.opacity = opacity;
+            this._workspacesDisplay.opacity = opacity;
         } else if (!SHOW_WS_TMB_BG) {
             // fade out ws wallpaper during transition to ws switcher if ws switcher background disabled
             const ws = this._workspacesDisplay._workspacesViews[global.display.get_primary_monitor()]._workspaces[this._workspaceAdjustment.value]
@@ -2652,9 +2652,9 @@ var ControlsManagerOverride = {
             this.set_child_above_sibling(this._searchEntryBin, null);
             // move dash above wsTmb for case that dash and wsTmb animate from the same side
             this.set_child_above_sibling(dash, null);
+            this.set_child_below_sibling(this._thumbnailsBox, null);
             this.set_child_below_sibling(this._workspacesDisplay, null);
             this.set_child_below_sibling(this._appDisplay, null);
-            this.set_child_below_sibling(this._thumbnailsBox, null);
         } else if (!this.dash._isAbove && progress === 1 && finalState > ControlsState.HIDDEN) {
             // set dash above workspace in the overview
             if (!_dashNotDefault()) {
