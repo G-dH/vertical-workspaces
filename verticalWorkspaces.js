@@ -45,6 +45,7 @@ WorkspacesView.SecondaryMonitorDisplay;
 
 let gOptions = null;
 let original_MAX_THUMBNAIL_SCALE;
+let original_SEARCH_MAX_WIDTH;
 
 const BACKGROUND_CORNER_RADIUS_PIXELS = 40;
 const WS_TMB_CORNER_RADIUS = 8;
@@ -145,6 +146,7 @@ let STATIC_WS_SWITCHER_BG;
 let SEARCH_ICON_SIZE;
 let SEARCH_VIEW_SCALE;
 
+
 function _dashNotDefault() {
     return Main.overview.dash !== Main.overview._overview._controls.layoutManager._dash;
 }
@@ -165,6 +167,9 @@ function activate() {
     WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
 
     original_MAX_THUMBNAIL_SCALE = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
+
+    // store original style value, 2 for store, otherwise the argument is for reset true/false
+    _updateSearchViewWidth(2);
 
     gOptions = new Settings.Options();
     _updateSettings();
@@ -235,9 +240,6 @@ function activate() {
 
     _moveDashAppGridIcon();
 
-    /*_updateSearchEntryVisibility();
-    _searchControllerSigId =  Main.overview._overview.controls._searchController.connect('notify::search-active', _updateSearchEntryVisibility);*/
-
     _setAppDisplayOrientation(ORIENTATION === Clutter.Orientation.VERTICAL);
 
     // switch PageUp/PageDown workspace switcher shortcuts
@@ -268,7 +270,7 @@ function activate() {
 
     _replaceOnSearchChanged();
 
-    _replaceSearchGetThemeNode();
+    _updateSearchViewWidth();
 }
 
 function reset() {
@@ -404,7 +406,7 @@ function reset() {
     _connectShowAppsIcon(reset);
 
     // restore Search view width
-    _replaceSearchGetThemeNode(reset);
+    _updateSearchViewWidth(reset);
 }
 
 function _replaceOnSearchChanged(reset = false) {
@@ -427,6 +429,24 @@ function _replaceOnSearchChanged(reset = false) {
         _searchControllerSigId = searchController.connect('notify::search-active', ControlsManagerOverride._onSearchChanged.bind(Main.overview._overview.controls));
     }
 
+}
+
+function _updateSearchViewWidth(reset = false) {
+    const searchContent = Main.overview._overview._controls.layoutManager._searchController._searchResults._content;
+    const themeNode = searchContent.get_theme_node();
+    let width;
+    if (reset === 2) { // just store original value;
+        const width = themeNode.get_max_width();
+        original_SEARCH_MAX_WIDTH = width;
+        return;
+    }
+
+    if (reset) {
+        searchContent.set_style('');
+    } else {
+        width = Math.round(original_SEARCH_MAX_WIDTH * SEARCH_VIEW_SCALE);
+        searchContent.set_style(`max-width: ${width}px;`);
+    }
 }
 
 function _enableStaticBgAnimation() {
@@ -613,7 +633,8 @@ function _updateSettings(settings, key) {
 
     SEARCH_ICON_SIZE = gOptions.get('searchIconSize', true);
     SEARCH_VIEW_SCALE = gOptions.get('searchViewScale', true) / 100;
-
+    
+    _updateSearchViewWidth();
     _updateOverviewTranslations();
     _switchPageShortcuts();
     _setStaticBackground();
@@ -3940,36 +3961,6 @@ var AppDisplayOverride = {
     }
 }
 
-//------ search view ---------------------------------------------------------------------------------
-
-function _replaceSearchGetThemeNode(reset = false) {
-    if (reset) {
-        const content = Main.overview._overview._controls.layoutManager._searchController._searchResults._content;
-        content.get_theme_node = content._get_theme_node;
-        return;
-    }
-
-    // replace get_theme_node().get_max_width() in MaxWidthBox class os Search module, which limits max width of Search view results
-    // MaxWidthBox._vfunc_allocate function override is blocked by using super
-    const get_theme_node = function() {
-        return new ThemeNodeDummy();
-    }
-
-    const ThemeNodeDummy = class {
-        constructor() {
-        }
-
-        get_max_width() {
-            const box = Main.overview._overview._controls.layoutManager._searchController._searchResults._content;
-            const width = box._get_theme_node().get_max_width() * SEARCH_VIEW_SCALE;
-            return width;
-        }
-    }
-    const content = Main.overview._overview._controls.layoutManager._searchController._searchResults._content;
-    content._get_theme_node = content.get_theme_node;
-    content.get_theme_node = get_theme_node;
-}
-
 //------ AppDisplay.AppSearchProvider ----------------------------------------------------------------------------------
 
 // App search result size
@@ -3983,8 +3974,9 @@ const AppSearchProviderOverride = {
             return icon;
         } else {
             const icon = new AppDisplay.SystemActionIcon(this, resultMeta);
-            icon.icon.setSizeManually = true;
+            icon.icon._setSizeManually = true;
             icon.icon.setIconSize(SEARCH_ICON_SIZE);
+            return icon;
         }
     }
 }
