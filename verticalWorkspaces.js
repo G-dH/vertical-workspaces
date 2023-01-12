@@ -28,6 +28,7 @@ const WindowPreview = imports.ui.windowPreview;
 const WorkspaceSwitcherPopup = imports.ui.workspaceSwitcherPopup;
 const SwipeTracker = imports.ui.swipeTracker;
 const WorkspaceAnimation = imports.ui.workspaceAnimation;
+const Search = imports.ui.search;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -141,6 +142,8 @@ let OVERVIEW_MODE;
 let WORKSPACE_MODE;
 let ANIMATION_TIME_FACTOR;
 let STATIC_WS_SWITCHER_BG;
+let SEARCH_ICON_SIZE;
+let SEARCH_VIEW_SCALE;
 
 function _dashNotDefault() {
     return Main.overview.dash !== Main.overview._overview._controls.layoutManager._dash;
@@ -217,6 +220,7 @@ function activate() {
     _verticalOverrides['ControlsManager'] = _Util.overrideProto(OverviewControls.ControlsManager.prototype, ControlsManagerOverride);
     _verticalOverrides['WindowPreview'] = _Util.overrideProto(WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
     _verticalOverrides['WorkspaceBackground'] = _Util.overrideProto(Workspace.WorkspaceBackground.prototype, WorkspaceBackgroundOverride);
+    _verticalOverrides['AppSearchProvider'] = _Util.overrideProto(AppDisplay.AppSearchProvider.prototype, AppSearchProviderOverride);
 
     _prevDash = {};
     const dash = Main.overview.dash;
@@ -263,6 +267,8 @@ function activate() {
     _connectShowAppsIcon();
 
     _replaceOnSearchChanged();
+
+    _replaceSearchGetThemeNode();
 }
 
 function reset() {
@@ -310,6 +316,7 @@ function reset() {
         _Util.removeInjection(Workspace.WorkspaceLayout.prototype, _workspaceLayoutInjections, name);
     }
     _workspaceAnimationInjections = undefined;
+    Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = 0.95;
 
     _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, _verticalOverrides['WorkspacesView']);
     _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, _verticalOverrides['WorkspacesDisplay']);
@@ -324,6 +331,8 @@ function reset() {
     _Util.overrideProto(AppDisplay.AppDisplay.prototype, _verticalOverrides['AppDisplay']);
     _Util.overrideProto(WindowPreview.WindowPreview.prototype, _verticalOverrides['WindowPreview']);
     _Util.overrideProto(Workspace.WorkspaceBackground.prototype, _verticalOverrides['WorkspaceBackground']);
+
+    _Util.overrideProto(AppDisplay.AppSearchProvider.prototype, _verticalOverrides['AppSearchProvider']);
 
     // original swipeTrackers' orientation and updateGesture function
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
@@ -393,6 +402,9 @@ function reset() {
     _replaceOnSearchChanged(reset);
 
     _connectShowAppsIcon(reset);
+
+    // restore Search view width
+    _replaceSearchGetThemeNode(reset);
 }
 
 function _replaceOnSearchChanged(reset = false) {
@@ -598,6 +610,9 @@ function _updateSettings(settings, key) {
 
     ANIMATION_TIME_FACTOR = gOptions.get('animationSpeedFactor', true) / 100;
     St.Settings.get().slow_down_factor = ANIMATION_TIME_FACTOR;
+
+    SEARCH_ICON_SIZE = gOptions.get('searchIconSize', true);
+    SEARCH_VIEW_SCALE = gOptions.get('searchViewScale', true) / 100;
 
     _updateOverviewTranslations();
     _switchPageShortcuts();
@@ -2618,9 +2633,11 @@ var ControlsManagerOverride = {
             this.set_child_above_sibling(dash, null);
             this.set_child_below_sibling(this._workspacesDisplay, null);
             this.set_child_below_sibling(this._appDisplay, null);
+            this.set_child_below_sibling(this._thumbnailsBox, null);
         } else if (!this.dash._isAbove && progress === 1 && finalState > ControlsState.HIDDEN) {
             // set dash above workspace in the overview
             if (!_dashNotDefault()) {
+                this.set_child_above_sibling(this._thumbnailsBox, null);
                 this.set_child_above_sibling(this._searchEntryBin, null);
                 this.set_child_above_sibling(this.dash, null);
                 this.dash._isAbove = true;
@@ -3831,14 +3848,15 @@ var ControlsManagerLayoutHorizontalOverride = {
 // in workspace state 0 where windows are not spread and window scale should follow workspace scale,
 // this window follows proper top left corner position, but doesn't scale with the workspace
 // so it looks bad and the window can exceed border of the workspace
-// extremely annoying in OVERVIEW_MODE > 0 with single smaller window on the workspace, also affects transition animation
+// extremely annoying in OVERVIEW_MODE 1 with single smaller window on the workspace, also affects appGrid transition animation
 function _injectWorkspaceLayout() {
     _workspaceLayoutInjections['_init'] = _Util.injectToFunction(
         Workspace.WorkspaceLayout.prototype, '_init', function() {
             this._stateAdjustment.connect('notify::value', () => {
+                if (OVERVIEW_MODE !== 1) return;
                 // scale 0.1 for window state 0 just needs to be smaller then possible scale of any window in spread view
                 const scale = this._stateAdjustment.value ? 0.95 : 0.1;
-                if (scale !== Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE) {
+                if (scale !== Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE || this._stateAdjustment.value === 1) {
                     // when transition to ws state 1 begins, replace the constant with the original one
                     // disadvantage - the value changes for all workspaces, so one affects others
                     // that can be visible in certain situations but not a big deal.
@@ -3921,6 +3939,56 @@ var AppDisplayOverride = {
         adaptToSize(width, height);
     }
 }
+
+//------ search view ---------------------------------------------------------------------------------
+
+function _replaceSearchGetThemeNode(reset = false) {
+    if (reset) {
+        const content = Main.overview._overview._controls.layoutManager._searchController._searchResults._content;
+        content.get_theme_node = content._get_theme_node;
+        return;
+    }
+
+    // replace get_theme_node().get_max_width() in MaxWidthBox class os Search module, which limits max width of Search view results
+    // MaxWidthBox._vfunc_allocate function override is blocked by using super
+    const get_theme_node = function() {
+        return new ThemeNodeDummy();
+    }
+
+    const ThemeNodeDummy = class {
+        constructor() {
+        }
+
+        get_max_width() {
+            const box = Main.overview._overview._controls.layoutManager._searchController._searchResults._content;
+            const width = box._get_theme_node().get_max_width() * SEARCH_VIEW_SCALE;
+            return width;
+        }
+    }
+    const content = Main.overview._overview._controls.layoutManager._searchController._searchResults._content;
+    content._get_theme_node = content.get_theme_node;
+    content.get_theme_node = get_theme_node;
+}
+
+//------ AppDisplay.AppSearchProvider ----------------------------------------------------------------------------------
+
+// App search result size
+const AppSearchProviderOverride = {
+    createResultObject: function(resultMeta) {
+        if (resultMeta.id.endsWith('.desktop')) {
+            const icon = new AppDisplay.AppIcon(this._appSys.lookup_app(resultMeta['id']), {
+                expandTitleOnHover: false,
+            });
+            icon.icon.setIconSize(SEARCH_ICON_SIZE);
+            return icon;
+        } else {
+            const icon = new AppDisplay.SystemActionIcon(this, resultMeta);
+            icon.icon.setSizeManually = true;
+            icon.icon.setIconSize(SEARCH_ICON_SIZE);
+        }
+    }
+}
+
 
 //---- SwipeTracker -----------------------------------------------------------------------------------
 // switch overview's state gesture direction
@@ -4060,6 +4128,8 @@ function _updateStaticBackground(bgManager, stateValue) {
     }
 }
 
+//---------------------------- Workspace Animation -----------------------------------------------------
+
 WorkspaceAnimation.MonitorGroup
 function _injectWorkspaceAnimation() {
     _workspaceAnimationInjections['_init'] = _Util.injectToFunction(
@@ -4106,6 +4176,7 @@ function _injectWorkspaceAnimation() {
 
 
             // restore all hidden windows at the end of animation
+            // todo - actors removed during transition need to be removed from the list  to avoid access to destroyed actor
             this.connect('destroy', () =>{
                 this._hiddenWindows.forEach(actor => {
                     actor.scale_x = 1;

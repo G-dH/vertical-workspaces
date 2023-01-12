@@ -109,5 +109,11 @@
     <key type="i" name="overview-mode">
       <default>0</default>
     </key>
+    <key type="i" name="search-icon-size">
+      <default>64</default>
+    </key>
+    <key type="i" name="search-width-scale">
+      <default>100</default>
+    </key>
   </schema>
 </schemalist>

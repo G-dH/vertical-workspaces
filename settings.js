@@ -80,6 +80,8 @@ var Options = class Options {
             startupState: ['int', 'startup-state'],
             overviewMode: ['int', 'overview-mode'],
             workspaceSwitcherAnimation: ['int', 'workspace-switcher-animation'],
+            searchIconSize: ['int', 'search-icon-size'],
+            searchViewScale: ['int', 'search-width-scale'],
         }
         this.cachedOptions = {};
     }

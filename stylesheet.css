@@ -138,3 +138,8 @@
 .transparent-panel {
 	background-color: transparent;
 }
+
+/*reduce spacing between app icons in search results*/
+.grid-search-results {
+	spacing: 0px;
+}

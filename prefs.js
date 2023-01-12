@@ -379,6 +379,40 @@ function _getLayoutOptionList() {
         )
     );
 
+    const searchViewScaleAdjustment = new Gtk.Adjustment({
+        upper: 150,
+        lower: 50,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const searchViewScale = itemFactory.newScale(searchViewScaleAdjustment);
+    searchViewScale.add_mark(100, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Search Results Width'),
+            _('Adjusts maximum width of search results view (% relative to default). This allows you to fit more (or less) app icons into app search result.'),
+            searchViewScale,
+            'searchViewScale'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('App Search Icon Size'),
+            _('Size of results provided by the App Search Provider.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'searchIconSize',
+            [[_('128'), 128],
+             [_('96'), 96],
+             [_('80'), 80],
+             [_('64'), 64],
+             [_('48'), 48],
+             [_('32'), 32],]
+        )
+    );
+
     return optionList;
 }
 
