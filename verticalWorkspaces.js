@@ -92,6 +92,8 @@ let _showingOverviewSigId;
 let _searchControllerSigId;
 let _originalSearchControllerSigId;
 let _showAppsIconBtnPressId;
+let _wsAnimationSwipeBeginId;
+let _wsAnimationSwipeEndId;
 
 let _resetTimeoutId;
 let _startupAnimTimeoutId1;
@@ -263,14 +265,17 @@ function activate() {
     // enable it on first hiding from the overview and disconnect the signal
     _overviewHiddenSigId = Main.overview.connect('hiding', _enableStaticBgAnimation);
 
-    // allow static bg during switching ws
-    _injectWorkspaceAnimation();
-
     _connectShowAppsIcon();
 
     _replaceOnSearchChanged();
 
     _updateSearchViewWidth();
+
+    // allow static bg during switching ws
+    _injectWorkspaceAnimation();
+
+    // connect swipe tracker to display ws switcher popup when switching using by gesture
+    _connectWsAnimationSwipeTracker();
 }
 
 function reset() {
@@ -311,13 +316,13 @@ function reset() {
     _controlsManagerInjections = undefined;
 
     for (let name in _workspaceAnimationInjections) {
-        _Util.removeInjection(WorkspaceAnimation.WorkspaceAnimationController.prototype, _workspaceAnimationInjections, name);
+        _Util.removeInjection(WorkspaceAnimation.MonitorGroup.prototype, _workspaceAnimationInjections, name);
     }
+    _workspaceAnimationInjections = undefined;
 
     for (let name in _workspaceLayoutInjections) {
         _Util.removeInjection(Workspace.WorkspaceLayout.prototype, _workspaceLayoutInjections, name);
     }
-    _workspaceAnimationInjections = undefined;
     Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = 0.95;
 
     _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, _verticalOverrides['WorkspacesView']);
@@ -405,8 +410,9 @@ function reset() {
 
     _connectShowAppsIcon(reset);
 
-    // restore Search view width
     _updateSearchViewWidth(reset);
+
+    _connectWsAnimationSwipeTracker(reset);
 }
 
 function _replaceOnSearchChanged(reset = false) {
@@ -481,6 +487,61 @@ function _resetExtension(timeout = 200) {
         }
     );
 }
+
+// ------ connect Ws Animation Swipe Tracker --------------
+
+function _connectWsAnimationSwipeTracker(reset = false) {
+    if (reset) {
+        if (_wsAnimationSwipeBeginId) {
+            Main.wm._workspaceAnimation._swipeTracker.disconnect(_wsAnimationSwipeBeginId);
+            _wsAnimationSwipeBeginId = 0;
+        }
+        if (_wsAnimationSwipeEndId) {
+            Main.wm._workspaceAnimation._swipeTracker.disconnect(_wsAnimationSwipeEndId);
+            _wsAnimationSwipeEndId = 0;
+        }
+    } else if (!_wsAnimationSwipeBeginId) {
+        // display ws switcher popup when gesture begins and connect progress
+        _wsAnimationSwipeBeginId = Main.wm._workspaceAnimation._swipeTracker.connect('begin', _connectWsAnimationProgress);
+        // we want to be sure that popup with the final ws index show up when gesture ends
+        _wsAnimationSwipeEndId = Main.wm._workspaceAnimation._swipeTracker.connect('end', () => _showWsSwitcherPopup(0));
+    }
+}
+
+function _connectWsAnimationProgress() {
+    if (Main.overview.visible) return;
+
+    // progress is being updated only when user finished gesture and the animation continues on "autopilot"
+    Main.wm._workspaceAnimation._switchData.monitors[0].connect('notify::progress',(actor) => {
+        const progress = actor.progress % 1;
+        let direction = 0;
+        if (!actor._prg) actor._prg = progress;
+        else if (!progress) return;
+        else if (progress < actor._prg) direction = -1;
+        else if (progress > actor._prg) direction = 1;
+        if (progress < 0.6 && progress > 0.4)
+            _showWsSwitcherPopup(direction);
+    });
+
+    // display popup when gesture begins
+    _showWsSwitcherPopup(0);
+}
+
+function _showWsSwitcherPopup(direction) {
+    if (Main.overview.visible) return;
+
+    const wsIndex = global.workspaceManager.get_active_workspace_index() + direction;
+    if (Main.wm._workspaceSwitcherPopup === null) {
+        Main.wm._workspaceSwitcherPopup = new WorkspaceSwitcherPopup.WorkspaceSwitcherPopup();
+        Main.wm._workspaceSwitcherPopup.connect('destroy', () => {
+            Main.wm._workspaceSwitcherPopup = null;
+        });
+    }
+
+    Main.wm._workspaceSwitcherPopup.display(wsIndex);
+}
+
+//-----------------------------------------------------
 
 function _fixUbuntuDock(activate = true) {
     // Workaround for Ubuntu Dock breaking overview allocations after changing monitor configuration and deactivating dock
