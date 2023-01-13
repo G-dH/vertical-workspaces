@@ -30,7 +30,7 @@
 
 #dash.vertical-overview .app-well-app-running-dot {
 	margin: 4px 0px;
-	width: 1px;
+	width: 2px;
 	height: 16px;
 }
 
@@ -64,7 +64,7 @@
 .app-well-app-running-dot {
 	margin-bottom: 6px;
 	width: 16px;
-	height: 1px;
+	height: 2px;
 }
 
 /* add shadow to the app grid app label to be readable if it overlaps light icon below */
@@ -78,7 +78,7 @@
 	padding-right: 5px;
 }
 
-/*adujtment for the vertical ws switcher indicator popup*/
+/*adjustment for the vertical ws switcher indicator popup*/
 .ws-switcher-indicator {
 	padding: 3px;
 	margin: 5px;
@@ -141,5 +141,5 @@
 
 /*reduce spacing between app icons in search results*/
 .grid-search-results {
-	spacing: 0px;
+	spacing: 2px;
 }

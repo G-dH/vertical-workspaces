@@ -113,7 +113,7 @@
       <default>64</default>
     </key>
     <key type="i" name="search-width-scale">
-      <default>100</default>
+      <default>103</default>
     </key>
   </schema>
 </schemalist>
