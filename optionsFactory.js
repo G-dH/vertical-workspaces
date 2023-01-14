@@ -258,6 +258,20 @@ var ItemFactory = class ItemFactory {
         return linkBtn;
     }
 
+    newResetButton(callback) {
+        const btn = new Gtk.Button({
+            halign: Gtk.Align.END,
+            valign: Gtk.Align.CENTER,
+            hexpand: true,
+            css_classes: ['destructive-action'],
+            icon_name: 'view-refresh-symbolic'
+        });
+
+        btn.connect('clicked', callback);
+        btn._activatable = false;
+        return btn;
+    }
+
     newOptionsResetButton() {
         const btn = new Gtk.Button({
             halign: Gtk.Align.END,

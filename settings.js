@@ -82,6 +82,13 @@ var Options = class Options {
             workspaceSwitcherAnimation: ['int', 'workspace-switcher-animation'],
             searchIconSize: ['int', 'search-icon-size'],
             searchViewScale: ['int', 'search-width-scale'],
+            appGridAllowCustom: ['int', 'app-grid-allow-custom'],
+            appGridIconSize: ['int', 'app-grid-icon-size'],
+            appGridColumns: ['int', 'app-grid-columns'],
+            appGridRows: ['int', 'app-grid-rows'],
+            appGridFolderIconSize: ['int', 'app-grid-folder-icon-size'],
+            appGridFolderColumns: ['int', 'app-grid-folder-columns'],
+            appGridFolderRows: ['int', 'app-grid-folder-rows']
         }
         this.cachedOptions = {};
     }

@@ -115,5 +115,26 @@
     <key type="i" name="search-width-scale">
       <default>103</default>
     </key>
+    <key type="b" name="app-grid-allow-custom">
+      <default>false</default>
+    </key>
+    <key type="i" name="app-grid-icon-size">
+      <default>80</default>
+    </key>
+    <key type="i" name="app-grid-columns">
+      <default>8</default>
+    </key>
+    <key type="i" name="app-grid-rows">
+      <default>4</default>
+    </key>
+    <key type="i" name="app-grid-folder-icon-size">
+      <default>80</default>
+    </key>
+    <key type="i" name="app-grid-folder-columns">
+      <default>3</default>
+    </key>
+    <key type="i" name="app-grid-folder-rows">
+      <default>3</default>
+    </key>
   </schema>
 </schemalist>

@@ -15,6 +15,7 @@ const { Clutter, Gio, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
 const DND = imports.ui.dnd;
 const Main = imports.ui.main;
 const AppDisplay = imports.ui.appDisplay;
+const IconGrid = imports.ui.iconGrid;
 const Dash = imports.ui.dash;
 const Layout = imports.ui.layout;
 const Overview = imports.ui.overview;
@@ -72,6 +73,7 @@ let _wsSwitcherPopupInjections;
 let _controlsManagerInjections;
 let _workspaceAnimationInjections;
 let _workspaceLayoutInjections;
+let _appFolderDialogInjections;
 let _bgManagers;
 let _shellSettings;
 
@@ -94,6 +96,9 @@ let _originalSearchControllerSigId;
 let _showAppsIconBtnPressId;
 let _wsAnimationSwipeBeginId;
 let _wsAnimationSwipeEndId;
+
+let _appGridLayoutSigId;
+let _appGridLayoutSettings;
 
 let _resetTimeoutId;
 let _startupAnimTimeoutId1;
@@ -142,11 +147,22 @@ let OVERVIEW_BG_BLUR_SIGMA;
 let APP_GRID_BG_BLUR_SIGMA;
 let SMOOTH_BLUR_TRANSITIONS;
 let OVERVIEW_MODE;
+let OVERVIEW_MODE2;
 let WORKSPACE_MODE;
 let ANIMATION_TIME_FACTOR;
 let STATIC_WS_SWITCHER_BG;
 let SEARCH_ICON_SIZE;
 let SEARCH_VIEW_SCALE;
+
+let APP_GRID_ALLOW_INCOMPLETE_PAGES;
+let APP_GRID_ICON_SIZE;
+let APP_GRID_COLUMNS;
+let APP_GRID_ROWS;
+let APP_GRID_FOLDER_ICON_SIZE;
+let APP_GRID_ALLOW_CUSTOM;
+let APP_GRID_FOLDER_COLUMNS;
+let APP_GRID_FOLDER_ROWS;
+
 
 
 function _dashNotDefault() {
@@ -165,7 +181,10 @@ function activate() {
     _controlsManagerInjections = {};
     _workspaceAnimationInjections = {};
     _workspaceLayoutInjections = {};
+    _appFolderDialogInjections = {};
+
     _bgManagers = [];
+
     WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
 
     original_MAX_THUMBNAIL_SCALE = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
@@ -228,6 +247,17 @@ function activate() {
     _verticalOverrides['WindowPreview'] = _Util.overrideProto(WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
     _verticalOverrides['WorkspaceBackground'] = _Util.overrideProto(Workspace.WorkspaceBackground.prototype, WorkspaceBackgroundOverride);
     _verticalOverrides['AppSearchProvider'] = _Util.overrideProto(AppDisplay.AppSearchProvider.prototype, AppSearchProviderOverride);
+    _verticalOverrides['AppFolderDialog'] = _Util.overrideProto(AppDisplay.AppFolderDialog.prototype, AppFolderDialogOverride);
+    if (shellVersion < 43) {
+        _verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
+        // fixed icon size for folder icons
+    } else {
+        AppDisplay.BaseAppViewGridLayout;
+        _verticalOverrides['BaseAppViewGridLayout'] = _Util.overrideProto(AppDisplay.BaseAppViewGridLayout.prototype, BaseAppViewGridLayoutOverride);
+        _verticalOverrides['IconGrid'] = _Util.overrideProto(IconGrid.IconGrid.prototype, IconGridOverride);
+    }
+    _verticalOverrides['FolderView'] = _Util.overrideProto(AppDisplay.FolderView.prototype, FolderViewOverrides);
+    _appFolderDialogInjections['_init'] = _injectAppFolderDialog();
 
     _prevDash = {};
     const dash = Main.overview.dash;
@@ -258,7 +288,6 @@ function activate() {
         _fixUbuntuDock(gOptions.get('fixUbuntuDock'));
     }
 
-    _setStaticBackground();
     _monitorsChangedSigId = Main.layoutManager.connect('monitors-changed', () => _resetExtension(3000));
 
     // static bg animations conflict with startup animation
@@ -323,6 +352,11 @@ function reset() {
     for (let name in _workspaceLayoutInjections) {
         _Util.removeInjection(Workspace.WorkspaceLayout.prototype, _workspaceLayoutInjections, name);
     }
+
+    for (let name in _appFolderDialogInjections) {
+        _Util.removeInjection(AppDisplay.AppFolderDialog.prototype, _appFolderDialogInjections, name);
+    }
+
     Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = 0.95;
 
     _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, _verticalOverrides['WorkspacesView']);
@@ -340,6 +374,13 @@ function reset() {
     _Util.overrideProto(Workspace.WorkspaceBackground.prototype, _verticalOverrides['WorkspaceBackground']);
 
     _Util.overrideProto(AppDisplay.AppSearchProvider.prototype, _verticalOverrides['AppSearchProvider']);
+    _Util.overrideProto(AppDisplay.AppFolderDialog.prototype, _verticalOverrides['AppFolderDialog']);
+    if (shellVersion < 43) {
+        _Util.overrideProto(AppDisplay.BaseAppView.prototype, _verticalOverrides['BaseAppView']);
+    } else {
+        _Util.overrideProto(AppDisplay.BaseAppViewGridLayout.prototype, _verticalOverrides['BaseAppViewGridLayout']);
+        _Util.overrideProto(IconGrid.IconGrid.prototype, _verticalOverrides['IconGrid']);
+    }
 
     // original swipeTrackers' orientation and updateGesture function
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
@@ -413,6 +454,8 @@ function reset() {
     _updateSearchViewWidth(reset);
 
     _connectWsAnimationSwipeTracker(reset);
+
+    _updateAppGridProperties(reset);
 }
 
 function _replaceOnSearchChanged(reset = false) {
@@ -685,6 +728,7 @@ function _updateSettings(settings, key) {
     SMOOTH_BLUR_TRANSITIONS = gOptions.get('smoothBlurTransitions', true);
 
     OVERVIEW_MODE = gOptions.get('overviewMode', true);
+    OVERVIEW_MODE2 = OVERVIEW_MODE === 2;
     WORKSPACE_MODE = OVERVIEW_MODE ? 0 : 1;
 
     STATIC_WS_SWITCHER_BG = gOptions.get('workspaceSwitcherAnimation', true);
@@ -695,6 +739,18 @@ function _updateSettings(settings, key) {
     SEARCH_ICON_SIZE = gOptions.get('searchIconSize', true);
     SEARCH_VIEW_SCALE = gOptions.get('searchViewScale', true) / 100;
 
+    APP_GRID_ALLOW_INCOMPLETE_PAGES = false;
+    APP_GRID_ALLOW_CUSTOM = gOptions.get('appGridAllowCustom', true);
+    APP_GRID_ICON_SIZE = gOptions.get('appGridIconSize', true);
+    APP_GRID_COLUMNS = gOptions.get('appGridColumns', true);
+    APP_GRID_ROWS = gOptions.get('appGridRows', true);
+
+    APP_GRID_FOLDER_ICON_SIZE = gOptions.get('appGridFolderIconSize', true);
+    APP_GRID_FOLDER_COLUMNS = gOptions.get('appGridFolderColumns', true);
+    APP_GRID_FOLDER_ROWS = gOptions.get('appGridFolderRows', true);
+
+    _setStaticBackground(!SHOW_BG_IN_OVERVIEW);
+    _updateAppGridProperties();
     _updateSearchViewWidth();
     _updateOverviewTranslations();
     _switchPageShortcuts();
@@ -1492,7 +1548,7 @@ var SecondaryMonitorDisplayVerticalOverride = {
             opacity = 255;
             scale = 1;
             translation_x = 0;
-            if (_staticBgAnimationEnabled && (!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE === 2)) {
+            if (_staticBgAnimationEnabled && (!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE2)) {
                 translation_x = this._thumbnails.width * (SEC_WS_TMB_LEFT ? -1 : 1);
             }
             break;
@@ -1534,7 +1590,7 @@ var SecondaryMonitorDisplayVerticalOverride = {
             break;
         case ControlsState.WINDOW_PICKER:
         case ControlsState.APP_GRID:
-            if (OVERVIEW_MODE === 2) {
+            if (OVERVIEW_MODE2) {
                 break;
             }
 
@@ -1617,7 +1673,7 @@ var SecondaryMonitorDisplayVerticalOverride = {
     },
 
     _updateThumbnailVisibility: function() {
-        if (OVERVIEW_MODE === 2) {
+        if (OVERVIEW_MODE2) {
             this.set_child_above_sibling(this._thumbnails, null);
         }
 
@@ -1711,7 +1767,7 @@ var SecondaryMonitorDisplayHorizontalOverride = {
             opacity = 255;
             scale = 1;
             translation_y = 0;
-            if (_staticBgAnimationEnabled && (!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE === 2)) {
+            if (_staticBgAnimationEnabled && (!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE2)) {
                 translation_y = this._thumbnails.height * (SEC_WS_TMB_TOP ? -1 : 1);
             }
             break;
@@ -1741,7 +1797,7 @@ var SecondaryMonitorDisplayHorizontalOverride = {
             break;
         case ControlsState.WINDOW_PICKER:
         case ControlsState.APP_GRID:
-            if (OVERVIEW_MODE === 2 && !WORKSPACE_MODE) {
+            if (OVERVIEW_MODE2 && !WORKSPACE_MODE) {
                 break;
             }
 
@@ -2018,7 +2074,7 @@ var WorkspaceThumbnailOverride = {
                 this.metaWorkspace.activate(time);
             }
         } else {
-            if (OVERVIEW_MODE === 2 && !WORKSPACE_MODE && wsIndex < lastWsIndex) {
+            if (OVERVIEW_MODE2 && !WORKSPACE_MODE && wsIndex < lastWsIndex) {
                 if (stateAdjustment.value > 1) {
                     stateAdjustment.value = 1;
                 }
@@ -2656,9 +2712,9 @@ var ControlsManagerOverride = {
         const skipDash = _dashNotDefault();
 
         // OVERVIEW_MODE 2 should animate dash and wsTmbBox only if WORKSPACE_MODE === 0 (windows not spread)
-        const animateOverviewMode2 = OVERVIEW_MODE === 2 && !(finalState === 1 && WORKSPACE_MODE);
+        const animateOverviewMode2 = OVERVIEW_MODE2 && !(finalState === 1 && WORKSPACE_MODE);
 
-        if (_staticBgAnimationEnabled && ((!SHOW_WS_PREVIEW_BG && !(OVERVIEW_MODE === 2)) || animateOverviewMode2)) {
+        if (_staticBgAnimationEnabled && ((!SHOW_WS_PREVIEW_BG && !(OVERVIEW_MODE2)) || animateOverviewMode2)) {
             if (!tmbBox._translationOriginal || Math.abs(tmbBox._translationOriginal) > 500) { // swipe gesture can call this calculation before tmbBox is finalized, giving nonsense width
                 const [tmbTranslation_x, tmbTranslation_y, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _getOverviewTranslations(dash, tmbBox, searchEntryBin);
                 tmbBox._translationOriginal = [tmbTranslation_x, tmbTranslation_y];
@@ -2708,7 +2764,7 @@ var ControlsManagerOverride = {
         }
         this._workspacesDisplay.setPrimaryWorkspaceVisible(workspacesDisplayVisible);
 
-        if (!this.dash._isAbove && progress > 0 && OVERVIEW_MODE === 2) {
+        if (!this.dash._isAbove && progress > 0 && OVERVIEW_MODE2) {
             // set searchEntry above appDisplay
             this.set_child_above_sibling(this._searchEntryBin, null);
             // move dash above wsTmb for case that dash and wsTmb animate from the same side
@@ -2781,7 +2837,7 @@ var ControlsManagerOverride = {
         });
 
 
-        if (OVERVIEW_MODE === 2) {
+        if (OVERVIEW_MODE2) {
             const workspacesDisplay = this._workspacesDisplay;
             workspacesDisplay.reactive = !searchActive;
             workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
@@ -3164,7 +3220,7 @@ var ControlsManagerLayoutVerticalOverride = {
             if (WS_ANIMATION && SHOW_WS_TMB && state === ControlsState.APP_GRID) {
                 workspaceBox.set_origin(...this._workspacesThumbnails.get_position());
                 workspaceBox.set_size(...this._workspacesThumbnails.get_size());
-            } else if (OVERVIEW_MODE === 2 && !WORKSPACE_MODE) {
+            } else if (OVERVIEW_MODE2 && !WORKSPACE_MODE) {
                 workspaceBox.set_origin(...workAreaBox.get_origin());
                 workspaceBox.set_size(...workAreaBox.get_size());
             } else {
@@ -3453,7 +3509,7 @@ var ControlsManagerLayoutVerticalOverride = {
 
         // Y position under top Dash
         let searchEntryX, searchEntryY;
-        if (OVERVIEW_MODE === 2 && !DASH_TOP && !WS_TMB_TOP) {
+        if (OVERVIEW_MODE2 && !DASH_TOP && !WS_TMB_TOP) {
             searchEntryY = 7;
         } else if (DASH_TOP) {
             searchEntryY = startY + dashHeight - spacing;
@@ -3552,7 +3608,7 @@ var ControlsManagerLayoutHorizontalOverride = {
             if (WS_ANIMATION && SHOW_WS_TMB && state === ControlsState.APP_GRID) {
                 workspaceBox.set_origin(...this._workspacesThumbnails.get_position());
                 workspaceBox.set_size(...this._workspacesThumbnails.get_size());
-            } else if (OVERVIEW_MODE === 2 && !WORKSPACE_MODE) {
+            } else if (OVERVIEW_MODE2 && !WORKSPACE_MODE) {
                 workspaceBox.set_origin(...workAreaBox.get_origin());
                 workspaceBox.set_size(...workAreaBox.get_size());
             } else {
@@ -3870,7 +3926,7 @@ var ControlsManagerLayoutHorizontalOverride = {
 
         // Y position under top Dash
         let searchEntryX, searchEntryY;
-        if (OVERVIEW_MODE === 2 && !DASH_TOP && !WS_TMB_TOP) {
+        if (OVERVIEW_MODE2 && !DASH_TOP && !WS_TMB_TOP) {
             searchEntryY = 7;
         } else if (DASH_TOP) {
             searchEntryY = startY + (WS_TMB_TOP ? wsTmbHeight : 0) + dashHeight - spacing;
@@ -4078,7 +4134,7 @@ function _setStaticBackground(reset = false) {
     });
 
     _bgManagers = [];
-
+    // if (!SHOW_BG_IN_OVERVIEW && SHOW_WS_PREVIEW_BG) the background is used for static transition from wallpaper to empty bg in the overview
     if (reset || (!SHOW_BG_IN_OVERVIEW && SHOW_WS_PREVIEW_BG))
         return;
 
@@ -4094,7 +4150,7 @@ function _setStaticBackground(reset = false) {
 
 
         bgManager._fadeSignal = Main.overview._overview._controls._stateAdjustment.connect('notify::value', (v) => {
-            _updateStaticBackground(bgManager, v.value);
+            _updateStaticBackground(bgManager, v.value, v);
 		});
 
         if (monitor.index === global.display.get_primary_monitor()) {
@@ -4107,10 +4163,11 @@ function _setStaticBackground(reset = false) {
     }
 }
 
-function _updateStaticBackground(bgManager, stateValue) {
+function _updateStaticBackground(bgManager, stateValue, stateAdjustment = null) {
     if (!SHOW_BG_IN_OVERVIEW && !SHOW_WS_PREVIEW_BG) {
         // if no bg shown in the overview, fade out the wallpaper
-        bgManager.backgroundActor.opacity = Util.lerp(255, 0, Math.min(stateValue, 1));
+        if (!(OVERVIEW_MODE2 && WORKSPACE_MODE && stateAdjustment?.getStateTransitionParams().finalState === 1))
+            bgManager.backgroundActor.opacity = Util.lerp(255, 0, Math.min(stateValue, 1));
     } else {
         // in case user activated search during overview transition
         if (Main.overview._overview._controls._searchController._searchActive) {
@@ -4118,14 +4175,14 @@ function _updateStaticBackground(bgManager, stateValue) {
         }
 
         let VIGNETTE, BRIGHTNESS, bgValue;
-        if (OVERVIEW_MODE === 2 && stateValue <= 1 && !WORKSPACE_MODE) {
+        if (OVERVIEW_MODE2 && stateValue <= 1 && !WORKSPACE_MODE) {
             VIGNETTE = 0;
             BRIGHTNESS = 1;
             bgValue = stateValue;
         } else {
             VIGNETTE = 0.4;
             BRIGHTNESS = 0.85;
-            if (OVERVIEW_MODE === 2 && stateValue > 1 && !WORKSPACE_MODE) {
+            if (OVERVIEW_MODE2 && stateValue > 1 && !WORKSPACE_MODE) {
                 bgValue = stateValue - 1;
             } else {
                 bgValue = stateValue;
@@ -4243,4 +4300,364 @@ function _injectWorkspaceAnimation() {
             });
         }
     );
+}
+
+//------ App Grid ----------------------------------------------------------
+
+// GS <= 42 only, Adapt app grid so it can use all available space
+BaseAppViewOverride = {
+    adaptToSize(width, height) {
+        let box = new Clutter.ActorBox({
+            x2: width,
+            y2: height,
+        });
+        box = this.get_theme_node().get_content_box(box);
+        box = this._scrollView.get_theme_node().get_content_box(box);
+        box = this._grid.get_theme_node().get_content_box(box);
+
+        const availWidth = box.get_width();
+        const availHeight = box.get_height();
+
+        const gridRatio = this._grid.layout_manager.columnsPerPage /
+            this._grid.layout_manager.rowsPerPage;
+        const spaceRatio = availWidth / availHeight;
+        let pageWidth, pageHeight;
+
+        if (spaceRatio > gridRatio * 1.1) {
+            // Enough room for some preview
+            pageHeight = availHeight;
+            pageWidth = Math.ceil(availHeight * gridRatio);
+
+            if (spaceRatio > gridRatio * 1.5) {
+                // Ultra-wide layout, give some extra space for
+                // the page area, but up to an extent.
+                const extraPageSpace = Math.min(
+                    Math.floor((availWidth - pageWidth) / 2), 200); // AppDisplay.MAX_PAGE_PADDING == 200
+                pageWidth += extraPageSpace;
+                this._grid.layout_manager.pagePadding.left =
+                    Math.floor(extraPageSpace / 2);
+                this._grid.layout_manager.pagePadding.right =
+                    Math.ceil(extraPageSpace / 2);
+            }
+        } else {
+            // Not enough room, needs to shrink horizontally
+            pageWidth = Math.ceil(availWidth * 0.95); // width limiter, original is 0.8
+            pageHeight = availHeight;
+            this._grid.layout_manager.pagePadding.left =
+                Math.floor(availWidth * 0.02);
+            this._grid.layout_manager.pagePadding.right =
+                Math.ceil(availWidth * 0.02);
+        }
+
+        this._grid.adaptToSize(pageWidth, pageHeight);
+
+        const leftPadding = Math.floor(
+            (availWidth - this._grid.layout_manager.pageWidth) / 2);
+        const rightPadding = Math.ceil(
+            (availWidth - this._grid.layout_manager.pageWidth) / 2);
+        const topPadding = Math.floor(
+            (availHeight - this._grid.layout_manager.pageHeight) / 2);
+        const bottomPadding = Math.ceil(
+            (availHeight - this._grid.layout_manager.pageHeight) / 2);
+
+        this._scrollView.content_padding = new Clutter.Margin({
+            left: leftPadding,
+            right: rightPadding,
+            top: topPadding,
+            bottom: bottomPadding,
+        });
+
+        this._availWidth = availWidth;
+        this._availHeight = availHeight;
+
+        this._pageIndicatorOffset = leftPadding;
+        this._pageArrowOffset = Math.max(
+            leftPadding - 80, 0); // 80 is AppDisplay.PAGE_PREVIEW_MAX_ARROW_OFFSET
+    }
+}
+
+const BaseAppViewGridLayoutOverride = {
+    _getIndicatorsWidth(box) {
+        const [width, height] = box.get_size();
+        const arrows = [
+            this._nextPageArrow,
+            this._previousPageArrow,
+        ];
+
+        const minArrowsWidth = arrows.reduce(
+            (previousWidth, accessory) => {
+                const [min] = accessory.get_preferred_width(height);
+                return Math.max(previousWidth, min);
+            }, 0);
+
+        const idealIndicatorWidth = (width * 0.1/*PAGE_PREVIEW_RATIO*/) / 2;
+
+        return Math.max(idealIndicatorWidth, minArrowsWidth);
+    }
+}
+
+// ------------------ IconGrid - override -------------------------------------------------------------------------
+
+// workaround - silence page -2 error on gnome 43 during cleaning appgrid
+
+const IconGridOverride = {
+    getItemsAtPage: function(page) {
+        if (page < 0 || page > this.nPages)
+            return [];
+            //throw new Error(`Page ${page} does not exist at IconGrid`);
+
+        const layoutManager = this.layout_manager;
+        return layoutManager.getItemsAtPage(page);
+    }
+}
+
+// ------------------ AppDisplay.AppIcon - injection --------------------------------------------------------------
+
+function _injectAppFolderDialog() {
+    return _Util.injectToFunction(
+        AppDisplay.AppFolderDialog.prototype, '_init', function() {
+            const iconSize = APP_GRID_FOLDER_ICON_SIZE < 0 ? 96 : APP_GRID_FOLDER_ICON_SIZE;
+            let width = APP_GRID_FOLDER_COLUMNS * (iconSize + 64);
+            width = Math.max(640, Math.round(width + width / 10));
+            let height = APP_GRID_FOLDER_ROWS * (iconSize + 64) + 150;
+            APP_GRID_ALLOW_CUSTOM && this.child.set_style(`
+                width: ${width}px;
+                height: ${height}px;
+                padding: 30px;
+            `);
+        }
+    );
+}
+
+// Set App Grid columns, rows, icon size, incomplete pages
+function _updateAppGridProperties(reset) {
+    // columns, rows, icon size
+    const appDisplay = Main.overview._overview._controls._appDisplay;
+    appDisplay.visible = true;
+
+    if (reset) {
+        appDisplay._grid.layout_manager.fixedIconSize = -1;
+        appDisplay._grid.layoutManager.allow_incomplete_pages = true;
+        appDisplay._grid.setGridModes();
+        if (_appGridLayoutSettings) {
+            _appGridLayoutSettings.disconnect(_appGridLayoutSigId);
+            _appGridLayoutSigId = null;
+            _appGridLayoutSettings = null;
+        }
+        appDisplay._redisplay();
+    } else {
+        // update grid on layout reset
+        if (!_appGridLayoutSettings) {
+           _appGridLayoutSettings = ExtensionUtils.getSettings('org.gnome.shell');
+           _appGridLayoutSigId = _appGridLayoutSettings.connect('changed::app-picker-layout', _resetAppGrid);
+        }
+
+        // remove icons from App Grid
+        _resetAppGrid();
+
+        const updateGrid = function(rows, columns) {
+            if (rows === -1 || columns === -1) {
+                appDisplay._grid.setGridModes();
+            } else {
+                appDisplay._grid.setGridModes(
+                    [{ rows, columns }]
+                );
+            }
+            appDisplay._grid._setGridMode(0);
+        }
+
+        appDisplay._grid._currentMode = -1;
+        if (APP_GRID_ALLOW_CUSTOM) {
+            updateGrid(APP_GRID_ROWS, APP_GRID_COLUMNS);
+        } else {
+            appDisplay._grid.setGridModes();
+            updateGrid(-1, -1);
+        }
+        appDisplay._grid.layoutManager.fixedIconSize = APP_GRID_ICON_SIZE;
+        appDisplay._grid.layoutManager.allow_incomplete_pages = APP_GRID_ALLOW_INCOMPLETE_PAGES;
+
+        // force rebuild icons. size shouldn't be the same as the current one, otherwise can be arbitrary
+        appDisplay._grid.layoutManager.adaptToSize(200, 200);
+        appDisplay._redisplay();
+    }
+}
+
+// ------------------ AppDisplay.FolderGrid -----------------------------------------------------------------------
+
+const FolderViewOverrides = {
+    _createGrid: function() {
+        let grid;
+        if (shellVersion < 43) {
+            grid = new FolderGrid();
+        } else {
+            grid = new FolderGrid43();
+        }
+        return grid;
+    }
+}
+
+// folder columns and rows
+
+const FolderGrid = GObject.registerClass(
+class FolderGrid extends IconGrid.IconGrid {
+    _init() {
+        super._init({
+            allow_incomplete_pages: false,
+            columns_per_page: APP_GRID_ALLOW_CUSTOM ? APP_GRID_FOLDER_COLUMNS : 3,
+            rows_per_page: APP_GRID_ALLOW_CUSTOM ? APP_GRID_FOLDER_ROWS : 3,
+            page_halign: Clutter.ActorAlign.CENTER,
+            page_valign: Clutter.ActorAlign.CENTER,
+        });
+
+        APP_GRID_ALLOW_CUSTOM && this.set_style('column-spacing: 10px; row-spacing: 10px;');
+        this.layout_manager.fixedIconSize = APP_GRID_FOLDER_ICON_SIZE;
+    }
+
+    adaptToSize(width, height) {
+        this.layout_manager.adaptToSize(width, height);
+    }
+});
+
+
+// only the first access to the const AppDisplay.AppGrid throws an error, so touch it before it's really needed
+let FolderGrid43;
+AppDisplay.AppGrid;
+if (AppDisplay.AppGrid) {
+    FolderGrid43 = GObject.registerClass(
+    class FolderGrid43 extends AppDisplay.AppGrid {
+        _init() {
+            super._init({
+                allow_incomplete_pages: false,
+                columns_per_page: APP_GRID_ALLOW_CUSTOM ? APP_GRID_FOLDER_COLUMNS : 3,
+                rows_per_page: APP_GRID_ALLOW_CUSTOM ? APP_GRID_FOLDER_ROWS : 3,
+                page_halign: Clutter.ActorAlign.CENTER,
+                page_valign: Clutter.ActorAlign.CENTER,
+            });
+
+            APP_GRID_ALLOW_CUSTOM && this.set_style('column-spacing: 10px; row-spacing: 10px;');
+            this.layout_manager.fixedIconSize = APP_GRID_FOLDER_ICON_SIZE;
+
+            this.setGridModes([
+                {
+                    rows: APP_GRID_ALLOW_CUSTOM ? APP_GRID_FOLDER_ROWS : 3,
+                    columns: APP_GRID_ALLOW_CUSTOM ? APP_GRID_FOLDER_COLUMNS : 3,
+                },
+            ]);
+        }
+
+        adaptToSize(width, height) {
+            this.layout_manager.adaptToSize(width, height);
+        }
+    });
+
+}
+
+const AppFolderDialogOverride = {
+    _zoomAndFadeIn: function() {
+        let [sourceX, sourceY] =
+            this._source.get_transformed_position();
+        let [dialogX, dialogY] =
+            this.child.get_transformed_position();
+
+        this.child.set({
+            translation_x: sourceX - dialogX,
+            translation_y: sourceY - dialogY,
+            scale_x: this._source.width / this.child.width,
+            scale_y: this._source.height / this.child.height,
+            opacity: 0,
+        });
+
+        this.ease({
+            background_color: Clutter.Color.from_pixel(0x00000033), // DIALOG_SHADE_NORMAL
+            duration: AppDisplay.FOLDER_DIALOG_ANIMATION_TIME,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+        });
+
+
+        this.child.ease({
+            translation_x: 0,
+            translation_y: 0,
+            scale_x: 1,
+            scale_y: 1,
+            opacity: 255,
+            duration: AppDisplay.FOLDER_DIALOG_ANIMATION_TIME,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+        });
+
+        this._needsZoomAndFade = false;
+
+        if (this._sourceMappedId === 0) {
+            this._sourceMappedId = this._source.connect(
+                'notify::mapped', this._zoomAndFadeOut.bind(this));
+        }
+    },
+
+    /*_zoomAndFadeOut: function() {
+        if (!this._isOpen)
+            return;
+
+        if (!this._source.mapped) {
+            this.hide();
+            return;
+        }
+
+        let [sourceX, sourceY] =
+            this._source.get_transformed_position();
+        let [dialogX, dialogY] =
+            this.child.get_transformed_position();
+
+        const appDisplay = Main.overview._overview._controls._appDisplay;
+        let blurEffect = appDisplay.get_effect('blur');
+        this.ease({
+            background_color: Clutter.Color.from_pixel(0x00000000),
+            duration: AppDisplay.FOLDER_DIALOG_ANIMATION_TIME,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+        });
+
+        this.child.ease({
+            translation_x: sourceX - dialogX,
+            translation_y: sourceY - dialogY,
+            scale_x: this._source.width / this.child.width,
+            scale_y: this._source.height / this.child.height,
+            opacity: 0,
+            duration: AppDisplay.FOLDER_DIALOG_ANIMATION_TIME,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => {
+                this.child.set({
+                    translation_x: 0,
+                    translation_y: 0,
+                    scale_x: 1,
+                    scale_y: 1,
+                    opacity: 255,
+                });
+                this.hide();
+
+                this._popdownCallbacks.forEach(func => func());
+                this._popdownCallbacks = [];
+                if (blurEffect) {
+                    blurEffect.sigma = 0;
+                    blurEffect.brightness = 1;
+                }
+            },
+        });
+
+        this._needsZoomAndFade = false;
+    }*/
+}
+
+function _resetAppGrid(settings = null, key = null) {
+    if (settings) {
+        const currentValue = JSON.stringify(settings.get_value('app-picker-layout').deep_unpack());
+        const emptyValue = JSON.stringify([]);
+        if (key === 'app-picker-layout' && currentValue != emptyValue)
+            return;
+    }
+    const appDisplay = Main.overview._overview._controls._appDisplay;
+    const items = appDisplay._orderedItems;
+    for (let i = items.length - 1; i > -1; i--) {
+        Main.overview._overview._controls._appDisplay._removeItem(items[i]);
+    }
+    // redisplay only from callback
+    if (settings)
+        appDisplay._redisplay();
 }

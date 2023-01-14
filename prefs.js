@@ -9,7 +9,7 @@
 
 'use strict';
 
-const { Gtk } = imports.gi;
+const { Gtk, GLib } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me             = ExtensionUtils.getCurrentExtension();
@@ -182,14 +182,15 @@ function _getLayoutOptionList() {
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'dashMaxIconSize',
-            [   [_('16'), 0],
-                [_('24'), 1],
-                [_('32'), 2],
-                [_('48'), 3],
-                [_('64'), 4],
-                [_('80'), 5],
+            [   [_('128'), 8],
+                [_('112'), 7],
                 [_('96'), 6],
-                [_('128'), 7],
+                [_('80'), 5],
+                [_('64'), 4],
+                [_('48'), 3],
+                [_('32'), 2],
+                [_('24'), 1],
+                [_('16'), 0],
             ]
         )
     );
@@ -357,6 +358,127 @@ function _getLayoutOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Icon Size'),
+            _('Allows to force fixed icon size and bypass the default adaptive algorithm.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'appGridIconSize',
+            [   [_('Adaptive (Default)'), -1],
+                [_('128'), 128],
+                [_('112'), 112],
+                [_('96'), 96],
+                [_('80'), 80],
+                [_('64'), 64],
+                [_('48'), 48],
+                [_('32'), 32],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Folder Icon Size'),
+            _('Allows to disable the default adaptive algorithm and set a fixed size of icons inside folders.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'appGridFolderIconSize',
+            [   [_('Adaptive (Default)'), -1],
+                [_('128'), 128],
+                [_('112'), 112],
+                [_('96'), 96],
+                [_('80'), 80],
+                [_('64'), 64],
+                [_('48'), 48],
+                [_('32'), 32],
+            ]
+        )
+    );
+
+    const customGridSwitch = itemFactory.newSwitch();
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Enable Custom Grid Size'),
+            _('Apply following grid parameters.'),
+            customGridSwitch,
+            //itemFactory.newDropDown(),
+            'appGridAllowCustom'
+        )
+    );
+
+    const columnsAdjustment = new Gtk.Adjustment({
+        upper: 15,
+        lower: 2,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const columnsSpinBtn = itemFactory.newSpinButton(columnsAdjustment);
+    optionList.push(itemFactory.getRowWidget(
+        _('Columns per Page'),
+        _('Number of columns in application grid.'),
+        columnsSpinBtn,
+        'appGridColumns'
+    ));
+
+    const rowsAdjustment = new Gtk.Adjustment({
+        upper: 15,
+        lower: 2,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const rowsSpinBtn = itemFactory.newSpinButton(rowsAdjustment);
+    optionList.push(itemFactory.getRowWidget(
+        _('Rows per Page'),
+        _('Number of rows in application grid.'),
+        rowsSpinBtn,
+        'appGridRows'
+    ));
+
+    const folderColumnsAdjustment = new Gtk.Adjustment({
+        upper: 8,
+        lower: 2,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const folderColumnsSpinBtn = itemFactory.newSpinButton(folderColumnsAdjustment);
+    optionList.push(itemFactory.getRowWidget(
+        _('Folder Columns per Page'),
+        _('Number of columns in folder grid.'),
+        folderColumnsSpinBtn,
+        'appGridFolderColumns'
+    ));
+
+    const folderRowsAdjustment = new Gtk.Adjustment({
+        upper: 8,
+        lower: 2,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const folderRowsSpinBtn = itemFactory.newSpinButton(folderRowsAdjustment);
+    optionList.push(itemFactory.getRowWidget(
+        _('Folder Rows per Page'),
+        _('Number of rows in folder grid.'),
+        folderRowsSpinBtn,
+        'appGridFolderRows'
+    ));
+
+    const _setOptionsSensitivity = () => {
+        columnsSpinBtn.sensitive = customGridSwitch.active;
+        rowsSpinBtn.sensitive = customGridSwitch.active;
+        folderColumnsSpinBtn.sensitive = customGridSwitch.active;
+        folderRowsSpinBtn.sensitive = customGridSwitch.active;
+    };
+    _setOptionsSensitivity();
+    customGridSwitch.connect('notify::active', () => {
+        _setOptionsSensitivity();
+    });
+
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Search View'),
         )
     );
@@ -405,6 +527,7 @@ function _getLayoutOptionList() {
             //itemFactory.newDropDown(),
             'searchIconSize',
             [[_('128'), 128],
+             [_('112'), 112],
              [_('96'), 96],
              [_('80'), 80],
              [_('64'), 64],
@@ -551,7 +674,7 @@ function _getAppearanceOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Background'),
+            _('Overview Background'),
         )
     );
 
@@ -591,7 +714,7 @@ function _getAppearanceOptionList() {
     const bgAppBlurScale = itemFactory.newScale(blurAppBgAdjustment);
     optionList.push(
         itemFactory.getRowWidget(
-            _('Blur Apps/Search Background'),
+            _('Blur App Grid/Search View Background'),
             _('Blur background wallpaper (if enabled) in the app grid and search results views.'),
             bgAppBlurScale,
             'appGridBgBlurSigma'
@@ -739,6 +862,30 @@ function _getMiscOptionList() {
             'enablePageShortcuts',
         )
     );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+             _('App Grid'),
+         )
+     );
+
+    optionList.push(itemFactory.getRowWidget(
+        _('Reset App Grid Layout'),
+        _('Removes all stored app grid icons positions, after the reset icons will be ordered alphabetically.'),
+        itemFactory.newResetButton(() => {
+            const settings = ExtensionUtils.getSettings('org.gnome.shell');
+            settings.set_value('app-picker-layout', new GLib.Variant('aa{sv}', []));
+        }),
+    ));
+
+    optionList.push(itemFactory.getRowWidget(
+        _('Remove App Grid Folders'),
+        _('Removes all folders, folder apps move to root grid.'),
+        itemFactory.newResetButton(() => {
+            const settings = ExtensionUtils.getSettings('org.gnome.desktop.app-folders');
+            settings.set_strv('folder-children', []);
+        }),
+    ));
 
     optionList.push(
        itemFactory.getRowWidget(

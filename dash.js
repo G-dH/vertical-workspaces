@@ -25,7 +25,7 @@ let verticalOverrides = {};
 let _origWorkId;
 let _newWorkId;
 
-var BaseIconSizes = [16, 24, 32, 48, 64, 80, 96, 128];
+var BaseIconSizes = [16, 24, 32, 48, 64, 80, 96, 112, 128];
 var MAX_ICON_SIZE = 64;
 
 var DASH_LEFT;
