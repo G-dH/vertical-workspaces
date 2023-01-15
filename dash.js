@@ -3,7 +3,7 @@
  * dash.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022
+ * @copyright  2022-2023
  * @license    GPL-3.0
  * modified dash module of https://github.com/RensAlthuis/vertical-overview extension
  */
@@ -33,24 +33,25 @@ var DASH_RIGHT;
 var DASH_TOP;
 var DASH_BOTTOM;
 
+let _overrides;
+
 const DASH_ITEM_LABEL_SHOW_TIME = 150;
 
 
-function override(horizonatal = false) {
-    if (verticalOverrides !== {})
-        reset();
+function override(horizontal = false) {
+    _overrides = new Util.Overrides();
 
-    verticalOverrides['DashItemContainer'] = Util.overrideProto(Dash.DashItemContainer.prototype, DashItemContainerOverride);
+    _overrides.addOverride('DashItemContainer', Dash.DashItemContainer.prototype, DashItemContainerOverride);
 
     const dash = Main.overview.dash;
-    if (horizonatal) {
-        verticalOverrides['DashCommon'] = Util.overrideProto(Dash.Dash.prototype, DashCommonOverride);
+    if (horizontal) {
+        _overrides.addOverride('DashCommon', Dash.Dash.prototype, DashCommonOverride);
         if (_origWorkId)
             dash._workId = _origWorkId;
     }
     else {
-        verticalOverrides['Dash'] = Util.overrideProto(Dash.Dash.prototype, DashOverride);
-        verticalOverrides['DashCommon'] = Util.overrideProto(Dash.Dash.prototype, DashCommonOverride);
+        _overrides.addOverride('Dash', Dash.Dash.prototype, DashOverride);
+        _overrides.addOverride('DashCommon', Dash.Dash.prototype, DashCommonOverride);
         set_to_vertical();
         dash.add_style_class_name("vertical-overview");
 
@@ -69,9 +70,10 @@ function reset() {
         return;
     if (Main.overview.dash._isHorizontal === undefined)
         set_to_horizontal();
-    Util.overrideProto(Dash.Dash.prototype, verticalOverrides['Dash']);
-    Util.overrideProto(Dash.Dash.prototype, verticalOverrides['DashCommon']);
-    Util.overrideProto(Dash.DashItemContainer.prototype, verticalOverrides['DashItemContainer']);
+
+    _overrides.removeAll();
+    _overrides = null;
+
     verticalOverrides = {};
     Main.overview.dash.remove_style_class_name("vertical-overview");
     Main.overview.dash.remove_style_class_name("vertical-overview-left");

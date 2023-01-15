@@ -22,7 +22,7 @@ const shellVersion = Settings.shellVersion;
 const ModifierType = imports.gi.Clutter.ModifierType;
 
 let gOptions;
-let windowSearchProvider = null;
+var windowSearchProvider = null;
 let _enableTimeoutId = 0;
 
 var prefix = 'wq/';
@@ -148,7 +148,7 @@ const closeAllResultsRegex = /^\/xa!$/;
 const moveToWsRegex = /^\/m[0-9]+$/;
 const moveAllToWsRegex = /^\/ma[0-9]+$/;
 
-let WindowSearchProvider = class WindowSearchProvider {
+var WindowSearchProvider = class WindowSearchProvider {
     constructor() {
         this.appInfo = Gio.AppInfo.create_from_commandline('true', 'Open Windows', null);
         this.appInfo.get_description = () => 'List of open windows';

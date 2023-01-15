@@ -68,13 +68,6 @@ const ControlsState = {
     APP_GRID: 2,
 };
 
-let _verticalOverrides;
-let _windowPreviewInjections;
-let _wsSwitcherPopupInjections;
-let _controlsManagerInjections;
-let _workspaceAnimationInjections;
-let _workspaceLayoutInjections;
-let _appFolderDialogInjections;
 let _bgManagers;
 let _shellSettings;
 
@@ -85,6 +78,8 @@ let _startupInitComplete;
 let _resetExtensionIfEnabled;
 let _prevDash;
 let _staticBgAnimationEnabled;
+
+let _connections;
 
 let _overviewHiddenSigId;
 let _appDisplayScrollConId;
@@ -166,7 +161,7 @@ let APP_GRID_FOLDER_ROWS;
 
 let WINDOW_SEARCH_PROVIDER_ENABLED;
 
-
+let _overrides;
 
 function _dashNotDefault() {
     return Main.overview.dash !== Main.overview._overview._controls.layoutManager._dash;
@@ -178,14 +173,8 @@ function _dashIsDashToDock() {
 
 function activate() {
     _enabled = true;
-    _verticalOverrides = {};
-    _windowPreviewInjections = {};
-    _wsSwitcherPopupInjections = {};
-    _controlsManagerInjections = {};
-    _workspaceAnimationInjections = {};
-    _workspaceLayoutInjections = {};
-    _appFolderDialogInjections = {};
 
+    _connections = {};
     _bgManagers = [];
 
     WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
@@ -198,12 +187,11 @@ function activate() {
     gOptions = new Settings.Options();
     _updateSettings();
     gOptions.connect('changed', _updateSettings);
-    if (Object.keys(_verticalOverrides).length != 0)
-        reset();
 
+    _overrides = new _Util.Overrides();
     // common adjustments
-    _verticalOverrides['WorkspacesView'] = _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, WorkspacesViewOverride);
-    _verticalOverrides['WorkspacesDisplay'] = _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, workspacesDisplayOverride);
+    _overrides.addOverride('WorkspacesView', WorkspacesView.WorkspacesView.prototype, WorkspacesViewOverride);
+    _overrides.addOverride('WorkspacesDisplay', WorkspacesView.WorkspacesDisplay.prototype, workspacesDisplayOverride);
 
     // adjust overview layout to better serve vertical workspaces orientation
     if (ORIENTATION === Clutter.Orientation.VERTICAL) {
@@ -211,12 +199,12 @@ function activate() {
         global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, -1, 1);
 
         // fix overlay base for Vertical Workspaces
-        _verticalOverrides['WorkspaceLayout'] = _Util.overrideProto(Workspace.WorkspaceLayout.prototype, WorkspaceLayoutOverride);
-        _verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxVerticalOverride);
-        _verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
-        _verticalOverrides['AppDisplay'] = _Util.overrideProto(AppDisplay.AppDisplay.prototype, AppDisplayOverride);
-        _verticalOverrides['SecondaryMonitorDisplay'] = _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayVerticalOverride);
-        _verticalOverrides['ControlsManagerLayout'] = _Util.overrideProto(OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutVerticalOverride);
+        _overrides.addOverride('WorkspaceLayout', Workspace.WorkspaceLayout.prototype, WorkspaceLayoutOverride);
+        _overrides.addOverride('ThumbnailsBox', WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxVerticalOverride);
+        _overrides.addOverride('BaseAppView', AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
+        _overrides.addOverride('AppDisplay', AppDisplay.AppDisplay.prototype, AppDisplayOverride);
+        _overrides.addOverride('SecondaryMonitorDisplay', WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayVerticalOverride);
+        _overrides.addOverride('ControlsManagerLayout', OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutVerticalOverride);
 
         // reverse swipe gestures for enter/leave overview and ws switching
         Main.overview._swipeTracker.orientation = Clutter.Orientation.HORIZONTAL;
@@ -235,32 +223,33 @@ function activate() {
         const enabled = settings.get_strv('enabled-extensions');
         const allowWsPopupInjection = !(enabled.includes('workspace-switcher-manager@G-dH.github.com') || enabled.includes('WsSwitcherPopupManager@G-dH.github.com-dev'));
         if (shellVersion >= 42 && allowWsPopupInjection)
-            _injectWsSwitcherPopup();
+            _overrides.addInjection('WorkspaceSwitcherPopup', WorkspaceSwitcherPopup.WorkspaceSwitcherPopup.prototype, WorkspaceSwitcherPopupInjections);
+        //_injectWsSwitcherPopup();
 
     } else {
         // switch internal workspace orientation in GS
         global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, 1, -1);
 
-        _verticalOverrides['ThumbnailsBox'] = _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxHorizontalOverride);
-        _verticalOverrides['SecondaryMonitorDisplay'] = _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayHorizontalOverride);
-        _verticalOverrides['ControlsManagerLayout'] = _Util.overrideProto(OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutHorizontalOverride);
+        _overrides.addOverride('ThumbnailsBox', WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxHorizontalOverride);
+        _overrides.addOverride('SecondaryMonitorDisplay', WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayHorizontalOverride);
+        _overrides.addOverride('ControlsManagerLayout', OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutHorizontalOverride);
     }
-    _verticalOverrides['WorkspaceThumbnail'] = _Util.overrideProto(WorkspaceThumbnail.WorkspaceThumbnail.prototype, WorkspaceThumbnailOverride);
-    _verticalOverrides['ControlsManager'] = _Util.overrideProto(OverviewControls.ControlsManager.prototype, ControlsManagerOverride);
-    _verticalOverrides['WindowPreview'] = _Util.overrideProto(WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
-    _verticalOverrides['WorkspaceBackground'] = _Util.overrideProto(Workspace.WorkspaceBackground.prototype, WorkspaceBackgroundOverride);
-    _verticalOverrides['AppSearchProvider'] = _Util.overrideProto(AppDisplay.AppSearchProvider.prototype, AppSearchProviderOverride);
-    _verticalOverrides['AppFolderDialog'] = _Util.overrideProto(AppDisplay.AppFolderDialog.prototype, AppFolderDialogOverride);
+    _overrides.addOverride('WorkspaceThumbnail', WorkspaceThumbnail.WorkspaceThumbnail.prototype, WorkspaceThumbnailOverride);
+    _overrides.addOverride('ControlsManager', OverviewControls.ControlsManager.prototype, ControlsManagerOverride);
+    _overrides.addOverride('WindowPreview', WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
+    _overrides.addOverride('WorkspaceBackground', Workspace.WorkspaceBackground.prototype, WorkspaceBackgroundOverride);
+    _overrides.addOverride('AppSearchProvider', AppDisplay.AppSearchProvider.prototype, AppSearchProviderOverride);
+    _overrides.addOverride('AppFolderDialog', AppDisplay.AppFolderDialog.prototype, AppFolderDialogOverride);
     if (shellVersion < 43) {
-        _verticalOverrides['BaseAppView'] = _Util.overrideProto(AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
+        _overrides.addOverride('BaseAppView', AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
         // fixed icon size for folder icons
     } else {
         AppDisplay.BaseAppViewGridLayout;
-        _verticalOverrides['BaseAppViewGridLayout'] = _Util.overrideProto(AppDisplay.BaseAppViewGridLayout.prototype, BaseAppViewGridLayoutOverride);
-        _verticalOverrides['IconGrid'] = _Util.overrideProto(IconGrid.IconGrid.prototype, IconGridOverride);
+        _overrides.addOverride('BaseAppViewGridLayout', AppDisplay.BaseAppViewGridLayout.prototype, BaseAppViewGridLayoutOverride);
+        _overrides.addOverride('IconGrid', IconGrid.IconGrid.prototype, IconGridOverride);
     }
-    _verticalOverrides['FolderView'] = _Util.overrideProto(AppDisplay.FolderView.prototype, FolderViewOverrides);
-    _appFolderDialogInjections['_init'] = _injectAppFolderDialog();
+    _overrides.addOverride('FolderView', AppDisplay.FolderView.prototype, FolderViewOverrides);
+    _overrides.addInjection('AppFolderDialog', AppDisplay.AppFolderDialog.prototype, AppFolderDialogInjections);
 
     _prevDash = {};
     const dash = Main.overview.dash;
@@ -268,20 +257,24 @@ function activate() {
     _prevDash.position = dash.position;
 
     // move titles into window previews
-    _injectWindowPreview();
+    _overrides.addInjection('WindowPreview', WindowPreview.WindowPreview.prototype, WindowPreviewInjections);
 
     // fix window scaling in workspace state 0
-    _injectWorkspaceLayout();
-
-    _moveDashAppGridIcon();
+    _overrides.addInjection('WorkspaceLayout', Workspace.WorkspaceLayout.prototype, WorkspaceLayoutInjections);
 
     _setAppDisplayOrientation(ORIENTATION === Clutter.Orientation.VERTICAL);
 
-    // switch PageUp/PageDown workspace switcher shortcuts
-    _switchPageShortcuts();
-
     // set Dash orientation
     _updateDashPosition();
+
+    _monitorsChangedSigId = Main.layoutManager.connect('monitors-changed', () => _resetExtension(3000));
+
+    // static bg animations conflict with startup animation
+    // enable it on first hiding from the overview and disconnect the signal
+    _overviewHiddenSigId = Main.overview.connect('hiding', _enableStaticBgAnimation);
+
+    _moveDashAppGridIcon();
+    _connectShowAppsIcon();
 
     // if Dash to Dock detected force enable "Fix for DtD" option
     if (_dashIsDashToDock) {
@@ -291,23 +284,17 @@ function activate() {
         _fixUbuntuDock(gOptions.get('fixUbuntuDock'));
     }
 
-    _monitorsChangedSigId = Main.layoutManager.connect('monitors-changed', () => _resetExtension(3000));
-
-    // static bg animations conflict with startup animation
-    // enable it on first hiding from the overview and disconnect the signal
-    _overviewHiddenSigId = Main.overview.connect('hiding', _enableStaticBgAnimation);
-
-    _connectShowAppsIcon();
-
     _replaceOnSearchChanged();
-
     _updateSearchViewWidth();
 
     // allow static bg during switching ws
-    _injectWorkspaceAnimation();
+    _overrides.addInjection('WorkspaceAnimationMonitorGroup', WorkspaceAnimation.MonitorGroup.prototype, MonitorGroupInjections);
 
     // connect swipe tracker to display ws switcher popup when switching using by gesture
     _connectWsAnimationSwipeTracker();
+
+    // switch PageUp/PageDown workspace switcher shortcuts
+    _switchPageShortcuts();
 }
 
 function reset() {
@@ -330,60 +317,10 @@ function reset() {
         _searchControllerSigId = 0;
     }
 
-    for (let name in _windowPreviewInjections) {
-        _Util.removeInjection(WindowPreview.WindowPreview.prototype, _windowPreviewInjections, name);
-    }
-    _windowPreviewInjections = undefined;
-
-    if (shellVersion >= 42) {
-        for (let name in _wsSwitcherPopupInjections) {
-            _Util.removeInjection(WorkspaceSwitcherPopup.WorkspaceSwitcherPopup.prototype, _wsSwitcherPopupInjections, name);
-        }
-        _wsSwitcherPopupInjections = undefined;
-    }
-
-    for (let name in _controlsManagerInjections) {
-        _Util.removeInjection(OverviewControls.ControlsManager.prototype, _controlsManagerInjections, name);
-    }
-    _controlsManagerInjections = undefined;
-
-    for (let name in _workspaceAnimationInjections) {
-        _Util.removeInjection(WorkspaceAnimation.MonitorGroup.prototype, _workspaceAnimationInjections, name);
-    }
-    _workspaceAnimationInjections = undefined;
-
-    for (let name in _workspaceLayoutInjections) {
-        _Util.removeInjection(Workspace.WorkspaceLayout.prototype, _workspaceLayoutInjections, name);
-    }
-
-    for (let name in _appFolderDialogInjections) {
-        _Util.removeInjection(AppDisplay.AppFolderDialog.prototype, _appFolderDialogInjections, name);
-    }
-
     Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = 0.95;
 
-    _Util.overrideProto(WorkspacesView.WorkspacesView.prototype, _verticalOverrides['WorkspacesView']);
-    _Util.overrideProto(WorkspacesView.WorkspacesDisplay.prototype, _verticalOverrides['WorkspacesDisplay']);
-    _Util.overrideProto(WorkspacesView.SecondaryMonitorDisplay.prototype, _verticalOverrides['SecondaryMonitorDisplay']);
-
-    _Util.overrideProto(WorkspaceThumbnail.ThumbnailsBox.prototype, _verticalOverrides['ThumbnailsBox']);
-    _Util.overrideProto(WorkspaceThumbnail.WorkspaceThumbnail.prototype, _verticalOverrides['WorkspaceThumbnail']);
-    _Util.overrideProto(OverviewControls.ControlsManagerLayout.prototype, _verticalOverrides['ControlsManagerLayout']);
-    _Util.overrideProto(OverviewControls.ControlsManager.prototype, _verticalOverrides['ControlsManager']);
-    _Util.overrideProto(Workspace.WorkspaceLayout.prototype, _verticalOverrides['WorkspaceLayout']);
-    _Util.overrideProto(AppDisplay.BaseAppView.prototype, _verticalOverrides['BaseAppView']);
-    _Util.overrideProto(AppDisplay.AppDisplay.prototype, _verticalOverrides['AppDisplay']);
-    _Util.overrideProto(WindowPreview.WindowPreview.prototype, _verticalOverrides['WindowPreview']);
-    _Util.overrideProto(Workspace.WorkspaceBackground.prototype, _verticalOverrides['WorkspaceBackground']);
-
-    _Util.overrideProto(AppDisplay.AppSearchProvider.prototype, _verticalOverrides['AppSearchProvider']);
-    _Util.overrideProto(AppDisplay.AppFolderDialog.prototype, _verticalOverrides['AppFolderDialog']);
-    if (shellVersion < 43) {
-        _Util.overrideProto(AppDisplay.BaseAppView.prototype, _verticalOverrides['BaseAppView']);
-    } else {
-        _Util.overrideProto(AppDisplay.BaseAppViewGridLayout.prototype, _verticalOverrides['BaseAppViewGridLayout']);
-        _Util.overrideProto(IconGrid.IconGrid.prototype, _verticalOverrides['IconGrid']);
-    }
+    _overrides.removeAll();
+    _overrides = null;
 
     // original swipeTrackers' orientation and updateGesture function
     Main.overview._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
@@ -939,116 +876,112 @@ function _switchPageShortcuts() {
 
 
 //----- WorkspaceSwitcherPopup --------------------------------------------------------
-function _injectWsSwitcherPopup() {
-    _wsSwitcherPopupInjections['_init'] = _Util.injectToFunction(
-        WorkspaceSwitcherPopup.WorkspaceSwitcherPopup.prototype, '_init', function() {
-            if (this._list) {
-                this._list.vertical = true;
-            }
+const WorkspaceSwitcherPopupInjections = {
+    _init: function() {
+        if (this._list) {
+            this._list.vertical = true;
         }
-    );
+    }
 }
 
 //----- WindowPreview ------------------------------------------------------------------
-function _injectWindowPreview() {
-    _windowPreviewInjections['_init'] = _Util.injectToFunction(
-        WindowPreview.WindowPreview.prototype, '_init', function() {
-            const ICON_OVERLAP = 0.7;
+const WindowPreviewInjections = {
+    _init: function() {
+        const ICON_OVERLAP = 0.7;
 
-            if (WIN_PREVIEW_ICON_SIZE < 64) {
-                this.remove_child(this._icon);
-                this._icon.destroy();
-                const tracker = Shell.WindowTracker.get_default();
-                const app = tracker.get_window_app(this.metaWindow);
-                this._icon = app.create_icon_texture(WIN_PREVIEW_ICON_SIZE);
-                this._icon.add_style_class_name('icon-dropshadow');
-                this._icon.set({
-                    reactive: true,
-                    pivot_point: new Graphene.Point({ x: 0.5, y: 0.5 }),
-                });
-                this._icon.add_constraint(new Clutter.BindConstraint({
-                    source: this.windowContainer,
-                    coordinate: Clutter.BindCoordinate.POSITION,
-                }));
-                this._icon.add_constraint(new Clutter.AlignConstraint({
-                    source: this.windowContainer,
-                    align_axis: Clutter.AlignAxis.X_AXIS,
-                    factor: 0.5,
-                }));
-                this._icon.add_constraint(new Clutter.AlignConstraint({
-                    source: this.windowContainer,
-                    align_axis: Clutter.AlignAxis.Y_AXIS,
-                    pivot_point: new Graphene.Point({ x: -1, y: ICON_OVERLAP }),
-                    factor: 1,
-                }));
-                this.add_child(this._icon);
-                if (WIN_PREVIEW_ICON_SIZE < 22) {
-                    // disable app icon
-                    this._icon.hide();
-                }
-                this._iconSize = WIN_PREVIEW_ICON_SIZE;
+        if (WIN_PREVIEW_ICON_SIZE < 64) {
+            this.remove_child(this._icon);
+            this._icon.destroy();
+            const tracker = Shell.WindowTracker.get_default();
+            const app = tracker.get_window_app(this.metaWindow);
+            this._icon = app.create_icon_texture(WIN_PREVIEW_ICON_SIZE);
+            this._icon.add_style_class_name('icon-dropshadow');
+            this._icon.set({
+                reactive: true,
+                pivot_point: new Graphene.Point({ x: 0.5, y: 0.5 }),
+            });
+            this._icon.add_constraint(new Clutter.BindConstraint({
+                source: this.windowContainer,
+                coordinate: Clutter.BindCoordinate.POSITION,
+            }));
+            this._icon.add_constraint(new Clutter.AlignConstraint({
+                source: this.windowContainer,
+                align_axis: Clutter.AlignAxis.X_AXIS,
+                factor: 0.5,
+            }));
+            this._icon.add_constraint(new Clutter.AlignConstraint({
+                source: this.windowContainer,
+                align_axis: Clutter.AlignAxis.Y_AXIS,
+                pivot_point: new Graphene.Point({ x: -1, y: ICON_OVERLAP }),
+                factor: 1,
+            }));
+            this.add_child(this._icon);
+            if (WIN_PREVIEW_ICON_SIZE < 22) {
+                // disable app icon
+                this._icon.hide();
             }
+            this._iconSize = WIN_PREVIEW_ICON_SIZE;
+        }
 
-            const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
-            const iconOverlap = WIN_PREVIEW_ICON_SIZE * ICON_OVERLAP;
-            // we cannot get proper title height before it gets to the stage, so 35 is estimated height + spacing
-            this._title.get_constraints()[1].offset = scaleFactor * (- iconOverlap - 35);
-            this.set_child_above_sibling(this._title, null);
-            // if window is created while the overview is shown, icon and title should visible immediately
-            if (Main.overview._overview._controls._stateAdjustment.value < 1) {
-                this._icon.scale_x = 0;
-                this._icon.scale_y = 0;
-                this._title.opacity = 0;
-            }
+        const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
+        const iconOverlap = WIN_PREVIEW_ICON_SIZE * ICON_OVERLAP;
+        // we cannot get proper title height before it gets to the stage, so 35 is estimated height + spacing
+        this._title.get_constraints()[1].offset = scaleFactor * (- iconOverlap - 35);
+        this.set_child_above_sibling(this._title, null);
+        // if window is created while the overview is shown, icon and title should visible immediately
+        if (Main.overview._overview._controls._stateAdjustment.value < 1) {
+            this._icon.scale_x = 0;
+            this._icon.scale_y = 0;
+            this._title.opacity = 0;
+        }
 
-            if (ALWAYS_SHOW_WIN_TITLES) {
-                this._title.show();
-                if (!OVERVIEW_MODE)
-                    this._title.opacity = 255;
-            }
+        if (ALWAYS_SHOW_WIN_TITLES) {
+            this._title.show();
+            if (!OVERVIEW_MODE)
+                this._title.opacity = 255;
+        }
 
-            if (OVERVIEW_MODE === 1) {
-                // spread windows on hover
-                this._wsStateConId = this.connect('enter-event', () => {
-                    const adjustment = this._workspace._background._stateAdjustment;
-                    if (!adjustment.value && !Main.overview._animationInProgress) {
-                        WORKSPACE_MODE = 1;
-                        if (adjustment.value === 0) {
-                            adjustment.value = 0;
-                            adjustment.ease(1, {
-                                duration: 200,
-                                mode: Clutter.AnimationMode.EASE_OUT_QUAD
-                            });
-                        }
+        if (OVERVIEW_MODE === 1) {
+            // spread windows on hover
+            this._wsStateConId = this.connect('enter-event', () => {
+                const adjustment = this._workspace._background._stateAdjustment;
+                if (!adjustment.value && !Main.overview._animationInProgress) {
+                    WORKSPACE_MODE = 1;
+                    if (adjustment.value === 0) {
+                        adjustment.value = 0;
+                        adjustment.ease(1, {
+                            duration: 200,
+                            mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                        });
                     }
-                });
-            }
-            if (OVERVIEW_MODE) {
-                // show window icon and title on ws windows spread
-                this._stateAdjustmentSigId = this._workspace.stateAdjustment.connect('notify::value', this._updateIconScale.bind(this));
-            }
-
-            // replace click action with custom one
-            const action = this.get_actions()[0];
-            this.remove_action(action);
-
-            const clickAction = new Clutter.ClickAction();
-            clickAction.connect('clicked', (action) => {
-                const button = action.get_button();
-                if (button === Clutter.BUTTON_PRIMARY) {
-                    this._activate();
-                } else if (button === Clutter.BUTTON_SECONDARY) {
-                    const tracker = Shell.WindowTracker.get_default();
-                    const appName = tracker.get_window_app(this.metaWindow).get_name();
-                    _activateWindowSearchProvider(appName);
-                    return Clutter.EVENT_STOP;
                 }
             });
-            // long-press is in conflict, it always activates on click that is not followed by leaving the overview
-            //clickAction.connect('long-press', this._onLongPress.bind(this));
-            this.add_action(clickAction);
         }
-    );
+        if (OVERVIEW_MODE) {
+            // show window icon and title on ws windows spread
+            this._stateAdjustmentSigId = this._workspace.stateAdjustment.connect('notify::value', this._updateIconScale.bind(this));
+        }
+
+        // replace click action with custom one
+        const action = this.get_actions()[0];
+        this.remove_action(action);
+
+        const clickAction = new Clutter.ClickAction();
+        clickAction.connect('clicked', (action) => {
+            const button = action.get_button();
+            if (button === Clutter.BUTTON_PRIMARY) {
+                this._activate();
+            } else if (button === Clutter.BUTTON_SECONDARY) {
+                const tracker = Shell.WindowTracker.get_default();
+                const appName = tracker.get_window_app(this.metaWindow).get_name();
+                _activateWindowSearchProvider(appName);
+                return Clutter.EVENT_STOP;
+            }
+        });
+        // long-press is in conflict, it always activates on click that is not followed by leaving the overview
+        //clickAction.connect('long-press', this._onLongPress.bind(this));
+        this.add_action(clickAction);
+    }
 }
 
 //----- AppDisplay -------------------------------------------------------------------
@@ -4139,24 +4072,22 @@ var ControlsManagerLayoutHorizontalOverride = {
 // this window follows proper top left corner position, but doesn't scale with the workspace
 // so it looks bad and the window can exceed border of the workspace
 // extremely annoying in OVERVIEW_MODE 1 with single smaller window on the workspace, also affects appGrid transition animation
-function _injectWorkspaceLayout() {
-    _workspaceLayoutInjections['_init'] = _Util.injectToFunction(
-        Workspace.WorkspaceLayout.prototype, '_init', function() {
-            this._stateAdjustment.connect('notify::value', () => {
-                if (OVERVIEW_MODE !== 1) return;
-                // scale 0.1 for window state 0 just needs to be smaller then possible scale of any window in spread view
-                const scale = this._stateAdjustment.value ? 0.95 : 0.1;
-                if (scale !== Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE || this._stateAdjustment.value === 1) {
-                    // when transition to ws state 1 begins, replace the constant with the original one
-                    // disadvantage - the value changes for all workspaces, so one affects others
-                    // that can be visible in certain situations but not a big deal.
-                    Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = scale;
-                    // and force recalculation of the target layout, so the transition will be smooth
-                    this._needsLayout = true;
-                }
-            });
-        }
-    );
+const WorkspaceLayoutInjections = {
+    _init: function() {
+        this._stateAdjustment.connect('notify::value', () => {
+            if (OVERVIEW_MODE !== 1) return;
+            // scale 0.1 for window state 0 just needs to be smaller then possible scale of any window in spread view
+            const scale = this._stateAdjustment.value ? 0.95 : 0.1;
+            if (scale !== Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE || this._stateAdjustment.value === 1) {
+                // when transition to ws state 1 begins, replace the constant with the original one
+                // disadvantage - the value changes for all workspaces, so one affects others
+                // that can be visible in certain situations but not a big deal.
+                Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = scale;
+                // and force recalculation of the target layout, so the transition will be smooth
+                this._needsLayout = true;
+            }
+        });
+    }
 }
 
 var WorkspaceLayoutOverride = {
@@ -4393,59 +4324,56 @@ function _updateStaticBackground(bgManager, stateValue, stateAdjustment = null) 
 //---------------------------- Workspace Animation -----------------------------------------------------
 
 WorkspaceAnimation.MonitorGroup
-function _injectWorkspaceAnimation() {
-    _workspaceAnimationInjections['_init'] = _Util.injectToFunction(
-        WorkspaceAnimation.MonitorGroup.prototype, '_init', function() {
-            if (!STATIC_WS_SWITCHER_BG) return;
+const MonitorGroupInjections = {
+    _init: function() {
+        if (!STATIC_WS_SWITCHER_BG) return;
 
-            // we have two options to implement static bg feature
-            // one is adding background to monitorGroup
-            // but this one has disadvantage - sticky windows will be always on top of animated windows
-            // which is bad for conky, for example, that window should be always below
-            /*this._bgManager = new Background.BackgroundManager({
-                container: this,
-                monitorIndex: this._monitor.index,
-                controlPosition: false,
-            });*/
+        // we have two options to implement static bg feature
+        // one is adding background to monitorGroup
+        // but this one has disadvantage - sticky windows will be always on top of animated windows
+        // which is bad for conky, for example, that window should be always below
+        /*this._bgManager = new Background.BackgroundManager({
+            container: this,
+            monitorIndex: this._monitor.index,
+            controlPosition: false,
+        });*/
 
-            // the second option is to make background of the monitorGroup transparent so the real desktop content will stay visible,
-            // hide windows that should be animated and keep only sticky windows
-            // we can keep certain sticky windows bellow and also extensions like DING (icons on desktop) will stay visible
-            this.set_style('background-color: transparent;');
-            // stickyGroup holds the Always on Visible Workspace windows to keep them static and above other windows during animation
-            const stickyGroup = this.get_children()[1];
-            stickyGroup._windowRecords.forEach((r, index) => {
-                const metaWin = r.windowActor.metaWindow;
-                // conky is sticky but should never get above other windows during ws animation
-                // so we hide it from the overlay group, we will see the original if not covered by other windows
-                if (metaWin.wm_class == 'conky') {
-                    r.clone.opacity = 0;
-                }
-            })
-            this._hiddenWindows = [];
-            // remove (hide) background wallpaper from the animation, we will see the original one
-            this._workspaceGroups.forEach(w => w._background.opacity = 0);
-            // hide (scale to 0) all non-sticky windows, their clones will be animated
-            global.get_window_actors().forEach(actor => {
-                const metaWin = actor.metaWindow;
-                if (metaWin?.get_monitor() === this._monitor.index && !(metaWin?.wm_class == 'conky' && metaWin?.is_on_all_workspaces())) { //* && !w.is_on_all_workspaces()*/) {
-                    // hide original window. we cannot use opacity since it also affects clones.
-                    // scaling them to 0 works well
-                    actor.scale_x = 0;
-                    this._hiddenWindows.push(actor);
-                }
+        // the second option is to make background of the monitorGroup transparent so the real desktop content will stay visible,
+        // hide windows that should be animated and keep only sticky windows
+        // we can keep certain sticky windows bellow and also extensions like DING (icons on desktop) will stay visible
+        this.set_style('background-color: transparent;');
+        // stickyGroup holds the Always on Visible Workspace windows to keep them static and above other windows during animation
+        const stickyGroup = this.get_children()[1];
+        stickyGroup._windowRecords.forEach((r, index) => {
+            const metaWin = r.windowActor.metaWindow;
+            // conky is sticky but should never get above other windows during ws animation
+            // so we hide it from the overlay group, we will see the original if not covered by other windows
+            if (metaWin.wm_class == 'conky') {
+                r.clone.opacity = 0;
+            }
+        })
+        this._hiddenWindows = [];
+        // remove (hide) background wallpaper from the animation, we will see the original one
+        this._workspaceGroups.forEach(w => w._background.opacity = 0);
+        // hide (scale to 0) all non-sticky windows, their clones will be animated
+        global.get_window_actors().forEach(actor => {
+            const metaWin = actor.metaWindow;
+            if (metaWin?.get_monitor() === this._monitor.index && !(metaWin?.wm_class == 'conky' && metaWin?.is_on_all_workspaces())) { //* && !w.is_on_all_workspaces()*/) {
+                // hide original window. we cannot use opacity since it also affects clones.
+                // scaling them to 0 works well
+                actor.scale_x = 0;
+                this._hiddenWindows.push(actor);
+            }
+        });
+
+        // restore all hidden windows at the end of animation
+        // todo - actors removed during transition need to be removed from the list  to avoid access to destroyed actor
+        this.connect('destroy', () =>{
+            this._hiddenWindows.forEach(actor => {
+                actor.scale_x = 1;
             });
-
-
-            // restore all hidden windows at the end of animation
-            // todo - actors removed during transition need to be removed from the list  to avoid access to destroyed actor
-            this.connect('destroy', () =>{
-                this._hiddenWindows.forEach(actor => {
-                    actor.scale_x = 1;
-                });
-            });
-        }
-    );
+        });
+    }
 }
 
 //------ App Grid ----------------------------------------------------------
@@ -4559,20 +4487,18 @@ const IconGridOverride = {
 
 // ------------------ AppDisplay.AppIcon - injection --------------------------------------------------------------
 
-function _injectAppFolderDialog() {
-    return _Util.injectToFunction(
-        AppDisplay.AppFolderDialog.prototype, '_init', function() {
-            const iconSize = APP_GRID_FOLDER_ICON_SIZE < 0 ? 96 : APP_GRID_FOLDER_ICON_SIZE;
-            let width = APP_GRID_FOLDER_COLUMNS * (iconSize + 64);
-            width = Math.max(640, Math.round(width + width / 10));
-            let height = APP_GRID_FOLDER_ROWS * (iconSize + 64) + 150;
-            APP_GRID_ALLOW_CUSTOM && this.child.set_style(`
-                width: ${width}px;
-                height: ${height}px;
-                padding: 30px;
-            `);
-        }
-    );
+const AppFolderDialogInjections = {
+    _init: function() {
+        const iconSize = APP_GRID_FOLDER_ICON_SIZE < 0 ? 96 : APP_GRID_FOLDER_ICON_SIZE;
+        let width = APP_GRID_FOLDER_COLUMNS * (iconSize + 64);
+        width = Math.max(640, Math.round(width + width / 10));
+        let height = APP_GRID_FOLDER_ROWS * (iconSize + 64) + 150;
+        APP_GRID_ALLOW_CUSTOM && this.child.set_style(`
+            width: ${width}px;
+            height: ${height}px;
+            padding: 30px;
+        `);
+    }
 }
 
 // Set App Grid columns, rows, icon size, incomplete pages
@@ -4590,6 +4516,8 @@ function _updateAppGridProperties(reset) {
             _appGridLayoutSigId = null;
             _appGridLayoutSettings = null;
         }
+        appDisplay._redisplay();
+        // secondary call is necessary to properly update app grid
         appDisplay._redisplay();
     } else {
         // update grid on layout reset
