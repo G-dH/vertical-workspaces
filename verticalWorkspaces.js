@@ -3,7 +3,7 @@
  * verticalworkspaces.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022
+ * @copyright  2022 - 2023
  * @license    GPL-3.0
  * contains parts of https://github.com/RensAlthuis/vertical-overview extension
  */
@@ -35,6 +35,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Settings = Me.imports.settings;
 const shellVersion = Settings.shellVersion;
+const WindowSearchProvider = Me.imports.windowSearchProvider;
 
 const VerticalDash = Me.imports.dash;
 
@@ -162,6 +163,8 @@ let APP_GRID_FOLDER_ICON_SIZE;
 let APP_GRID_ALLOW_CUSTOM;
 let APP_GRID_FOLDER_COLUMNS;
 let APP_GRID_FOLDER_ROWS;
+
+let WINDOW_SEARCH_PROVIDER_ENABLED;
 
 
 
@@ -456,6 +459,8 @@ function reset() {
     _connectWsAnimationSwipeTracker(reset);
 
     _updateAppGridProperties(reset);
+
+    _updateWindowSearchProvider(reset);
 }
 
 function _replaceOnSearchChanged(reset = false) {
@@ -749,12 +754,15 @@ function _updateSettings(settings, key) {
     APP_GRID_FOLDER_COLUMNS = gOptions.get('appGridFolderColumns', true);
     APP_GRID_FOLDER_ROWS = gOptions.get('appGridFolderRows', true);
 
+    WINDOW_SEARCH_PROVIDER_ENABLED = gOptions.get('searchWindowsEnable', true);
+
     _setStaticBackground(!SHOW_BG_IN_OVERVIEW);
     _updateAppGridProperties();
     _updateSearchViewWidth();
     _updateOverviewTranslations();
     _switchPageShortcuts();
     _setStaticBackground();
+    _updateWindowSearchProvider();
     if (key === 'fix-ubuntu-dock')
         _fixUbuntuDock(gOptions.get('fixUbuntuDock', true));
     if (key === 'show-app-icon-position')
@@ -766,6 +774,14 @@ function _updateSettings(settings, key) {
     if (key === 'ws-thumbnails-position') {
         reset();
         activate();
+    }
+}
+
+function _updateWindowSearchProvider(reset = false) {
+    if (!reset && WINDOW_SEARCH_PROVIDER_ENABLED && !WindowSearchProvider.windowSearchProvider) {
+        WindowSearchProvider.enable(gOptions);
+    } else if (reset || !WINDOW_SEARCH_PROVIDER_ENABLED) {
+        WindowSearchProvider.disable();
     }
 }
 
@@ -800,8 +816,11 @@ function _connectShowAppsIcon(reset = false) {
 
         Main.overview.dash._showAppsIcon.reactive = true;
         _showAppsIconBtnPressId = Main.overview.dash._showAppsIcon.connect('button-press-event', (actor, event) => {
-            if (event.get_button() === Clutter.BUTTON_MIDDLE) {
+            const button = event.get_button();
+            if (button === Clutter.BUTTON_MIDDLE) {
                 _openPreferences();
+            } else if (button === Clutter.BUTTON_SECONDARY) {
+                _activateWindowSearchProvider();
             } else {
                 return Clutter.EVENT_PROPAGATE;
             }
@@ -1008,6 +1027,26 @@ function _injectWindowPreview() {
                 // show window icon and title on ws windows spread
                 this._stateAdjustmentSigId = this._workspace.stateAdjustment.connect('notify::value', this._updateIconScale.bind(this));
             }
+
+            // replace click action with custom one
+            const action = this.get_actions()[0];
+            this.remove_action(action);
+
+            const clickAction = new Clutter.ClickAction();
+            clickAction.connect('clicked', (action) => {
+                const button = action.get_button();
+                if (button === Clutter.BUTTON_PRIMARY) {
+                    this._activate();
+                } else if (button === Clutter.BUTTON_SECONDARY) {
+                    const tracker = Shell.WindowTracker.get_default();
+                    const appName = tracker.get_window_app(this.metaWindow).get_name();
+                    _activateWindowSearchProvider(appName);
+                    return Clutter.EVENT_STOP;
+                }
+            });
+            // long-press is in conflict, it always activates on click that is not followed by leaving the overview
+            //clickAction.connect('long-press', this._onLongPress.bind(this));
+            this.add_action(clickAction);
         }
     );
 }
@@ -1348,6 +1387,142 @@ var workspacesDisplayOverride = {
 
             this._workspacesViews.push(view);
         }
+    },
+
+    _onScrollEvent: function(actor, event) {
+        if (this._swipeTracker.canHandleScrollEvent(event))
+            return Clutter.EVENT_PROPAGATE;
+
+        if (!this.mapped)
+            return Clutter.EVENT_PROPAGATE;
+
+        if (this._workspacesOnlyOnPrimary &&
+            this._getMonitorIndexForEvent(event) != this._primaryIndex)
+            return Clutter.EVENT_PROPAGATE;
+
+        if (/*SHIFT_REORDERS_WS && */global.get_pointer()[2] & Clutter.ModifierType.SHIFT_MASK) {
+            let direction = event.get_scroll_direction();
+            if (direction === Clutter.ScrollDirection.UP) {
+                direction = -1;
+            }
+            else if (direction === Clutter.ScrollDirection.DOWN) {
+                direction = 1;
+            } else {
+                direction = 0;
+            }
+
+            if (direction) {
+                _reorderWorkspace(direction);
+                // make all workspaces on primary monitor visible for case the new position is hidden
+                Main.overview._overview._controls._workspacesDisplay._workspacesViews[0]._workspaces.forEach(w => w.visible = true);
+                return Clutter.EVENT_STOP;
+            }
+        }
+
+        return Main.wm.handleWorkspaceScroll(event);
+    },
+
+    _onKeyPressEvent: function(actor, event) {
+        const symbol = event.get_key_symbol();
+        const { ControlsState } = OverviewControls;
+        if (this._overviewAdjustment.value !== ControlsState.WINDOW_PICKER && symbol !== Clutter.KEY_space)
+            return Clutter.EVENT_PROPAGATE;
+
+        /*if (!this.reactive)
+            return Clutter.EVENT_PROPAGATE;**/
+        const isCtrlPressed = (event.get_state() & Clutter.ModifierType.CONTROL_MASK) != 0;
+        const { workspaceManager } = global;
+        const vertical = workspaceManager.layout_rows === -1;
+        const rtl = this.get_text_direction() === Clutter.TextDirection.RTL;
+
+        let which;
+        switch (symbol) {
+        case Clutter.KEY_Page_Up:
+            if (vertical)
+                which = Meta.MotionDirection.UP;
+            else if (rtl)
+                which = Meta.MotionDirection.RIGHT;
+            else
+                which = Meta.MotionDirection.LEFT;
+            break;
+        case Clutter.KEY_Page_Down:
+            if (vertical)
+                which = Meta.MotionDirection.DOWN;
+            else if (rtl)
+                which = Meta.MotionDirection.LEFT;
+            else
+                which = Meta.MotionDirection.RIGHT;
+            break;
+        case Clutter.KEY_Home:
+            which = 0;
+            break;
+        case Clutter.KEY_End:
+            which = workspaceManager.n_workspaces - 1;
+            break;
+        case Clutter.KEY_space:
+            if (isCtrlPressed) {
+                Main.ctrlAltTabManager._items.forEach(i => {if (i.sortGroup === 1 && i.name === 'Dash') Main.ctrlAltTabManager.focusGroup(i)});
+            } else if (WINDOW_SEARCH_PROVIDER_ENABLED/* && SEARCH_WINDOWS_SPACE*/) {
+                _activateWindowSearchProvider();
+            }
+            return Clutter.EVENT_STOP;
+        default:
+            return Clutter.EVENT_PROPAGATE;
+        }
+
+        let ws;
+        if (which < 0)
+            // Negative workspace numbers are directions
+            // with respect to the current workspace
+            ws = workspaceManager.get_active_workspace().get_neighbor(which);
+        else
+            // Otherwise it is a workspace index
+            ws = workspaceManager.get_workspace_by_index(which);
+
+        if (SHIFT_REORDERS_WS && event.get_state() & Clutter.ModifierType.SHIFT_MASK) {
+            let direction;
+            if (which === Meta.MotionDirection.UP || which === Meta.MotionDirection.LEFT)
+                direction = -1;
+            else if (which === Meta.MotionDirection.DOWN || which === Meta.MotionDirection.RIGHT)
+                direction = 1;
+            if (direction)
+                _reorderWorkspace(direction);
+                // make all workspaces on primary monitor visible for case the new position is hidden
+                Main.overview._overview._controls._workspacesDisplay._workspacesViews[0]._workspaces.forEach(w => w.visible = true);
+                return Clutter.EVENT_STOP;
+        }
+
+        if (ws)
+            Main.wm.actionMoveWorkspace(ws);
+
+        return Clutter.EVENT_STOP;
+    },
+}
+
+// ------------------ Reorder Workspaces - callback for Dash and workspacesDisplay -----------------------------------
+
+function _reorderWorkspace(direction = 0) {
+    let activeWs = global.workspace_manager.get_active_workspace();
+    let activeWsIdx = activeWs.index();
+    let targetIdx = activeWsIdx + direction;
+    if (targetIdx > -1 && targetIdx < (global.workspace_manager.get_n_workspaces())) {
+        global.workspace_manager.reorder_workspace(activeWs, targetIdx);
+    }
+}
+
+// ------------------ Activate Window Search Provider - callback for Dash Show Apps Icon -----------------------------------
+
+function _activateWindowSearchProvider(term = '') {
+    const searchEntry = Main.overview.searchEntry;
+    if (!searchEntry.get_text()) {
+        const prefix = _(WindowSearchProvider.prefix + term + ' ');
+        const position = prefix.length;
+        searchEntry.set_text(prefix);
+        searchEntry.grab_key_focus();
+        searchEntry.get_first_child().set_cursor_position(position);
+        searchEntry.get_first_child().set_selection(position, position);
+    } else {
+        searchEntry.set_text('');
     }
 }
 
@@ -3774,35 +3949,6 @@ var ControlsManagerLayoutHorizontalOverride = {
 
         let [searchHeight] = this._searchEntry.get_preferred_height(width);
 
-        /*// Search entry
-        const searchXoffset = (DASH_POSITION === 3 ? dashWidth : 0) + spacing;
-        //let [searchHeight] = this._searchEntry.get_preferred_height(width - wsTmbWidth);
-
-        // Y position under top Dash
-        let searchEntryX, searchEntryY;
-        if (DASH_TOP) {
-            searchEntryY = startY + dashHeight - spacing;
-        } else {
-            searchEntryY = startY;
-        }
-
-        searchEntryX = searchXoffset;
-        let searchWidth = width - 2 * spacing - (DASH_VERTICAL ? dashWidth : 0); // xAlignCenter is given by wsBox
-        searchWidth = this._xAlignCenter ? width : searchWidth;
-
-        if (CENTER_SEARCH_VIEW) {
-            childBox.set_origin(0, searchEntryY);
-            childBox.set_size(width, searchHeight);
-        } else {
-            childBox.set_origin(this._xAlignCenter ? 0 : searchEntryX, searchEntryY);
-            childBox.set_size(this._xAlignCenter ? width : searchWidth - spacing, searchHeight);
-        }
-
-        this._searchEntry.allocate(childBox);
-
-        availableHeight -= searchHeight + spacing;*/
-
-        // Workspace Thumbnails
         let wsTmbWidth = 0;
         let wsTmbHeight = 0;
 

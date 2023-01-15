@@ -88,7 +88,9 @@ var Options = class Options {
             appGridRows: ['int', 'app-grid-rows'],
             appGridFolderIconSize: ['int', 'app-grid-folder-icon-size'],
             appGridFolderColumns: ['int', 'app-grid-folder-columns'],
-            appGridFolderRows: ['int', 'app-grid-folder-rows']
+            appGridFolderRows: ['int', 'app-grid-folder-rows'],
+            searchWindowsEnable: ['boolean', 'search-windows-enable'],
+            searchWindowsFuzzy: ['boolean', 'search-windows-fuzzy']
         }
         this.cachedOptions = {};
     }

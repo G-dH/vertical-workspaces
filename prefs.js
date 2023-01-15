@@ -840,6 +840,42 @@ function _getBehaviorOptionList() {
         )
     );
 
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Window Search Provider'),
+        )
+    );
+
+    const wspSwitch = itemFactory.newSwitch();
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Enable Window Search Provider'),
+            _('Activates a window search provider that adds open windows to the search results. You can search app names and window titles. You can also use "wq/" prefix to suppress results from other search providers.'),
+            wspSwitch,
+            'searchWindowsEnable'
+        )
+    );
+
+    const wspFuzzySwitch = itemFactory.newSwitch();
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Enable Fuzzy Match'),
+            _('Fuzzy match allows you to find "Firefox" even if you type "ffx". If fuzzy match is disabled, you need to enter exact patterns separated by a space, but in arbitrary order.'),
+            wspFuzzySwitch,
+            'searchWindowsFuzzy'
+        )
+    );
+
+    /*const wspCommandSwitch = itemFactory.newSwitch();
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Enable Commands in Search Entry'),
+            _('You can use following commands separated by the space at the end of entered pattern:\n/x!   \t\t\t- close selected window\n/xa! \t\t\t- close all found windows\n/m[number] \t\t- (e.g. /m6) move selected window to workspace with given index\n/ma[number] \t- move all found windows to workspace with given index'),
+            wspCommandSwitch,
+            'searchWindowsCommands'
+        )
+    );*/
+
     return optionList;
 }
 
