@@ -2890,7 +2890,7 @@ var ControlsManagerOverride = {
         const animateOverviewMode2 = OVERVIEW_MODE2 && !(finalState === 1 && WORKSPACE_MODE);
 
         if (_staticBgAnimationEnabled && ((!SHOW_WS_PREVIEW_BG && !(OVERVIEW_MODE2)) || animateOverviewMode2)) {
-            if (!tmbBox._translationOriginal || Math.abs(tmbBox._translationOriginal) > 500) { // swipe gesture can call this calculation before tmbBox is finalized, giving nonsense width
+            if (!tmbBox._translationOriginal || Math.abs(tmbBox._translationOriginal[0]) > 500) { // swipe gesture can call this calculation before tmbBox is finalized, giving nonsense width
                 const [tmbTranslation_x, tmbTranslation_y, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _getOverviewTranslations(dash, tmbBox, searchEntryBin);
                 tmbBox._translationOriginal = [tmbTranslation_x, tmbTranslation_y];
                 dash._translationOriginal = [dashTranslation_x, dashTranslation_y];
