@@ -968,14 +968,20 @@ const WindowPreviewInjections = {
             if (button === Clutter.BUTTON_PRIMARY) {
                 this._activate();
             } else if (button === Clutter.BUTTON_SECONDARY) {
+                // this action cancels long-press event and the 'long-press-cancel' event is used by the Shell to actually initiate DnD
+                // so the dnd initiation needs to be removed
+                if (this._longPressLater) {
+                    Meta.later_remove(this._longPressLater);
+                    delete this._longPressLater;
+                }
                 const tracker = Shell.WindowTracker.get_default();
                 const appName = tracker.get_window_app(this.metaWindow).get_name();
                 _activateWindowSearchProvider(appName);
                 return Clutter.EVENT_STOP;
             }
         });
-        // long-press is in conflict, it always activates on click that is not followed by leaving the overview
-        //clickAction.connect('long-press', this._onLongPress.bind(this));
+
+        clickAction.connect('long-press', this._onLongPress.bind(this));
         this.add_action(clickAction);
     }
 }
