@@ -2101,6 +2101,13 @@ var WorkspaceThumbnailOverride = {
                     let tracker = Shell.WindowTracker.get_default();
                     label += `: ${tracker.get_window_app(metaWin).get_name()}`;
                 }
+            } else if (SHOW_WST_LABELS === 4) {
+                const metaWin = global.display.get_tab_list(0, null).filter(
+                    w => w.get_monitor() === this.monitorIndex && w.get_workspace().index() === wsIndex)[0];
+
+                if (metaWin) {
+                    label += `: ${metaWin.title}`;
+                }
             }
             this._wsLabel = new St.Label({
                 text: label,
@@ -2809,7 +2816,7 @@ var ControlsManagerOverride = {
             this._workspacesDisplay.opacity = opacity;
         } else if (!SHOW_WS_TMB_BG) {
             // fade out ws wallpaper during transition to ws switcher if ws switcher background disabled
-            const ws = this._workspacesDisplay._workspacesViews[global.display.get_primary_monitor()]._workspaces[this._workspaceAdjustment.value]
+            const ws = this._workspacesDisplay._workspacesViews[global.display.get_primary_monitor()]._workspaces[this._workspaceAdjustment.value];
             if (ws)
                 ws._background.opacity = opacity;
         }

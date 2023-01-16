@@ -594,7 +594,7 @@ function _getAppearanceOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Show Workspaces Thumbnails Labels'),
-            _('Each workspace thumbnails can show its index and name (if defined in the system settings) or name of its most recently used app.'),
+            _('Each workspace thumbnails can show its index and name (if defined in the system settings) or name/title of its most recently used app/window.'),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'showWsTmbLabels',
@@ -602,6 +602,7 @@ function _getAppearanceOptionList() {
                 [_('Index'), 1],
                 [_('Index + WS Name'), 2],
                 [_('Index + App Name'), 3],
+                [_('Index + Window Title'), 4],
             ]
         )
     );
