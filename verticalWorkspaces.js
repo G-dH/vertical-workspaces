@@ -4292,10 +4292,13 @@ function _updateStaticBackground(bgManager, stateValue, stateAdjustment = null) 
             sigmaInit = 0
         }
 
-        //bgManager.backgroundActor.content.vignette_sharpness = Util.lerp(vignetteInit, VIGNETTE, Math.min(stateValue, 1));
-        //bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, Math.min(stateValue, 1));
-        bgManager.backgroundActor.content.vignette_sharpness = Util.lerp(vignetteInit, VIGNETTE, bgValue);
-        bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, bgValue);
+        if (OVERVIEW_MODE2) {
+            bgManager.backgroundActor.content.vignette_sharpness = Util.lerp(vignetteInit, VIGNETTE, bgValue);
+            bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, bgValue);
+        } else {
+            bgManager.backgroundActor.content.vignette_sharpness = Util.lerp(vignetteInit, VIGNETTE, Math.min(stateValue, 1));
+            bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, Math.min(stateValue, 1));
+        }
 
         if (OVERVIEW_BG_BLUR_SIGMA || APP_GRID_BG_BLUR_SIGMA) {
             // reduce number of steps of blur transition to improve performance
