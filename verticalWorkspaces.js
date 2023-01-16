@@ -216,7 +216,6 @@ function activate() {
         Main.overview._swipeTracker._updateGesture = SwipeTrackerOverride._updateGesture;
         _vwGestureUpdateId = Main.overview._swipeTracker._touchpadGesture.connect('update', SwipeTrackerOverride._updateGesture.bind(Main.overview._swipeTracker));
 
-
         // GS 42+ needs to help with the workspace switcher popup, older versions reflects new orientation automatically
         // avoid the injection is WSM extension is enabled because it brakes the popup
         const settings = ExtensionUtils.getSettings('org.gnome.shell');
@@ -224,7 +223,6 @@ function activate() {
         const allowWsPopupInjection = !(enabled.includes('workspace-switcher-manager@G-dH.github.com') || enabled.includes('WsSwitcherPopupManager@G-dH.github.com-dev'));
         if (shellVersion >= 42 && allowWsPopupInjection)
             _overrides.addInjection('WorkspaceSwitcherPopup', WorkspaceSwitcherPopup.WorkspaceSwitcherPopup.prototype, WorkspaceSwitcherPopupInjections);
-        //_injectWsSwitcherPopup();
 
     } else {
         // switch internal workspace orientation in GS
@@ -334,8 +332,6 @@ function reset() {
         Main.overview._swipeTracker._touchpadGesture.unblock_signal_handler(_originalGestureUpdateId);
         _originalGestureUpdateId = 0;
     }
-    _verticalOverrides = {}
-
 
     _setAppDisplayOrientation(false);
 
