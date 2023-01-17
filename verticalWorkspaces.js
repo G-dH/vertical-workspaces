@@ -15,6 +15,9 @@ const { Clutter, Gio, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
 const DND = imports.ui.dnd;
 const Main = imports.ui.main;
 const AppDisplay = imports.ui.appDisplay;
+const { AppMenu } = imports.ui.appMenu;
+const PopupMenu = imports.ui.popupMenu;
+const BoxPointer = imports.ui.boxpointer;
 const IconGrid = imports.ui.iconGrid;
 const Dash = imports.ui.dash;
 const Layout = imports.ui.layout;
@@ -159,6 +162,10 @@ let APP_GRID_ALLOW_CUSTOM;
 let APP_GRID_FOLDER_COLUMNS;
 let APP_GRID_FOLDER_ROWS;
 
+let DASH_SHOW_WINS_BEFORE;
+let DASH_SHIFT_CLICK_MV;
+let DASH_FOLLOW_RECENT_WIN;
+
 let WINDOW_SEARCH_PROVIDER_ENABLED;
 
 let _overrides;
@@ -248,6 +255,7 @@ function activate() {
     }
     _overrides.addOverride('FolderView', AppDisplay.FolderView.prototype, FolderViewOverrides);
     _overrides.addInjection('AppFolderDialog', AppDisplay.AppFolderDialog.prototype, AppFolderDialogInjections);
+    _overrides.addOverride('AppIcon', AppDisplay.AppIcon.prototype, AppIconOverride);
 
     _prevDash = {};
     const dash = Main.overview.dash;
@@ -557,6 +565,7 @@ function _fixUbuntuDock(activate = true) {
         if (_prevDash.dash !== dash || _prevDash.position !== dash._position) {
             _resetExtensionIfEnabled(0);
         }
+        Main.panel.set_style('background-color: transparent;');
     });
 }
 
@@ -668,6 +677,7 @@ function _updateSettings(settings, key) {
     OVERVIEW_MODE = gOptions.get('overviewMode', true);
     OVERVIEW_MODE2 = OVERVIEW_MODE === 2;
     WORKSPACE_MODE = OVERVIEW_MODE ? 0 : 1;
+    Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = 0.95;
 
     STATIC_WS_SWITCHER_BG = gOptions.get('workspaceSwitcherAnimation', true);
 
@@ -686,6 +696,10 @@ function _updateSettings(settings, key) {
     APP_GRID_FOLDER_ICON_SIZE = gOptions.get('appGridFolderIconSize', true);
     APP_GRID_FOLDER_COLUMNS = gOptions.get('appGridFolderColumns', true);
     APP_GRID_FOLDER_ROWS = gOptions.get('appGridFolderRows', true);
+
+    DASH_SHOW_WINS_BEFORE = true;
+    DASH_SHIFT_CLICK_MV = true;
+    DASH_FOLLOW_RECENT_WIN = true;
 
     WINDOW_SEARCH_PROVIDER_ENABLED = gOptions.get('searchWindowsEnable', true);
 
@@ -933,8 +947,6 @@ const WindowPreviewInjections = {
 
         if (ALWAYS_SHOW_WIN_TITLES) {
             this._title.show();
-            if (!OVERVIEW_MODE)
-                this._title.opacity = 255;
         }
 
         if (OVERVIEW_MODE === 1) {
@@ -3192,10 +3204,10 @@ var ControlsManagerOverride = {
         // in which case the the animation is greatly delayed, stuttering, or even skipped
         // for user it is more acceptable to watch delayed smooth animation,
         // even if it takes little more time, than jumping frames
-        const delay = 50 + global.display.get_tab_list(0, global.workspace_manager.get_active_workspace()).length * 1;
+        const delay = 30 + global.display.get_tab_list(0, global.workspace_manager.get_active_workspace()).length;
         this._stateAdjustment.ease(state, {
             delay,
-            duration: Overview.ANIMATION_TIME,
+            duration: 220, //Overview.ANIMATION_TIME -50,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onStopped: () => {
                 if (callback)
@@ -4497,7 +4509,7 @@ const IconGridOverride = {
     }
 }
 
-// ------------------ AppDisplay.AppIcon - injection --------------------------------------------------------------
+// ------------------ AppDisplay.AppFolderDialog - injection --------------------------------------------------------------
 
 const AppFolderDialogInjections = {
     _init: function() {
@@ -4638,6 +4650,7 @@ if (AppDisplay.AppGrid) {
 
 }
 
+const FOLDER_DIALOG_ANIMATION_TIME = 200; // AppDisplay.FOLDER_DIALOG_ANIMATION_TIME
 const AppFolderDialogOverride = {
     _zoomAndFadeIn: function() {
         let [sourceX, sourceY] =
@@ -4655,7 +4668,7 @@ const AppFolderDialogOverride = {
 
         this.ease({
             background_color: Clutter.Color.from_pixel(0x00000033), // DIALOG_SHADE_NORMAL
-            duration: AppDisplay.FOLDER_DIALOG_ANIMATION_TIME,
+            duration: FOLDER_DIALOG_ANIMATION_TIME,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
         });
 
@@ -4666,7 +4679,7 @@ const AppFolderDialogOverride = {
             scale_x: 1,
             scale_y: 1,
             opacity: 255,
-            duration: AppDisplay.FOLDER_DIALOG_ANIMATION_TIME,
+            duration: FOLDER_DIALOG_ANIMATION_TIME,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
         });
 
@@ -4696,7 +4709,7 @@ const AppFolderDialogOverride = {
         let blurEffect = appDisplay.get_effect('blur');
         this.ease({
             background_color: Clutter.Color.from_pixel(0x00000000),
-            duration: AppDisplay.FOLDER_DIALOG_ANIMATION_TIME,
+            duration: FOLDER_DIALOG_ANIMATION_TIME,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
         });
 
@@ -4706,7 +4719,7 @@ const AppFolderDialogOverride = {
             scale_x: this._source.width / this.child.width,
             scale_y: this._source.height / this.child.height,
             opacity: 0,
-            duration: AppDisplay.FOLDER_DIALOG_ANIMATION_TIME,
+            duration: FOLDER_DIALOG_ANIMATION_TIME,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => {
                 this.child.set({
@@ -4746,4 +4759,177 @@ function _resetAppGrid(settings = null, key = null) {
     // redisplay only from callback
     if (settings)
         appDisplay._redisplay();
+}
+
+// ------------------ AppDisplay.AppIcon - override ---------------------------------------------------------------
+
+function _getWindowApp(metaWin) {
+    const tracker = Shell.WindowTracker.get_default();
+    return tracker.get_window_app(metaWin);
+}
+
+function _getAppLastUsedWindow(app) {
+    let recentWin;
+    global.display.get_tab_list(Meta.TabList.NORMAL_ALL, null).forEach(metaWin => {
+        const winApp = _getWindowApp(metaWin);
+        if (!recentWin && winApp == app) {
+            recentWin = metaWin;
+        }
+    });
+    return recentWin;
+}
+
+function _getAppRecentWorkspace(app) {
+    const recentWin = _getAppLastUsedWindow(app)
+    if (recentWin)
+        return recentWin.get_workspace();
+
+    return null;
+}
+
+const AppIconOverride = {
+    activate: function(button) {
+        const event = Clutter.get_current_event();
+        const modifiers = event ? event.get_state() : 0;
+        const isMiddleButton = button && button == Clutter.BUTTON_MIDDLE;
+        const isCtrlPressed = (modifiers & Clutter.ModifierType.CONTROL_MASK) != 0;
+        const isShiftPressed = (modifiers & Clutter.ModifierType.SHIFT_MASK) != 0;
+        const openNewWindow = this.app.can_open_new_window() &&
+                            this.app.state == Shell.AppState.RUNNING &&
+                            (isCtrlPressed || isMiddleButton);
+
+        const currentWS = global.workspace_manager.get_active_workspace();
+        const appRecentWorkspace = _getAppRecentWorkspace(this.app);
+
+        let targetWindowOnCurrentWs = false;
+        if (DASH_FOLLOW_RECENT_WIN) {
+            targetWindowOnCurrentWs = appRecentWorkspace === currentWS;
+        } else {
+            this.app.get_windows().forEach(
+                w => targetWindowOnCurrentWs = targetWindowOnCurrentWs || (w.get_workspace() === currentWS)
+            );
+        }
+
+        if ((this.app.state == Shell.AppState.STOPPED || openNewWindow) && !isShiftPressed)
+            this.animateLaunch();
+
+        if (openNewWindow) {
+            this.app.open_new_window(-1);
+        // if the app has more than one window (option: and has no window on the current workspace),
+        // don't activate the app, only move the overview to the workspace with the app's recent window
+        } else if (DASH_SHOW_WINS_BEFORE && !isShiftPressed && this.app.get_n_windows() > 1 && !targetWindowOnCurrentWs) {
+            this._scroll = true;
+            this._scrollTime = Date.now();
+            //const appWS = this.app.get_windows()[0].get_workspace();
+            Main.wm.actionMoveWorkspace(appRecentWorkspace);
+            Main.overview.dash.showAppsButton.checked = false;
+            return;
+        } else if (DASH_SHIFT_CLICK_MV && isShiftPressed && this.app.get_windows().length) {
+            this._moveAppToCurrentWorkspace();
+            return;
+        } else if (isShiftPressed) {
+            return;
+        } else {
+            this.app.activate();
+        }
+
+        Main.overview.hide();
+    },
+
+    _moveAppToCurrentWorkspace: function() {
+        this.app.get_windows().forEach(w => w.change_workspace(global.workspace_manager.get_active_workspace()));
+    },
+
+    popupMenu: function(side = St.Side.LEFT) {
+        if (shellVersion >= 42)
+            this.setForcedHighlight(true);
+        this._removeMenuTimeout();
+        this.fake_release();
+
+        if (!this._getWindowsOnCurrentWs) {
+            this._getWindowsOnCurrentWs = function() {
+                const winList = [];
+                this.app.get_windows().forEach(w => {
+                    if(w.get_workspace() === global.workspace_manager.get_active_workspace()) winList.push(w)
+                });
+                return winList;
+            };
+
+            this._windowsOnOtherWs = function() {
+                return (this.app.get_windows().length - this._getWindowsOnCurrentWs().length) > 0;
+            };
+        }
+
+        if (!this._menu) {
+            this._menu = new AppMenu(this, side, {
+                favoritesSection: true,
+                showSingleWindows: true,
+            });
+
+            this._menu.setApp(this.app);
+            this._openSigId = this._menu.connect('open-state-changed', (menu, isPoppedUp) => {
+                if (!isPoppedUp)
+                    this._onMenuPoppedDown();
+            });
+            //Main.overview.connectObject('hiding',
+            this._hidingSigId = Main.overview.connect('hiding',
+                () => this._menu.close(), this);
+
+            Main.uiGroup.add_actor(this._menu.actor);
+            this._menuManager.addMenu(this._menu);
+        }
+
+        // once the menu is created, it stays unchanged and we need to modify our items based on current situation
+        if (this._addedMenuItems && this._addedMenuItems.length) {
+            this._addedMenuItems.forEach(i => i.destroy());
+        }
+
+        const popupItems =[];
+
+        const separator = new PopupMenu.PopupSeparatorMenuItem();
+        this._menu.addMenuItem(separator);
+
+        if (this.app.get_n_windows()) {
+            if (/*APP_MENU_FORCE_QUIT*/true) {
+                popupItems.push([_('Force Quit'), () => {
+                    this.app.get_windows()[0].kill();
+                }]);
+            }
+
+            if (/*APP_MENU_CLOSE_WS*/true) {
+                const nWin = this._getWindowsOnCurrentWs().length;
+                if (nWin) {
+                    popupItems.push([_(`Close ${nWin} Windows on Current Workspace`), () => {
+                        const windows = this._getWindowsOnCurrentWs();
+                        let time = global.get_current_time();
+                        for (let win of windows) {
+                            // increase time by 1 ms for each window to avoid errors from GS
+                            win.delete(time++);
+                        }
+                    }]);
+                }
+            }
+
+            if (/*APP_MENU_MV_TO_WS && */this._windowsOnOtherWs()) {
+                popupItems.push([_('Move App to Current Workspace'), this._moveAppToCurrentWorkspace]);
+            }
+        }
+
+        this._addedMenuItems = [];
+        this._addedMenuItems.push(separator);
+        popupItems.forEach(i => {
+            let item = new PopupMenu.PopupMenuItem(i[0]);
+            this._menu.addMenuItem(item);
+            item.connect('activate', i[1].bind(this));
+            this._addedMenuItems.push(item);
+        });
+
+        this.emit('menu-state-changed', true);
+
+        this._menu.open(BoxPointer.PopupAnimation.FULL);
+        this._menuManager.ignoreRelease();
+        this.emit('sync-tooltip');
+
+        return false;
+    }
 }
