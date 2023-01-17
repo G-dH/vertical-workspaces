@@ -1414,7 +1414,7 @@ var workspacesDisplayOverride = {
             // Otherwise it is a workspace index
             ws = workspaceManager.get_workspace_by_index(which);
 
-        if (SHIFT_REORDERS_WS && event.get_state() & Clutter.ModifierType.SHIFT_MASK) {
+        if (/*SHIFT_REORDERS_WS && */event.get_state() & Clutter.ModifierType.SHIFT_MASK) {
             let direction;
             if (which === Meta.MotionDirection.UP || which === Meta.MotionDirection.LEFT)
                 direction = -1;
