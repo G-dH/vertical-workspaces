@@ -301,6 +301,9 @@ function activate() {
 
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
+
+    // set app grid size, columns, rows
+    _updateAppGridProperties();
 }
 
 function reset() {
@@ -446,8 +449,10 @@ function _updateSearchViewWidth(reset = false) {
 
 function _enableStaticBgAnimation() {
     _staticBgAnimationEnabled = true;
-    Main.overview.disconnect(_overviewHiddenSigId);
-    _overviewHiddenSigId = 0;
+
+    Main.panel.set_style('');
+    /*Main.overview.disconnect(_overviewHiddenSigId);
+    _overviewHiddenSigId = 0;*/
 }
 
 function _resetExtension(timeout = 200) {
@@ -565,7 +570,11 @@ function _fixUbuntuDock(activate = true) {
         if (_prevDash.dash !== dash || _prevDash.position !== dash._position) {
             _resetExtensionIfEnabled(0);
         }
-        Main.panel.set_style('background-color: transparent;');
+        if (OVERVIEW_MODE2) {
+            //Main.panel.set_style('background-color: transparent;');
+            const color = Main.panel.get_theme_node().get_background_color();
+            Main.panel.set_style(`background-color: rgba(${color.red}, ${color.green}, ${color.blue}, 1);`);
+        }
     });
 }
 
@@ -704,7 +713,6 @@ function _updateSettings(settings, key) {
     WINDOW_SEARCH_PROVIDER_ENABLED = gOptions.get('searchWindowsEnable', true);
 
     _setStaticBackground(!SHOW_BG_IN_OVERVIEW);
-    _updateAppGridProperties();
     _updateSearchViewWidth();
     _updateOverviewTranslations();
     _switchPageShortcuts();
@@ -722,6 +730,9 @@ function _updateSettings(settings, key) {
         reset();
         activate();
     }
+    if (key?.includes('app-grid'))
+        _updateAppGridProperties();
+
 }
 
 function _updateWindowSearchProvider(reset = false) {
@@ -1465,7 +1476,7 @@ function _activateWindowSearchProvider(term = '') {
         const prefix = _(WindowSearchProvider.prefix + term + ' ');
         const position = prefix.length;
         searchEntry.set_text(prefix);
-        searchEntry.grab_key_focus();
+        //searchEntry.grab_key_focus();
         searchEntry.get_first_child().set_cursor_position(position);
         searchEntry.get_first_child().set_selection(position, position);
     } else {
@@ -3204,10 +3215,10 @@ var ControlsManagerOverride = {
         // in which case the the animation is greatly delayed, stuttering, or even skipped
         // for user it is more acceptable to watch delayed smooth animation,
         // even if it takes little more time, than jumping frames
-        const delay = 30 + global.display.get_tab_list(0, global.workspace_manager.get_active_workspace()).length;
+        const delay = global.display.get_tab_list(0, global.workspace_manager.get_active_workspace()).length * 3;
         this._stateAdjustment.ease(state, {
             delay,
-            duration: 220, //Overview.ANIMATION_TIME -50,
+            duration: 250, //Overview.ANIMATION_TIME,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onStopped: () => {
                 if (callback)
