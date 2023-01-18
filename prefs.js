@@ -758,7 +758,6 @@ function _getBehaviorOptionList() {
         )
     );
 
-
     optionList.push(
         itemFactory.getRowWidget(
             _('Startup State'),
@@ -770,6 +769,71 @@ function _getBehaviorOptionList() {
                 [_('Desktop'), 1],
                 [_('App Grid'), 2],
             ]
+        )
+    );
+
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Dash'),
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Dash Icon Click'),
+            _('if the app you clicked on has more than one window and the recently used window is not on the workspace, the overview can switch to the workspace with the recent window.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'dashShowWindowsBeforeActivation',
+            [   [_('Activate Last Used Window Immediately'), 0],
+                [_('Switch to Workspace with Recently Used Window'), 1],
+            ]
+        )
+    );
+
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('App Grid'),
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Apps Order'),
+            _('Choose sorting method for the app grid. Note that sorting by alphabet and usage ignores folders.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'appGridOrder',
+            [   [_('Default'), 0],
+                [_('Alphabet'), 1],
+                [_('Usage'), 2],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Include Dash Items'),
+            _('Include favorite / running apps currently present in the Dash in the app grid.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'appGridIncludeDash',
+            [   [_('Disable'), 0],
+                [_('Enable'), 1],
+                [_('Enable - Sort First'), 2],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Allow Incomplete Pages'),
+            _('If disabled, icons from the next page (if any) are automatically moved to fill any empty slot left after an icon was (re)moved (to a folder for example).'),
+            itemFactory.newSwitch(),
+            //itemFactory.newDropDown(),
+            'appGridIncompletePages'
         )
     );
 

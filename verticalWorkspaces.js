@@ -105,6 +105,12 @@ let _resetTimeoutId;
 let _startupAnimTimeoutId1;
 let _startupAnimTimeoutId2;
 
+// drop control for app grid sorting modes
+let _appSystemStateSigId;
+let _origAppViewItemAcceptDrop;
+let _origAppViewItemHandleDragOver;
+let _origAppDisplayAcceptDrop;
+
 // constants from settings
 let ORIENTATION;
 let WS_PREVIEW_SCALE;
@@ -163,6 +169,8 @@ let APP_GRID_FOLDER_ICON_SIZE;
 let APP_GRID_ALLOW_CUSTOM;
 let APP_GRID_FOLDER_COLUMNS;
 let APP_GRID_FOLDER_ROWS;
+let APP_GRID_INCLUDE_DASH;
+let APP_GRID_ORDER;
 
 let DASH_SHOW_WINS_BEFORE;
 let DASH_SHIFT_CLICK_MV;
@@ -210,8 +218,8 @@ function activate() {
         // fix overlay base for Vertical Workspaces
         _overrides.addOverride('WorkspaceLayout', Workspace.WorkspaceLayout.prototype, WorkspaceLayoutOverride);
         _overrides.addOverride('ThumbnailsBox', WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxVerticalOverride);
-        _overrides.addOverride('BaseAppView', AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
-        _overrides.addOverride('AppDisplay', AppDisplay.AppDisplay.prototype, AppDisplayOverride);
+        _overrides.addOverride('BaseAppViewVertical', AppDisplay.BaseAppView.prototype, BaseAppViewVerticalOverride);
+        _overrides.addOverride('AppDisplayVertical', AppDisplay.AppDisplay.prototype, AppDisplayVerticalOverride);
         _overrides.addOverride('SecondaryMonitorDisplay', WorkspacesView.SecondaryMonitorDisplay.prototype, SecondaryMonitorDisplayVerticalOverride);
         _overrides.addOverride('ControlsManagerLayout', OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutVerticalOverride);
 
@@ -246,11 +254,11 @@ function activate() {
     _overrides.addOverride('WindowPreview', WindowPreview.WindowPreview.prototype, WindowPreviewOverride);
     _overrides.addOverride('WorkspaceBackground', Workspace.WorkspaceBackground.prototype, WorkspaceBackgroundOverride);
     _overrides.addOverride('AppSearchProvider', AppDisplay.AppSearchProvider.prototype, AppSearchProviderOverride);
+
+    // Custom App Grid
     _overrides.addOverride('AppFolderDialog', AppDisplay.AppFolderDialog.prototype, AppFolderDialogOverride);
-    if (shellVersion < 43) {
-        _overrides.addOverride('BaseAppView', AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
-        // fixed icon size for folder icons
-    } else {
+    if (shellVersion >= 43) {
+        // const defined class needs to be touched before real access
         AppDisplay.BaseAppViewGridLayout;
         _overrides.addOverride('BaseAppViewGridLayout', AppDisplay.BaseAppViewGridLayout.prototype, BaseAppViewGridLayoutOverride);
         _overrides.addOverride('IconGrid', IconGrid.IconGrid.prototype, IconGridOverride);
@@ -258,6 +266,8 @@ function activate() {
     _overrides.addOverride('FolderView', AppDisplay.FolderView.prototype, FolderViewOverrides);
     _overrides.addInjection('AppFolderDialog', AppDisplay.AppFolderDialog.prototype, AppFolderDialogInjections);
     _overrides.addOverride('AppIcon', AppDisplay.AppIcon.prototype, AppIconOverride);
+    _overrides.addOverride('BaseAppView', AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
+    _overrides.addOverride('AppDisplay', AppDisplay.AppDisplay.prototype, AppDisplayOverride);
 
     _prevDash = {};
     const dash = Main.overview.dash;
@@ -306,10 +316,12 @@ function activate() {
 
     // set app grid size, columns, rows
     _updateAppGridProperties();
+    _updateAppGridDND();
 }
 
 function reset() {
     _enabled = 0;
+    const reset = true;
 
     _fixUbuntuDock(false);
     if (_monitorsChangedSigId) {
@@ -329,6 +341,9 @@ function reset() {
     }
 
     Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = 0.95;
+
+    _updateAppGridProperties(reset);
+    _updateAppGridDND(reset);
 
     _overrides.removeAll();
     _overrides = null;
@@ -355,7 +370,6 @@ function reset() {
 
     //Main.overview._overview._controls._thumbnailsBox._indicator.set_style()
 
-    const reset = true;
     _moveDashAppGridIcon(reset);
     _prevDash = null;
 
@@ -403,8 +417,6 @@ function reset() {
     _updateSearchViewWidth(reset);
 
     _connectWsAnimationSwipeTracker(reset);
-
-    _updateAppGridProperties(reset);
 
     _updateWindowSearchProvider(reset);
 }
@@ -707,14 +719,15 @@ function _updateSettings(settings, key) {
     APP_GRID_ICON_SIZE = gOptions.get('appGridIconSize', true);
     APP_GRID_COLUMNS = gOptions.get('appGridColumns', true);
     APP_GRID_ROWS = gOptions.get('appGridRows', true);
+    APP_GRID_ORDER = gOptions.get('appGridOrder', true);
+    APP_GRID_INCLUDE_DASH = gOptions.get('appGridIncludeDash', true);
 
     APP_GRID_FOLDER_ICON_SIZE = gOptions.get('appGridFolderIconSize', true);
     APP_GRID_FOLDER_COLUMNS = gOptions.get('appGridFolderColumns', true);
     APP_GRID_FOLDER_ROWS = gOptions.get('appGridFolderRows', true);
 
-    DASH_SHOW_WINS_BEFORE = true;
+    DASH_SHOW_WINS_BEFORE = gOptions.get('dashShowWindowsBeforeActivation', true);
     DASH_SHIFT_CLICK_MV = true;
-    DASH_FOLLOW_RECENT_WIN = true;
 
     WINDOW_SEARCH_PROVIDER_ENABLED = gOptions.get('searchWindowsEnable', true);
 
@@ -738,6 +751,7 @@ function _updateSettings(settings, key) {
     }
     if (key?.includes('app-grid'))
         _updateAppGridProperties();
+        _updateAppGridDND();
 
 }
 
@@ -4181,17 +4195,10 @@ var WorkspaceLayoutOverride = {
     }
 }
 
-//------ appDisplay --------------------------------------------------------------------------------
+//------ appDisplay - Vertical --------------------------------------------------------------------------------
 
-// this fixes dnd from appDisplay to the workspace thumbnail on the left if appDisplay is on page 1 because of appgrid left overshoot
-var BaseAppViewOverride  = {
-    _pageForCoords: function(x, y) {
-        return AppDisplay.SidePages.NONE;
-    }
-}
-
-// correction of the appGrid size when page indicators were moved from the bottom to the right
-var AppDisplayOverride = {
+const AppDisplayVerticalOverride = {
+    // correction of the appGrid size when page indicators were moved from the bottom to the right
     adaptToSize: function(width, height) {
         const [, indicatorWidth] = this._pageIndicators.get_preferred_width(-1);
         width -= indicatorWidth;
@@ -4200,8 +4207,9 @@ var AppDisplayOverride = {
 
         const adaptToSize = AppDisplay.BaseAppView.prototype.adaptToSize.bind(this);
         adaptToSize(width, height);
-    }
+    },
 }
+
 
 //------ AppDisplay.AppSearchProvider ----------------------------------------------------------------------------------
 
@@ -4421,10 +4429,292 @@ const MonitorGroupInjections = {
     }
 }
 
-//------ App Grid ----------------------------------------------------------
+//------ App Grid - Customization ----------------------------------------------------------
 
-// GS <= 42 only, Adapt app grid so it can use all available space
-BaseAppViewOverride = {
+function _updateAppGridDND(reset) {
+    if (APP_GRID_ORDER && !reset) {
+        if (!_appSystemStateSigId)
+            _appSystemStateSigId = Shell.AppSystem.get_default().connect('app-state-changed', () => Main.overview._overview._controls._appDisplay._redisplay());
+
+        // deny dnd from dash to app grid
+        if (!_origAppDisplayAcceptDrop)
+            _origAppDisplayAcceptDrop = AppDisplay.AppDisplay.prototype.acceptDrop;
+        AppDisplay.AppDisplay.prototype.acceptDrop = function() { return false; };
+
+        // deny creating folders by dnd on other icon
+        if (!_origAppViewItemHandleDragOver)
+            _origAppViewItemHandleDragOver = AppDisplay.AppViewItem.prototype.handleDragOver;
+        AppDisplay.AppViewItem.prototype.handleDragOver = () => DND.DragMotionResult.NO_DROP;
+
+        if (!_origAppViewItemAcceptDrop)
+            _origAppViewItemAcceptDrop = AppDisplay.AppViewItem.prototype.acceptDrop;
+        AppDisplay.AppViewItem.prototype.acceptDrop = () => false;
+    } else {
+        if (_appSystemStateSigId) {
+            Shell.AppSystem.get_default().disconnect(_appSystemStateSigId);
+            _appSystemStateSigId = 0;
+        }
+
+        if (_origAppDisplayAcceptDrop)
+            AppDisplay.AppDisplay.prototype.acceptDrop = _origAppDisplayAcceptDrop;
+
+        if (_origAppViewItemHandleDragOver)
+            AppDisplay.AppViewItem.prototype.handleDragOver = _origAppViewItemHandleDragOver;
+
+        if (_origAppViewItemAcceptDrop)
+            AppDisplay.AppViewItem.prototype.acceptDrop = _origAppViewItemAcceptDrop;
+    }
+}
+
+// Set App Grid columns, rows, icon size, incomplete pages
+function _updateAppGridProperties(reset = false) {
+    // columns, rows, icon size
+    const appDisplay = Main.overview._overview._controls._appDisplay;
+    appDisplay.visible = true;
+
+    // replace isFavorite function to always return false to allow dnd with favorite apps
+    if (!reset && APP_GRID_INCLUDE_DASH) {
+        if (!appDisplay._appFavorites._backupIsFavorite) {
+            appDisplay._appFavorites._backupIsFavorite = appDisplay._appFavorites.isFavorite;
+        }
+        appDisplay._appFavorites.isFavorite = () => false;
+    } else {
+        if (appDisplay._appFavorites._backupIsFavorite) {
+            appDisplay._appFavorites.isFavorite = appDisplay._appFavorites._backupIsFavorite;
+            appDisplay._appFavorites._backupIsFavorite = undefined;
+        }
+    }
+
+    if (reset) {
+        appDisplay._grid.layout_manager.fixedIconSize = -1;
+        appDisplay._grid.layoutManager.allow_incomplete_pages = true;
+        appDisplay._grid.setGridModes();
+        if (_appGridLayoutSettings) {
+            _appGridLayoutSettings.disconnect(_appGridLayoutSigId);
+            _appGridLayoutSigId = null;
+            _appGridLayoutSettings = null;
+        }
+        appDisplay._redisplay();
+        // secondary call is necessary to properly update app grid
+        appDisplay._redisplay();
+    } else {
+        // update grid on layout reset
+        if (!_appGridLayoutSettings) {
+           _appGridLayoutSettings = ExtensionUtils.getSettings('org.gnome.shell');
+           _appGridLayoutSigId = _appGridLayoutSettings.connect('changed::app-picker-layout', _resetAppGrid);
+        }
+
+        // remove icons from App Grid
+        _resetAppGrid();
+
+        const updateGrid = function(rows, columns) {
+            if (rows === -1 || columns === -1) {
+                appDisplay._grid.setGridModes();
+            } else {
+                appDisplay._grid.setGridModes(
+                    [{ rows, columns }]
+                );
+            }
+            appDisplay._grid._setGridMode(0);
+        }
+
+        appDisplay._grid._currentMode = -1;
+        if (APP_GRID_ALLOW_CUSTOM) {
+            updateGrid(APP_GRID_ROWS, APP_GRID_COLUMNS);
+        } else {
+            appDisplay._grid.setGridModes();
+            updateGrid(-1, -1);
+        }
+        appDisplay._grid.layoutManager.fixedIconSize = APP_GRID_ICON_SIZE;
+        appDisplay._grid.layoutManager.allow_incomplete_pages = APP_GRID_ALLOW_INCOMPLETE_PAGES;
+
+        // force rebuild icons. size shouldn't be the same as the current one, otherwise can be arbitrary
+        appDisplay._grid.layoutManager.adaptToSize(200, 200);
+        appDisplay._redisplay();
+    }
+}
+
+
+var BaseAppViewVerticalOverride = {
+    // this fixes dnd from appDisplay to the workspace thumbnail on the left if appDisplay is on page 1 because of appgrid left overshoot
+    _pageForCoords: function(x, y) {
+        return AppDisplay.SidePages.NONE;
+    },
+}
+
+// ------ AppDisplay - Custom App Grid ------------------------------------------------------------------------
+
+const AppDisplayOverride = {
+    _ensureDefaultFolders: function() {
+        // disable creation of default folders if user deleted them
+    },
+
+    // apps load adapted for custom sorting and including dash items
+    _loadApps: function() {
+        let appIcons = [];
+        this._appInfoList = Shell.AppSystem.get_default().get_installed().filter(appInfo => {
+            try {
+                appInfo.get_id(); // catch invalid file encodings
+            } catch (e) {
+                return false;
+            }
+            return (APP_GRID_INCLUDE_DASH || !this._appFavorites.isFavorite(appInfo.get_id())) &&
+                this._parentalControlsManager.shouldShowApp(appInfo);
+        });
+
+        let apps = this._appInfoList.map(app => app.get_id());
+
+        let appSys = Shell.AppSystem.get_default();
+
+        const appsInsideFolders = new Set();
+        this._folderIcons = [];
+        if (!APP_GRID_ORDER) {
+
+            let folders = this._folderSettings.get_strv('folder-children');
+            folders.forEach(id => {
+                let path = `${this._folderSettings.path}folders/${id}/`;
+                let icon = this._items.get(id);
+                if (!icon) {
+                    icon = new AppDisplay.FolderIcon(id, path, this);
+                    icon.connect('apps-changed', () => {
+                        this._redisplay();
+                        this._savePages();
+                    });
+                    icon.connect('notify::pressed', () => {
+                        if (icon.pressed)
+                            this.updateDragFocus(icon);
+                    });
+                }
+
+                // Don't try to display empty folders
+                if (!icon.visible) {
+                    icon.destroy();
+                    return;
+                }
+
+                appIcons.push(icon);
+                this._folderIcons.push(icon);
+
+                icon.getAppIds().forEach(appId => appsInsideFolders.add(appId));
+            });
+        }
+
+        // Allow dragging of the icon only if the Dash would accept a drop to
+        // change favorite-apps. There are no other possible drop targets from
+        // the app picker, so there's no other need for a drag to start,
+        // at least on single-monitor setups.
+        // This also disables drag-to-launch on multi-monitor setups,
+        // but we hope that is not used much.
+        const isDraggable =
+            global.settings.is_writable('favorite-apps') ||
+            global.settings.is_writable('app-picker-layout');
+
+        apps.forEach(appId => {
+            if (!APP_GRID_ORDER && appsInsideFolders.has(appId))
+                return;
+
+            let icon = this._items.get(appId);
+            if (!icon) {
+                let app = appSys.lookup_app(appId);
+
+                icon = new AppDisplay.AppIcon(app, { isDraggable });
+                icon.connect('notify::pressed', () => {
+                    if (icon.pressed)
+                        this.updateDragFocus(icon);
+                });
+            }
+
+            appIcons.push(icon);
+        });
+
+        // At last, if there's a placeholder available, add it
+        if (this._placeholder)
+            appIcons.push(this._placeholder);
+
+        const runningIDs = Shell.AppSystem.get_default().get_running().map(app => app.get_id());
+
+        // remove running apps
+        /*if (!APP_GRID_INCLUDE_DASH) { // !icon.app means folder
+            appIcons = appIcons.filter((icon) => this._folderIcons.includes(icon) || !(runningIDs.includes(icon.app.id) || this._appFavorites.isFavorite(icon.id)));
+        }*/
+
+        return appIcons;
+    },
+}
+
+var BaseAppViewOverride = {
+    // adds sorting options and option to add favorites and running apps
+    _redisplay: function() {
+        let oldApps = this._orderedItems.slice();
+        let oldAppIds = oldApps.map(icon => icon.id);
+
+        let newApps = this._loadApps().sort(this._compareItems.bind(this));
+        let newAppIds = newApps.map(icon => icon.id);
+
+        let addedApps = newApps.filter(icon => !oldAppIds.includes(icon.id));
+        let removedApps = oldApps.filter(icon => !newAppIds.includes(icon.id));
+
+        // Remove old app icons
+        removedApps.forEach(icon => {
+            this._removeItem(icon);
+            icon.destroy();
+        });
+
+        // Add new app icons, or move existing ones
+        newApps.forEach(icon => {
+            const [page, position] = this._getItemPosition(icon);
+            if (addedApps.includes(icon))
+                this._addItem(icon, page, position);
+            else if (page !== -1 && position !== -1) {
+                this._moveItem(icon, page, position);
+            }
+
+        });
+
+        // Reorder App Grid by usage
+        // sort all alphabetically
+        if(APP_GRID_ORDER > 0) {
+            const { itemsPerPage } = this._grid;
+            let appIcons = this._orderedItems;
+            appIcons.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+            // then sort used apps by usage
+            if (APP_GRID_ORDER === 2) {
+                appIcons.sort((a, b) => Shell.AppUsage.get_default().compare(a.app.id, b.app.id));
+            }
+            // sort favorites first
+            if (APP_GRID_INCLUDE_DASH === 2) {
+                const fav = Object.keys(this._appFavorites._favorites);
+                appIcons.sort((a, b) => {
+                    let aFav = fav.indexOf(a.id);
+                    if (aFav < 0) aFav = 999;
+                    let bFav = fav.indexOf(b.id);
+                    if (bFav < 0) bFav = 999;
+                    return bFav < aFav;
+                });
+            }
+
+            // sort running first
+            if (APP_GRID_INCLUDE_DASH === 2) {
+                appIcons.sort((a, b) => a.app.get_state() !== Shell.AppState.RUNNING && b.app.get_state() === Shell.AppState.RUNNING);
+            }
+
+            appIcons.forEach((icon, i) => {
+                const page = Math.floor(i / itemsPerPage);
+                const position = i % itemsPerPage;
+                this._moveItem(icon, page, position);
+            });
+
+            this._orderedItems = appIcons;
+        }
+
+        this.emit('view-loaded');
+    },
+
+    _canAccept: function(source) {
+        return (APP_GRID_ORDER ? false : source instanceof AppDisplay.AppViewItem);
+    },
+
+    // GS <= 42 only, Adapt app grid so it can use all available space
     adaptToSize(width, height) {
         let box = new Clutter.ActorBox({
             x2: width,
@@ -4546,60 +4836,6 @@ const AppFolderDialogInjections = {
     }
 }
 
-// Set App Grid columns, rows, icon size, incomplete pages
-function _updateAppGridProperties(reset) {
-    // columns, rows, icon size
-    const appDisplay = Main.overview._overview._controls._appDisplay;
-    appDisplay.visible = true;
-
-    if (reset) {
-        appDisplay._grid.layout_manager.fixedIconSize = -1;
-        appDisplay._grid.layoutManager.allow_incomplete_pages = true;
-        appDisplay._grid.setGridModes();
-        if (_appGridLayoutSettings) {
-            _appGridLayoutSettings.disconnect(_appGridLayoutSigId);
-            _appGridLayoutSigId = null;
-            _appGridLayoutSettings = null;
-        }
-        appDisplay._redisplay();
-        // secondary call is necessary to properly update app grid
-        appDisplay._redisplay();
-    } else {
-        // update grid on layout reset
-        if (!_appGridLayoutSettings) {
-           _appGridLayoutSettings = ExtensionUtils.getSettings('org.gnome.shell');
-           _appGridLayoutSigId = _appGridLayoutSettings.connect('changed::app-picker-layout', _resetAppGrid);
-        }
-
-        // remove icons from App Grid
-        _resetAppGrid();
-
-        const updateGrid = function(rows, columns) {
-            if (rows === -1 || columns === -1) {
-                appDisplay._grid.setGridModes();
-            } else {
-                appDisplay._grid.setGridModes(
-                    [{ rows, columns }]
-                );
-            }
-            appDisplay._grid._setGridMode(0);
-        }
-
-        appDisplay._grid._currentMode = -1;
-        if (APP_GRID_ALLOW_CUSTOM) {
-            updateGrid(APP_GRID_ROWS, APP_GRID_COLUMNS);
-        } else {
-            appDisplay._grid.setGridModes();
-            updateGrid(-1, -1);
-        }
-        appDisplay._grid.layoutManager.fixedIconSize = APP_GRID_ICON_SIZE;
-        appDisplay._grid.layoutManager.allow_incomplete_pages = APP_GRID_ALLOW_INCOMPLETE_PAGES;
-
-        // force rebuild icons. size shouldn't be the same as the current one, otherwise can be arbitrary
-        appDisplay._grid.layoutManager.adaptToSize(200, 200);
-        appDisplay._redisplay();
-    }
-}
 
 // ------------------ AppDisplay.FolderGrid -----------------------------------------------------------------------
 

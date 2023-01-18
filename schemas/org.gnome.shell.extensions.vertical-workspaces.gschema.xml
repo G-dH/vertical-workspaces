@@ -127,6 +127,12 @@
     <key type="i" name="app-grid-rows">
       <default>4</default>
     </key>
+    <key type="i" name="app-grid-order">
+      <default>0</default>
+    </key>
+    <key type="i" name="app-grid-include-dash">
+      <default>0</default>
+    </key>
     <key type="i" name="app-grid-folder-icon-size">
       <default>80</default>
     </key>
@@ -135,6 +141,12 @@
     </key>
     <key type="i" name="app-grid-folder-rows">
       <default>3</default>
+    </key>
+    <key type="b" name="app-grid-incomplete-pages">
+      <default>true</default>
+    </key>
+    <key type="i" name="dash-show-windows-before-activation">
+      <default>1</default>
     </key>
     <key type="b" name="search-windows-enable">
       <default>true</default>

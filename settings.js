@@ -89,8 +89,12 @@ var Options = class Options {
             appGridFolderIconSize: ['int', 'app-grid-folder-icon-size'],
             appGridFolderColumns: ['int', 'app-grid-folder-columns'],
             appGridFolderRows: ['int', 'app-grid-folder-rows'],
+            appGridIncludeDash: ['int', 'app-grid-include-dash'],
+            appGridIncompletePages: ['boolean', 'app-grid-incomplete-pages'],
+            appGridOrder: ['int', 'app-grid-order'],
             searchWindowsEnable: ['boolean', 'search-windows-enable'],
-            searchWindowsFuzzy: ['boolean', 'search-windows-fuzzy']
+            searchWindowsFuzzy: ['boolean', 'search-windows-fuzzy'],
+            dashShowWindowsBeforeActivation: ['int', 'dash-show-windows-before-activation']
         }
         this.cachedOptions = {};
     }
