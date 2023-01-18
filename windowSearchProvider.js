@@ -24,8 +24,9 @@ const ModifierType = imports.gi.Clutter.ModifierType;
 let gOptions;
 var windowSearchProvider = null;
 let _enableTimeoutId = 0;
+let _moveTimeoutId;
 
-var prefix = 'wq/';
+var prefix = 'wq//';
 
 const Action = {
     NONE: 0,
@@ -73,6 +74,10 @@ function disable() {
         _enableTimeoutId = 0;
     }
     gOptions = null;
+
+    if (_moveTimeoutId) {
+        GLib.source_remove(_moveTimeoutId);
+    }
 }
 
 function fuzzyMatch(term, text) {
@@ -186,7 +191,7 @@ var WindowSearchProvider = class WindowSearchProvider {
             if (this.action) {
                 terms.pop();
                 if (this.action === Action.MOVE_TO_WS || this.action === Action.MOVE_ALL_TO_WS) {
-                    this.targetWs = parseInt(lastTerm.replace(/^[^0-9]+/, ''));
+                    this.targetWs = parseInt(lastTerm.replace(/^[^0-9]+/, '')) - 1;
                 }
             } else if (lastTerm.startsWith('/')) {
                 terms.pop();
@@ -259,18 +264,15 @@ var WindowSearchProvider = class WindowSearchProvider {
         const isCtrlPressed = (state & ModifierType.CONTROL_MASK) != 0;
         const isShiftPressed = (state & ModifierType.SHIFT_MASK) != 0;
 
-        if (!this.action) {
-            const currentWs = global.workspaceManager.get_active_workspace().index() + 1;
-//            if (isShiftPressed && !isCtrlPressed && gOptions.get('searchWindowsShiftMoves')) {
-            if (isShiftPressed && !isCtrlPressed) {
-                this.action = Action.MOVE_TO_WS;
-                this.targetWs = currentWs;
-            } else if (isShiftPressed && isCtrlPressed) {
-                this.action = Action.MOVE_ALL_TO_WS;
-                this.targetWs = currentWs;
-            }
-        }
+        this.action = 0;
+        this.targetWs = 0;
 
+        this.targetWs = global.workspaceManager.get_active_workspace().index() + 1;
+        if (isShiftPressed && !isCtrlPressed) {
+            this.action = Action.MOVE_TO_WS;
+        } else if (isShiftPressed && isCtrlPressed) {
+            this.action = Action.MOVE_ALL_TO_WS;
+        }
 
         if (!this.action) {
             const result = this.windows[resultId];
@@ -306,12 +308,16 @@ var WindowSearchProvider = class WindowSearchProvider {
         if (!wsIndex || wsIndex > global.workspaceManager.n_workspaces) {
             return false;
         }
-        const ws = global.workspaceManager.get_workspace_by_index(wsIndex - 1);
-        for (let i = 0; i < resultIds.length; i++) {
-            this.windows[resultIds[i]].window.change_workspace(ws);
-        }
-        const selectedWin = this.windows[selectedId].window;
-        Main.activateWindow(selectedWin);
+
+        _moveTimeoutId = GLib.timeout_add(0, 200, () => {
+            for (let i = 0; i < resultIds.length; i++) {
+                this.windows[resultIds[i]].window.change_workspace_by_index(wsIndex - 1, global.get_current_time());
+            }
+            const selectedWin = this.windows[selectedId].window;
+            Main.activateWindow(selectedWin);
+            _moveTimeoutId = 0;
+            return GLib.SOURCE_REMOVE;
+        });
     }
 
     getInitialResultSet (terms, callback, cancellable = null) {
@@ -320,9 +326,11 @@ var WindowSearchProvider = class WindowSearchProvider {
         }
         let windows;
         this.windows = windows = {};
-        global.display.get_tab_list(Meta.TabList.NORMAL, null).map(
+        global.display.get_tab_list(Meta.TabList.NORMAL, null).filter(w => w.get_workspace() !== null).map(
             (v, i) => windows[`${i}-${v.get_id()}`] = makeResult(v, `${i}-${v.get_id()}`)
         );
+
+
 
         if (shellVersion >= 43) {
             return new Promise(resolve => resolve(this._getResultSet(terms)));
