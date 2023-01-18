@@ -96,6 +96,8 @@ let _showAppsIconBtnPressId;
 let _wsAnimationSwipeBeginId;
 let _wsAnimationSwipeEndId;
 
+let _showingPointerX;
+
 let _appGridLayoutSigId;
 let _appGridLayoutSettings;
 
@@ -565,6 +567,9 @@ function _fixUbuntuDock(activate = true) {
     _watchDockSigId = _shellSettings.connect('changed::enabled-extensions', () => _resetExtension());
     _resetExtensionIfEnabled = _resetExtension;
     _showingOverviewSigId = Main.overview.connect('showing', () => {
+        // store pointer X coordinate for OVERVIEW_MODE 1 window spread - if mouse pointer is steady, don't spread
+        _showingPointerX = global.get_pointer()[0];
+
         // workaround for Ubuntu Dock breaking overview allocations after changing position
         const dash = Main.overview.dash;
         if (_prevDash.dash !== dash || _prevDash.position !== dash._position) {
@@ -572,6 +577,7 @@ function _fixUbuntuDock(activate = true) {
         }
         if (OVERVIEW_MODE2) {
             //Main.panel.set_style('background-color: transparent;');
+            // keep panel bg opacity in WINDOW_PICKER overview (not needed in Ubuntu)
             const color = Main.panel.get_theme_node().get_background_color();
             Main.panel.set_style(`background-color: rgba(${color.red}, ${color.green}, ${color.blue}, 1);`);
         }
@@ -963,6 +969,10 @@ const WindowPreviewInjections = {
         if (OVERVIEW_MODE === 1) {
             // spread windows on hover
             this._wsStateConId = this.connect('enter-event', () => {
+                // don't spread windows if user don't use pointer device at this moment
+                if (global.get_pointer()[0] === _showingPointerX)
+                    return;
+
                 const adjustment = this._workspace._background._stateAdjustment;
                 if (!adjustment.value && !Main.overview._animationInProgress) {
                     WORKSPACE_MODE = 1;
@@ -3430,7 +3440,7 @@ var ControlsManagerLayoutVerticalOverride = {
 
         const xOffsetL = (WS_TMB_LEFT ? thumbnailsWidth : 0) + (DASH_LEFT ? dashWidth : 0);
         const xOffsetR = (WS_TMB_RIGHT ? thumbnailsWidth : 0) + (DASH_RIGHT ? dashWidth : 0);
-        const yOffsetT = (DASH_TOP ? dashHeight : 0) + searchHeight;
+        const yOffsetT = (DASH_TOP ? dashHeight : 0) + (SHOW_SEARCH_ENTRY ? searchHeight : 0);
         const yOffsetB = (DASH_BOTTOM ? dashHeight : 0);
         const adWidth = CENTER_APP_GRID ? (width - 2 * Math.max (xOffsetL, xOffsetR) - 4 * spacing) : (width - xOffsetL - xOffsetR - 4 * spacing);
         const adHeight = height - yOffsetT - yOffsetB - 4 * spacing;
@@ -3817,7 +3827,7 @@ var ControlsManagerLayoutHorizontalOverride = {
         const appDisplayBox = new Clutter.ActorBox();
         const { spacing } = this;
 
-        const yOffsetT = (WS_TMB_TOP ? thumbnailsHeight : 0) + (DASH_TOP ? dashHeight : 0) + searchHeight;
+        const yOffsetT = (WS_TMB_TOP ? thumbnailsHeight : 0) + (DASH_TOP ? dashHeight : 0) + (SHOW_SEARCH_ENTRY ? searchHeight : 0);
         const yOffsetB = (WS_TMB_BOTTOM ? thumbnailsHeight : 0) + (DASH_BOTTOM ? dashHeight : 0);
         const xOffsetL = (DASH_LEFT ? dashWidth : 0);
         const xOffsetR = (DASH_RIGHT ? dashWidth : 0);
