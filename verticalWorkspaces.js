@@ -33,6 +33,7 @@ const WorkspaceSwitcherPopup = imports.ui.workspaceSwitcherPopup;
 const SwipeTracker = imports.ui.swipeTracker;
 const WorkspaceAnimation = imports.ui.workspaceAnimation;
 const Search = imports.ui.search;
+const WindowManager = imports.ui.windowManager;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -276,6 +277,7 @@ function activate() {
     _overrides.addOverride('AppIcon', AppDisplay.AppIcon.prototype, AppIconOverride);
     _overrides.addOverride('BaseAppView', AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
     _overrides.addOverride('AppDisplay', AppDisplay.AppDisplay.prototype, AppDisplayOverride);
+    _overrides.addOverride('WindowManager', WindowManager.WindowManager.prototype, WindowManagerOverride);
 
     _prevDash = {};
     const dash = Main.overview.dash;
@@ -328,6 +330,8 @@ function activate() {
 
     _disconnectPanel();
     _showingOverviewSigId = Main.overview.connect('showing', _onShowingOverview);
+
+    _replaceMinimizeFunction();
 }
 
 function reset() {
@@ -431,7 +435,9 @@ function reset() {
 
     _updateWindowSearchProvider(reset);
 
-    _showPanel(true, reset);
+    _updatePanel(reset);
+
+    _replaceMinimizeFunction(reset);
 }
 
 function _onShowingOverview() {
@@ -5257,13 +5263,10 @@ const AppIconOverride = {
 //---------- Panel visibility ------------------------------------------------------------
 
 function _updatePanel(reset = false) {
-    /*if (!_staticBgAnimationEnabled)
-        return;*/
-
     const panel = Main.layoutManager.panelBox;
 
     const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
-    if (PANEL_POSITION_TOP) {
+    if (reset || PANEL_POSITION_TOP) {
         panel.set_position(geometry.x, geometry.y);
     } else {
         panel.set_position(geometry.x, geometry.y + geometry.height - panel.height);
@@ -5271,9 +5274,7 @@ function _updatePanel(reset = false) {
 
     if (reset || PANEL_MODE === 0) {
         _disconnectPanel();
-        if (panel.get_parent() === Main.layoutManager.overviewGroup) {
-            _reparentPanel(false);
-        }
+        _reparentPanel(false);
         _showPanel();
         panel.translation_y = 0;
         panel.opacity = 255;
@@ -5315,12 +5316,18 @@ function _reparentPanel(reparent = false) {
     }
 }
 
+function _removeStrutsActor() {
+    if (_strutsActor) {
+        Main.layoutManager.removeChrome(_strutsActor);
+        _strutsActor = null;
+    }
+}
+
 function _setPanelStructs(state) {
     Main.layoutManager._trackedActors.forEach(a => {
         if (a.actor === Main.layoutManager.panelBox)
             a.affectsStruts = state;
     });
-
 
     // workaround to force maximized windows to resize after removing affectsStruts
     // simulation of minimal swipe gesture to the opposite direction
@@ -5380,5 +5387,167 @@ function _disconnectPanel() {
     if (_panelLeaveSigId) {
         Main.panel.disconnect(_panelLeaveSigId);
         _panelLeaveSigId = 0;
+    }
+}
+
+let _originalMinimizeSigId;
+let _minimizeSigId;
+let _originalUnminimizeSigId;
+let _unminimizeSigId;
+
+function _replaceMinimizeFunction(reset = false) {
+    if (reset) {
+        Main.wm._shellwm.disconnect(_minimizeSigId);
+        _minimizeSigId = 0;
+        Main.wm._shellwm.unblock_signal_handler(_originalMinimizeSigId);
+        _originalMinimizeSigId = 0;
+
+        Main.wm._shellwm.disconnect(_unminimizeSigId);
+        _unminimizeSigId = 0;
+        Main.wm._shellwm.unblock_signal_handler(_originalUnminimizeSigId);
+        _originalUnminimizeSigId = 0;
+
+    } else if (!_minimizeSigId) {
+        _originalMinimizeSigId = GObject.signal_handler_find(Main.wm._shellwm, { signalId: 'minimize' });
+        if (_originalMinimizeSigId) {
+            Main.wm._shellwm.block_signal_handler(_originalMinimizeSigId);
+            _minimizeSigId = Main.wm._shellwm.connect('minimize', WindowManagerOverride._minimizeWindow.bind(Main.wm));
+        }
+
+        _originalUnminimizeSigId = GObject.signal_handler_find(Main.wm._shellwm, { signalId: 'unminimize' });
+        if (_originalUnminimizeSigId) {
+            Main.wm._shellwm.block_signal_handler(_originalUnminimizeSigId);
+            _unminimizeSigId = Main.wm._shellwm.connect('unminimize', WindowManagerOverride._unminimizeWindow.bind(Main.wm));
+        }
+    }
+}
+
+// fix for mainstream bug - fullscreen windows should minimize using opacity transition
+// but its being applied directly on window actor and that doesn't work
+// anyway, animation is better, even if the Activities button is not visible...
+// and also add support for bottom position of the panel
+const WindowManagerOverride = {
+    _minimizeWindow: function(shellwm, actor) {
+        const types = [
+            Meta.WindowType.NORMAL,
+            Meta.WindowType.MODAL_DIALOG,
+            Meta.WindowType.DIALOG,
+        ];
+        if (!this._shouldAnimateActor(actor, types)) {
+            shellwm.completed_minimize(actor);
+            return;
+        }
+
+        actor.set_scale(1.0, 1.0);
+
+        this._minimizing.add(actor);
+
+        if (false/*actor.meta_window.is_monitor_sized()*/) {
+            actor.get_first_child().ease({
+                opacity: 0,
+                duration: WindowManager.MINIMIZE_WINDOW_ANIMATION_TIME,
+                mode: WindowManager.MINIMIZE_WINDOW_ANIMATION_MODE,
+                onStopped: () => this._minimizeWindowDone(shellwm, actor),
+            });
+        } else {
+            let xDest, yDest, xScale, yScale;
+            let [success, geom] = actor.meta_window.get_icon_geometry();
+            if (success) {
+                xDest = geom.x;
+                yDest = geom.y;
+                xScale = geom.width / actor.width;
+                yScale = geom.height / actor.height;
+            } else {
+                let monitor = Main.layoutManager.monitors[actor.meta_window.get_monitor()];
+                if (!monitor) {
+                    this._minimizeWindowDone();
+                    return;
+                }
+                xDest = monitor.x;
+                yDest = PANEL_POSITION_TOP ? monitor.y : monitor.y + monitor.height;
+                if (Clutter.get_default_text_direction() == Clutter.TextDirection.RTL)
+                    xDest += monitor.width;
+                xScale = 0;
+                yScale = 0;
+            }
+
+            actor.ease({
+                scale_x: xScale,
+                scale_y: yScale,
+                x: xDest,
+                y: yDest,
+                duration: WindowManager.MINIMIZE_WINDOW_ANIMATION_TIME,
+                mode: WindowManager.MINIMIZE_WINDOW_ANIMATION_MODE,
+                onStopped: () => this._minimizeWindowDone(shellwm, actor),
+            });
+        }
+    },
+
+    _minimizeWindowDone: function(shellwm, actor) {
+        if (this._minimizing.delete(actor)) {
+            actor.remove_all_transitions();
+            actor.set_scale(1.0, 1.0);
+            actor.get_first_child().set_opacity(255);
+            actor.set_pivot_point(0, 0);
+
+            shellwm.completed_minimize(actor);
+        }
+    },
+
+    _unminimizeWindow: function(shellwm, actor) {
+        const types = [
+            Meta.WindowType.NORMAL,
+            Meta.WindowType.MODAL_DIALOG,
+            Meta.WindowType.DIALOG,
+        ];
+        if (!this._shouldAnimateActor(actor, types)) {
+            shellwm.completed_unminimize(actor);
+            return;
+        }
+
+        this._unminimizing.add(actor);
+
+        if (false/*actor.meta_window.is_monitor_sized()*/) {
+            actor.opacity = 0;
+            actor.set_scale(1.0, 1.0);
+            actor.ease({
+                opacity: 255,
+                duration: WindowManager.MINIMIZE_WINDOW_ANIMATION_TIME,
+                mode: WindowManager.MINIMIZE_WINDOW_ANIMATION_MODE,
+                onStopped: () => this._unminimizeWindowDone(shellwm, actor),
+            });
+        } else {
+            let [success, geom] = actor.meta_window.get_icon_geometry();
+            if (success) {
+                actor.set_position(geom.x, PANEL_POSITION_TOP ? geom.y : geom.y + geom.height);
+                actor.set_scale(geom.width / actor.width,
+                                geom.height / actor.height);
+            } else {
+                let monitor = Main.layoutManager.monitors[actor.meta_window.get_monitor()];
+                if (!monitor) {
+                    actor.show();
+                    this._unminimizeWindowDone();
+                    return;
+                }
+                actor.set_position(monitor.x, PANEL_POSITION_TOP ? monitor.y : monitor.y + monitor.height);
+                if (Clutter.get_default_text_direction() == Clutter.TextDirection.RTL)
+                    actor.x += monitor.width;
+                actor.set_scale(0, 0);
+            }
+
+            let rect = actor.meta_window.get_buffer_rect();
+            let [xDest, yDest] = [rect.x, rect.y];
+
+            actor.show();
+            actor.ease({
+                scale_x: 1,
+                scale_y: 1,
+                x: xDest,
+                y: yDest,
+                duration: WindowManager.MINIMIZE_WINDOW_ANIMATION_TIME,
+                mode: WindowManager.MINIMIZE_WINDOW_ANIMATION_MODE,
+                onStopped: () => this._unminimizeWindowDone(shellwm, actor),
+            });
+        }
     }
 }
