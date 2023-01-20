@@ -711,11 +711,7 @@ function _updateSettings(settings, key) {
     CENTER_SEARCH_VIEW = gOptions.get('centerSearch', true);
     APP_GRID_ANIMATION = gOptions.get('appGridAnimation', true);
     if (APP_GRID_ANIMATION === 4) {
-        if (ORIENTATION === Clutter.Orientation.VERTICAL) {
-            APP_GRID_ANIMATION = (WS_TMB_LEFT || !SHOW_WS_TMB) ? 1 : 2; // 1 right, 2 left
-        } else {
-            APP_GRID_ANIMATION = (WS_TMB_TOP  || !SHOW_WS_TMB) ? 3 : 5; // 3 bottom, 5 top
-        }
+        APP_GRID_ANIMATION = _getAppGridAnimationDirection();
     }
     WS_ANIMATION = gOptions.get('workspaceAnimation', true);
 
@@ -788,6 +784,14 @@ function _updateSettings(settings, key) {
         _updateAppGridProperties();
         _updateAppGridDND();
 
+}
+
+function _getAppGridAnimationDirection() {
+    if (ORIENTATION === Clutter.Orientation.VERTICAL) {
+        return (WS_TMB_LEFT || !SHOW_WS_TMB) ? 1 : 2; // 1 right, 2 left
+    } else {
+        return (WS_TMB_TOP  || !SHOW_WS_TMB) ? 3 : 5; // 3 bottom, 5 top
+    }
 }
 
 function _updateWindowSearchProvider(reset = false) {
@@ -5266,30 +5270,49 @@ function _updatePanel(reset = false) {
     }
 
     if (reset || PANEL_MODE === 0) {
+        _disconnectPanel();
         if (panel.get_parent() === Main.layoutManager.overviewGroup) {
-            Main.layoutManager.overviewGroup.remove_child(panel);
-            Main.layoutManager.uiGroup.insert_child_at_index(panel, 4);
-            _disconnectPanel();
+            _reparentPanel(false);
         }
+        _showPanel();
         panel.translation_y = 0;
+        panel.opacity = 255;
     } else if (PANEL_MODE === 1) {
-        panel.translation_y = PANEL_POSITION_TOP ? -panel.height : panel.height;
+        _reparentPanel(false);
+        _showPanel(false);
+        _connectPanel();
     } else if (PANEL_MODE === 2) {
-        if (SHOW_WS_PREVIEW_BG && panel.get_parent() === Main.layoutManager.uiGroup) {
-            Main.layoutManager.uiGroup.remove_child(panel);
-            Main.layoutManager.overviewGroup.add_child(panel);
-        }
-        if (OVERVIEW_MODE2) {
-            Main.layoutManager.overviewGroup.set_child_above_sibling(panel, null)
-        } else if (panel.get_parent() === Main.layoutManager.overviewGroup) {
-            Main.layoutManager.overviewGroup.set_child_below_sibling(panel, Main.overview._overview);
-            panel.translation_y = 0;
+        if (SHOW_WS_PREVIEW_BG) {
+            _reparentPanel(true);
+            if (OVERVIEW_MODE2) {
+                // in OM2 if the panel has been moved to the overviewGroup move panel above all
+                Main.layoutManager.overviewGroup.set_child_above_sibling(panel, null);
+            } else {
+                // otherwise move the panel below overviewGroup so it can get below workspacesDisplay
+                Main.layoutManager.overviewGroup.set_child_below_sibling(panel, Main.overview._overview);
+            }
+            _showPanel(true);
         } else {
-            panel.translation_y = PANEL_POSITION_TOP ? -panel.height : panel.height;
+            // if ws preview bg is disabled, panel can stay in uiGroup
+            _reparentPanel(false);
+            _showPanel(false);
         }
+
         _connectPanel();
     }
     _setPanelStructs(PANEL_MODE === 0);
+}
+
+function _reparentPanel(reparent = false) {
+    const panel = Main.layoutManager.panelBox;
+    if (reparent && panel.get_parent() === Main.layoutManager.uiGroup) {
+        Main.layoutManager.uiGroup.remove_child(panel);
+        Main.layoutManager.overviewGroup.add_child(panel);
+    } else if (!reparent && panel.get_parent() === Main.layoutManager.overviewGroup) {
+        Main.layoutManager.overviewGroup.remove_child(panel);
+        // return the panel at default position, pane shouldn't cover objects that should be above
+        Main.layoutManager.uiGroup.insert_child_at_index(panel, 4);
+    }
 }
 
 function _setPanelStructs(state) {
@@ -5297,6 +5320,15 @@ function _setPanelStructs(state) {
         if (a.actor === Main.layoutManager.panelBox)
             a.affectsStruts = state;
     });
+
+
+    // workaround to force maximized windows to resize after removing affectsStruts
+    // simulation of minimal swipe gesture to the opposite direction
+    // todo - needs better solution!!!!!!!!!!!
+    /*const direction = _getAppGridAnimationDirection() === 2 ? 1 : -1;
+    Main.overview._swipeTracker._beginTouchSwipe(null, global.get_current_time(), 1, 1);
+    Main.overview._swipeTracker._updateGesture(null, global.get_current_time(), direction, 1);
+    GLib.timeout_add(0, 50, () => Main.overview._swipeTracker._endGesture(global.get_current_time(), 1, true));*/
 }
 
 function _showPanel(show = true) {
@@ -5324,6 +5356,8 @@ function _showPanel(show = true) {
 }
 
 function _connectPanel() {
+    // not reliable, disabled for now
+    return;
     if (!_panelEnterSigId) {
         _panelEnterSigId = Main.panel.connect('enter-event', () => {
             if (!Main.overview._shown)
@@ -5339,11 +5373,11 @@ function _connectPanel() {
 }
 
 function _disconnectPanel() {
-    if (!_panelEnterSigId) {
+    if (_panelEnterSigId) {
         Main.panel.disconnect(_panelEnterSigId);
         _panelEnterSigId = 0;
     }
-    if (!_panelLeaveSigId) {
+    if (_panelLeaveSigId) {
         Main.panel.disconnect(_panelLeaveSigId);
         _panelLeaveSigId = 0;
     }
