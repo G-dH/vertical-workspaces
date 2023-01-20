@@ -24,7 +24,6 @@ const ModifierType = imports.gi.Clutter.ModifierType;
 let gOptions;
 var windowSearchProvider = null;
 let _enableTimeoutId = 0;
-let _moveTimeoutId;
 
 var prefix = 'wq//';
 
@@ -74,10 +73,6 @@ function disable() {
         _enableTimeoutId = 0;
     }
     gOptions = null;
-
-    if (_moveTimeoutId) {
-        GLib.source_remove(_moveTimeoutId);
-    }
 }
 
 function fuzzyMatch(term, text) {
@@ -288,10 +283,10 @@ var WindowSearchProvider = class WindowSearchProvider {
             this._closeWindows(this.resultIds);
             break;
         case Action.MOVE_TO_WS:
-            this._moveWindowsToWs(resultId, [resultId], this.targetWs);
+            this._moveWindowsToWs(resultId, [resultId]);
             break;
         case Action.MOVE_ALL_TO_WS:
-            this._moveWindowsToWs(resultId, this.resultIds, this.targetWs);
+            this._moveWindowsToWs(resultId, this.resultIds);
             break;
         }
     }
@@ -304,20 +299,14 @@ var WindowSearchProvider = class WindowSearchProvider {
         Main.notify('Window Search Provider', `Closed ${ids.length} windows.`);
     }
 
-    _moveWindowsToWs(selectedId, resultIds, wsIndex) {
-        if (!wsIndex || wsIndex > global.workspaceManager.n_workspaces) {
-            return false;
-        }
+    _moveWindowsToWs(selectedId, resultIds) {
+        const workspace = global.workspaceManager.get_active_workspace();
 
-        _moveTimeoutId = GLib.timeout_add(0, 200, () => {
-            for (let i = 0; i < resultIds.length; i++) {
-                this.windows[resultIds[i]].window.change_workspace_by_index(wsIndex - 1, global.get_current_time());
-            }
-            const selectedWin = this.windows[selectedId].window;
-            Main.activateWindow(selectedWin);
-            _moveTimeoutId = 0;
-            return GLib.SOURCE_REMOVE;
-        });
+        for (let i = 0; i < resultIds.length; i++) {
+            this.windows[resultIds[i]].window.change_workspace(workspace);
+        }
+        const selectedWin = this.windows[selectedId].window;
+        selectedWin.activate_with_workspace(global.get_current_time(), workspace);
     }
 
     getInitialResultSet (terms, callback, cancellable = null) {
