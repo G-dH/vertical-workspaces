@@ -95,6 +95,8 @@ let _originalSearchControllerSigId;
 let _showAppsIconBtnPressId;
 let _wsAnimationSwipeBeginId;
 let _wsAnimationSwipeEndId;
+let _panelEnterSigId;
+let _panelLeaveSigId;
 
 let _showingPointerX;
 
@@ -177,6 +179,12 @@ let DASH_SHIFT_CLICK_MV;
 let DASH_FOLLOW_RECENT_WIN;
 
 let WINDOW_SEARCH_PROVIDER_ENABLED;
+
+let PANEL_POSITION_TOP;
+let PANEL_MODE;
+let START_Y_OFFSET;
+
+let FIX_UBUNTU_DOCK;
 
 let _overrides;
 
@@ -289,7 +297,7 @@ function activate() {
 
     // static bg animations conflict with startup animation
     // enable it on first hiding from the overview and disconnect the signal
-    _overviewHiddenSigId = Main.overview.connect('hiding', _enableStaticBgAnimation);
+    _overviewHiddenSigId = Main.overview.connect('hiding', _onHidingOverview);
 
     _moveDashAppGridIcon();
     _connectShowAppsIcon();
@@ -317,6 +325,9 @@ function activate() {
     // set app grid size, columns, rows
     _updateAppGridProperties();
     _updateAppGridDND();
+
+    _disconnectPanel();
+    _showingOverviewSigId = Main.overview.connect('showing', _onShowingOverview);
 }
 
 function reset() {
@@ -419,6 +430,46 @@ function reset() {
     _connectWsAnimationSwipeTracker(reset);
 
     _updateWindowSearchProvider(reset);
+
+    _showPanel(true, reset);
+}
+
+function _onShowingOverview() {
+    // store pointer X coordinate for OVERVIEW_MODE 1 window spread - if mouse pointer is steady, don't spread
+    _showingPointerX = global.get_pointer()[0];
+
+    if (OVERVIEW_MODE2) {
+        // keep panel bg opacity in WINDOW_PICKER overview (not needed in Ubuntu)
+        const color = Main.panel.get_theme_node().get_background_color();
+        Main.panel.set_style(`background-color: rgba(${color.red}, ${color.green}, ${color.blue}, 1);`);
+    } else {
+        //Main.panel.set_style('background-color: transparent;');
+    }
+
+    if ((!SHOW_WS_PREVIEW_BG && PANEL_MODE === 2) || OVERVIEW_MODE2) {
+        // overview should be visible only in the overview
+        _showPanel(true);
+    }
+
+    if (FIX_UBUNTU_DOCK) {
+        // workaround for Ubuntu Dock breaking overview allocations after changing position
+        const dash = Main.overview.dash;
+        if (_prevDash.dash !== dash || _prevDash.position !== dash._position) {
+            _resetExtensionIfEnabled(0);
+        }
+    }
+}
+
+function _onHidingOverview() {
+    // enable dash and wsTmb transition animations with the first hiding, avoiding conflict with the startup animation
+    _staticBgAnimationEnabled = true;
+
+    Main.panel.set_style('');
+
+    if ((!SHOW_WS_PREVIEW_BG && PANEL_MODE === 2) || OVERVIEW_MODE2) {
+        // overview should be visible only in the overview
+        _showPanel(false);
+    }
 }
 
 function _replaceOnSearchChanged(reset = false) {
@@ -459,14 +510,6 @@ function _updateSearchViewWidth(reset = false) {
         width = Math.round(original_SEARCH_MAX_WIDTH * SEARCH_VIEW_SCALE);
         searchContent.set_style(`max-width: ${width}px;`);
     }
-}
-
-function _enableStaticBgAnimation() {
-    _staticBgAnimationEnabled = true;
-
-    Main.panel.set_style('');
-    /*Main.overview.disconnect(_overviewHiddenSigId);
-    _overviewHiddenSigId = 0;*/
 }
 
 function _resetExtension(timeout = 200) {
@@ -578,22 +621,6 @@ function _fixUbuntuDock(activate = true) {
     _shellSettings = ExtensionUtils.getSettings( 'org.gnome.shell');
     _watchDockSigId = _shellSettings.connect('changed::enabled-extensions', () => _resetExtension());
     _resetExtensionIfEnabled = _resetExtension;
-    _showingOverviewSigId = Main.overview.connect('showing', () => {
-        // store pointer X coordinate for OVERVIEW_MODE 1 window spread - if mouse pointer is steady, don't spread
-        _showingPointerX = global.get_pointer()[0];
-
-        // workaround for Ubuntu Dock breaking overview allocations after changing position
-        const dash = Main.overview.dash;
-        if (_prevDash.dash !== dash || _prevDash.position !== dash._position) {
-            _resetExtensionIfEnabled(0);
-        }
-        if (OVERVIEW_MODE2) {
-            //Main.panel.set_style('background-color: transparent;');
-            // keep panel bg opacity in WINDOW_PICKER overview (not needed in Ubuntu)
-            const color = Main.panel.get_theme_node().get_background_color();
-            Main.panel.set_style(`background-color: rgba(${color.red}, ${color.green}, ${color.blue}, 1);`);
-        }
-    });
 }
 
 //*************************************************************************************************
@@ -730,6 +757,14 @@ function _updateSettings(settings, key) {
     DASH_SHIFT_CLICK_MV = true;
 
     WINDOW_SEARCH_PROVIDER_ENABLED = gOptions.get('searchWindowsEnable', true);
+
+    PANEL_POSITION_TOP = gOptions.get('panelPosition', true) === 0;
+    PANEL_MODE = gOptions.get('panelVisibility', true);
+    START_Y_OFFSET = (PANEL_MODE === 2 && PANEL_POSITION_TOP) ? Main.panel.height : 0;
+
+    _updatePanel();
+
+    FIX_UBUNTU_DOCK = gOptions.get('fixUbuntuDock', true);
 
     _setStaticBackground(!SHOW_BG_IN_OVERVIEW);
     _updateSearchViewWidth();
@@ -1448,6 +1483,16 @@ var workspacesDisplayOverride = {
                 _activateWindowSearchProvider();
             }
             return Clutter.EVENT_STOP;
+        case Clutter.KEY_Down:
+        case Clutter.KEY_Left:
+        case Clutter.KEY_Right:
+        case Clutter.KEY_Up:
+            if (Main.overview._overview._controls._searchController.searchActive) {
+                Main.overview.searchEntry.grab_key_focus();
+                return Clutter.EVENT_STOP;
+            } else if (OVERVIEW_MODE && !WORKSPACE_MODE) {
+
+            }
         default:
             return Clutter.EVENT_PROPAGATE;
         }
@@ -3257,10 +3302,24 @@ var ControlsManagerOverride = {
     },
 }
 
+function _shouldAnimateOverview() {
+    return !SHOW_WS_PREVIEW_BG || OVERVIEW_MODE2;
+}
+
 function _updateOverviewTranslations(dash = null, tmbBox = null, searchEntryBin = null) {
     dash = dash ?? Main.overview.dash;
     tmbBox = tmbBox ?? Main.overview._overview._controls._thumbnailsBox;
     searchEntryBin = searchEntryBin ?? Main.overview._overview._controls._searchEntryBin;
+
+    if (!_shouldAnimateOverview()) {
+        tmbBox.translation_x = 0;
+        tmbBox.translation_y = 0;
+        dash.translation_x = 0;
+        dash.translation_y = 0;
+        searchEntryBin.translation_x = 0;
+        searchEntryBin.translation_y = 0;
+        return;
+    }
 
     const [tmbTranslation_x, tmbTranslation_y, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _getOverviewTranslations(dash, tmbBox, searchEntryBin);
     tmbBox.translation_x = tmbTranslation_x;
@@ -3376,7 +3435,16 @@ var ControlsManagerLayoutVerticalOverride = {
 
         switch (state) {
         case ControlsState.HIDDEN:
-            workspaceBox.set_origin(...workAreaBox.get_origin());
+            // if PANEL_MODE == 2 (overview only) the affectStruts property stays on false to avoid stuttering
+            // therefore we added panel height to startY for the overview allocation,
+            // but here we need to remove the correction since the panel will be in the hidden state
+            if (START_Y_OFFSET) {
+                let [x, y] = workAreaBox.get_origin();
+                y -= START_Y_OFFSET;
+                workspaceBox.set_origin(x, y);
+            } else {
+                workspaceBox.set_origin(...workAreaBox.get_origin());
+            }
             workspaceBox.set_size(...workAreaBox.get_size());
             break;
         case ControlsState.WINDOW_PICKER:
@@ -3385,9 +3453,17 @@ var ControlsManagerLayoutVerticalOverride = {
                 workspaceBox.set_origin(...this._workspacesThumbnails.get_position());
                 workspaceBox.set_size(...this._workspacesThumbnails.get_size());
             } else if (OVERVIEW_MODE2 && !WORKSPACE_MODE) {
-                workspaceBox.set_origin(...workAreaBox.get_origin());
+                if (START_Y_OFFSET) {
+                    let [x, y] = workAreaBox.get_origin();
+                    y -= START_Y_OFFSET;
+                    workspaceBox.set_origin(x, y);
+                } else {
+                    workspaceBox.set_origin(...workAreaBox.get_origin());
+                }
                 workspaceBox.set_size(...workAreaBox.get_size());
             } else {
+                // in PANEL_MODE 2 panel don't affects workArea height (affectStruts === false), it needs to be compensated
+                height = PANEL_POSITION_TOP ? height : height - Main.panel.height;
                 searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
                 wWidth = width
                             - (DASH_VERTICAL ? dash.width : 0)
@@ -3410,14 +3486,17 @@ var ControlsManagerLayoutVerticalOverride = {
                     wHeight = wWidth / ratio;
                 }
 
+                // height decides the actual size, ratio is given by the workarea
                 wHeight *= WS_PREVIEW_SCALE;
                 wWidth *= WS_PREVIEW_SCALE;
 
                 let xOffset = 0;
                 let yOffset = 0;
 
-                yOffset = searchHeight + (DASH_TOP ? dashHeight + spacing : spacing);
-                yOffset = yOffset + ((height - wHeight - searchHeight - (!DASH_VERTICAL ? dashHeight + spacing : 0)) / 2);
+                const yOffsetT = (DASH_TOP ? dashHeight : 0) + searchHeight;
+                const yOffsetB = (DASH_BOTTOM ? dashHeight : 0);
+                const yAvailableSpace = (height - yOffsetT - wHeight - yOffsetB) / 2;
+                yOffset = yOffsetT + yAvailableSpace;
 
                 const centeredBoxX = (width - wWidth) / 2;
 
@@ -3446,7 +3525,9 @@ var ControlsManagerLayoutVerticalOverride = {
         const [width] = box.get_size();
         const { x1: startX } = workAreaBox;
         //const { y1: startY } = workAreaBox;
-        const height = workAreaBox.get_height();
+        let height = workAreaBox.get_height();
+        // in PANEL_MODE 2 panel don't affects workArea height (affectStruts === false), it needs to be compensated
+        height = PANEL_MODE === 2 ? height - Main.panel.height : height;
         const appDisplayBox = new Clutter.ActorBox();
         const { spacing } = this;
 
@@ -3501,13 +3582,18 @@ var ControlsManagerLayoutVerticalOverride = {
         const monitor = Main.layoutManager.findMonitorForActor(this._container);
         const workArea = Main.layoutManager.getWorkAreaForMonitor(monitor.index);
         const startX = workArea.x - monitor.x;
-        let startY = workArea.y - monitor.y;
+        // if PANEL_MODE == 2 (overview only) the affectStruts property stays on false to avoid stuttering
+        // therefore we need to add panel height to startY
+        let startY = workArea.y - monitor.y + START_Y_OFFSET;
         const workAreaBox = new Clutter.ActorBox();
         workAreaBox.set_origin(startX, startY);
         workAreaBox.set_size(workArea.width, workArea.height);
         box.y1 += startY;
         box.x1 += startX;
-        const [width, height] = box.get_size();
+        let [width, height] = box.get_size();
+        // if PANEL_MODE == 2 (overview only) the affectStruts property stays on false to avoid stuttering
+        // therefore we also need to compensate the height of the available box
+        //height = PANEL_MODE === 2 ? height - Main.panel.height : height;
         let availableHeight = height;
 
         // Dash
@@ -3517,7 +3603,6 @@ var ControlsManagerLayoutVerticalOverride = {
         let dashWidth = 0;
 
         // dash cloud be overridden by the Dash to Dock clone
-        // Dash to Dock has property _isHorizontal
         const dash = Main.overview.dash;
         if (_dashIsDashToDock()) {
             // if Dash to Dock replaced the default dash and its inteli-hide id disabled we need to compensate for affected startY
@@ -3764,7 +3849,16 @@ var ControlsManagerLayoutHorizontalOverride = {
 
         switch (state) {
         case ControlsState.HIDDEN:
-            workspaceBox.set_origin(...workAreaBox.get_origin());
+            // if PANEL_MODE == 2 (overview only) the affectStruts property stays on false to avoid stuttering
+            // therefore we added panel height to startY for the overview allocation,
+            // but here we need to remove the correction since the panel will be in the hidden state
+            if (START_Y_OFFSET) {
+                let [x, y] = workAreaBox.get_origin();
+                y -= START_Y_OFFSET;
+                workspaceBox.set_origin(x, y);
+            } else {
+                workspaceBox.set_origin(...workAreaBox.get_origin());
+            }
             workspaceBox.set_size(...workAreaBox.get_size());
             break;
         case ControlsState.WINDOW_PICKER:
@@ -3773,9 +3867,17 @@ var ControlsManagerLayoutHorizontalOverride = {
                 workspaceBox.set_origin(...this._workspacesThumbnails.get_position());
                 workspaceBox.set_size(...this._workspacesThumbnails.get_size());
             } else if (OVERVIEW_MODE2 && !WORKSPACE_MODE) {
-                workspaceBox.set_origin(...workAreaBox.get_origin());
+                if (START_Y_OFFSET) {
+                    let [x, y] = workAreaBox.get_origin();
+                    y -= START_Y_OFFSET;
+                    workspaceBox.set_origin(x, y);
+                } else {
+                    workspaceBox.set_origin(...workAreaBox.get_origin());
+                }
                 workspaceBox.set_size(...workAreaBox.get_size());
             } else {
+                // in PANEL_MODE 2 panel don't affects workArea height (affectStruts === false), it needs to be compensated
+                height = PANEL_POSITION_TOP ? height : height - Main.panel.height;
                 searchHeight = SHOW_SEARCH_ENTRY ? searchHeight : 0;
                 wWidth = width
                             - spacing
@@ -3808,6 +3910,7 @@ var ControlsManagerLayoutHorizontalOverride = {
 
                 const yOffsetT = (DASH_TOP ? dashHeight : 0) + (WS_TMB_TOP ? thumbnailsHeight : 0) + searchHeight;
                 const yOffsetB = (DASH_BOTTOM ? dashHeight : 0) + (WS_TMB_BOTTOM ? thumbnailsHeight : 0);
+
                 const yAvailableSpace = (height - yOffsetT - wHeight - yOffsetB) / 2;
                 yOffset = yOffsetT + yAvailableSpace;
 
@@ -3837,7 +3940,9 @@ var ControlsManagerLayoutHorizontalOverride = {
         const [width] = box.get_size();
         const { x1: startX } = workAreaBox;
         //const { y1: startY } = workAreaBox;
-        const height = workAreaBox.get_height();
+        let height = workAreaBox.get_height();
+        // in PANEL_MODE 2 panel don't affects workArea height (affectStruts === false), it needs to be compensated
+        height = PANEL_MODE === 2 ? height - Main.panel.height : height;
         const appDisplayBox = new Clutter.ActorBox();
         const { spacing } = this;
 
@@ -3890,13 +3995,18 @@ var ControlsManagerLayoutHorizontalOverride = {
         const monitor = Main.layoutManager.findMonitorForActor(this._container);
         const workArea = Main.layoutManager.getWorkAreaForMonitor(monitor.index);
         const startX = workArea.x - monitor.x;
-        let startY = workArea.y - monitor.y;
+        // if PANEL_MODE == 2 (overview only) the affectStruts property stays on false to avoid stuttering
+        // therefore we need to add panel height to startY
+        let startY = workArea.y - monitor.y + START_Y_OFFSET;
         const workAreaBox = new Clutter.ActorBox();
         workAreaBox.set_origin(startX, startY);
         workAreaBox.set_size(workArea.width, workArea.height);
         box.y1 += startY;
         box.x1 += startX;
-        const [width, height] = box.get_size();
+        let [width, height] = box.get_size();
+        // if PANEL_MODE == 2 (overview only) the affectStruts property stays on false to avoid stuttering
+        // therefore we also need to compensate the height of the available box
+        //height = PANEL_MODE === 2 ? height - Main.panel.height : height;
         let availableHeight = height;
 
         // Dash
@@ -3961,8 +4071,9 @@ var ControlsManagerLayoutHorizontalOverride = {
             if (WS_TMB_TOP) {
                 wsTmbY = Math.round(startY + /*searchHeight + */(DASH_TOP ? dashHeight : spacing / 2));
             } else {
-                const boxY = workArea.y - monitor.y; // startY might be compensated
-                wsTmbY = Math.round(boxY + height - (DASH_BOTTOM ? dashHeight : 0) - wsTmbHeight);
+                //const boxY = workArea.y - monitor.y; // startY might be compensated
+                //wsTmbY = Math.round(boxY + height - (DASH_BOTTOM ? dashHeight : 0) - wsTmbHeight);
+                wsTmbY = Math.round(startY + height - (DASH_BOTTOM ? dashHeight : 0) - wsTmbHeight);
             }
 
             let wstOffset = (width - wsTmbWidth) / 2;
@@ -4947,58 +5058,6 @@ const AppFolderDialogOverride = {
                 'notify::mapped', this._zoomAndFadeOut.bind(this));
         }
     },
-
-    /*_zoomAndFadeOut: function() {
-        if (!this._isOpen)
-            return;
-
-        if (!this._source.mapped) {
-            this.hide();
-            return;
-        }
-
-        let [sourceX, sourceY] =
-            this._source.get_transformed_position();
-        let [dialogX, dialogY] =
-            this.child.get_transformed_position();
-
-        const appDisplay = Main.overview._overview._controls._appDisplay;
-        let blurEffect = appDisplay.get_effect('blur');
-        this.ease({
-            background_color: Clutter.Color.from_pixel(0x00000000),
-            duration: FOLDER_DIALOG_ANIMATION_TIME,
-            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-        });
-
-        this.child.ease({
-            translation_x: sourceX - dialogX,
-            translation_y: sourceY - dialogY,
-            scale_x: this._source.width / this.child.width,
-            scale_y: this._source.height / this.child.height,
-            opacity: 0,
-            duration: FOLDER_DIALOG_ANIMATION_TIME,
-            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-            onComplete: () => {
-                this.child.set({
-                    translation_x: 0,
-                    translation_y: 0,
-                    scale_x: 1,
-                    scale_y: 1,
-                    opacity: 255,
-                });
-                this.hide();
-
-                this._popdownCallbacks.forEach(func => func());
-                this._popdownCallbacks = [];
-                if (blurEffect) {
-                    blurEffect.sigma = 0;
-                    blurEffect.brightness = 1;
-                }
-            },
-        });
-
-        this._needsZoomAndFade = false;
-    }*/
 }
 
 function _resetAppGrid(settings = null, key = null) {
@@ -5188,5 +5247,104 @@ const AppIconOverride = {
         this.emit('sync-tooltip');
 
         return false;
+    }
+}
+
+//---------- Panel visibility ------------------------------------------------------------
+
+function _updatePanel(reset = false) {
+    /*if (!_staticBgAnimationEnabled)
+        return;*/
+
+    const panel = Main.layoutManager.panelBox;
+
+    const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
+    if (PANEL_POSITION_TOP) {
+        panel.set_position(geometry.x, geometry.y);
+    } else {
+        panel.set_position(geometry.x, geometry.y + geometry.height - panel.height);
+    }
+
+    if (reset || PANEL_MODE === 0) {
+        if (panel.get_parent() === Main.layoutManager.overviewGroup) {
+            Main.layoutManager.overviewGroup.remove_child(panel);
+            Main.layoutManager.uiGroup.insert_child_at_index(panel, 4);
+            _disconnectPanel();
+        }
+        panel.translation_y = 0;
+    } else if (PANEL_MODE === 1) {
+        panel.translation_y = PANEL_POSITION_TOP ? -panel.height : panel.height;
+    } else if (PANEL_MODE === 2) {
+        if (SHOW_WS_PREVIEW_BG && panel.get_parent() === Main.layoutManager.uiGroup) {
+            Main.layoutManager.uiGroup.remove_child(panel);
+            Main.layoutManager.overviewGroup.add_child(panel);
+        }
+        if (OVERVIEW_MODE2) {
+            Main.layoutManager.overviewGroup.set_child_above_sibling(panel, null)
+        } else if (panel.get_parent() === Main.layoutManager.overviewGroup) {
+            Main.layoutManager.overviewGroup.set_child_below_sibling(panel, Main.overview._overview);
+            panel.translation_y = 0;
+        } else {
+            panel.translation_y = PANEL_POSITION_TOP ? -panel.height : panel.height;
+        }
+        _connectPanel();
+    }
+    _setPanelStructs(PANEL_MODE === 0);
+}
+
+function _setPanelStructs(state) {
+    Main.layoutManager._trackedActors.forEach(a => {
+        if (a.actor === Main.layoutManager.panelBox)
+            a.affectsStruts = state;
+    });
+}
+
+function _showPanel(show = true) {
+    if (show) {
+        Main.panel.opacity = 255;
+        Main.layoutManager.panelBox.ease({
+            duration: Overview.ANIMATION_TIME,
+            translation_y: 0,
+            onComplete: () => {
+                _setPanelStructs(PANEL_MODE === 0);
+            }
+        });
+
+    } else {
+        const panelHeight = Main.panel.height;
+        Main.layoutManager.panelBox.ease({
+            duration: Overview.ANIMATION_TIME,
+            translation_y: PANEL_POSITION_TOP ? -panelHeight + 1 : panelHeight - 1,
+            onComplete: () => {
+                Main.panel.opacity = 0;
+                _setPanelStructs(PANEL_MODE === 0);
+            }
+        });
+    }
+}
+
+function _connectPanel() {
+    if (!_panelEnterSigId) {
+        _panelEnterSigId = Main.panel.connect('enter-event', () => {
+            if (!Main.overview._shown)
+                _showPanel(true);
+        });
+    }
+    if (!_panelLeaveSigId) {
+        _panelLeaveSigId = Main.panel.connect('leave-event', () => {
+            if (!Main.overview._shown)
+                _showPanel(false);
+        });
+    }
+}
+
+function _disconnectPanel() {
+    if (!_panelEnterSigId) {
+        Main.panel.disconnect(_panelEnterSigId);
+        _panelEnterSigId = 0;
+    }
+    if (!_panelLeaveSigId) {
+        Main.panel.disconnect(_panelLeaveSigId);
+        _panelLeaveSigId = 0;
     }
 }

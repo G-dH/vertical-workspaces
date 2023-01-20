@@ -129,7 +129,7 @@ function _getLayoutOptionList() {
                 [_('Right'), 1],
                 [_('Bottom'), 2],
                 [_('Left'), 3],
-                [_('Disable'), 4],
+                [_('Hide'), 4],
             ]
         )
     );
@@ -211,10 +211,10 @@ function _getLayoutOptionList() {
             'workspaceThumbnailsPosition',
             [   [_('Left       \t Vertical Orientation'), 0],
                 [_('Right      \t Vertical Orientation'), 1],
-                [_('Disable    \t Set Vertical Orientation'), 4],
+                [_('Hide       \t Set Vertical Orientation'), 4],
                 [_('Top        \t Horizontal Orientation'), 5],
                 [_('Bottom     \t Horizontal Orientation'), 6],
-                [_('Disable    \t Set Horizontal Orientation'), 9],
+                [_('Hide       \t Set Horizontal Orientation'), 9],
             ]
         )
     );
@@ -533,6 +533,40 @@ function _getLayoutOptionList() {
              [_('64'), 64],
              [_('48'), 48],
              [_('32'), 32],]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Panel'),
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Main Panel Position'),
+            _('Allows you to place the main panel at the bottom of your monitor.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'panelPosition',
+            [   [_('Top (Default)'), 0],
+                [_('Bottom'), 1],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Main Panel Visibility'),
+            _('Main panel can be visible always, only in the overview or never.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'panelVisibility',
+            [   [_('Always Visible (Default)'), 0],
+                [_('Always Hidden'), 1],
+                [_('Overview Only'), 2],
+                //[_('Desktop View Only'), 3],
+            ]
         )
     );
 

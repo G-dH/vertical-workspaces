@@ -71,7 +71,7 @@ function reset() {
     if (Main.overview.dash._isHorizontal === undefined)
         set_to_horizontal();
 
-    _overrides.removeAll();
+    _overrides && _overrides.removeAll();
     _overrides = null;
 
     verticalOverrides = {};
