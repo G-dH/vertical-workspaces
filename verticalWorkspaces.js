@@ -5519,7 +5519,7 @@ const WindowManagerOverride = {
         } else {
             let [success, geom] = actor.meta_window.get_icon_geometry();
             if (success) {
-                actor.set_position(geom.x, PANEL_POSITION_TOP ? geom.y : geom.y + geom.height);
+                actor.set_position(geom.x, geom.y);
                 actor.set_scale(geom.width / actor.width,
                                 geom.height / actor.height);
             } else {
