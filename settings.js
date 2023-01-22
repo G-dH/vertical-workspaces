@@ -56,6 +56,7 @@ var Options = class Options {
             showWsTmbLabelsOnHover: ['boolean', 'show-wst-labels-on-hover'],
             SecWsTmbPositionAdjust: ['int', 'sec-wst-position-adjust'],
             dashMaxIconSize: ['int', 'dash-max-icon-size'],
+            dashShowWindowsIcon: ['int', 'dash-show-windows-icon'],
             centerDashToWs: ['boolean', 'center-dash-to-ws'],
             showAppsIconPosition: ['int', 'show-app-icon-position'],
             wsThumbnailScale: ['int', 'ws-thumbnail-scale'],

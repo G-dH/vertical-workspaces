@@ -20,6 +20,7 @@ const { DashIcon, DashItemContainer, getAppFromSource, DragPlaceholderItem } = i
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Util = Me.imports.util;
+const _ = Me.imports.settings._;
 
 let verticalOverrides = {};
 let _origWorkId;
@@ -27,6 +28,7 @@ let _newWorkId;
 
 var BaseIconSizes = [16, 24, 32, 48, 64, 80, 96, 112, 128];
 var MAX_ICON_SIZE = 64;
+var SHOW_WINDOWS_ICON;
 
 var DASH_LEFT;
 var DASH_RIGHT;
@@ -39,6 +41,7 @@ const DASH_ITEM_LABEL_SHOW_TIME = 150;
 
 
 function override(horizontal = false) {
+    reset();
     _overrides = new Util.Overrides();
 
     _overrides.addOverride('DashItemContainer', Dash.DashItemContainer.prototype, DashItemContainerOverride);
@@ -63,6 +66,8 @@ function override(horizontal = false) {
             dash._workId = _newWorkId;
         }
     }
+
+    _updateSearchWindowsIcon();
 }
 
 function reset() {
@@ -78,6 +83,8 @@ function reset() {
     Main.overview.dash.remove_style_class_name("vertical-overview");
     Main.overview.dash.remove_style_class_name("vertical-overview-left");
     Main.overview.dash.remove_style_class_name("vertical-overview-right");
+
+    _updateSearchWindowsIcon(false);
 }
 
 function set_to_vertical() {
@@ -413,7 +420,7 @@ var DashOverride = {
 }
 
 var DashItemContainerOverride = {
-    // move labels under the icons
+    // move labels according dash position
     showLabel: function() {
         if (!this._labelText)
             return;
@@ -490,6 +497,9 @@ var DashCommonOverride = {
         });
 
         iconChildren.push(this._showAppsIcon);
+        if (this._showWindowsIcon) {
+            iconChildren.push(this._showWindowsIcon);
+        }
 
         if (this._maxWidth === -1 || this._maxHeight === -1)
             return;
@@ -601,3 +611,72 @@ var DashCommonOverride = {
         }
     },
 }
+
+function _updateSearchWindowsIcon(show = SHOW_WINDOWS_ICON) {
+
+    const dash = Main.overview._overview._controls.dash;
+    const dashContainer = Main.overview._overview.controls.dash._dashContainer;
+
+    if (dash._showWindowsIcon) {
+        dashContainer.remove_child(dash._showWindowsIcon);
+        dash._showWindowsIconClickedId && dash._showWindowsIcon.toggleButton.disconnect(dash._showWindowsIconClickedId);
+        dash._showWindowsIconClickedId = undefined;
+        dash._showWindowsIcon && dash._showWindowsIcon.destroy();
+        dash._showWindowsIcon = undefined;
+    }
+
+    if (!show) return;
+
+    if (!dash._showWindowsIcon) {
+        dash._showWindowsIcon = new ShowWindowsIcon();
+        dash._showWindowsIcon.show(false);
+        dashContainer.add_child(dash._showWindowsIcon);
+        dash._hookUpLabel(dash._showWindowsIcon);
+    }
+
+    dash._showWindowsIcon.icon.setIconSize(MAX_ICON_SIZE);
+    if (SHOW_WINDOWS_ICON === 1) {
+        dashContainer.set_child_at_index(dash._showWindowsIcon, 0);
+    } else if (SHOW_WINDOWS_ICON === 2) {
+        index = dashContainer.get_children().length - 1;
+        dashContainer.set_child_at_index(dash._showWindowsIcon, index);
+    }
+}
+
+var ShowWindowsIcon = GObject.registerClass(
+class ShowWindowsIcon extends Dash.DashItemContainer {
+    _init() {
+        super._init();
+
+        this._labelText = _('Search Open Windows');
+        this.toggleButton = new St.Button({
+            style_class: 'show-apps',
+            track_hover: true,
+            can_focus: true,
+            toggle_mode: false,
+        });
+
+        this._iconActor = null;
+        this.icon = new IconGrid.BaseIcon(this.labelText, {
+            setSizeManually: true,
+            showLabel: false,
+            createIcon: this._createIcon.bind(this),
+        });
+        this.icon.y_align = Clutter.ActorAlign.CENTER;
+
+        this.toggleButton.add_actor(this.icon);
+        this.toggleButton._delegate = this;
+
+        this.setChild(this.toggleButton);
+    }
+
+    _createIcon(size) {
+        this._iconActor = new St.Icon({
+            icon_name: 'focus-windows-symbolic',
+            icon_size: size,
+            style_class: 'show-apps-icon',
+            track_hover: true,
+        });
+        return this._iconActor;
+    }
+});

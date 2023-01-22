@@ -168,9 +168,24 @@ function _getLayoutOptionList() {
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'showAppsIconPosition',
-            [   [_('Start'), 0],
-                [_('End'), 1],
+            [
                 [_('Hide'), 2],
+                [_('Start'), 0],
+                [_('End'), 1],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('List Windows Icon Position'),
+            _('This option adds "List Open Windows" icon into dash so you can directly toggle window search provider results. Even if you disable this icon, you can use the secondary mouse button click on the Show Apps Icon, or the Space key press to access this feature.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'dashShowWindowsIcon',
+            [   [_('Hide'), 0],
+                [_('Start'), 1],
+                [_('End'), 2],
             ]
         )
     );
@@ -816,7 +831,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Dash Icon Click'),
-            _('if the app you clicked on has more than one window and the recently used window is not on the workspace, the overview can switch to the workspace with the recent window.'),
+            _('if the app you clicked on has more than one window and the recently used window is not on the current workspace, the overview can switch to the workspace with the recent window.'),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'dashShowWindowsBeforeActivation',

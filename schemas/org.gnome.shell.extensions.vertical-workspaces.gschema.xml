@@ -23,7 +23,10 @@
       <default>0</default>
     </key>
     <key type="i" name="show-app-icon-position">
-      <default>0</default>
+      <default>1</default>
+    </key>
+    <key type="i" name="dash-show-windows-icon">
+      <default>1</default>
     </key>
     <key type="i" name="wst-position-adjust">
       <default>0</default>

@@ -437,7 +437,7 @@ function reset() {
 
     _updatePanel(reset);
 
-    _replaceMinimizeFunction(reset);
+    _replaceMinimizeFunction(reset);;
 }
 
 function _onShowingOverview() {
@@ -632,7 +632,7 @@ function _fixUbuntuDock(activate = true) {
 //*************************************************************************************************
 
 function _updateSettings(settings, key) {
-    const dash = Main.overview.dash;
+    const dash = Main.overview._overview._controls.dash;
     if (_dashIsDashToDock()) {
         DASH_POSITION = dash._position;
     } else {
@@ -654,6 +654,11 @@ function _updateSettings(settings, key) {
     VerticalDash.DASH_BOTTOM = DASH_BOTTOM;
     VerticalDash.DASH_LEFT = DASH_LEFT;
     VerticalDash.MAX_ICON_SIZE = VerticalDash.BaseIconSizes[gOptions.get('dashMaxIconSize', true)];
+    VerticalDash.SHOW_WINDOWS_ICON = gOptions.get('dashShowWindowsIcon', true);
+    VerticalDash._updateSearchWindowsIcon(VerticalDash.SHOW_WINDOWS_ICON);
+    if (dash._showWindowsIcon && !dash._showWindowsIconClickedId) {
+        dash._showWindowsIconClickedId = dash._showWindowsIcon.toggleButton.connect('clicked', (a, c) => c && _activateWindowSearchProvider());
+    }
 
     if (!_dashIsDashToDock()) {// DtD has its own opacity control
         Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
@@ -1169,8 +1174,10 @@ function _moveDashAppGridIcon(reset = false) {
     dash._showAppsIcon.visible = true;
     if (!reset && appIconPosition === 0) // 0 - start
         dash._dashContainer.set_child_at_index(dash._showAppsIcon, 0);
-    if (reset || appIconPosition === 1) // 1 - end
-        dash._dashContainer.set_child_at_index(dash._showAppsIcon, 1);
+    if (reset || appIconPosition === 1) { // 1 - end
+        const index = dash._dashContainer.get_children().length - 1;
+        dash._dashContainer.set_child_at_index(dash._showAppsIcon, index);
+    }
     if (!reset && appIconPosition === 2) // 2 - hide
         dash._showAppsIcon.visible = false;
 }
@@ -1458,6 +1465,7 @@ var workspacesDisplayOverride = {
         /*if (!this.reactive)
             return Clutter.EVENT_PROPAGATE;**/
         const isCtrlPressed = (event.get_state() & Clutter.ModifierType.CONTROL_MASK) != 0;
+        const isShiftPressed = (event.get_state() & Clutter.ModifierType.SHIFT_MASK) != 0;
         const { workspaceManager } = global;
         const vertical = workspaceManager.layout_rows === -1;
         const rtl = this.get_text_direction() === Clutter.TextDirection.RTL;
@@ -1487,7 +1495,9 @@ var workspacesDisplayOverride = {
             which = workspaceManager.n_workspaces - 1;
             break;
         case Clutter.KEY_space:
-            if (isCtrlPressed) {
+            if (isCtrlPressed && isShiftPressed) {
+                _openPreferences();
+            } else if (isCtrlPressed) {
                 Main.ctrlAltTabManager._items.forEach(i => {if (i.sortGroup === 1 && i.name === 'Dash') Main.ctrlAltTabManager.focusGroup(i)});
             } else if (WINDOW_SEARCH_PROVIDER_ENABLED/* && SEARCH_WINDOWS_SPACE*/) {
                 _activateWindowSearchProvider();
@@ -3601,9 +3611,9 @@ var ControlsManagerLayoutVerticalOverride = {
         box.y1 += startY;
         box.x1 += startX;
         let [width, height] = box.get_size();
-        // if PANEL_MODE == 2 (overview only) the affectStruts property stays on false to avoid stuttering
-        // therefore we also need to compensate the height of the available box
-        //height = PANEL_MODE === 2 ? height - Main.panel.height : height;
+        // if panel is at bottom position,
+        // compensate the height of the available box (the box size is calculated for top panel)
+        height = PANEL_POSITION_TOP ? height : height - Main.panel.height;
         let availableHeight = height;
 
         // Dash
@@ -4014,9 +4024,9 @@ var ControlsManagerLayoutHorizontalOverride = {
         box.y1 += startY;
         box.x1 += startX;
         let [width, height] = box.get_size();
-        // if PANEL_MODE == 2 (overview only) the affectStruts property stays on false to avoid stuttering
-        // therefore we also need to compensate the height of the available box
-        //height = PANEL_MODE === 2 ? height - Main.panel.height : height;
+        // if panel is at bottom position,
+        // compensate the height of the available box (the box size is calculated for top panel)
+        height = PANEL_POSITION_TOP ? height : height - Main.panel.height;
         let availableHeight = height;
 
         // Dash
