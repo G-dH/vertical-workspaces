@@ -118,9 +118,9 @@ function strictMatch(term, text) {
     let p = term.toLowerCase();
     let ps = p.split(/ +/);
 
-    // allows to use multiple exact patterns separated by sa pace in arbitrary order
-    for (let w of ps) {
-        if (!s.match(w)) {
+    // allows to use multiple exact patterns separated by a space in arbitrary order
+    for (let w of ps) {  // escape regex control chars
+        if (!s.match(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))) {
             return -1;
         }
     }

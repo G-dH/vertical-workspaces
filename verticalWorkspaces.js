@@ -1561,6 +1561,11 @@ function _reorderWorkspace(direction = 0) {
 
 function _activateWindowSearchProvider(term = '') {
     const searchEntry = Main.overview.searchEntry;
+    // fake previous results to be different from the last search
+    // otherwise the search module skips collecting new results and uses the last results
+    // so even if windows have changed workspace or other metadata, or have been closed, search view displays same old data
+    // since we use same string to toggle window search
+    Main.overview._overview._controls.layoutManager._searchController._searchResults._terms = ['no results'];
     if (!searchEntry.get_text()) {
         const prefix = _(WindowSearchProvider.prefix + term + ' ');
         const position = prefix.length;
