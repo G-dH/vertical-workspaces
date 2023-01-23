@@ -25,6 +25,9 @@ let gOptions;
 var windowSearchProvider = null;
 let _enableTimeoutId = 0;
 
+// prefix helps to eliminate results from other search providers
+// so it needs to be something less common
+// needs to be accessible from vw module
 var prefix = 'wq//';
 
 const Action = {
@@ -162,12 +165,13 @@ var WindowSearchProvider = class WindowSearchProvider {
         this.isRemoteProvider = false;
 
         this.action = 0;
-        // prefix helps to eliminate results from other search providers so it needs to something unique for other search providers
     }
 
     _getResultSet (terms) {
+        // do not modify original terms
+        let termsCopy = [...terms];
         // search for terms without prefix
-        terms[0] = terms[0].replace(prefix, '');
+        termsCopy[0] = termsCopy[0].replace(prefix, '');
 
         /*if (gOptions.get('searchWindowsCommands')) {
             this.action = 0;
@@ -194,7 +198,7 @@ var WindowSearchProvider = class WindowSearchProvider {
         }*/
 
         const candidates = this.windows;
-        const _terms = [].concat(terms);
+        const _terms = [].concat(termsCopy);
         let match;
 
         const term = _terms.join(' ');
