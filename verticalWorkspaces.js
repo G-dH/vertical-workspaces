@@ -10,7 +10,7 @@
 
 'use strict';
 
-const { Clutter, Gio, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
+const { Clutter, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
 
 const DND = imports.ui.dnd;
 const Main = imports.ui.main;
@@ -2192,34 +2192,38 @@ var WorkspaceThumbnailOverride = {
             if (SHOW_WS_TMB_BG)
                 this.add_style_class_name('ws-tmb-labeled');
 
-            const wsIndex = this.metaWorkspace.index();
+            const getLabel = function() {
+                const wsIndex = this.metaWorkspace.index();
+                let label = `${wsIndex + 1}`;
+                if (SHOW_WST_LABELS === 2) { // 2 - index + workspace name
+                    const settings = ExtensionUtils.getSettings('org.gnome.desktop.wm.preferences');
+                    const wsLabels = settings.get_strv('workspace-names');
+                    if (wsLabels.length > wsIndex && wsLabels[wsIndex]) {
+                        label += `: ${wsLabels[wsIndex]}`;
+                    }
+                } else if (SHOW_WST_LABELS === 3) { // 3- index + app name
+                    // global.display.get_tab_list offers workspace filtering using the second argument, but...
+                    // ... it sometimes includes windows from other workspaces, like minimized VBox machines, after Shell restarts
+                    const metaWin = global.display.get_tab_list(0, null).filter(
+                        w => w.get_monitor() === this.monitorIndex && w.get_workspace().index() === wsIndex)[0];
 
-            let label = `${wsIndex + 1}`;
+                    if (metaWin) {
+                        let tracker = Shell.WindowTracker.get_default();
+                        label += `: ${tracker.get_window_app(metaWin).get_name()}`;
+                    }
+                } else if (SHOW_WST_LABELS === 4) {
+                    const metaWin = global.display.get_tab_list(0, null).filter(
+                        w => w.get_monitor() === this.monitorIndex && w.get_workspace().index() === wsIndex)[0];
 
-            if (SHOW_WST_LABELS === 2) { // 2 - index + workspace name
-                const settings = ExtensionUtils.getSettings('org.gnome.desktop.wm.preferences');
-                const wsLabels = settings.get_strv('workspace-names');
-                if (wsLabels.length > wsIndex && wsLabels[wsIndex]) {
-                    label += `: ${wsLabels[wsIndex]}`;
+                    if (metaWin) {
+                        label += `: ${metaWin.title}`;
+                    }
                 }
-            } else if (SHOW_WST_LABELS === 3) { // 3- index + app name
-                // global.display.get_tab_list offers workspace filtering using the second argument, but...
-                // ... it sometimes includes windows from other workspaces, like minimized VBox machines, after Shell restarts
-                const metaWin = global.display.get_tab_list(0, null).filter(
-                    w => w.get_monitor() === this.monitorIndex && w.get_workspace().index() === wsIndex)[0];
+                return label;
+            }.bind(this);
 
-                if (metaWin) {
-                    let tracker = Shell.WindowTracker.get_default();
-                    label += `: ${tracker.get_window_app(metaWin).get_name()}`;
-                }
-            } else if (SHOW_WST_LABELS === 4) {
-                const metaWin = global.display.get_tab_list(0, null).filter(
-                    w => w.get_monitor() === this.monitorIndex && w.get_workspace().index() === wsIndex)[0];
+            const label = getLabel();
 
-                if (metaWin) {
-                    label += `: ${metaWin.title}`;
-                }
-            }
             this._wsLabel = new St.Label({
                 text: label,
                 style_class: 'ws-tmb-label',
@@ -2234,6 +2238,13 @@ var WorkspaceThumbnailOverride = {
 
             this.add_child(this._wsLabel);
             this.set_child_above_sibling(this._wsLabel, null);
+
+            this._wsIndexSigId = this.metaWorkspace.connect('notify::workspace-index', () => {
+                const newLabel = getLabel();
+                this._wsLabel.text = newLabel;
+            });
+
+            this.connect('destroy', () => this.metaWorkspace.disconnect(this._wsIndexSigId));
 
             if (SHOW_WST_LABELS_ON_HOVER) {
                 this._wsLabel.opacity = 0;
