@@ -3172,14 +3172,6 @@ var ControlsManagerOverride = {
                     this.set_child_below_sibling(this._workspacesDisplay, null);
                 },
             });
-
-            // if static background enabled, blur bg of search results with the value for AppGrid
-            if (SHOW_BG_IN_OVERVIEW && state < ControlsState.APP_GRID) {
-                if (_bgManagers.length) {
-                    _updateStaticBackground(_bgManagers[0], 2);
-                    // when search view is hidden update the blur according the current overview state
-                }
-            }
         } else {
             this._workspacesDisplay.setPrimaryWorkspaceVisible(true);
             this._workspacesDisplay.ease({
@@ -3199,14 +3191,15 @@ var ControlsManagerOverride = {
                 onComplete: () => (this._searchController.visible = searchActive),
             });
 
-            // if static background enabled, blur bg of search results with the value for AppGrid
-            if (SHOW_BG_IN_OVERVIEW) {
-                if (searchActive && _bgManagers.length) {
-                    _updateStaticBackground(_bgManagers[0], 2);
-                } else if (_bgManagers.length) {
-                    // when search view is hidden update the blur according the current overview state
-                    _updateStaticBackground(_bgManagers[0], Main.overview._overview._controls._stateAdjustment.value);
-                }
+        }
+
+        // if static background enabled, blur bg of search results with the value for AppGrid
+        if (SHOW_BG_IN_OVERVIEW) {
+            if (searchActive && _bgManagers.length) {
+                _updateStaticBackground(_bgManagers[0], 2);
+            } else if (_bgManagers.length) {
+                // when search view is hidden update the blur according the current overview state
+                _updateStaticBackground(_bgManagers[0], Main.overview._overview._controls._stateAdjustment.value);
             }
         }
 
