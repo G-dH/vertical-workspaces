@@ -3193,13 +3193,29 @@ var ControlsManagerOverride = {
 
         }
 
-        // if static background enabled, blur bg of search results with the value for AppGrid
-        if (SHOW_BG_IN_OVERVIEW) {
-            if (searchActive && _bgManagers.length) {
-                _updateStaticBackground(_bgManagers[0], 2);
-            } else if (_bgManagers.length) {
-                // when search view is hidden update the blur according the current overview state
-                _updateStaticBackground(_bgManagers[0], Main.overview._overview._controls._stateAdjustment.value);
+        if (SHOW_BG_IN_OVERVIEW /*&& SMOOTH_BLUR_TRANSITIONS*/) {
+            const effect = _bgManagers[0].backgroundActor.get_effect('blur');
+            if (effect) {
+                const bgActor = _bgManagers[0].backgroundActor;
+                bgActor.remove_all_transitions();
+                let transition = new Clutter.PropertyTransition(Object.assign({
+                    property_name: '@effects.blur.sigma',
+                    remove_on_complete: true,
+                    duration: SIDE_CONTROLS_ANIMATION_TIME * ANIMATION_TIME_FACTOR,
+                    progress_mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                },));
+                transition.set_to(searchActive ? APP_GRID_BG_BLUR_SIGMA : OVERVIEW_BG_BLUR_SIGMA),
+                bgActor.add_transition('blur-transition', transition);
+            }
+        } else {
+            // if static background enabled, blur bg of search results with the value for AppGrid
+            if (SHOW_BG_IN_OVERVIEW) {
+                if (searchActive && _bgManagers.length) {
+                    _updateStaticBackground(_bgManagers[0], 2);
+                } else if (_bgManagers.length) {
+                    // when search view is hidden update the blur according the current overview state
+                    _updateStaticBackground(_bgManagers[0], Main.overview._overview._controls._stateAdjustment.value);
+                }
             }
         }
 
