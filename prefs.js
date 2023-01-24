@@ -224,6 +224,7 @@ function _getLayoutOptionList() {
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'workspaceThumbnailsPosition',
+            // this mess is just because of backward compatibility
             [   [_('Left       \t Vertical Orientation'), 0],
                 [_('Right      \t Vertical Orientation'), 1],
                 [_('Hide       \t Set Vertical Orientation'), 4],
@@ -913,7 +914,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Preview Animation'),
-            _(`When entering / leaving the App Grid view, the workspace preview can animate to/from workspace thumbnail.`),
+            _(`When entering / leaving the App Grid / Search view, the workspace preview can animate to/from workspace thumbnail.`),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'workspaceAnimation',

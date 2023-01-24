@@ -655,10 +655,6 @@ function _updateSettings(settings, key) {
     VerticalDash.DASH_LEFT = DASH_LEFT;
     VerticalDash.MAX_ICON_SIZE = VerticalDash.BaseIconSizes[gOptions.get('dashMaxIconSize', true)];
     VerticalDash.SHOW_WINDOWS_ICON = gOptions.get('dashShowWindowsIcon', true);
-    VerticalDash._updateSearchWindowsIcon(VerticalDash.SHOW_WINDOWS_ICON);
-    if (dash._showWindowsIcon && !dash._showWindowsIconClickedId) {
-        dash._showWindowsIconClickedId = dash._showWindowsIcon.toggleButton.connect('clicked', (a, c) => c && _activateWindowSearchProvider());
-    }
 
     if (!_dashIsDashToDock()) {// DtD has its own opacity control
         Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
@@ -791,10 +787,16 @@ function _updateSettings(settings, key) {
         reset();
         activate();
     }
-    if (key?.includes('app-grid'))
+    if (key?.includes('app-grid')) {
         _updateAppGridProperties();
         _updateAppGridDND();
-
+    }
+    if (key === 'dash-show-windows-icon') {
+        VerticalDash._updateSearchWindowsIcon(VerticalDash.SHOW_WINDOWS_ICON);
+    }
+    if (dash._showWindowsIcon && !dash._showWindowsIconClickedId) {
+        dash._showWindowsIconClickedId = dash._showWindowsIcon.toggleButton.connect('clicked', (a, c) => c && _activateWindowSearchProvider());
+}
 }
 
 function _getAppGridAnimationDirection() {
@@ -1019,7 +1021,7 @@ const WindowPreviewInjections = {
         // we cannot get proper title height before it gets to the stage, so 35 is estimated height + spacing
         this._title.get_constraints()[1].offset = scaleFactor * (- iconOverlap - 35);
         this.set_child_above_sibling(this._title, null);
-        // if window is created while the overview is shown, icon and title should visible immediately
+        // if window is created while the overview is shown, icon and title should be visible immediately
         if (Main.overview._overview._controls._stateAdjustment.value < 1) {
             this._icon.scale_x = 0;
             this._icon.scale_y = 0;
@@ -1028,6 +1030,10 @@ const WindowPreviewInjections = {
 
         if (ALWAYS_SHOW_WIN_TITLES) {
             this._title.show();
+            this._stateConId = this._workspace._background._stateAdjustment.connect('notify::value', (adj) => {
+                this._title.opacity = Math.floor(adj.value) * 255;
+            });
+
         }
 
         if (OVERVIEW_MODE === 1) {
@@ -1080,6 +1086,8 @@ const WindowPreviewInjections = {
 
         clickAction.connect('long-press', this._onLongPress.bind(this));
         this.add_action(clickAction);
+
+        this.connect('destroy', () => this._workspace.stateAdjustment.disconnect(this._stateConId));
     }
 }
 
@@ -1608,8 +1616,9 @@ var WindowPreviewOverride = {
             (initialState === ControlsState.APP_GRID && finalState === ControlsState.WINDOW_PICKER))
             ) {
             scale = 1;
-        } else if (primaryMonitor && ((initialState === ControlsState.WINDOW_PICKER && finalState === ControlsState.APP_GRID) ||
-            initialState === ControlsState.APP_GRID && finalState === ControlsState.HIDDEN)) {
+        /*} else if (primaryMonitor && ((initialState === ControlsState.WINDOW_PICKER && finalState === ControlsState.APP_GRID) ||
+            initialState === ControlsState.APP_GRID && finalState === ControlsState.HIDDEN)) {*/
+        } else if (primaryMonitor && currentState > ControlsState.WINDOW_PICKER) {
             scale = 0;
         }
 
@@ -1629,9 +1638,10 @@ var WindowPreviewOverride = {
         });
 
         // if titles are in 'always show' mode, we need to add transition between visible/invisible state
+        // but the transition is quite expensive,
+        // showing the titles at the end of the transition is good enough and workspace preview transition is much smoother
         this._title.set({
-            opacity: Math.round(scale * 255),
-            //scale_y: scale,
+            opacity: Math.floor(scale) * 255,
         });
     },
 
@@ -2897,6 +2907,10 @@ var ControlsManagerOverride = {
 
     // this function is pure addition to the original code and handles wsDisp transition to APP_GRID view
     _updateWorkspacesDisplay: function() {
+        this._workspacesDisplay.translation_x = 0;
+        this._workspacesDisplay.translation_y = 0;
+        this._workspacesDisplay.scale_x = 1;
+        this._workspacesDisplay.scale_y = 1;
         const { initialState, finalState, progress, currentState } = this._stateAdjustment.getStateTransitionParams();
         const { searchActive } = this._searchController;
 
@@ -3047,7 +3061,7 @@ var ControlsManagerOverride = {
 
     _onSearchChanged: function() {
         const { searchActive } = this._searchController;
-        const SIDE_CONTROLS_ANIMATION_TIME = 150; // OverviewControls.SIDE_CONTROLS_ANIMATION_TIME = Overview.ANIMATION_TIME = 250
+        const SIDE_CONTROLS_ANIMATION_TIME = 250; // OverviewControls.SIDE_CONTROLS_ANIMATION_TIME = Overview.ANIMATION_TIME = 250
 
         if (!searchActive) {
             this._updateAppDisplayVisibility();
@@ -3057,7 +3071,7 @@ var ControlsManagerOverride = {
             this._searchController.show();
         }
 
-        this._updateThumbnailsBox(true);
+        //this._updateThumbnailsBox(true);
 
         const state = this._stateAdjustment.value;
 
@@ -3068,33 +3082,106 @@ var ControlsManagerOverride = {
             onComplete: () => this._updateAppDisplayVisibility(),
         });
 
-        this._searchController.ease({
-            opacity: searchActive ? 255 : 0,
-            duration: SIDE_CONTROLS_ANIMATION_TIME,
-            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-            onComplete: () => (this._searchController.visible = searchActive),
-        });
+
+        this._searchController._searchResults.translation_x = 0;
+        this._searchController._searchResults.translation_y = 0;
+        this._searchController.visible = true;
+
+        if (WS_ANIMATION && state === ControlsState.WINDOW_PICKER && ![4, 8].includes(WS_TMB_POSITION) && !OVERVIEW_MODE2) {
+            this._searchController.opacity = searchActive ? 255 : 0;
+            let translation_x = 0;
+            let translation_y = 0;
+            const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
 
 
-        if (OVERVIEW_MODE2) {
-            const workspacesDisplay = this._workspacesDisplay;
-            workspacesDisplay.reactive = !searchActive;
-            workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
-            this._workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
-            /*workspacesDisplay.setPrimaryWorkspaceVisible(true);
-            workspacesDisplay.opacity = 255;
-            if (!workspacesDisplay.get_effect('blur')) {
-                const blurEffect = new Shell.BlurEffect({
-                    brightness: 1,
-                    sigma: 0,
-                    mode: Shell.BlurMode.ACTOR,
-                });
-                workspacesDisplay.add_effect_with_name('blur', blurEffect);
+            if (state < ControlsState.APP_GRID) {
+                switch (APP_GRID_ANIMATION) {
+                    case 0:
+                        translation_x = 0;
+                        translation_y = 0;
+                        break;
+                    case 1:
+                        // make it longer to cover the delay before results appears
+                        translation_x = geometry.x + geometry.width - this._searchController.x + this._workspacesDisplay.width;
+                        translation_y = 0;
+                        break;
+                    case 2:
+                        translation_x = - this._searchController.x - 2 * this._workspacesDisplay.width;
+                        translation_y = 0;
+                        break;
+                    case 3:
+                        translation_x = 0;
+                        translation_y = geometry.y + geometry.height + this._searchController.y + this._workspacesDisplay.height;
+                        break;
+                    case 5:
+                        translation_x = 0;
+                        translation_y = - this._searchController.y - 2 * this._workspacesDisplay.height;
+                        break;
+                }
+            }
+
+            if (searchActive) {
+                this._searchController._searchResults.translation_x = translation_x;
+                this._searchController._searchResults.translation_y = translation_y;
             } else {
-                workspacesDisplay.get_effect('blur').sigma = searchActive ? 5 : 0;
-                workspacesDisplay.get_effect('blur').brightness = searchActive ? 0.8 : 1;
-            }*/
+                this._searchController._searchResults.translation_x = 0;
+                this._searchController._searchResults.translation_y = 0;
+            }
+
+            this._searchController._searchResults.ease({
+                //opacity: searchActive ? 255 : 0,
+                translation_x: searchActive ? 0 : translation_x,
+                translation_y: searchActive ? 0 : translation_y,
+                duration: SIDE_CONTROLS_ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                onComplete: () => (this._searchController.visible = searchActive),
+            });
+
+            this._workspacesDisplay.setPrimaryWorkspaceVisible(true);
+            this.set_child_above_sibling(this._workspacesDisplay, null);
+            this._workspacesDisplay._fitModeAdjustment.ease(searchActive ? 1 : 0, {
+                duration: SIDE_CONTROLS_ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD
+            });
+
+            const [xt, yt] = this._thumbnailsBox.get_position();
+            const [wt, ht] = this._thumbnailsBox.get_size();
+            let [xw, yw] = this._workspacesDisplay.get_position();
+            let [ww, hw] = this._workspacesDisplay.get_size();
+            let scale;
+            if (ORIENTATION)
+                scale = ht / hw;
+            else
+                scale = wt / ww;
+
+            xw += (ww * scale - wt) / 2;
+            yw += (hw * scale - ht) / 2;
+            translation_x = xt - xw;
+            translation_y = yt - yw;
+            this._workspacesDisplay.opacity = 255;
+            this._workspacesDisplay.ease({
+                translation_x: searchActive ? translation_x : 0,
+                translation_y: searchActive ? translation_y : 0,
+                scale_x: searchActive ? scale : 1,
+                scale_y: searchActive ? scale : 1,
+                duration: SIDE_CONTROLS_ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                onComplete: () => {
+                    this._workspacesDisplay.reactive = !searchActive;
+                    this._workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
+                    this.set_child_below_sibling(this._workspacesDisplay, null);
+                },
+            });
+
+            // if static background enabled, blur bg of search results with the value for AppGrid
+            if (SHOW_BG_IN_OVERVIEW && state < ControlsState.APP_GRID) {
+                if (_bgManagers.length) {
+                    _updateStaticBackground(_bgManagers[0], 2);
+                    // when search view is hidden update the blur according the current overview state
+                }
+            }
         } else {
+            this._workspacesDisplay.setPrimaryWorkspaceVisible(true);
             this._workspacesDisplay.ease({
                 opacity: searchActive ? 0 : 255,
                 duration: SIDE_CONTROLS_ANIMATION_TIME,
@@ -3104,6 +3191,23 @@ var ControlsManagerOverride = {
                     this._workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
                 },
             });
+
+            this._searchController.ease({
+                opacity: searchActive ? 255 : 0,
+                duration: SIDE_CONTROLS_ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                onComplete: () => (this._searchController.visible = searchActive),
+            });
+
+            // if static background enabled, blur bg of search results with the value for AppGrid
+            if (SHOW_BG_IN_OVERVIEW) {
+                if (searchActive && _bgManagers.length) {
+                    _updateStaticBackground(_bgManagers[0], 2);
+                } else if (_bgManagers.length) {
+                    // when search view is hidden update the blur according the current overview state
+                    _updateStaticBackground(_bgManagers[0], Main.overview._overview._controls._stateAdjustment.value);
+                }
+            }
         }
 
         const entry = this._searchEntry;
@@ -3111,6 +3215,8 @@ var ControlsManagerOverride = {
             entry.visible = true;
             entry.opacity = 255;
         } else {
+            entry.visible = true;
+            entry.opacity = searchActive ? 0 : 255;
             // show search entry only if the user starts typing, and hide it when leaving the search mode
             entry.ease({
                 opacity: searchActive ? 255 : 0,
@@ -3120,16 +3226,6 @@ var ControlsManagerOverride = {
                     entry.visible = searchActive;
                 },
             });
-        }
-
-        // if static background enabled, blur bg of search results with the value for AppGrid
-        if (SHOW_BG_IN_OVERVIEW) {
-            if (searchActive && _bgManagers.length) {
-                _updateStaticBackground(_bgManagers[0], 2);
-            } else if (_bgManagers.length) {
-                // when search view is hidden update the blur according the current overview state
-                _updateStaticBackground(_bgManagers[0], Main.overview._overview._controls._stateAdjustment.value);
-            }
         }
     },
 
@@ -5321,7 +5417,7 @@ function _updatePanel(reset = false) {
 
         _connectPanel();
     }
-    _setPanelStructs(PANEL_MODE === 0);
+    _setPanelStructs(reset || PANEL_MODE === 0);
 }
 
 function _reparentPanel(reparent = false) {
@@ -5333,13 +5429,6 @@ function _reparentPanel(reparent = false) {
         Main.layoutManager.overviewGroup.remove_child(panel);
         // return the panel at default position, pane shouldn't cover objects that should be above
         Main.layoutManager.uiGroup.insert_child_at_index(panel, 4);
-    }
-}
-
-function _removeStrutsActor() {
-    if (_strutsActor) {
-        Main.layoutManager.removeChrome(_strutsActor);
-        _strutsActor = null;
     }
 }
 
