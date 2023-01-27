@@ -21,7 +21,6 @@ const shellVersion = Settings.shellVersion;
 
 const ModifierType = imports.gi.Clutter.ModifierType;
 
-let gOptions;
 var windowSearchProvider = null;
 let _enableTimeoutId = 0;
 
@@ -45,15 +44,14 @@ function getOverviewSearchResult() {
         return Main.overview._overview.controls._searchController._searchResults;
 }
 
-function enable(options) {
-    gOptions = options;
+function enable(gOptions) {
     // delay because Fedora had problem to register a new provider soon after Shell restarts
     _enableTimeoutId = GLib.timeout_add(
         GLib.PRIORITY_DEFAULT,
         2000,
         () => {
             if (windowSearchProvider == null) {
-                windowSearchProvider = new WindowSearchProvider();
+                windowSearchProvider = new WindowSearchProvider(gOptions);
                 getOverviewSearchResult()._registerProvider(
                     windowSearchProvider
                 );
@@ -75,7 +73,6 @@ function disable() {
         GLib.source_remove(_enableTimeoutId);
         _enableTimeoutId = 0;
     }
-    gOptions = null;
 }
 
 function fuzzyMatch(term, text) {
@@ -152,7 +149,8 @@ const moveToWsRegex = /^\/m[0-9]+$/;
 const moveAllToWsRegex = /^\/ma[0-9]+$/;
 
 var WindowSearchProvider = class WindowSearchProvider {
-    constructor() {
+    constructor(gOptions) {
+        this._gOptions = gOptions;
         this.appInfo = Gio.AppInfo.create_from_commandline('true', 'Open Windows', null);
         this.appInfo.get_description = () => 'List of open windows';
         this.appInfo.get_name = () => 'Open Windows';
@@ -209,7 +207,7 @@ var WindowSearchProvider = class WindowSearchProvider {
         const results = [];
         let m;
         for (let key in candidates) {
-            if (gOptions.get('searchWindowsFuzzy')) {
+            if (this._gOptions.get('searchWindowsFuzzy')) {
                 m = fuzzyMatch(term, candidates[key].name);
             } else {
                 m = strictMatch(term, candidates[key].name);
