@@ -157,6 +157,9 @@
     <key type="b" name="search-windows-fuzzy">
       <default>false</default>
     </key>
+    <key type="i" name="search-max-results-rows">
+      <default>10</default>
+    </key>
     <key type="i" name="panel-visibility">
       <default>0</default>
     </key>

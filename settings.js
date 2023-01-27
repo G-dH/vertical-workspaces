@@ -95,6 +95,7 @@ var Options = class Options {
             appGridOrder: ['int', 'app-grid-order'],
             searchWindowsEnable: ['boolean', 'search-windows-enable'],
             searchWindowsFuzzy: ['boolean', 'search-windows-fuzzy'],
+            searchMaxResultsRows: ['int', 'search-max-results-rows'],
             dashShowWindowsBeforeActivation: ['int', 'dash-show-windows-before-activation'],
             panelVisibility: ['int', 'panel-visibility'],
             panelPosition: ['int', 'panel-position'],

@@ -889,71 +889,31 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Animations'),
+            _('Search'),
         )
     );
 
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('App Grid Animation'),
-            _(`When entering the App Grid view, the app grid animates from the edge of the screen. You can choose direction, keep it Default (direction will be chosen automatically) or disable the animation if you don't like it.`),
-            itemFactory.newComboBox(),
-            //itemFactory.newDropDown(),
-            'appGridAnimation',
-            [
-                [_('Default'), 4],
-                [_('Disable'), 0],
-                [_('Right to Left'), 1],
-                [_('Left to Right'), 2],
-                [_('Bottom to Top'), 3],
-                [_('Top to Bottom'), 5],
-            ]
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Workspace Preview Animation'),
-            _(`When entering / leaving the App Grid / Search view, the workspace preview can animate to/from workspace thumbnail.`),
-            itemFactory.newComboBox(),
-            //itemFactory.newDropDown(),
-            'workspaceAnimation',
-            [   [_('Disable'), 0],
-                [_('Enable'), 1],
-            ]
-        )
-    );
-
-    const animationSpeedAdjustment = new Gtk.Adjustment({
-        upper: 500,
-        lower: 1,
-        step_increment: 10,
-        page_increment: 100,
+    const maxSearchResultsAdjustment = new Gtk.Adjustment({
+        upper: 50,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 5,
     });
 
+    const maxSearchResultsSpinButton = itemFactory.newScale(maxSearchResultsAdjustment);
+    maxSearchResultsSpinButton.add_mark(10, Gtk.PositionType.TOP, null);
+    maxSearchResultsSpinButton.add_mark(20, Gtk.PositionType.TOP, null);
+    maxSearchResultsSpinButton.add_mark(30, Gtk.PositionType.TOP, null);
+    maxSearchResultsSpinButton.add_mark(40, Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
-            _('Workspace Switcher Animation'),
-            _('Allows you to disable movement of the desktop background during workspace switcher animation outside of the overview.'),
-            itemFactory.newComboBox(),
-            //itemFactory.newDropDown(),
-            'workspaceSwitcherAnimation',
-            [   [_('Default'), 0],
-                [_('Static Background'), 1],
-            ]
+            _('Max Search Results Rows'),
+            _('Sets the maximum number of rows for result lists of all search providers except window search provider which always lists all results.'),
+            maxSearchResultsSpinButton,
+            'searchMaxResultsRows'
         )
     );
 
-    const animationSpeedScale = itemFactory.newScale(animationSpeedAdjustment);
-    animationSpeedScale.add_mark(100, Gtk.PositionType.TOP, null);
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Animation Speed'),
-            _('Adjusts the global animation speed in % of the default duration - higher value means slower animation.'),
-            animationSpeedScale,
-            'animationSpeedFactor'
-        )
-    );
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -990,6 +950,75 @@ function _getBehaviorOptionList() {
             'searchWindowsCommands'
         )
     );*/
+
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Animations'),
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('App Grid Animation'),
+            _(`When entering the App Grid view, the app grid animates from the edge of the screen. You can choose direction, keep it Default (direction will be chosen automatically) or disable the animation if you don't like it.`),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'appGridAnimation',
+            [
+                [_('Default'), 4],
+                [_('Disable'), 0],
+                [_('Right to Left'), 1],
+                [_('Left to Right'), 2],
+                [_('Bottom to Top'), 3],
+                [_('Top to Bottom'), 5],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Preview Animation'),
+            _(`When entering / leaving the App Grid / Search view, the workspace preview can animate to/from workspace thumbnail.`),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'workspaceAnimation',
+            [   [_('Disable'), 0],
+                [_('Enable'), 1],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Switcher Animation'),
+            _('Allows you to disable movement of the desktop background during workspace switcher animation outside of the overview.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'workspaceSwitcherAnimation',
+            [   [_('Default'), 0],
+                [_('Static Background'), 1],
+            ]
+        )
+    );
+
+    const animationSpeedAdjustment = new Gtk.Adjustment({
+        upper: 500,
+        lower: 1,
+        step_increment: 10,
+        page_increment: 100,
+    });
+
+    const animationSpeedScale = itemFactory.newScale(animationSpeedAdjustment);
+    animationSpeedScale.add_mark(100, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Animation Speed'),
+            _('Adjusts the global animation speed in % of the default duration - higher value means slower animation.'),
+            animationSpeedScale,
+            'animationSpeedFactor'
+        )
+    );
 
     return optionList;
 }

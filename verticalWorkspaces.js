@@ -163,6 +163,7 @@ let ANIMATION_TIME_FACTOR;
 let STATIC_WS_SWITCHER_BG;
 let SEARCH_ICON_SIZE;
 let SEARCH_VIEW_SCALE;
+let SEARCH_MAX_ROWS;
 
 let APP_GRID_ALLOW_INCOMPLETE_PAGES;
 let APP_GRID_ICON_SIZE;
@@ -437,7 +438,9 @@ function reset() {
 
     _updatePanel(reset);
 
-    _replaceMinimizeFunction(reset);;
+    _replaceMinimizeFunction(reset);
+
+    _restoreOverviewGroup();
 }
 
 function _onShowingOverview() {
@@ -743,6 +746,8 @@ function _updateSettings(settings, key) {
 
     SEARCH_ICON_SIZE = gOptions.get('searchIconSize', true);
     SEARCH_VIEW_SCALE = gOptions.get('searchViewScale', true) / 100;
+    SEARCH_MAX_ROWS = gOptions.get('searchMaxResultsRows', true);
+    imports.ui.search.MAX_LIST_SEARCH_RESULTS_ROWS = SEARCH_MAX_ROWS;
 
     APP_GRID_ALLOW_INCOMPLETE_PAGES = false;
     APP_GRID_ALLOW_CUSTOM = gOptions.get('appGridAllowCustom', true);
@@ -3407,6 +3412,9 @@ var ControlsManagerOverride = {
     },
 
     animateToOverview: function(state, callback) {
+        // don't enter overview during updating appDisplay properties
+        if (_updateAppGridTimeoutId)
+            Main.overview.hide();
         this._ignoreShowAppsButtonToggle = true;
 
         this._searchController.prepareToEnterOverview();
@@ -4777,7 +4785,54 @@ function _updateAppGridProperties(reset = false) {
         // force rebuild icons. size shouldn't be the same as the current one, otherwise can be arbitrary
         appDisplay._grid.layoutManager.adaptToSize(200, 200);
         appDisplay._redisplay();
+
+        _realizeAppDisplay();
     }
+}
+
+let _updateAppGridTimeoutId;
+function _realizeAppDisplay() {
+    // force app grid to build all icons before the first visible animation to remove possible stuttering
+    // let the main loop realize previous changes before continuing
+
+    // IT CAN CAUSE PROBLEMS IF USER TOGGLES THE OVERVIEW DURING UPDATE, SO I KEEP IT DISABLED FOR NOW
+
+    // don't do this during startup
+    if (!_staticBgAnimationEnabled)
+        return;
+
+    if (_updateAppGridTimeoutId) {
+        GLib.source_remove(_updateAppGridTimeoutId);
+    }
+
+    _updateAppGridTimeoutId = GLib.timeout_add(
+        GLib.PRIORITY_DEFAULT,
+        1000,
+        () => {
+            Main.layoutManager.overviewGroup.opacity = 1;
+            Main.layoutManager.overviewGroup.scale_x = 0.1;
+            Main.layoutManager.overviewGroup.show();
+            Main.overview.dash.showAppsButton.checked = true;
+
+            GLib.source_remove(_updateAppGridTimeoutId);
+
+            _updateAppGridTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
+            500,
+            () => {
+                _restoreOverviewGroup();
+
+                _updateAppGridTimeoutId = 0;
+                return GLib.SOURCE_REMOVE;
+            });
+        }
+    );
+}
+
+function _restoreOverviewGroup() {
+    Main.overview.dash.showAppsButton.checked = false;
+    Main.layoutManager.overviewGroup.opacity = 255;
+    Main.layoutManager.overviewGroup.scale_x = 1;
+    Main.layoutManager.overviewGroup.hide();
 }
 
 
