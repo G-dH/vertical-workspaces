@@ -1,9 +1,9 @@
 /**
- * OFP - Overview Feature Pack
- * WindowSearchProvider
+ * Vertical Workspaces
+ * windowSearchProvider.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022
+ * @copyright  2022 -2023
  * @license    GPL-3.0
  */
 
@@ -154,10 +154,9 @@ var WindowSearchProvider = class WindowSearchProvider {
         this.appInfo = Gio.AppInfo.create_from_commandline('true', 'Open Windows', null);
         this.appInfo.get_description = () => 'List of open windows';
         this.appInfo.get_name = () => 'Open Windows';
-        this.appInfo.get_id = () => Me.metadata.uuid;
+        this.appInfo.get_id = () => `${Me.metadata.uuid} ${this.title}`;
         this.appInfo.get_icon = () => Gio.icon_new_for_string('focus-windows-symbolic');
         this.appInfo.should_show = () => true;
-        this.id = Me.metadata.uuid;
         this.title = 'Window Search Provider',
         this.canLaunchSearch = true;
         this.isRemoteProvider = false;
@@ -207,7 +206,7 @@ var WindowSearchProvider = class WindowSearchProvider {
         const results = [];
         let m;
         for (let key in candidates) {
-            if (this._gOptions.get('searchWindowsFuzzy')) {
+            if (this._gOptions.get('searchFuzzy')) {
                 m = fuzzyMatch(term, candidates[key].name);
             } else {
                 m = strictMatch(term, candidates[key].name);
