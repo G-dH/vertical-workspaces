@@ -23,9 +23,12 @@
       <default>0</default>
     </key>
     <key type="i" name="show-app-icon-position">
-      <default>1</default>
+      <default>2</default>
     </key>
     <key type="i" name="dash-show-windows-icon">
+      <default>1</default>
+    </key>
+    <key type="i" name="dash-show-recent-files-icon">
       <default>1</default>
     </key>
     <key type="i" name="wst-position-adjust">
@@ -154,7 +157,10 @@
     <key type="b" name="search-windows-enable">
       <default>true</default>
     </key>
-    <key type="b" name="search-windows-fuzzy">
+    <key type="b" name="search-recent-files-enable">
+      <default>true</default>
+    </key>
+    <key type="b" name="search-fuzzy">
       <default>false</default>
     </key>
     <key type="i" name="search-max-results-rows">

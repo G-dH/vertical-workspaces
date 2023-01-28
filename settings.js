@@ -3,7 +3,7 @@
  * settings.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022
+ * @copyright  2022 - 2023
  * @license    GPL-3.0
  */
 
@@ -57,6 +57,7 @@ var Options = class Options {
             SecWsTmbPositionAdjust: ['int', 'sec-wst-position-adjust'],
             dashMaxIconSize: ['int', 'dash-max-icon-size'],
             dashShowWindowsIcon: ['int', 'dash-show-windows-icon'],
+            dashShowRecentFilesIcon: ['int', 'dash-show-recent-files-icon'],
             centerDashToWs: ['boolean', 'center-dash-to-ws'],
             showAppsIconPosition: ['int', 'show-app-icon-position'],
             wsThumbnailScale: ['int', 'ws-thumbnail-scale'],
@@ -94,7 +95,8 @@ var Options = class Options {
             appGridIncompletePages: ['boolean', 'app-grid-incomplete-pages'],
             appGridOrder: ['int', 'app-grid-order'],
             searchWindowsEnable: ['boolean', 'search-windows-enable'],
-            searchWindowsFuzzy: ['boolean', 'search-windows-fuzzy'],
+            searchRecentFilesEnable: ['boolean', 'search-recent-files-enable'],
+            searchFuzzy: ['boolean', 'search-fuzzy'],
             searchMaxResultsRows: ['int', 'search-max-results-rows'],
             dashShowWindowsBeforeActivation: ['int', 'dash-show-windows-before-activation'],
             panelVisibility: ['int', 'panel-visibility'],
@@ -122,6 +124,11 @@ var Options = class Options {
     }
 
     get(option, updateCache = false) {
+        if (!this.options[option]) {
+            log(`[${Me.metadata.name}] Error: Option ${option} is undefined.`);
+            return;
+        }
+
         if (updateCache || this.cachedOptions[option] === undefined) {
             const [format, key, settings] = this.options[option];
             let gSettings;

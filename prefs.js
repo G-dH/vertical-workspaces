@@ -3,7 +3,7 @@
  * prefs.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022
+ * @copyright  2022 - 2023
  * @license    GPL-3.0
  */
 
@@ -178,11 +178,25 @@ function _getLayoutOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('List Windows Icon Position'),
-            _('This option adds "List Open Windows" icon into dash so you can directly toggle window search provider results. Even if you disable this icon, you can use the secondary mouse button click on the Show Apps Icon, or the Space key press to access this feature.'),
+            _('Open Windows Icon Position'),
+            _('This option adds "Search Open Windows" icon into dash so you can directly toggle window search provider results. Even if you disable this icon, you can use the secondary mouse button click on the Show Apps Icon, or the Space hotkey to access this feature.'),
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'dashShowWindowsIcon',
+            [   [_('Hide'), 0],
+                [_('Start'), 1],
+                [_('End'), 2],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Recent Files Icon Position'),
+            _('This option adds "Search Recent Files" icon into dash so you can directly toggle recent files search provider results. Even if you disable this icon, you can use the secondary mouse button click on the Show Apps Icon, or the Ctrl + Space hotkey to access this feature.'),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'dashShowRecentFilesIcon',
             [   [_('Hide'), 0],
                 [_('Start'), 1],
                 [_('End'), 2],
@@ -915,29 +929,36 @@ function _getBehaviorOptionList() {
     );
 
 
-    optionList.push(
+    /*optionList.push(
         itemFactory.getRowWidget(
             _('Window Search Provider'),
         )
-    );
+    );*/
 
-    const wspSwitch = itemFactory.newSwitch();
     optionList.push(
         itemFactory.getRowWidget(
             _('Enable Window Search Provider'),
-            _('Activates a window search provider that adds open windows to the search results. You can search app names and window titles. You can also use "wq/" prefix to suppress results from other search providers.'),
-            wspSwitch,
+            _('Activates the window search provider that adds open windows to the search results. You can search app names and window titles. You can also use "wq/" prefix to suppress results from other search providers.'),
+            itemFactory.newSwitch(),
             'searchWindowsEnable'
         )
     );
 
-    const wspFuzzySwitch = itemFactory.newSwitch();
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Enable Recent Files Search Provider'),
+            _('Activates the recent files search provider that can be triggered by a dash icon, Ctrl + Space hotkey or by typing "fq//" prefix in the search entry field. This option needs File History option enabled in the GNOME Privacy settings.'),
+            itemFactory.newSwitch(),
+            'searchRecentFilesEnable'
+        )
+    );
+
     optionList.push(
         itemFactory.getRowWidget(
             _('Enable Fuzzy Match'),
-            _('Fuzzy match allows you to find "Firefox" even if you type "ffx". If fuzzy match is disabled, you need to enter exact patterns separated by a space, but in arbitrary order.'),
-            wspFuzzySwitch,
-            'searchWindowsFuzzy'
+            _('Enabling the fuzzy match allows you to skip letters in the pattern you are searching for and find "Firefox" even if you type "ffx". Works only for the Window and Recent files search providers.'),
+            itemFactory.newSwitch(),
+            'searchFuzzy'
         )
     );
 

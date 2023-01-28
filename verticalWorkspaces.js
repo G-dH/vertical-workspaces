@@ -40,6 +40,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Settings = Me.imports.settings;
 const shellVersion = Settings.shellVersion;
 const WindowSearchProvider = Me.imports.windowSearchProvider;
+const RecentFilesSearchProvider = Me.imports.recentFilesSearchProvider;
 
 const VerticalDash = Me.imports.dash;
 
@@ -181,6 +182,7 @@ let DASH_SHIFT_CLICK_MV;
 let DASH_FOLLOW_RECENT_WIN;
 
 let WINDOW_SEARCH_PROVIDER_ENABLED;
+let RECENT_FILES_SEARCH_PROVIDER_ENABLED;
 
 let PANEL_POSITION_TOP;
 let PANEL_MODE;
@@ -658,6 +660,7 @@ function _updateSettings(settings, key) {
     VerticalDash.DASH_LEFT = DASH_LEFT;
     VerticalDash.MAX_ICON_SIZE = VerticalDash.BaseIconSizes[gOptions.get('dashMaxIconSize', true)];
     VerticalDash.SHOW_WINDOWS_ICON = gOptions.get('dashShowWindowsIcon', true);
+    VerticalDash.SHOW_RECENT_FILES_ICON = gOptions.get('dashShowRecentFilesIcon', true);
 
     if (!_dashIsDashToDock()) {// DtD has its own opacity control
         Main.overview.dash._background.opacity = Math.round(gOptions.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
@@ -765,6 +768,9 @@ function _updateSettings(settings, key) {
     DASH_SHIFT_CLICK_MV = true;
 
     WINDOW_SEARCH_PROVIDER_ENABLED = gOptions.get('searchWindowsEnable', true);
+    RECENT_FILES_SEARCH_PROVIDER_ENABLED = gOptions.get('searchRecentFilesEnable', true);
+    VerticalDash.WINDOW_SEARCH_PROVIDER_ENABLED = WINDOW_SEARCH_PROVIDER_ENABLED;
+    VerticalDash.RECENT_FILES_SEARCH_PROVIDER_ENABLED = RECENT_FILES_SEARCH_PROVIDER_ENABLED;
 
     PANEL_POSITION_TOP = gOptions.get('panelPosition', true) === 0;
     PANEL_MODE = gOptions.get('panelVisibility', true);
@@ -796,12 +802,18 @@ function _updateSettings(settings, key) {
         _updateAppGridProperties();
         _updateAppGridDND();
     }
-    if (key === 'dash-show-windows-icon') {
+    if (key === 'dash-show-windows-icon' || key === 'dash-show-recent-files-icon' || key === 'search-windows-enable' || key === 'search-recent-files-enable') {
         VerticalDash._updateSearchWindowsIcon(VerticalDash.SHOW_WINDOWS_ICON);
+        VerticalDash._updateRecentFilesIcon(VerticalDash.SHOW_RECENT_FILES_ICON);
+        // keep Show Apps Icon always at first or last
+        _moveDashAppGridIcon()
     }
     if (dash._showWindowsIcon && !dash._showWindowsIconClickedId) {
-        dash._showWindowsIconClickedId = dash._showWindowsIcon.toggleButton.connect('clicked', (a, c) => c && _activateWindowSearchProvider());
-}
+        dash._showWindowsIconClickedId = dash._showWindowsIcon.toggleButton.connect('clicked', (a, c) => c && _activateSearchProvider(WindowSearchProvider.prefix));
+    }
+    if (dash._recentFilesIcon && !dash._recentFilesIconClickedId) {
+        dash._recentFilesIconClickedId = dash._recentFilesIcon.toggleButton.connect('clicked', (a, c) => c && _activateSearchProvider(RecentFilesSearchProvider.prefix));
+    }
 }
 
 function _getAppGridAnimationDirection() {
@@ -817,6 +829,12 @@ function _updateWindowSearchProvider(reset = false) {
         WindowSearchProvider.enable(gOptions);
     } else if (reset || !WINDOW_SEARCH_PROVIDER_ENABLED) {
         WindowSearchProvider.disable();
+    }
+
+    if (!reset && RECENT_FILES_SEARCH_PROVIDER_ENABLED && !RecentFilesSearchProvider.recentFilesSearchProvider) {
+        RecentFilesSearchProvider.enable(gOptions);
+    } else if (reset || !RECENT_FILES_SEARCH_PROVIDER_ENABLED) {
+        RecentFilesSearchProvider.disable();
     }
 }
 
@@ -855,7 +873,7 @@ function _connectShowAppsIcon(reset = false) {
             if (button === Clutter.BUTTON_MIDDLE) {
                 _openPreferences();
             } else if (button === Clutter.BUTTON_SECONDARY) {
-                _activateWindowSearchProvider();
+                _activateSearchProvider(WindowSearchProvider.prefix);
             } else {
                 return Clutter.EVENT_PROPAGATE;
             }
@@ -1084,7 +1102,7 @@ const WindowPreviewInjections = {
                 }
                 const tracker = Shell.WindowTracker.get_default();
                 const appName = tracker.get_window_app(this.metaWindow).get_name();
-                _activateWindowSearchProvider(appName);
+                _activateSearchProvider(`${WindowSearchProvider.prefix} ${appName}`);
                 return Clutter.EVENT_STOP;
             }
         });
@@ -1511,9 +1529,10 @@ var workspacesDisplayOverride = {
             if (isCtrlPressed && isShiftPressed) {
                 _openPreferences();
             } else if (isCtrlPressed) {
-                Main.ctrlAltTabManager._items.forEach(i => {if (i.sortGroup === 1 && i.name === 'Dash') Main.ctrlAltTabManager.focusGroup(i)});
+                //Main.ctrlAltTabManager._items.forEach(i => {if (i.sortGroup === 1 && i.name === 'Dash') Main.ctrlAltTabManager.focusGroup(i)});
+                _activateSearchProvider(RecentFilesSearchProvider.prefix);
             } else if (WINDOW_SEARCH_PROVIDER_ENABLED/* && SEARCH_WINDOWS_SPACE*/) {
-                _activateWindowSearchProvider();
+                _activateSearchProvider(WindowSearchProvider.prefix);
             }
             return Clutter.EVENT_STOP;
         case Clutter.KEY_Down:
@@ -1572,10 +1591,10 @@ function _reorderWorkspace(direction = 0) {
 
 // ------------------ Activate Window Search Provider - callback for Dash Show Apps Icon -----------------------------------
 
-function _activateWindowSearchProvider(term = '') {
+function _activateSearchProvider(prefix = '') {
     const searchEntry = Main.overview.searchEntry;
-    if (!searchEntry.get_text()) {
-        const prefix = _(WindowSearchProvider.prefix + term + ' ');
+    if (!searchEntry.get_text() || !searchEntry.get_text().startsWith(prefix)) {
+        prefix = _(prefix + ' ');
         const position = prefix.length;
         searchEntry.set_text(prefix);
         searchEntry.get_first_child().set_cursor_position(position);
@@ -4932,7 +4951,7 @@ const AppDisplayOverride = {
         if (this._placeholder)
             appIcons.push(this._placeholder);
 
-        const runningIDs = Shell.AppSystem.get_default().get_running().map(app => app.get_id());
+        //const runningIDs = Shell.AppSystem.get_default().get_running().map(app => app.get_id());
 
         // remove running apps
         /*if (!APP_GRID_INCLUDE_DASH) { // !icon.app means folder

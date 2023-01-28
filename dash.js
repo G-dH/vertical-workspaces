@@ -28,7 +28,10 @@ let _newWorkId;
 
 var BaseIconSizes = [16, 24, 32, 48, 64, 80, 96, 112, 128];
 var MAX_ICON_SIZE = 64;
+var WINDOW_SEARCH_PROVIDER_ENABLED;
+var RECENT_FILES_SEARCH_PROVIDER_ENABLED;
 var SHOW_WINDOWS_ICON;
+var SHOW_RECENT_FILES_ICON;
 
 var DASH_LEFT;
 var DASH_RIGHT;
@@ -68,6 +71,7 @@ function override(horizontal = false) {
     }
 
     _updateSearchWindowsIcon();
+    _updateRecentFilesIcon();
 }
 
 function reset() {
@@ -85,6 +89,7 @@ function reset() {
     Main.overview.dash.remove_style_class_name("vertical-overview-right");
 
     _updateSearchWindowsIcon(false);
+    _updateRecentFilesIcon(false);
 }
 
 function set_to_vertical() {
@@ -625,7 +630,7 @@ function _updateSearchWindowsIcon(show = SHOW_WINDOWS_ICON) {
         dash._showWindowsIcon = undefined;
     }
 
-    if (!show) return;
+    if (!show || !WINDOW_SEARCH_PROVIDER_ENABLED) return;
 
     if (!dash._showWindowsIcon) {
         dash._showWindowsIcon = new ShowWindowsIcon();
@@ -648,7 +653,7 @@ class ShowWindowsIcon extends Dash.DashItemContainer {
     _init() {
         super._init();
 
-        this._labelText = _('Search Open Windows');
+        this._labelText = _('Search Open Windows (Hotkey: Space)');
         this.toggleButton = new St.Button({
             style_class: 'show-apps',
             track_hover: true,
@@ -673,6 +678,75 @@ class ShowWindowsIcon extends Dash.DashItemContainer {
     _createIcon(size) {
         this._iconActor = new St.Icon({
             icon_name: 'focus-windows-symbolic',
+            icon_size: size,
+            style_class: 'show-apps-icon',
+            track_hover: true,
+        });
+        return this._iconActor;
+    }
+});
+
+function _updateRecentFilesIcon(show = SHOW_RECENT_FILES_ICON) {
+
+    const dash = Main.overview._overview._controls.dash;
+    const dashContainer = Main.overview._overview.controls.dash._dashContainer;
+
+    if (dash._recentFilesIcon) {
+        dashContainer.remove_child(dash._recentFilesIcon);
+        dash._recentFilesIconClickedId && dash._recentFilesIcon.toggleButton.disconnect(dash._recentFilesIconClickedId);
+        dash._recentFilesIconClickedId = undefined;
+        dash._recentFilesIcon && dash._recentFilesIcon.destroy();
+        dash._recentFilesIcon = undefined;
+    }
+
+    if (!show || !RECENT_FILES_SEARCH_PROVIDER_ENABLED) return;
+
+    if (!dash._recentFilesIcon) {
+        dash._recentFilesIcon = new ShowRecentFilesIcon();
+        dash._recentFilesIcon.show(false);
+        dashContainer.add_child(dash._recentFilesIcon);
+        dash._hookUpLabel(dash._recentFilesIcon);
+    }
+
+    dash._recentFilesIcon.icon.setIconSize(MAX_ICON_SIZE);
+    if (SHOW_RECENT_FILES_ICON === 1) {
+        dashContainer.set_child_at_index(dash._recentFilesIcon, 0);
+    } else if (SHOW_RECENT_FILES_ICON === 2) {
+        index = dashContainer.get_children().length - 1;
+        dashContainer.set_child_at_index(dash._recentFilesIcon, index);
+    }
+}
+
+var ShowRecentFilesIcon = GObject.registerClass(
+class ShowRecentFilesIcon extends Dash.DashItemContainer {
+    _init() {
+        super._init();
+
+        this._labelText = _('Search Recent Files (Hotkey: Ctrl + Space)');
+        this.toggleButton = new St.Button({
+            style_class: 'show-apps',
+            track_hover: true,
+            can_focus: true,
+            toggle_mode: false,
+        });
+
+        this._iconActor = null;
+        this.icon = new IconGrid.BaseIcon(this.labelText, {
+            setSizeManually: true,
+            showLabel: false,
+            createIcon: this._createIcon.bind(this),
+        });
+        this.icon.y_align = Clutter.ActorAlign.CENTER;
+
+        this.toggleButton.add_actor(this.icon);
+        this.toggleButton._delegate = this;
+
+        this.setChild(this.toggleButton);
+    }
+
+    _createIcon(size) {
+        this._iconActor = new St.Icon({
+            icon_name: 'document-open-recent-symbolic',
             icon_size: size,
             style_class: 'show-apps-icon',
             track_hover: true,
