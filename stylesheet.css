@@ -114,6 +114,7 @@
 	padding: 0px;
 }
 
+/* GS 43 App Grid - indicators that show up when dragging icon */
 .prevPageIndicator {
 	background: rgba(255, 255, 255, 0.1);
 	background-gradient-start: rgba(255, 255, 255, 0.1);
@@ -142,4 +143,13 @@
 /*reduce spacing between app icons in search results*/
 .grid-search-results {
 	spacing: 2px;
+}
+
+/*.panel {
+	text-shadow: 1px 1px 3px rgba(33, 33, 33, 1);
+}*/
+
+/* hide vertical scroll bar, it's distracting in the search results */
+StButton#vhandle {
+	background-color: rgba(100, 100, 100, 0.3);
 }
