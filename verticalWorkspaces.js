@@ -770,6 +770,7 @@ function _updateSettings(settings, key) {
 
     WINDOW_SEARCH_PROVIDER_ENABLED = gOptions.get('searchWindowsEnable', true);
     RECENT_FILES_SEARCH_PROVIDER_ENABLED = gOptions.get('searchRecentFilesEnable', true);
+
     VerticalDash.WINDOW_SEARCH_PROVIDER_ENABLED = WINDOW_SEARCH_PROVIDER_ENABLED;
     VerticalDash.RECENT_FILES_SEARCH_PROVIDER_ENABLED = RECENT_FILES_SEARCH_PROVIDER_ENABLED;
 
@@ -2961,7 +2962,7 @@ var ControlsManagerOverride = {
 
         let opacity = Math.round(Util.lerp(initialParams.opacity, finalParams.opacity, progress));
 
-        let workspacesDisplayVisible = (opacity != 0) && !(searchActive);
+        let workspacesDisplayVisible = (opacity != 0)/* && !(searchActive)*/;
 
         // improve transition from search results to desktop
         if (finalState === 0 && this._searchController._searchResults.visible) {
@@ -3075,51 +3076,46 @@ var ControlsManagerOverride = {
             stateTransitionParams = this._stateAdjustment.getStateTransitionParams();
 
         const { currentState } = stateTransitionParams;
+        if (this.dash.showAppsButton.checked)
+            this._searchTransition = false;
 
         // if !APP_GRID_ANIMATION appGrid needs to be hidden in WINDOW_PICKER mode (1)
         // but needs to be visible for transition from HIDDEN (0) to APP_GRID (2)
         this._appDisplay.visible =
             currentState > ControlsState.HIDDEN &&
             !this._searchController.searchActive &&
-            !(currentState === 1 && !APP_GRID_ANIMATION);
+            !(currentState === ControlsState.WINDOW_PICKER && !APP_GRID_ANIMATION) &&
+            !this._searchTransition;
     },
 
     _onSearchChanged: function() {
+        const { initialState, finalState, progress, currentState } = this._stateAdjustment.getStateTransitionParams();
         const { searchActive } = this._searchController;
         const SIDE_CONTROLS_ANIMATION_TIME = 250; // OverviewControls.SIDE_CONTROLS_ANIMATION_TIME = Overview.ANIMATION_TIME = 250
 
         if (!searchActive) {
-            this._updateAppDisplayVisibility();
             this._workspacesDisplay.reactive = true;
             this._workspacesDisplay.setPrimaryWorkspaceVisible(true);
         } else {
             this._searchController.show();
         }
 
-        //this._updateThumbnailsBox(true);
-
-        const state = this._stateAdjustment.value;
-
-        this._appDisplay.ease({
-            opacity: (searchActive || state < 2) ? 0 : 255,
-            duration: SIDE_CONTROLS_ANIMATION_TIME,
-            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-            onComplete: () => this._updateAppDisplayVisibility(),
-        });
-
+        this._searchTransition = true;
 
         this._searchController._searchResults.translation_x = 0;
         this._searchController._searchResults.translation_y = 0;
         this._searchController.visible = true;
 
-        if (WS_ANIMATION && state === ControlsState.WINDOW_PICKER && ![4, 8].includes(WS_TMB_POSITION) && !OVERVIEW_MODE2) {
+        if (WS_ANIMATION && !this.dash.showAppsButton.checked && ![4, 8].includes(WS_TMB_POSITION) && !OVERVIEW_MODE2) {
+            this._updateAppDisplayVisibility();
+
             this._searchController.opacity = searchActive ? 255 : 0;
             let translation_x = 0;
             let translation_y = 0;
             const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
 
 
-            if (state < ControlsState.APP_GRID) {
+            if (currentState < ControlsState.APP_GRID) {
                 switch (APP_GRID_ANIMATION) {
                     case 0:
                         translation_x = 0;
@@ -3159,17 +3155,35 @@ var ControlsManagerOverride = {
                 translation_y: searchActive ? 0 : translation_y,
                 duration: SIDE_CONTROLS_ANIMATION_TIME,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                onComplete: () => (this._searchController.visible = searchActive),
+                onComplete: () => {
+                    this._searchController.visible = searchActive;
+                    this._searchTransition = false;
+                }
             });
 
-            this._workspacesDisplay.setPrimaryWorkspaceVisible(true);
+            // reuse already tuned overview transition, just replace APP_GRID with the search view
+            if (finalState !== ControlsState.HIDDEN) {
+                this._stateAdjustment.ease(searchActive ? ControlsState.APP_GRID : ControlsState.WINDOW_PICKER, {
+                    duration: SIDE_CONTROLS_ANIMATION_TIME,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onComplete: () => {
+                        this._workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
+                    }
+                });
+            }
+
+            this._workspacesDisplay.opacity = 255;
+
+            // manual transition of the workspacesDisplay, replaced by transition to APP_GRID state
+
+            /*this._workspacesDisplay.setPrimaryWorkspaceVisible(true);
             this.set_child_above_sibling(this._workspacesDisplay, null);
             this._workspacesDisplay._fitModeAdjustment.ease(searchActive ? 1 : 0, {
                 duration: SIDE_CONTROLS_ANIMATION_TIME,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD
             });
 
-            const [xt, yt] = this._thumbnailsBox.get_position();
+            /*const [xt, yt] = this._thumbnailsBox.get_position();
             const [wt, ht] = this._thumbnailsBox.get_size();
             let [xw, yw] = this._workspacesDisplay.get_position();
             let [ww, hw] = this._workspacesDisplay.get_size();
@@ -3183,7 +3197,7 @@ var ControlsManagerOverride = {
             yw += (hw * scale - ht) / 2;
             translation_x = xt - xw;
             translation_y = yt - yw;
-            this._workspacesDisplay.opacity = 255;
+
             this._workspacesDisplay.ease({
                 translation_x: searchActive ? translation_x : 0,
                 translation_y: searchActive ? translation_y : 0,
@@ -3195,9 +3209,18 @@ var ControlsManagerOverride = {
                     this._workspacesDisplay.reactive = !searchActive;
                     this._workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
                     this.set_child_below_sibling(this._workspacesDisplay, null);
+                    this._stateAdjustment.value = 1;
                 },
-            });
+            });*/
         } else {
+            this._appDisplay.ease({
+                opacity: (searchActive || currentState < 2) ? 0 : 255,
+                duration: SIDE_CONTROLS_ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                onComplete: () => this._updateAppDisplayVisibility(),
+            });
+
+            //this._updateAppDisplayVisibility();
             this._workspacesDisplay.setPrimaryWorkspaceVisible(true);
             this._workspacesDisplay.ease({
                 opacity: searchActive ? 0 : 255,
@@ -3215,7 +3238,6 @@ var ControlsManagerOverride = {
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onComplete: () => (this._searchController.visible = searchActive),
             });
-
         }
 
         if (SHOW_BG_IN_OVERVIEW /*&& SMOOTH_BLUR_TRANSITIONS*/) {
@@ -3447,9 +3469,9 @@ var ControlsManagerOverride = {
         // in which case the the animation is greatly delayed, stuttering, or even skipped
         // for user it is more acceptable to watch delayed smooth animation,
         // even if it takes little more time, than jumping frames
-        const delay = global.display.get_tab_list(0, global.workspace_manager.get_active_workspace()).length * 3;
+        //const delay = global.display.get_tab_list(0, global.workspace_manager.get_active_workspace()).length * 3;
         this._stateAdjustment.ease(state, {
-            delay,
+            //delay,
             duration: 250, //Overview.ANIMATION_TIME,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onStopped: () => {
@@ -3907,7 +3929,8 @@ var ControlsManagerLayoutVerticalOverride = {
         let workspacesBox;
         if (!transitionParams.transitioning) {
             workspacesBox = this._cachedWorkspaceBoxes.get(transitionParams.currentState);
-        } else {
+        }
+        if (!workspacesBox) {
             const initialBox = this._cachedWorkspaceBoxes.get(transitionParams.initialState);
             const finalBox = this._cachedWorkspaceBoxes.get(transitionParams.finalState);
             workspacesBox = initialBox.interpolate(finalBox, transitionParams.progress);
@@ -4321,7 +4344,8 @@ var ControlsManagerLayoutHorizontalOverride = {
         let workspacesBox;
         if (!transitionParams.transitioning) {
             workspacesBox = this._cachedWorkspaceBoxes.get(transitionParams.currentState);
-        } else {
+        }
+        if (!workspacesBox) {
             const initialBox = this._cachedWorkspaceBoxes.get(transitionParams.initialState);
             const finalBox = this._cachedWorkspaceBoxes.get(transitionParams.finalState);
             workspacesBox = initialBox.interpolate(finalBox, transitionParams.progress);
