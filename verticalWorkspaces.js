@@ -281,6 +281,7 @@ function activate() {
     _overrides.addOverride('BaseAppView', AppDisplay.BaseAppView.prototype, BaseAppViewOverride);
     _overrides.addOverride('AppDisplay', AppDisplay.AppDisplay.prototype, AppDisplayOverride);
     _overrides.addOverride('WindowManager', WindowManager.WindowManager.prototype, WindowManagerOverride);
+    _overrides.addOverride('LayoutManager', Layout.LayoutManager.prototype, LayoutManagerOverride);
 
     _prevDash = {};
     const dash = Main.overview.dash;
@@ -5459,7 +5460,7 @@ const AppIconOverride = {
     }
 }
 
-//---------- Panel visibility ------------------------------------------------------------
+//---------- Panel visibility and position ------------------------------------------------------------
 
 function _updatePanel(reset = false) {
     const panel = Main.layoutManager.panelBox;
@@ -5610,6 +5611,29 @@ function _replaceMinimizeFunction(reset = false) {
         if (_originalUnminimizeSigId) {
             Main.wm._shellwm.block_signal_handler(_originalUnminimizeSigId);
             _unminimizeSigId = Main.wm._shellwm.connect('unminimize', WindowManagerOverride._unminimizeWindow.bind(Main.wm));
+        }
+    }
+}
+
+const LayoutManagerOverride = {
+    _updatePanelBarrier: function() {
+        if (this._rightPanelBarrier) {
+            this._rightPanelBarrier.destroy();
+            this._rightPanelBarrier = null;
+        }
+
+        if (!this.primaryMonitor)
+            return;
+
+        if (this.panelBox.height) {
+            let primary = this.primaryMonitor;
+
+            this._rightPanelBarrier = new Meta.Barrier({
+                display: global.display,
+                x1: primary.x + primary.width, y1: PANEL_POSITION_TOP ? primary.y : primary.y + primary.height - this.panelBox.height,
+                x2: primary.x + primary.width, y2: PANEL_POSITION_TOP ? primary.y + this.panelBox.height : primary.y + primary.height,
+                directions: Meta.BarrierDirection.NEGATIVE_X,
+            });
         }
     }
 }
