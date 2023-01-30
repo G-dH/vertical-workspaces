@@ -3089,7 +3089,7 @@ var ControlsManagerOverride = {
     },
 
     _onSearchChanged: function() {
-        const { initialState, finalState, progress, currentState } = this._stateAdjustment.getStateTransitionParams();
+        const { finalState, currentState } = this._stateAdjustment.getStateTransitionParams();
         const { searchActive } = this._searchController;
         const SIDE_CONTROLS_ANIMATION_TIME = 250; // OverviewControls.SIDE_CONTROLS_ANIMATION_TIME = Overview.ANIMATION_TIME = 250
 
@@ -3164,7 +3164,10 @@ var ControlsManagerOverride = {
             // reuse already tuned overview transition, just replace APP_GRID with the search view
             if (finalState !== ControlsState.HIDDEN) {
                 this._stateAdjustment.ease(searchActive ? ControlsState.APP_GRID : ControlsState.WINDOW_PICKER, {
-                    duration: SIDE_CONTROLS_ANIMATION_TIME,
+                    // shorter animation time when entering search view can avoid stuttering in transition
+                    // collecting search results take some time and the problematic part is the realization of the object on the screen
+                    // if the ws animation ends before this event, the whole transition is smoother
+                    duration: searchActive ? 100 : SIDE_CONTROLS_ANIMATION_TIME,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onComplete: () => {
                         this._workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
@@ -3173,45 +3176,6 @@ var ControlsManagerOverride = {
             }
 
             this._workspacesDisplay.opacity = 255;
-
-            // manual transition of the workspacesDisplay, replaced by transition to APP_GRID state
-
-            /*this._workspacesDisplay.setPrimaryWorkspaceVisible(true);
-            this.set_child_above_sibling(this._workspacesDisplay, null);
-            this._workspacesDisplay._fitModeAdjustment.ease(searchActive ? 1 : 0, {
-                duration: SIDE_CONTROLS_ANIMATION_TIME,
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD
-            });
-
-            /*const [xt, yt] = this._thumbnailsBox.get_position();
-            const [wt, ht] = this._thumbnailsBox.get_size();
-            let [xw, yw] = this._workspacesDisplay.get_position();
-            let [ww, hw] = this._workspacesDisplay.get_size();
-            let scale;
-            if (ORIENTATION)
-                scale = ht / hw;
-            else
-                scale = wt / ww;
-
-            xw += (ww * scale - wt) / 2;
-            yw += (hw * scale - ht) / 2;
-            translation_x = xt - xw;
-            translation_y = yt - yw;
-
-            this._workspacesDisplay.ease({
-                translation_x: searchActive ? translation_x : 0,
-                translation_y: searchActive ? translation_y : 0,
-                scale_x: searchActive ? scale : 1,
-                scale_y: searchActive ? scale : 1,
-                duration: SIDE_CONTROLS_ANIMATION_TIME,
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                onComplete: () => {
-                    this._workspacesDisplay.reactive = !searchActive;
-                    this._workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
-                    this.set_child_below_sibling(this._workspacesDisplay, null);
-                    this._stateAdjustment.value = 1;
-                },
-            });*/
         } else {
             this._appDisplay.ease({
                 opacity: (searchActive || currentState < 2) ? 0 : 255,
@@ -3238,32 +3202,6 @@ var ControlsManagerOverride = {
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onComplete: () => (this._searchController.visible = searchActive),
             });
-        }
-
-        if (SHOW_BG_IN_OVERVIEW /*&& SMOOTH_BLUR_TRANSITIONS*/) {
-            const effect = _bgManagers[0].backgroundActor.get_effect('blur');
-            if (effect) {
-                const bgActor = _bgManagers[0].backgroundActor;
-                bgActor.remove_all_transitions();
-                let transition = new Clutter.PropertyTransition(Object.assign({
-                    property_name: '@effects.blur.sigma',
-                    remove_on_complete: true,
-                    duration: SIDE_CONTROLS_ANIMATION_TIME * ANIMATION_TIME_FACTOR,
-                    progress_mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                },));
-                transition.set_to(searchActive ? APP_GRID_BG_BLUR_SIGMA : OVERVIEW_BG_BLUR_SIGMA),
-                bgActor.add_transition('blur-transition', transition);
-            }
-        } else {
-            // if static background enabled, blur bg of search results with the value for AppGrid
-            if (SHOW_BG_IN_OVERVIEW) {
-                if (searchActive && _bgManagers.length) {
-                    _updateStaticBackground(_bgManagers[0], 2);
-                } else if (_bgManagers.length) {
-                    // when search view is hidden update the blur according the current overview state
-                    _updateStaticBackground(_bgManagers[0], Main.overview._overview._controls._stateAdjustment.value);
-                }
-            }
         }
 
         const entry = this._searchEntry;
