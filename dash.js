@@ -49,7 +49,7 @@ function override(horizontal = false) {
 
     _overrides.addOverride('DashItemContainer', Dash.DashItemContainer.prototype, DashItemContainerOverride);
 
-    const dash = Main.overview.dash;
+    const dash = Main.overview._overview._controls.layoutManager._dash;
     if (horizontal) {
         _overrides.addOverride('DashCommon', Dash.Dash.prototype, DashCommonOverride);
         if (_origWorkId)
@@ -75,28 +75,26 @@ function override(horizontal = false) {
 }
 
 function reset() {
+    const dash = Main.overview._overview._controls.layoutManager._dash;
     if (verticalOverrides === {})
         return;
-    if (Main.overview.dash._isHorizontal === undefined)
-        set_to_horizontal();
+
+    set_to_horizontal();
 
     _overrides && _overrides.removeAll();
     _overrides = null;
 
     verticalOverrides = {};
-    Main.overview.dash.remove_style_class_name("vertical-overview");
-    Main.overview.dash.remove_style_class_name("vertical-overview-left");
-    Main.overview.dash.remove_style_class_name("vertical-overview-right");
+    dash.remove_style_class_name("vertical-overview");
+    dash.remove_style_class_name("vertical-overview-left");
+    dash.remove_style_class_name("vertical-overview-right");
 
     _updateSearchWindowsIcon(false);
     _updateRecentFilesIcon(false);
 }
 
 function set_to_vertical() {
-    let dash = Main.overview.dash;
-    // don't touch Dash to Dock
-    if (dash._isHorizontal !== undefined)
-        return;
+    let dash = Main.overview._overview._controls.layoutManager._dash;
 
     dash._box.layout_manager.orientation = Clutter.Orientation.VERTICAL;
     dash._dashContainer.layout_manager.orientation = Clutter.Orientation.VERTICAL;
@@ -123,7 +121,7 @@ function set_to_vertical() {
 }
 
 function set_to_horizontal() {
-    let dash = Main.overview._overview._controls.dash;
+    let dash = Main.overview._overview._controls.layoutManager._dash;
     if (_origWorkId)
         dash._workId = _origWorkId; //pretty sure this is a leak, but there no provided way to disconnect these...
     dash._box.layout_manager.orientation = Clutter.Orientation.HORIZONTAL;
@@ -619,8 +617,8 @@ var DashCommonOverride = {
 
 function _updateSearchWindowsIcon(show = SHOW_WINDOWS_ICON) {
 
-    const dash = Main.overview._overview._controls.dash;
-    const dashContainer = Main.overview._overview.controls.dash._dashContainer;
+    const dash = Main.overview._overview._controls.layoutManager._dash;
+    const dashContainer = dash._dashContainer;
 
     if (dash._showWindowsIcon) {
         dashContainer.remove_child(dash._showWindowsIcon);
@@ -688,8 +686,8 @@ class ShowWindowsIcon extends Dash.DashItemContainer {
 
 function _updateRecentFilesIcon(show = SHOW_RECENT_FILES_ICON) {
 
-    const dash = Main.overview._overview._controls.dash;
-    const dashContainer = Main.overview._overview.controls.dash._dashContainer;
+    const dash = Main.overview._overview._controls.layoutManager._dash;
+    const dashContainer = dash._dashContainer;
 
     if (dash._recentFilesIcon) {
         dashContainer.remove_child(dash._recentFilesIcon);

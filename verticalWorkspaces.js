@@ -638,7 +638,7 @@ function _fixUbuntuDock(activate = true) {
 //*************************************************************************************************
 
 function _updateSettings(settings, key) {
-    const dash = Main.overview._overview._controls.dash;
+    const dash = Main.overview.dash;
     if (_dashIsDashToDock()) {
         DASH_POSITION = dash._position;
     } else {
