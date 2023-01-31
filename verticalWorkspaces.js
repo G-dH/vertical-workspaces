@@ -458,7 +458,7 @@ function _onShowingOverview() {
         //Main.panel.set_style('background-color: transparent;');
     }
 
-    if ((!SHOW_WS_PREVIEW_BG && PANEL_MODE === 2) || OVERVIEW_MODE2) {
+    if ((!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE2) && PANEL_MODE === 2) {
         // overview should be visible only in the overview
         _showPanel(true);
     }
@@ -478,7 +478,7 @@ function _onHidingOverview() {
 
     Main.panel.set_style('');
 
-    if ((!SHOW_WS_PREVIEW_BG && PANEL_MODE === 2) || OVERVIEW_MODE2) {
+    if ((!SHOW_WS_PREVIEW_BG || OVERVIEW_MODE2) && PANEL_MODE === 2) {
         // overview should be visible only in the overview
         _showPanel(false);
     }
@@ -1491,20 +1491,22 @@ var workspacesDisplayOverride = {
 
     _onKeyPressEvent: function(actor, event) {
         const symbol = event.get_key_symbol();
-        const { ControlsState } = OverviewControls;
+        /*const { ControlsState } = OverviewControls;
         if (this._overviewAdjustment.value !== ControlsState.WINDOW_PICKER && symbol !== Clutter.KEY_space)
-            return Clutter.EVENT_PROPAGATE;
+            return Clutter.EVENT_PROPAGATE;*/
 
         /*if (!this.reactive)
             return Clutter.EVENT_PROPAGATE;**/
         const isCtrlPressed = (event.get_state() & Clutter.ModifierType.CONTROL_MASK) != 0;
         const isShiftPressed = (event.get_state() & Clutter.ModifierType.SHIFT_MASK) != 0;
+        const isAltPressed = (event.get_state() & Clutter.ModifierType.MOD1_MASK) != 0;
         const { workspaceManager } = global;
         const vertical = workspaceManager.layout_rows === -1;
         const rtl = this.get_text_direction() === Clutter.TextDirection.RTL;
 
         let which;
         switch (symbol) {
+        /*case Clutter.KEY_Return:*/
         case Clutter.KEY_Page_Up:
             if (vertical)
                 which = Meta.MotionDirection.UP;
@@ -1530,8 +1532,9 @@ var workspacesDisplayOverride = {
         case Clutter.KEY_space:
             if (isCtrlPressed && isShiftPressed) {
                 _openPreferences();
+            } else if (isAltPressed) {
+                Main.ctrlAltTabManager._items.forEach(i => {if (i.sortGroup === 1 && i.name === 'Dash') Main.ctrlAltTabManager.focusGroup(i)});
             } else if (isCtrlPressed) {
-                //Main.ctrlAltTabManager._items.forEach(i => {if (i.sortGroup === 1 && i.name === 'Dash') Main.ctrlAltTabManager.focusGroup(i)});
                 _activateSearchProvider(RecentFilesSearchProvider.prefix);
             } else if (WINDOW_SEARCH_PROVIDER_ENABLED/* && SEARCH_WINDOWS_SPACE*/) {
                 _activateSearchProvider(WindowSearchProvider.prefix);
@@ -1543,10 +1546,10 @@ var workspacesDisplayOverride = {
         case Clutter.KEY_Up:
             if (Main.overview._overview._controls._searchController.searchActive) {
                 Main.overview.searchEntry.grab_key_focus();
-                return Clutter.EVENT_STOP;
-            } else if (OVERVIEW_MODE && !WORKSPACE_MODE) {
-
+            } else /*if (OVERVIEW_MODE && !WORKSPACE_MODE)*/ {
+                Main.ctrlAltTabManager._items.forEach(i => {if (i.sortGroup === 1 && i.name === 'Dash') Main.ctrlAltTabManager.focusGroup(i)});
             }
+            return Clutter.EVENT_STOP;
         default:
             return Clutter.EVENT_PROPAGATE;
         }
@@ -1554,13 +1557,12 @@ var workspacesDisplayOverride = {
         let ws;
         if (which < 0)
             // Negative workspace numbers are directions
-            // with respect to the current workspace
             ws = workspaceManager.get_active_workspace().get_neighbor(which);
         else
             // Otherwise it is a workspace index
             ws = workspaceManager.get_workspace_by_index(which);
 
-        if (/*SHIFT_REORDERS_WS && */event.get_state() & Clutter.ModifierType.SHIFT_MASK) {
+        if (/*SHIFT_REORDERS_WS && */isShiftPressed) {
             let direction;
             if (which === Meta.MotionDirection.UP || which === Meta.MotionDirection.LEFT)
                 direction = -1;
@@ -3106,7 +3108,7 @@ var ControlsManagerOverride = {
         this._searchController._searchResults.translation_y = 0;
         this._searchController.visible = true;
 
-        if (WS_ANIMATION && !this.dash.showAppsButton.checked && ![4, 8].includes(WS_TMB_POSITION) && !OVERVIEW_MODE2) {
+        if (WS_ANIMATION && !this.dash.showAppsButton.checked && ![4, 8].includes(WS_TMB_POSITION) /*&& !OVERVIEW_MODE2*/) {
             this._updateAppDisplayVisibility();
 
             this._searchController.opacity = searchActive ? 255 : 0;
@@ -3161,20 +3163,6 @@ var ControlsManagerOverride = {
                 }
             });
 
-            // reuse already tuned overview transition, just replace APP_GRID with the search view
-            if (finalState !== ControlsState.HIDDEN) {
-                this._stateAdjustment.ease(searchActive ? ControlsState.APP_GRID : ControlsState.WINDOW_PICKER, {
-                    // shorter animation time when entering search view can avoid stuttering in transition
-                    // collecting search results take some time and the problematic part is the realization of the object on the screen
-                    // if the ws animation ends before this event, the whole transition is smoother
-                    duration: searchActive ? 100 : SIDE_CONTROLS_ANIMATION_TIME,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    onComplete: () => {
-                        this._workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
-                    }
-                });
-            }
-
             this._workspacesDisplay.opacity = 255;
         } else {
             this._appDisplay.ease({
@@ -3201,6 +3189,20 @@ var ControlsManagerOverride = {
                 duration: SIDE_CONTROLS_ANIMATION_TIME,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onComplete: () => (this._searchController.visible = searchActive),
+            });
+        }
+
+        // reuse already tuned overview transition, just replace APP_GRID with the search view
+        if (finalState !== ControlsState.HIDDEN) {
+            this._stateAdjustment.ease(searchActive ? ControlsState.APP_GRID : ControlsState.WINDOW_PICKER, {
+                // shorter animation time when entering search view can avoid stuttering in transition
+                // collecting search results take some time and the problematic part is the realization of the object on the screen
+                // if the ws animation ends before this event, the whole transition is smoother
+                duration: searchActive ? 100 : SIDE_CONTROLS_ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                onComplete: () => {
+                    this._workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
+                }
             });
         }
 
@@ -5519,8 +5521,7 @@ function _showPanel(show = true) {
 
 function _connectPanel() {
     // not reliable, disabled for now
-    return;
-    if (!_panelEnterSigId) {
+    /*if (!_panelEnterSigId) {
         _panelEnterSigId = Main.panel.connect('enter-event', () => {
             if (!Main.overview._shown)
                 _showPanel(true);
@@ -5531,7 +5532,7 @@ function _connectPanel() {
             if (!Main.overview._shown)
                 _showPanel(false);
         });
-    }
+    }*/
 }
 
 function _disconnectPanel() {
