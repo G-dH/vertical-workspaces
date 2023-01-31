@@ -116,6 +116,7 @@ function set_to_vertical() {
     dash._box.remove_all_children();
     dash._separator = null;
     dash._queueRedisplay();
+    dash._adjustIconSize();
 
     dash.add_style_class_name(DASH_LEFT ? 'vertical-overview-left' : 'vertical-overview-right');
 }
@@ -145,6 +146,7 @@ function set_to_horizontal() {
     dash._box.remove_all_children();
     dash._separator = null;
     dash._queueRedisplay();
+    dash._adjustIconSize();
 }
 
 var DashOverride = {
@@ -499,9 +501,15 @@ var DashCommonOverride = {
                 !actor.animatingOut;
         });
 
-        iconChildren.push(this._showAppsIcon);
+        // add new custom icons into the calculation
+        if (this._showAppsIcon.visible) {
+            iconChildren.push(this._showAppsIcon);
+        }
         if (this._showWindowsIcon) {
             iconChildren.push(this._showWindowsIcon);
+        }
+        if (this._recentFilesIcon) {
+            iconChildren.push(this._recentFilesIcon);
         }
 
         if (this._maxWidth === -1 || this._maxHeight === -1)
@@ -523,6 +531,8 @@ var DashCommonOverride = {
 
         let firstButton = iconChildren[0].child;
         let firstIcon = firstButton._delegate.icon;
+
+        if (!firstIcon.icon) return;
 
         // Enforce valid spacings during the size request
         firstIcon.icon.ensure_style();
@@ -567,8 +577,8 @@ var DashCommonOverride = {
                 newIconSize = BaseIconSizes[i];
         }
 
-        if (newIconSize == this.iconSize)
-            return;
+        /*if (newIconSize == this.iconSize)
+            return;*/
 
         let oldIconSize = this.iconSize;
         this.iconSize = newIconSize;
@@ -644,6 +654,8 @@ function _updateSearchWindowsIcon(show = SHOW_WINDOWS_ICON) {
         index = dashContainer.get_children().length - 1;
         dashContainer.set_child_at_index(dash._showWindowsIcon, index);
     }
+
+    Main.overview._overview._controls.layoutManager._dash._adjustIconSize();
 }
 
 var ShowWindowsIcon = GObject.registerClass(
@@ -713,6 +725,8 @@ function _updateRecentFilesIcon(show = SHOW_RECENT_FILES_ICON) {
         index = dashContainer.get_children().length - 1;
         dashContainer.set_child_at_index(dash._recentFilesIcon, index);
     }
+
+    Main.overview._overview._controls.layoutManager._dash._adjustIconSize();
 }
 
 var ShowRecentFilesIcon = GObject.registerClass(

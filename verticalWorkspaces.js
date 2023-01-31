@@ -792,8 +792,10 @@ function _updateSettings(settings, key) {
         _fixUbuntuDock(gOptions.get('fixUbuntuDock', true));
     if (key === 'show-app-icon-position')
         _moveDashAppGridIcon();
-    if (key === 'dash-position')
+    if (key === 'dash-position') {
         _updateDashPosition();
+        _moveDashAppGridIcon();
+    }
     if (key === 'dash-max-icon-size')
         Main.overview.dash._redisplay();
     if (key === 'ws-thumbnails-position') {
@@ -808,7 +810,7 @@ function _updateSettings(settings, key) {
         VerticalDash._updateSearchWindowsIcon(VerticalDash.SHOW_WINDOWS_ICON);
         VerticalDash._updateRecentFilesIcon(VerticalDash.SHOW_RECENT_FILES_ICON);
         // keep Show Apps Icon always at first or last
-        _moveDashAppGridIcon()
+        _moveDashAppGridIcon();
     }
     if (dash._showWindowsIcon && !dash._showWindowsIconClickedId) {
         dash._showWindowsIconClickedId = dash._showWindowsIcon.toggleButton.connect('clicked', (a, c) => c && _activateSearchProvider(WindowSearchProvider.prefix));
@@ -1467,8 +1469,19 @@ var workspacesDisplayOverride = {
             this._getMonitorIndexForEvent(event) != this._primaryIndex)
             return Clutter.EVENT_PROPAGATE;
 
-        if (/*SHIFT_REORDERS_WS && */global.get_pointer()[2] & Clutter.ModifierType.SHIFT_MASK) {
-            let direction = event.get_scroll_direction();
+        const isShiftPressed = (event.get_state() & Clutter.ModifierType.SHIFT_MASK) != 0;
+        /*const isCtrlPressed = (event.get_state() & Clutter.ModifierType.CONTROL_MASK) != 0;
+        const isAltPressed = (event.get_state() & Clutter.ModifierType.MOD1_MASK) != 0;
+        const noModifiersPressed = !(isCtrlPressed && isShiftPressed && isAltPressed);
+
+        if (OVERVIEW_MODE2 && noModifiersPressed) {
+            Main.overview.hide();
+            return Clutter.EVENT_STOP;
+        }*/
+
+        let direction = event.get_scroll_direction();
+
+        if (/*SHIFT_REORDERS_WS && */isShiftPressed) {
             if (direction === Clutter.ScrollDirection.UP) {
                 direction = -1;
             }
@@ -2346,7 +2359,7 @@ var WorkspaceThumbnailOverride = {
 
         if (stateAdjustment.value === ControlsState.APP_GRID) {
             if (this.metaWorkspace.active) {
-                Main.overview.dash.showAppsButton.checked = false;
+                Main.overview._overview.controls._shiftState(Meta.MotionDirection.DOWN);
             } else {
                 this.metaWorkspace.activate(time);
             }
@@ -3078,7 +3091,7 @@ var ControlsManagerOverride = {
             stateTransitionParams = this._stateAdjustment.getStateTransitionParams();
 
         const { currentState } = stateTransitionParams;
-        if (this.dash.showAppsButton.checked)
+        if (this.dash.showAppsButton.checked || currentState <= ControlsState.WINDOW_PICKER)
             this._searchTransition = false;
 
         // if !APP_GRID_ANIMATION appGrid needs to be hidden in WINDOW_PICKER mode (1)
@@ -3884,9 +3897,9 @@ var ControlsManagerLayoutVerticalOverride = {
 
         // Y position under top Dash
         let searchEntryX, searchEntryY;
-        if (OVERVIEW_MODE2 && !DASH_TOP && !WS_TMB_TOP) {
+        /*if (OVERVIEW_MODE2 && !DASH_TOP && !WS_TMB_TOP) {
             searchEntryY = 7;
-        } else if (DASH_TOP) {
+        } else*/ if (DASH_TOP) {
             searchEntryY = startY + dashHeight - spacing;
         } else {
             searchEntryY = startY;
@@ -3929,10 +3942,11 @@ var ControlsManagerLayoutVerticalOverride = {
 
         // Search
         if (CENTER_SEARCH_VIEW) {
-            searchWidth = width - 2 * wsTmbWidth;
-            childBox.set_origin(wsTmbWidth, startY + (DASH_TOP ? dashHeight : 0) + searchHeight);
+            const dashW = (DASH_VERTICAL ? dashWidth : 0) + spacing;
+            searchWidth = width - 2 * wsTmbWidth - 2 * dashW;
+            childBox.set_origin(wsTmbWidth + dashW, startY + (DASH_TOP ? dashHeight : spacing) + searchHeight);
         } else {
-            childBox.set_origin(this._xAlignCenter ? wsTmbWidth + spacing : searchXoffset, startY + (DASH_TOP ? dashHeight : 0) + searchHeight);
+            childBox.set_origin(this._xAlignCenter ? wsTmbWidth + spacing : searchXoffset, startY + (DASH_TOP ? dashHeight : spacing) + searchHeight);
         }
 
         childBox.set_size(searchWidth, availableHeight);
@@ -4161,13 +4175,13 @@ var ControlsManagerLayoutHorizontalOverride = {
                 [, dashHeight] = this._dash.get_preferred_height(width);
                 [, dashWidth] = this._dash.get_preferred_width(dashHeight);
                 dashHeight = Math.min(dashHeight, maxDashHeight);
-                dashWidth = Math.min(dashWidth, width);
+                dashWidth = Math.min(dashWidth, width - spacing);
 
             } else if (!WS_TMB_FULL) {
                 this._dash.setMaxSize(maxDashWidth, height);
                 [, dashWidth] = this._dash.get_preferred_width(height);
                 [, dashHeight] = this._dash.get_preferred_height(dashWidth);
-                dashHeight = Math.min(dashHeight, height - 2 * spacing);
+                dashHeight = Math.min(dashHeight, height - spacing);
                 dashWidth = Math.min(dashWidth, width);
             }
         }
@@ -4220,8 +4234,9 @@ var ControlsManagerLayoutHorizontalOverride = {
 
 
         if (this._dash.visible) {
-            const wMaxHeight = height - spacing - wsTmbHeight - 2 * spacing - (DASH_VERTICAL ? 0 : dashHeight + spacing);
+            //const wMaxHeight = height - spacing - wsTmbHeight - 2 * spacing - (DASH_VERTICAL ? 0 : dashHeight + spacing);
             if (WS_TMB_FULL && DASH_VERTICAL) {
+                const wMaxHeight = height - spacing - wsTmbHeight;
                 this._dash.setMaxSize(maxDashWidth, wMaxHeight);
                 [, dashWidth] = this._dash.get_preferred_width(wMaxHeight);
                 [, dashHeight] = this._dash.get_preferred_height(dashWidth);
@@ -4246,20 +4261,20 @@ var ControlsManagerLayoutHorizontalOverride = {
                     if (WS_TMB_TOP) {
                         offset = offset - DASH_POSITION_ADJUSTMENT * offset;
                         dashY = startY + offset + wsTmbHeight;
-                        dashY = Math.max(dashY, startY + wsTmbHeight);
+                        //dashY = Math.max(dashY, startY + wsTmbHeight);
                     } else {
                         offset = offset - DASH_POSITION_ADJUSTMENT * offset;
                         dashY = startY + offset;
-                        dashY = Math.max(dashY, height - wsTmbHeight - dashHeight - 3 * spacing);
+                        //dashY = Math.max(dashY, height - wsTmbHeight - dashHeight - 3 * spacing);
                     }
                 } else {
                     offset = (height - dashHeight) / 2;
-                    offset = offset - DASH_POSITION_ADJUSTMENT * offset;
+                    offset = offset - DASH_POSITION_ADJUSTMENT * (offset - spacing / 2);
                     dashY = startY + offset;
                 }
             } else {
                 offset = (width - dashWidth) / 2;
-                dashX = startX + ((offset - DASH_POSITION_ADJUSTMENT * offset));
+                dashX = startX + (offset - DASH_POSITION_ADJUSTMENT * (offset - spacing));
             }
 
             childBox.set_origin(Math.round(startX + dashX), Math.round(dashY));
@@ -4299,9 +4314,9 @@ var ControlsManagerLayoutHorizontalOverride = {
 
         // Y position under top Dash
         let searchEntryX, searchEntryY;
-        if (OVERVIEW_MODE2 && !DASH_TOP && !WS_TMB_TOP) {
+        /*if (OVERVIEW_MODE2 && !DASH_TOP && !WS_TMB_TOP) {
             searchEntryY = 7;
-        } else if (DASH_TOP) {
+        } else */if (DASH_TOP) {
             searchEntryY = startY + (WS_TMB_TOP ? wsTmbHeight : 0) + dashHeight - spacing;
         } else {
             searchEntryY = startY + (WS_TMB_TOP ? wsTmbHeight + spacing : 0);
@@ -4343,10 +4358,11 @@ var ControlsManagerLayoutHorizontalOverride = {
 
         // Search
         if (CENTER_SEARCH_VIEW) {
-            searchWidth = width;
-            childBox.set_origin(0, startY + (DASH_TOP ? dashHeight : 0) + (WS_TMB_TOP ? wsTmbHeight + spacing : 0) + searchHeight);
+            const dashW = (DASH_VERTICAL ? dashWidth : 0) + spacing;
+            searchWidth = width - 2 * dashW;
+            childBox.set_origin(dashW, startY + (DASH_TOP ? dashHeight : spacing) + (WS_TMB_TOP ? wsTmbHeight + spacing : 0) + searchHeight);
         } else {
-            childBox.set_origin(this._xAlignCenter ? spacing : searchXoffset, startY + (DASH_TOP ? dashHeight : 0) + (WS_TMB_TOP ? wsTmbHeight + spacing : 0) + searchHeight);
+            childBox.set_origin(this._xAlignCenter ? spacing : searchXoffset, startY + (DASH_TOP ? dashHeight : spacing) + (WS_TMB_TOP ? wsTmbHeight + spacing : 0) + searchHeight);
         }
 
         childBox.set_size(searchWidth, availableHeight);
