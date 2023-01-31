@@ -3091,7 +3091,7 @@ var ControlsManagerOverride = {
             stateTransitionParams = this._stateAdjustment.getStateTransitionParams();
 
         const { currentState } = stateTransitionParams;
-        if (this.dash.showAppsButton.checked || currentState <= ControlsState.WINDOW_PICKER)
+        if (this.dash.showAppsButton.checked)
             this._searchTransition = false;
 
         // if !APP_GRID_ANIMATION appGrid needs to be hidden in WINDOW_PICKER mode (1)
@@ -3411,6 +3411,7 @@ var ControlsManagerOverride = {
         if (_updateAppGridTimeoutId)
             Main.overview.hide();
         this._ignoreShowAppsButtonToggle = true;
+        this._searchTransition = false;
 
         this._searchController.prepareToEnterOverview();
         this._workspacesDisplay.prepareToEnterOverview();
