@@ -21,13 +21,15 @@ const shellVersion = Settings.shellVersion;
 
 const ModifierType = imports.gi.Clutter.ModifierType;
 
-var windowSearchProvider = null;
+let windowSearchProvider;
 let _enableTimeoutId = 0;
 
 // prefix helps to eliminate results from other search providers
 // so it needs to be something less common
 // needs to be accessible from vw module
 var prefix = 'wq//';
+
+let opt;
 
 const Action = {
     NONE: 0,
@@ -44,14 +46,24 @@ function getOverviewSearchResult() {
         return Main.overview._overview.controls._searchController._searchResults;
 }
 
-function enable(gOptions) {
+function update(reset = false) {
+    opt = Me.imports.settings.opt;
+    if (!reset && opt.WINDOW_SEARCH_PROVIDER_ENABLED && !windowSearchProvider) {
+        enable();
+    } else if (reset || !opt.WINDOW_SEARCH_PROVIDER_ENABLED) {
+        disable();
+        opt = null;
+    }
+}
+
+function enable() {
     // delay because Fedora had problem to register a new provider soon after Shell restarts
     _enableTimeoutId = GLib.timeout_add(
         GLib.PRIORITY_DEFAULT,
         2000,
         () => {
             if (windowSearchProvider == null) {
-                windowSearchProvider = new WindowSearchProvider(gOptions);
+                windowSearchProvider = new WindowSearchProvider(opt);
                 getOverviewSearchResult()._registerProvider(
                     windowSearchProvider
                 );

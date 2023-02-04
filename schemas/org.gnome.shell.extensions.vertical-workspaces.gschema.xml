@@ -59,7 +59,7 @@
       <default>13</default>
     </key>
     <key type="i" name="dash-max-icon-size">
-      <default>3</default>
+      <default>48</default>
     </key>
     <key type="i" name="dash-bg-opacity">
       <default>40</default>
@@ -89,6 +89,9 @@
       <default>false</default>
     </key>
     <key type="i" name="app-grid-animation">
+      <default>4</default>
+    </key>
+    <key type="i" name="search-view-animation">
       <default>4</default>
     </key>
     <key type="i" name="workspace-animation">

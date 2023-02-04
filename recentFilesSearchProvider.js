@@ -21,13 +21,15 @@ const shellVersion = Settings.shellVersion;
 
 const ModifierType = imports.gi.Clutter.ModifierType;
 
-var recentFilesSearchProvider = null;
+let recentFilesSearchProvider;
 let _enableTimeoutId = 0;
 
 // prefix helps to eliminate results from other search providers
 // so it needs to be something less common
 // needs to be accessible from vw module
 var prefix = 'fq//';
+
+var opt;
 
 const Action = {
     NONE: 0,
@@ -44,14 +46,25 @@ function getOverviewSearchResult() {
         return Main.overview._overview.controls._searchController._searchResults;
 }
 
-function enable(gOptions) {
+
+function update(reset = false) {
+    opt = Me.imports.settings.opt;
+    if (!reset && opt.RECENT_FILES_SEARCH_PROVIDER_ENABLED && !recentFilesSearchProvider) {
+        enable();
+    } else if (reset || !opt.RECENT_FILES_SEARCH_PROVIDER_ENABLED) {
+        disable();
+        opt = null;
+    }
+}
+
+function enable() {
     // delay because Fedora had problem to register a new provider soon after Shell restarts
     _enableTimeoutId = GLib.timeout_add(
         GLib.PRIORITY_DEFAULT,
         2000,
         () => {
             if (recentFilesSearchProvider == null) {
-                recentFilesSearchProvider = new RecentFilesSearchProvider(gOptions);
+                recentFilesSearchProvider = new RecentFilesSearchProvider(opt);
                 getOverviewSearchResult()._registerProvider(recentFilesSearchProvider);
             }
             _enableTimeoutId = 0;
@@ -269,7 +282,9 @@ var RecentFilesSearchProvider = class RecentFilesSearchProvider {
             this._openNautilus(file.get_uri());
         } else {
             const appInfo = Gio.AppInfo.get_default_for_type(file.get_mime_type(), false);
-            appInfo && appInfo.launch_uris([file.get_uri()], null);
+            if (!(appInfo && appInfo.launch_uris([file.get_uri()], null))) {
+                this._openNautilus(file.get_uri());
+            }
         }
     }
 

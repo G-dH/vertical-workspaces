@@ -9,7 +9,7 @@
 
 'use strict';
 
-const { GLib, Gio } = imports.gi;
+const { GLib, Gio, Clutter, } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -20,6 +20,9 @@ var   shellVersion = parseFloat(Config.PACKAGE_VERSION);
 const Gettext = imports.gettext.domain(Me.metadata['gettext-domain']);
 var _ = Gettext.gettext;
 const _schema = Me.metadata['settings-schema'];
+
+// common instance of Options accessible from all modules
+var opt;
 
 
 var Options = class Options {
@@ -74,6 +77,7 @@ var Options = class Options {
             appGridBgBlurSigma: ['int', 'app-grid-bg-blur-sigma'],
             smoothBlurTransitions: ['boolean', 'smooth-blur-transitions'],
             appGridAnimation: ['int', 'app-grid-animation'],
+            searchViewAnimation: ['int', 'search-view-animation'],
             workspaceAnimation: ['int', 'workspace-animation'],
             animationSpeedFactor: ['int', 'animation-speed-factor'],
             fixUbuntuDock: ['boolean', 'fix-ubuntu-dock'],
@@ -103,6 +107,8 @@ var Options = class Options {
             panelPosition: ['int', 'panel-position'],
         }
         this.cachedOptions = {};
+
+        this.shellVersion = shellVersion;
     }
 
     connect(name, callback) {
@@ -180,4 +186,125 @@ var Options = class Options {
 
         return gSettings.get_default_value(key).deep_unpack();
     }
+
+    _updateSettings(settings, key) {
+        this.DASH_POSITION = this.get('dashPosition', true);
+        this.DASH_TOP = this.DASH_POSITION === 0;
+        this.DASH_RIGHT = this.DASH_POSITION === 1;
+        this.DASH_BOTTOM = this.DASH_POSITION === 2;
+        this.DASH_LEFT = this.DASH_POSITION === 3;
+        this.DASH_VERTICAL = this.DASH_LEFT || this.DASH_RIGHT;
+        this.DASH_VISIBLE = this.DASH_POSITION !== 4; // 4 - disable
+        this.DASH_FOLLOW_RECENT_WIN = false;
+
+        this.DASH_POSITION_ADJUSTMENT = this.get('dashPositionAdjust', true);
+        this.DASH_POSITION_ADJUSTMENT = this.DASH_POSITION_ADJUSTMENT * -1 / 100; // range 1 to -1
+        this.CENTER_DASH_WS = this.get('centerDashToWs', true);
+
+        this.MAX_ICON_SIZE = 64; // updates from main module
+        this.SHOW_WINDOWS_ICON = this.get('dashShowWindowsIcon', true);
+        this.SHOW_RECENT_FILES_ICON = this.get('dashShowRecentFilesIcon', true);
+
+        this.WS_TMB_POSITION = this.get('workspaceThumbnailsPosition', true);
+        this.ORIENTATION = this.WS_TMB_POSITION > 4 ? Clutter.Orientation.HORIZONTAL : Clutter.Orientation.VERTICAL;
+        this.WORKSPACE_MAX_SPACING = this.get('wsMaxSpacing', true);
+                                //ORIENTATION || DASH_LEFT || DASH_RIGHT ? 350 : 80;
+        this.SHOW_WS_TMB = ![4, 9].includes(this.WS_TMB_POSITION); // 4, 9 - disable
+        this.WS_TMB_FULL = this.get('WsThumbnailsFull', true);
+        // translate ws tmb position to 0 top, 1 right, 2 bottom, 3 left
+        //0L 1R, 2LF, 3RF, 4DV, 5T, 6B, 7TF, 8BF, 9DH
+        this.WS_TMB_POSITION = [3, 1, 3, 1, 4, 0, 2, 0, 2, 8][this.WS_TMB_POSITION];
+        this.WS_TMB_TOP = this.WS_TMB_POSITION === 0;
+        this.WS_TMB_RIGHT = this.WS_TMB_POSITION === 1;
+        this.WS_TMB_BOTTOM = this.WS_TMB_POSITION === 2;
+        this.WS_TMB_LEFT = this.WS_TMB_POSITION === 3;
+        this.WS_TMB_POSITION_ADJUSTMENT = this.get('wsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
+        this.SEC_WS_TMB_POSITION = this.get('secondaryWsThumbnailsPosition', true);
+        this.SEC_WS_TMB_TOP = (this.SEC_WS_TMB_POSITION === 0 && !this.ORIENTATION) || (this.SEC_WS_TMB_POSITION === 2 && this.WS_TMB_TOP);
+        this.SEC_WS_TMB_RIGHT = (this.SEC_WS_TMB_POSITION === 1 && this.ORIENTATION) || (this.SEC_WS_TMB_POSITION === 2 && this.WS_TMB_RIGHT);
+        this.SEC_WS_TMB_BOTTOM = (this.SEC_WS_TMB_POSITION === 1 && !this.ORIENTATION) || (this.SEC_WS_TMB_POSITION === 2 && this.WS_TMB_BOTTOM);
+        this.SEC_WS_TMB_LEFT = (this.SEC_WS_TMB_POSITION === 0 && this.ORIENTATION) || (this.SEC_WS_TMB_POSITION === 2 && this.WS_TMB_LEFT);
+
+        this.SEC_WS_TMB_POSITION_ADJUSTMENT = this.get('SecWsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
+        this.SHOW_WST_LABELS = this.get('showWsTmbLabels', true);
+        this.SHOW_WST_LABELS_ON_HOVER = this.get('showWsTmbLabelsOnHover', true);
+
+        this.MAX_THUMBNAIL_SCALE = this.get('wsThumbnailScale', true) / 100;
+
+        this.WS_PREVIEW_SCALE = this.get('wsPreviewScale', true) / 100;
+        // calculate number of possibly visible neighbor previews according to ws scale
+        this.NUMBER_OF_VISIBLE_NEIGHBORS = Math.round(1 + (100 - this.WS_PREVIEW_SCALE) / 40);
+
+        this.SHOW_WS_TMB_BG = this.get('showWsSwitcherBg', true) && this.SHOW_WS_TMB;
+        this.SHOW_WS_PREVIEW_BG = this.get('showWsPreviewBg', true);
+
+        this.CENTER_APP_GRID = this.get('centerAppGrid', true);
+
+        this.SHOW_SEARCH_ENTRY = this.get('showSearchEntry', true);
+        this.CENTER_SEARCH_VIEW = this.get('centerSearch', true);
+        this.APP_GRID_ANIMATION = this.get('appGridAnimation', true);
+        if (this.APP_GRID_ANIMATION === 4) {
+            this.APP_GRID_ANIMATION = this._getAnimationDirection();
+        }
+        this.SEARCH_VIEW_ANIMATION = this.get('searchViewAnimation', true);
+        if (this.SEARCH_VIEW_ANIMATION === 4) {
+            this.SEARCH_VIEW_ANIMATION = 3;
+        }
+        this.WS_ANIMATION = this.get('workspaceAnimation', true);
+
+        this.WIN_PREVIEW_ICON_SIZE = [64, 48, 32, 22, 8][this.get('winPreviewIconSize', true)];
+        this.ALWAYS_SHOW_WIN_TITLES = this.get('alwaysShowWinTitles', true);
+
+        this.STARTUP_STATE = this.get('startupState', true);
+        this.SHOW_BG_IN_OVERVIEW = this.get('showBgInOverview', true);
+        this.OVERVIEW_BG_BLUR_SIGMA = this.get('overviewBgBlurSigma', true);
+        this.APP_GRID_BG_BLUR_SIGMA = this.get('appGridBgBlurSigma', true);
+        this.SMOOTH_BLUR_TRANSITIONS = this.get('smoothBlurTransitions', true);
+
+        this.OVERVIEW_MODE = this.get('overviewMode', true);
+        this.OVERVIEW_MODE2 = this.OVERVIEW_MODE === 2;
+        this.WORKSPACE_MODE = this.OVERVIEW_MODE ? 0 : 1;
+        //Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = 0.95;
+
+        this.STATIC_WS_SWITCHER_BG = this.get('workspaceSwitcherAnimation', true);
+
+        this.ANIMATION_TIME_FACTOR = this.get('animationSpeedFactor', true) / 100;
+        //St.Settings.get().slow_down_factor = this.ANIMATION_TIME_FACTOR;
+
+        this.SEARCH_ICON_SIZE = this.get('searchIconSize', true);
+        this.SEARCH_VIEW_SCALE = this.get('searchViewScale', true) / 100;
+        this.SEARCH_MAX_ROWS = this.get('searchMaxResultsRows', true);
+        //imports.ui.search.MAX_LIST_SEARCH_RESULTS_ROWS = this.SEARCH_MAX_ROWS;
+
+        this.APP_GRID_ALLOW_INCOMPLETE_PAGES = false;
+        this.APP_GRID_ALLOW_CUSTOM = this.get('appGridAllowCustom', true);
+        this.APP_GRID_ICON_SIZE = this.get('appGridIconSize', true);
+        this.APP_GRID_COLUMNS = this.get('appGridColumns', true);
+        this.APP_GRID_ROWS = this.get('appGridRows', true);
+        this.APP_GRID_ORDER = this.get('appGridOrder', true);
+        this.APP_GRID_INCLUDE_DASH = this.get('appGridIncludeDash', true);
+        
+        this.APP_GRID_FOLDER_ICON_SIZE = this.get('appGridFolderIconSize', true);
+        this.APP_GRID_FOLDER_COLUMNS = this.get('appGridFolderColumns', true);
+        this.APP_GRID_FOLDER_ROWS = this.get('appGridFolderRows', true);
+
+        this.DASH_SHOW_WINS_BEFORE = this.get('dashShowWindowsBeforeActivation', true);
+        this.DASH_SHIFT_CLICK_MV = true;
+
+        this.WINDOW_SEARCH_PROVIDER_ENABLED = this.get('searchWindowsEnable', true);
+        this.RECENT_FILES_SEARCH_PROVIDER_ENABLED = this.get('searchRecentFilesEnable', true);
+
+        this.PANEL_POSITION_TOP = this.get('panelPosition', true) === 0;
+        this.PANEL_MODE = this.get('panelVisibility', true);
+        this.START_Y_OFFSET = 0; // set from main module
+    }
+
+    _getAnimationDirection() {
+        if (this.ORIENTATION === Clutter.Orientation.VERTICAL) {
+            return (this.WS_TMB_LEFT || !this.SHOW_WS_TMB) ? 1 : 2; // 1 right, 2 left
+        } else {
+            return (this.WS_TMB_TOP  || !this.SHOW_WS_TMB) ? 3 : 5; // 3 bottom, 5 top
+        }
+    }
+
 };

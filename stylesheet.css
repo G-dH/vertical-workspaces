@@ -151,5 +151,17 @@
 
 /* hide vertical scroll bar, it's distracting in the search results */
 StButton#vhandle {
-	background-color: rgba(100, 100, 100, 0.3);
+	background-color: transparent;
+}
+
+.show-apps-icon-horizontal-hide {
+	width: 0;
+    margin: 0;
+    spacing: 0;
+}
+
+.show-apps-icon-vertical-hide {
+	height: 0;
+    margin: 0;
+    spacing: 0;
 }

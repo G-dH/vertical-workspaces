@@ -25,40 +25,54 @@ const _ = Me.imports.settings._;
 let verticalOverrides = {};
 let _origWorkId;
 let _newWorkId;
+let _showAppsIconBtnPressId;
 
-var BaseIconSizes = [16, 24, 32, 48, 64, 80, 96, 112, 128];
-var MAX_ICON_SIZE = 64;
-var WINDOW_SEARCH_PROVIDER_ENABLED;
-var RECENT_FILES_SEARCH_PROVIDER_ENABLED;
-var SHOW_WINDOWS_ICON;
-var SHOW_RECENT_FILES_ICON;
+// added values to achieve better ability to scale down according the available space
+var BaseIconSizes = [16, 24, 32, 40, 44, 48, 56, 64, 72, 80, 96, 112, 128];
 
-var DASH_LEFT;
-var DASH_RIGHT;
-var DASH_TOP;
-var DASH_BOTTOM;
+const RecentFilesSearchProviderPrefix = Me.imports.recentFilesSearchProvider.prefix;
+const WindowSearchProviderPrefix = Me.imports.windowSearchProvider.prefix;
 
 let _overrides;
 
 const DASH_ITEM_LABEL_SHOW_TIME = 150;
 
+let opt;
 
-function override(horizontal = false) {
-    reset();
+function update(reset = false) {
+    if (_overrides) {
+        _overrides.removeAll();
+    }
+    
+    opt = Me.imports.settings.opt;
+    const dash = Main.overview._overview._controls.layoutManager._dash;
+
+    setToHorizontal();
+
+    dash.remove_style_class_name("vertical-overview");
+    dash.remove_style_class_name("vertical-overview-left");
+    dash.remove_style_class_name("vertical-overview-right");
+
+    if (reset) {
+        _moveDashAppGridIcon(reset);
+        _connectShowAppsIcon(reset);
+        _updateSearchWindowsIcon(false);
+        _updateRecentFilesIcon(false);
+        dash.visible = true;
+        dash._background.opacity = 255;
+        _overrides = null;
+        opt = null;
+        return;
+    }
+
     _overrides = new Util.Overrides();
 
     _overrides.addOverride('DashItemContainer', Dash.DashItemContainer.prototype, DashItemContainerOverride);
+    _overrides.addOverride('DashCommon', Dash.Dash.prototype, DashCommonOverride);
 
-    const dash = Main.overview._overview._controls.layoutManager._dash;
-    if (horizontal) {
-        _overrides.addOverride('DashCommon', Dash.Dash.prototype, DashCommonOverride);
-        if (_origWorkId)
-            dash._workId = _origWorkId;
-    }
-    else {
+    if (opt.DASH_VERTICAL) {
         _overrides.addOverride('Dash', Dash.Dash.prototype, DashOverride);
-        _overrides.addOverride('DashCommon', Dash.Dash.prototype, DashCommonOverride);
-        set_to_vertical();
+        setToVertical();
         dash.add_style_class_name("vertical-overview");
 
         if (!_newWorkId) {
@@ -68,32 +82,28 @@ function override(horizontal = false) {
         } else {
             dash._workId = _newWorkId;
         }
+    } else {
+        setToHorizontal();
+        if (_origWorkId)
+            dash._workId = _origWorkId;
     }
 
     _updateSearchWindowsIcon();
     _updateRecentFilesIcon();
+    _moveDashAppGridIcon();
+    _connectShowAppsIcon();
+
+    if (dash._showWindowsIcon && !dash._showWindowsIconClickedId) {
+        dash._showWindowsIconClickedId = dash._showWindowsIcon.toggleButton.connect('clicked', (a, c) => c && Util.activateSearchProvider(WindowSearchProviderPrefix));
+    }
+    if (dash._recentFilesIcon && !dash._recentFilesIconClickedId) {
+        dash._recentFilesIconClickedId = dash._recentFilesIcon.toggleButton.connect('clicked', (a, c) => c && Util.activateSearchProvider(RecentFilesSearchProviderPrefix));
+    }
+    Main.overview.dash._redisplay();
+    Main.overview._overview._controls.layoutManager._dash.visible = opt.DASH_VISIBLE;
 }
 
-function reset() {
-    const dash = Main.overview._overview._controls.layoutManager._dash;
-    if (verticalOverrides === {})
-        return;
-
-    set_to_horizontal();
-
-    _overrides && _overrides.removeAll();
-    _overrides = null;
-
-    verticalOverrides = {};
-    dash.remove_style_class_name("vertical-overview");
-    dash.remove_style_class_name("vertical-overview-left");
-    dash.remove_style_class_name("vertical-overview-right");
-
-    _updateSearchWindowsIcon(false);
-    _updateRecentFilesIcon(false);
-}
-
-function set_to_vertical() {
+function setToVertical() {
     let dash = Main.overview._overview._controls.layoutManager._dash;
 
     dash._box.layout_manager.orientation = Clutter.Orientation.VERTICAL;
@@ -118,10 +128,10 @@ function set_to_vertical() {
     dash._queueRedisplay();
     dash._adjustIconSize();
 
-    dash.add_style_class_name(DASH_LEFT ? 'vertical-overview-left' : 'vertical-overview-right');
+    dash.add_style_class_name(opt.DASH_LEFT ? 'vertical-overview-left' : 'vertical-overview-right');
 }
 
-function set_to_horizontal() {
+function setToHorizontal() {
     let dash = Main.overview._overview._controls.layoutManager._dash;
     if (_origWorkId)
         dash._workId = _origWorkId; //pretty sure this is a leak, but there no provided way to disconnect these...
@@ -147,6 +157,55 @@ function set_to_horizontal() {
     dash._separator = null;
     dash._queueRedisplay();
     dash._adjustIconSize();
+}
+
+function _moveDashAppGridIcon(reset = false) {
+    // move dash app grid icon to the front
+    const dash = Main.overview._overview._controls.layoutManager._dash;
+
+    const appIconPosition = opt.get('showAppsIconPosition', true);
+    dash._showAppsIcon.remove_style_class_name('show-apps-icon-vertical-hide');
+    dash._showAppsIcon.remove_style_class_name('show-apps-icon-horizontal-hide');
+    dash._showAppsIcon.opacity = 255;
+    if (!reset && appIconPosition === 0) // 0 - start
+        dash._dashContainer.set_child_at_index(dash._showAppsIcon, 0);
+    if (reset || appIconPosition === 1) { // 1 - end
+        const index = dash._dashContainer.get_children().length - 1;
+        dash._dashContainer.set_child_at_index(dash._showAppsIcon, index);
+    }
+    if (!reset && appIconPosition === 2) {// 2 - hide
+        const style = opt.DASH_VERTICAL ? 'show-apps-icon-vertical-hide' : 'show-apps-icon-horizontal-hide';
+        dash._showAppsIcon.add_style_class_name(style);
+        // for some reason even if the icon height in vertical mode should be set to 0 by the style, it stays visible in full size returning height 1px
+        dash._showAppsIcon.opacity = 0;
+    }
+}
+
+function _connectShowAppsIcon(reset = false) {
+    if (!reset) {
+        if (_showAppsIconBtnPressId || Util.dashIsDashToDock()) {
+            // button is already connected || dash is Dash to Dock
+            return;
+        }
+
+        Main.overview.dash._showAppsIcon.reactive = true;
+        _showAppsIconBtnPressId = Main.overview.dash._showAppsIcon.connect('button-press-event', (actor, event) => {
+            const button = event.get_button();
+            if (button === Clutter.BUTTON_MIDDLE) {
+                Util.openPreferences();
+            } else if (button === Clutter.BUTTON_SECONDARY) {
+                Util.activateSearchProvider(WindowSearchProviderPrefix);
+            } else {
+                return Clutter.EVENT_PROPAGATE;
+            }
+        });
+    } else {
+        if (_showAppsIconBtnPressId) {
+            Main.overview.dash._showAppsIcon.disconnect(_showAppsIconBtnPressId);
+            _showAppsIconBtnPressId = 0;
+            Main.overview.dash._showAppsIcon.reactive = false;
+        }
+    }
 }
 
 var DashOverride = {
@@ -401,7 +460,7 @@ var DashOverride = {
         let appIcon = new DashIcon(app);
 
         let indicator = appIcon._dot;
-        indicator.x_align = DASH_LEFT ? Clutter.ActorAlign.START : Clutter.ActorAlign.END;
+        indicator.x_align = opt.DASH_LEFT ? Clutter.ActorAlign.START : Clutter.ActorAlign.END;
         indicator.y_align = Clutter.ActorAlign.CENTER;
 
         appIcon.connect('menu-state-changed',
@@ -447,15 +506,15 @@ var DashItemContainerOverride = {
         let node = this.label.get_theme_node();
         let y;
 
-        if (DASH_TOP) {
+        if (opt.DASH_TOP) {
             const yOffset = itemHeight - labelHeight + 3 * node.get_length('-y-offset');
             y = stageY + yOffset;
 
-        } else  if (DASH_BOTTOM) {
+        } else  if (opt.DASH_BOTTOM) {
             const yOffset = node.get_length('-y-offset');
             y = stageY - this.label.height - yOffset;
 
-        } else if (DASH_RIGHT) {
+        } else if (opt.DASH_RIGHT) {
             const yOffset = Math.floor((itemHeight - labelHeight) / 2);
 
             const xOffset = 4;
@@ -463,7 +522,7 @@ var DashItemContainerOverride = {
             x = stageX - xOffset - this.label.width;
             y = Math.clamp(stageY + yOffset, 0, global.stage.height - labelHeight);
 
-        } if (DASH_LEFT) {
+        } if (opt.DASH_LEFT) {
             const yOffset = Math.floor((itemHeight - labelHeight) / 2);
 
             const xOffset = 4;
@@ -512,10 +571,12 @@ var DashCommonOverride = {
             iconChildren.push(this._recentFilesIcon);
         }
 
+        if (!iconChildren.length) return;
+
         if (this._maxWidth === -1 || this._maxHeight === -1)
             return;
 
-        const dashHorizontal = DASH_TOP || DASH_BOTTOM;
+        const dashHorizontal = !opt.DASH_VERTICAL;
 
         const themeNode = this.get_theme_node();
         const maxAllocation = new Clutter.ActorBox({
@@ -553,7 +614,7 @@ var DashCommonOverride = {
             availHeight -= themeNode.get_vertical_padding();
             availHeight -= buttonHeight - iconHeight;
 
-            maxIconSize = Math.min(availWidth / iconChildren.length, availHeight, MAX_ICON_SIZE);
+            maxIconSize = Math.min(availWidth / iconChildren.length, availHeight, opt.MAX_ICON_SIZE);
         } else {
             availWidth = this._maxWidth;
             availWidth -= this._background.get_theme_node().get_horizontal_padding();
@@ -565,7 +626,7 @@ var DashCommonOverride = {
                             (iconChildren.length - 1) * spacing +
                             2 * this._background.get_theme_node().get_vertical_padding();
 
-            maxIconSize = Math.min(availWidth, availHeight / iconChildren.length, MAX_ICON_SIZE);
+            maxIconSize = Math.min(availWidth, availHeight / iconChildren.length, opt.MAX_ICON_SIZE);
         }
 
         let scaleFactor = St.ThemeContext.get_for_stage(global.stage).scale_factor;
@@ -625,7 +686,7 @@ var DashCommonOverride = {
     },
 }
 
-function _updateSearchWindowsIcon(show = SHOW_WINDOWS_ICON) {
+function _updateSearchWindowsIcon(show = opt.SHOW_WINDOWS_ICON) {
 
     const dash = Main.overview._overview._controls.layoutManager._dash;
     const dashContainer = dash._dashContainer;
@@ -638,7 +699,7 @@ function _updateSearchWindowsIcon(show = SHOW_WINDOWS_ICON) {
         dash._showWindowsIcon = undefined;
     }
 
-    if (!show || !WINDOW_SEARCH_PROVIDER_ENABLED) return;
+    if (!show || !opt.WINDOW_SEARCH_PROVIDER_ENABLED) return;
 
     if (!dash._showWindowsIcon) {
         dash._showWindowsIcon = new ShowWindowsIcon();
@@ -647,10 +708,10 @@ function _updateSearchWindowsIcon(show = SHOW_WINDOWS_ICON) {
         dash._hookUpLabel(dash._showWindowsIcon);
     }
 
-    dash._showWindowsIcon.icon.setIconSize(MAX_ICON_SIZE);
-    if (SHOW_WINDOWS_ICON === 1) {
+    dash._showWindowsIcon.icon.setIconSize(opt.MAX_ICON_SIZE);
+    if (opt.SHOW_WINDOWS_ICON === 1) {
         dashContainer.set_child_at_index(dash._showWindowsIcon, 0);
-    } else if (SHOW_WINDOWS_ICON === 2) {
+    } else if (opt.SHOW_WINDOWS_ICON === 2) {
         index = dashContainer.get_children().length - 1;
         dashContainer.set_child_at_index(dash._showWindowsIcon, index);
     }
@@ -696,7 +757,7 @@ class ShowWindowsIcon extends Dash.DashItemContainer {
     }
 });
 
-function _updateRecentFilesIcon(show = SHOW_RECENT_FILES_ICON) {
+function _updateRecentFilesIcon(show = opt.SHOW_RECENT_FILES_ICON) {
 
     const dash = Main.overview._overview._controls.layoutManager._dash;
     const dashContainer = dash._dashContainer;
@@ -709,7 +770,7 @@ function _updateRecentFilesIcon(show = SHOW_RECENT_FILES_ICON) {
         dash._recentFilesIcon = undefined;
     }
 
-    if (!show || !RECENT_FILES_SEARCH_PROVIDER_ENABLED) return;
+    if (!show || !opt.RECENT_FILES_SEARCH_PROVIDER_ENABLED) return;
 
     if (!dash._recentFilesIcon) {
         dash._recentFilesIcon = new ShowRecentFilesIcon();
@@ -718,10 +779,10 @@ function _updateRecentFilesIcon(show = SHOW_RECENT_FILES_ICON) {
         dash._hookUpLabel(dash._recentFilesIcon);
     }
 
-    dash._recentFilesIcon.icon.setIconSize(MAX_ICON_SIZE);
-    if (SHOW_RECENT_FILES_ICON === 1) {
+    dash._recentFilesIcon.icon.setIconSize(opt.MAX_ICON_SIZE);
+    if (opt.SHOW_RECENT_FILES_ICON === 1) {
         dashContainer.set_child_at_index(dash._recentFilesIcon, 0);
-    } else if (SHOW_RECENT_FILES_ICON === 2) {
+    } else if (opt.SHOW_RECENT_FILES_ICON === 2) {
         index = dashContainer.get_children().length - 1;
         dashContainer.set_child_at_index(dash._recentFilesIcon, index);
     }

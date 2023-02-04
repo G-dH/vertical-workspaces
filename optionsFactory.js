@@ -3,7 +3,7 @@
  * optionsFactory.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022
+ * @copyright  2022 - 2023
  * @license    GPL-3.0
  */
 

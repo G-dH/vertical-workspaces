@@ -211,15 +211,15 @@ function _getLayoutOptionList() {
             itemFactory.newComboBox(),
             //itemFactory.newDropDown(),
             'dashMaxIconSize',
-            [   [_('128'), 8],
-                [_('112'), 7],
-                [_('96'), 6],
-                [_('80'), 5],
-                [_('64'), 4],
-                [_('48'), 3],
-                [_('32'), 2],
-                [_('24'), 1],
-                [_('16'), 0],
+            [   [_('128'), 128],
+                [_('112'), 112],
+                [_('96'),   96],
+                [_('80'),   80],
+                [_('64'),   64],
+                [_('48'),   48],
+                [_('32'),   32],
+                [_('24'),   24],
+                [_('16'),   16],
             ]
         )
     );
@@ -593,8 +593,8 @@ function _getLayoutOptionList() {
             //itemFactory.newDropDown(),
             'panelVisibility',
             [   [_('Always Visible (Default)'), 0],
-                [_('Always Hidden'), 1],
-                [_('Overview Only'), 2],
+                [_('Overview Only'), 1],
+                [_('Always Hidden'), 2],
                 //[_('Desktop View Only'), 3],
             ]
         )
@@ -996,6 +996,25 @@ function _getBehaviorOptionList() {
             ]
         )
     );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Search View Animation'),
+            _(`When search is activated the search view with search results can animate from the edge of the screen. You can choose direction, keep it Default (currently Bottom to Top) or disable the animation if you don't like it.`),
+            itemFactory.newComboBox(),
+            //itemFactory.newDropDown(),
+            'searchViewAnimation',
+            [
+                [_('Default'), 4],
+                [_('Disable'), 0],
+                [_('Right to Left'), 1],
+                [_('Left to Right'), 2],
+                [_('Bottom to Top'), 3],
+                [_('Top to Bottom'), 5],
+            ]
+        )
+    );
+
 
     optionList.push(
         itemFactory.getRowWidget(
