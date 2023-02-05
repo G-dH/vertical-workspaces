@@ -9,7 +9,7 @@
 
 'use strict';
 
-const { GLib, Gio, Clutter, } = imports.gi;
+const { GLib, Gio, } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -206,7 +206,7 @@ var Options = class Options {
         this.SHOW_RECENT_FILES_ICON = this.get('dashShowRecentFilesIcon', true);
 
         this.WS_TMB_POSITION = this.get('workspaceThumbnailsPosition', true);
-        this.ORIENTATION = this.WS_TMB_POSITION > 4 ? Clutter.Orientation.HORIZONTAL : Clutter.Orientation.VERTICAL;
+        this.ORIENTATION = this.WS_TMB_POSITION > 4 ? 0 : 1;
         this.WORKSPACE_MAX_SPACING = this.get('wsMaxSpacing', true);
                                 //ORIENTATION || DASH_LEFT || DASH_RIGHT ? 350 : 80;
         this.SHOW_WS_TMB = ![4, 9].includes(this.WS_TMB_POSITION); // 4, 9 - disable
@@ -300,7 +300,7 @@ var Options = class Options {
     }
 
     _getAnimationDirection() {
-        if (this.ORIENTATION === Clutter.Orientation.VERTICAL) {
+        if (this.ORIENTATION) {
             return (this.WS_TMB_LEFT || !this.SHOW_WS_TMB) ? 1 : 2; // 1 right, 2 left
         } else {
             return (this.WS_TMB_TOP  || !this.SHOW_WS_TMB) ? 3 : 5; // 3 bottom, 5 top
