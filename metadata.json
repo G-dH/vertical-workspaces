@@ -1,7 +1,7 @@
 {
-  "name": "Vertical Workspaces",
+  "name": "V-Shell",
   "uuid": "vertical-workspaces@G-dH.github.com",
-  "description": "A extension that allows you to customize your desktop interface to suit your workflow and eyes. You can change the horizontal stacking of workspaces to vertical, but also change layout, content, appearance and behavior of Activities overview and workspace switcher.",
+  "description": "An extension that allows you to customize your desktop interface to suit your workflow and eyes. You can change the horizontal stacking of workspaces to vertical, but also change layout, content, appearance and behavior of Activities overview and workspace switcher.",
   "shell-version": [
     "42",
     "43"
