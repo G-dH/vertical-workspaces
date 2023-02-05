@@ -281,11 +281,11 @@ function _updateSettings(settings, key) {
     const dash = Main.overview.dash;
     if (_Util.dashIsDashToDock()) {
         opt.DASH_POSITION = dash._position;
-        opt.DASH_TOP = DASH_POSITION === 0;
-        opt.DASH_RIGHT = DASH_POSITION === 1;
-        opt.DASH_BOTTOM = DASH_POSITION === 2;
-        opt.DASH_LEFT = DASH_POSITION === 3;
-        opt.DASH_VERTICAL = DASH_LEFT || DASH_RIGHT;
+        opt.DASH_TOP = opt.DASH_POSITION === 0;
+        opt.DASH_RIGHT = opt.DASH_POSITION === 1;
+        opt.DASH_BOTTOM = opt.DASH_POSITION === 2;
+        opt.DASH_LEFT = opt.DASH_POSITION === 3;
+        opt.DASH_VERTICAL = opt.DASH_LEFT || opt.DASH_RIGHT;
     }
 
     opt.MAX_ICON_SIZE = opt.get('dashMaxIconSize', true);
