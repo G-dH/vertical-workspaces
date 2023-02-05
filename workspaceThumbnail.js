@@ -96,7 +96,7 @@ var WorkspaceThumbnailCommon = {
                         let tracker = Shell.WindowTracker.get_default();
                         label += `: ${tracker.get_window_app(metaWin).get_name()}`;
                     }
-                } else if (SHOW_WST_LABELS === 4) {
+                } else if (opt.SHOW_WST_LABELS === 4) {
                     const metaWin = global.display.get_tab_list(0, null).filter(
                         w => w.get_monitor() === this.monitorIndex && w.get_workspace().index() === wsIndex)[0];
 
