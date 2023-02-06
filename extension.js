@@ -237,12 +237,10 @@ function _resetExtension(timeout = 200) {
             if (!timeout && _prevDash.dash && dash !== _prevDash.dash) { // !timeout means DtD workaround callback
                 _prevDash.dash = dash;
                 log(`[${Me.metadata.name}]: Dash has been replaced, resetting extension...`);
-                Main.notify('jeeeeeeeeeeeeeeeeeeeeeee')
                 reset();
                 activate();
             } else if (timeout) {
                 log(`[${Me.metadata.name}]: resetting extension...`);
-                Main.notify('jooooooooooooooooooooooo')
                 reset();
                 activate();
             }
