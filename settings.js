@@ -297,6 +297,7 @@ var Options = class Options {
         this.PANEL_POSITION_TOP = this.get('panelPosition', true) === 0;
         this.PANEL_MODE = this.get('panelVisibility', true);
         this.START_Y_OFFSET = 0; // set from main module
+        this.FIX_UBUNTU_DOCK = this.get('fixUbuntuDock', true);
     }
 
     _getAnimationDirection() {

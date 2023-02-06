@@ -136,6 +136,9 @@ function activate() {
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
     _setStaticBackground(!opt.SHOW_BG_IN_OVERVIEW);
+
+    // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
+    Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
 }
 
 function reset() {
@@ -185,8 +188,8 @@ function reset() {
 function _updateOverrides(reset = false) {
     WorkspacesViewOverride.update(reset);
     WorkspaceThumbnailOverride.update(reset);
-    OverviewControlsOverride.update(reset);
     OverviewOverride.update(reset);
+    OverviewControlsOverride.update(reset);
 
     WorkspaceOverride.update(reset);
     WindowPreviewOverride.update(reset);
@@ -234,10 +237,12 @@ function _resetExtension(timeout = 200) {
             if (!timeout && _prevDash.dash && dash !== _prevDash.dash) { // !timeout means DtD workaround callback
                 _prevDash.dash = dash;
                 log(`[${Me.metadata.name}]: Dash has been replaced, resetting extension...`);
+                Main.notify('jeeeeeeeeeeeeeeeeeeeeeee')
                 reset();
                 activate();
             } else if (timeout) {
                 log(`[${Me.metadata.name}]: resetting extension...`);
+                Main.notify('jooooooooooooooooooooooo')
                 reset();
                 activate();
             }

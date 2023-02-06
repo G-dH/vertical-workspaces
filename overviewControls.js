@@ -230,18 +230,18 @@ var ControlsManager = {
             // set searchEntry above appDisplay
             this.set_child_above_sibling(this._searchEntryBin, null);
             // move dash above wsTmb for case that dash and wsTmb animate from the same side
-            this.set_child_above_sibling(dash, null);
+            !_Util.dashNotDefault() && this.set_child_above_sibling(dash, null);
             this.set_child_below_sibling(this._thumbnailsBox, null);
             this.set_child_below_sibling(this._workspacesDisplay, null);
             this.set_child_below_sibling(this._appDisplay, null);
         } else if (!this.dash._isAbove && progress === 1 && finalState > ControlsState.HIDDEN) {
             // set dash above workspace in the overview
-            if (!_dashNotDefault()) {
-                this.set_child_above_sibling(this._thumbnailsBox, null);
-                this.set_child_above_sibling(this._searchEntryBin, null);
+            this.set_child_above_sibling(this._thumbnailsBox, null);
+            this.set_child_above_sibling(this._searchEntryBin, null);
+            if (!_Util.dashNotDefault()) {
                 this.set_child_above_sibling(this.dash, null);
-                this.dash._isAbove = true;
             }
+            this.dash._isAbove = true;
 
             // update max tmb scale in case some other extension changed it
             WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = opt.MAX_THUMBNAIL_SCALE;
@@ -273,11 +273,30 @@ var ControlsManager = {
 
     _onSearchChanged: function() {
         // if user start typing or activated search provider during overview animation, this switcher will be called again after animation ends
-        if (opt.SEARCH_VIEW_ANIMATION && Main.overview._animationInProgress) return;
-
+        
         const { finalState, currentState } = this._stateAdjustment.getStateTransitionParams();
+        if (opt.SEARCH_VIEW_ANIMATION && Main.overview._animationInProgress && finalState !== ControlsState.HIDDEN) return;
+
         const { searchActive } = this._searchController;
         const SIDE_CONTROLS_ANIMATION_TIME = 250; // OverviewControls.SIDE_CONTROLS_ANIMATION_TIME = Overview.ANIMATION_TIME = 250
+
+        const entry = this._searchEntry;
+        if (opt.SHOW_SEARCH_ENTRY) {
+            entry.visible = true;
+            entry.opacity = 255;
+        } else {
+            entry.visible = true;
+            entry.opacity = searchActive ? 0 : 255;
+            // show search entry only if the user starts typing, and hide it when leaving the search mode
+            entry.ease({
+                opacity: searchActive ? 255 : 0,
+                duration: SIDE_CONTROLS_ANIMATION_TIME / 2,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                onComplete: () => {
+                    entry.visible = searchActive;
+                },
+            });
+        }
 
         if (!searchActive) {
             this._workspacesDisplay.reactive = true;
@@ -390,31 +409,10 @@ var ControlsManager = {
                 }
             });
         }
-
-        const entry = this._searchEntry;
-        if (opt.SHOW_SEARCH_ENTRY) {
-            entry.visible = true;
-            entry.opacity = 255;
-        } else {
-            entry.visible = true;
-            entry.opacity = searchActive ? 0 : 255;
-            // show search entry only if the user starts typing, and hide it when leaving the search mode
-            entry.ease({
-                opacity: searchActive ? 255 : 0,
-                duration: SIDE_CONTROLS_ANIMATION_TIME / 2,
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                onComplete: () => {
-                    entry.visible = searchActive;
-                },
-            });
-        }
     },
 
     runStartupAnimation: async function(callback) {
-        // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
-        this._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
         this._ignoreShowAppsButtonToggle = true;
-
         this._searchController.prepareToEnterOverview();
         this._workspacesDisplay.prepareToEnterOverview();
 
@@ -1235,8 +1233,8 @@ var ControlsManagerLayoutHorizontal = {
         if (_dashIsDashToDock()) {
             // if Dash to Dock replaced the default dash and its inteli-hide is disabled we need to compensate for affected startY
             if (!Main.overview.dash.get_parent()?.get_parent()?.get_parent()?._intellihideIsEnabled) {
-                if (Main.panel.y === monitor.y)
-                    startY = Main.panel.height + spacing;
+                //if (Main.panel.y === monitor.y)
+                    //startY = Main.panel.height + spacing;
             }
             dashHeight = dash.height;
             dashWidth = dash.width;
