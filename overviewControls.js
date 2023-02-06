@@ -1290,11 +1290,11 @@ var ControlsManagerLayoutHorizontal = {
             }
 
             let wstOffset = (width - wsTmbWidth) / 2;
-            wstOffset = wstOffset - opt.WS_TMB_POSITION_ADJUSTMENT * wstOffset;
+            wstOffset = wstOffset - opt.WS_TMB_POSITION_ADJUSTMENT * (wstOffset - spacing / 2);
             let wsTmbX = Math.round(Math.clamp(
                 startX + wstOffset,
-                startX + (opt.DASH_LEFT ? dashWidthReservation + spacing / 2 : spacing / 2),
-                width - wsTmbWidth - startX - (opt.DASH_RIGHT ? dashWidthReservation + spacing / 2 : spacing / 2)
+                startX + (opt.DASH_LEFT ? dashWidthReservation : 0),
+                width - wsTmbWidth - startX - (opt.DASH_RIGHT ? dashWidthReservation: 0)
             ));
 
             childBox.set_origin(wsTmbX, wsTmbY);
