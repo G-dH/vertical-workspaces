@@ -33,7 +33,7 @@ function update(reset = false) {
     }
 
     if (reset) {
-        imports.ui.workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = 0.95;
+        Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = 0.95;
         _overrides = null;
         opt = null;
         return;
@@ -54,26 +54,30 @@ function update(reset = false) {
 
 // workaround for upstream bug (that is not that invisible in default shell)
 // smaller window cannot be scaled below 0.95 (WINDOW_PREVIEW_MAXIMUM_SCALE)
-// when its target scale for spread windows view (workspace state 1) is bigger than the scale needed for ws state 0.
+// when its target scale for exposed windows view (workspace state 1) is bigger than the scale needed for ws state 0.
 // in workspace state 0 where windows are not spread and window scale should follow workspace scale,
 // this window follows proper top left corner position, but doesn't scale with the workspace
 // so it looks bad and the window can exceed border of the workspace
 // extremely annoying in OVERVIEW_MODE 1 with single smaller window on the workspace, also affects appGrid transition animation
+
+// disadvantage of following workaround - the WINDOW_PREVIEW_MAXIMUM_SCALE value is common for every workspace,
+// on multi-monitor system can be visible unwanted scaling of windows on workspace in WORKSPACE_MODE 0 (windows not spread)
+// when leaving overview while any other workspace is in the WORKSPACE_MODE 1.
 var WorkspaceLayoutInjections = {
     _init: function() {
-        this._stateAdjustment.connect('notify::value', () => {
-            if (opt.OVERVIEW_MODE !== 1) return;
-            // scale 0.1 for window state 0 just needs to be smaller then possible scale of any window in spread view
-            const scale = this._stateAdjustment.value ? 0.95 : 0.1;
-            if (scale !== Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE || this._stateAdjustment.value === 1) {
-                // when transition to ws state 1 begins, replace the constant with the original one
-                // disadvantage - the value changes for all workspaces, so one affects others
-                // that can be visible in certain situations but not a big deal.
-                Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = scale;
-                // and force recalculation of the target layout, so the transition will be smooth
-                this._needsLayout = true;
-            }
-        });
+        if (opt.OVERVIEW_MODE === 1) {
+            this._stateAdjustment.connect('notify::value', () => {
+                // scale 0.1 for window state 0 just needs to be smaller then possible scale of any window in spread view
+                const scale = this._stateAdjustment.value ? 0.95 : 0.1;
+                if (scale !== this.WINDOW_PREVIEW_MAXIMUM_SCALE) {
+                    this.WINDOW_PREVIEW_MAXIMUM_SCALE = scale;
+                    // when transition to ws state 1 (WINDOW_PICKER) begins, replace the constant with the original one
+                    Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = scale;
+                    // and force recalculation of the target layout, so the transition will be smooth
+                    this._needsLayout = true;
+                }
+            });
+        }
     }
 }
 

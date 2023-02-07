@@ -297,7 +297,7 @@ function _updateSettings(settings, key) {
         opt.set('dashMaxIconSize', 64);
     }
 
-    imports.ui.workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = 0.95;
+    imports.ui.workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = opt.OVERVIEW_MODE === 1 ? 0.1 : 0.95;
 
     if (!_Util.dashIsDashToDock()) {// DtD has its own opacity control
         Main.overview.dash._background.opacity = Math.round(opt.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255

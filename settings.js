@@ -265,17 +265,14 @@ var Options = class Options {
         this.OVERVIEW_MODE = this.get('overviewMode', true);
         this.OVERVIEW_MODE2 = this.OVERVIEW_MODE === 2;
         this.WORKSPACE_MODE = this.OVERVIEW_MODE ? 0 : 1;
-        //Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = 0.95;
 
         this.STATIC_WS_SWITCHER_BG = this.get('workspaceSwitcherAnimation', true);
 
         this.ANIMATION_TIME_FACTOR = this.get('animationSpeedFactor', true) / 100;
-        //St.Settings.get().slow_down_factor = this.ANIMATION_TIME_FACTOR;
 
         this.SEARCH_ICON_SIZE = this.get('searchIconSize', true);
         this.SEARCH_VIEW_SCALE = this.get('searchViewScale', true) / 100;
         this.SEARCH_MAX_ROWS = this.get('searchMaxResultsRows', true);
-        //imports.ui.search.MAX_LIST_SEARCH_RESULTS_ROWS = this.SEARCH_MAX_ROWS;
 
         this.APP_GRID_ALLOW_INCOMPLETE_PAGES = false;
         this.APP_GRID_ALLOW_CUSTOM = this.get('appGridAllowCustom', true);
