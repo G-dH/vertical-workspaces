@@ -183,7 +183,7 @@ var WorkspacesViewCommon = {
         }
 
         const secondaryMonitor = this._monitorIndex !== global.display.get_primary_monitor();
-        const blockSecondaryAppGrid = opt.OVERVIEW_MODE && currentState >= 1;
+        const blockSecondaryAppGrid = opt.OVERVIEW_MODE && currentState > 1;
         // Hide inactive workspaces
         this._workspaces.forEach((w, index) => {
             if (!(blockSecondaryAppGrid && secondaryMonitor))
