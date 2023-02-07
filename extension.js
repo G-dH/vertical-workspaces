@@ -340,6 +340,8 @@ function _applySettings(key) {
         OverviewControlsOverride.update();
         WorkspaceThumbnailOverride.update();
         WorkspacesViewOverride.update();
+        WorkspaceSwitcherPopupOverride.update();
+        SwipeTrackerOverride.update();
     }
     if (key?.includes('app-grid')) {
         AppDisplayOverride.update();
