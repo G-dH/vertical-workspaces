@@ -272,10 +272,7 @@ var ControlsManager = {
     },
 
     _onSearchChanged: function() {
-        // if user start typing or activated search provider during overview animation, this switcher will be called again after animation ends
-        
         const { finalState, currentState } = this._stateAdjustment.getStateTransitionParams();
-        if (opt.SEARCH_VIEW_ANIMATION && Main.overview._animationInProgress && finalState !== ControlsState.HIDDEN) return;
 
         const { searchActive } = this._searchController;
         const SIDE_CONTROLS_ANIMATION_TIME = 250; // OverviewControls.SIDE_CONTROLS_ANIMATION_TIME = Overview.ANIMATION_TIME = 250
@@ -284,7 +281,7 @@ var ControlsManager = {
         if (opt.SHOW_SEARCH_ENTRY) {
             entry.visible = true;
             entry.opacity = 255;
-        } else {
+        } else if (!(searchActive && entry.visible)) {
             entry.visible = true;
             entry.opacity = searchActive ? 0 : 255;
             // show search entry only if the user starts typing, and hide it when leaving the search mode
@@ -297,6 +294,9 @@ var ControlsManager = {
                 },
             });
         }
+
+        // if user start typing or activated search provider during overview animation, this switcher will be called again after animation ends
+        if (opt.SEARCH_VIEW_ANIMATION && Main.overview._animationInProgress && finalState !== ControlsState.HIDDEN) return;
 
         if (!searchActive) {
             this._workspacesDisplay.reactive = true;
@@ -402,7 +402,7 @@ var ControlsManager = {
                 // collecting search results take some time and the problematic part is the realization of the object on the screen
                 // if the ws animation ends before this event, the whole transition is smoother
                 // removing the ws transition (duration: 0) seems like the best solution here
-                duration: searchActive ? 0 : SIDE_CONTROLS_ANIMATION_TIME,
+                duration: (searchActive || (opt.OVERVIEW_MODE && !opt.WORKSPACE_MODE)) ? 0 : SIDE_CONTROLS_ANIMATION_TIME,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onComplete: () => {
                     this._workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
