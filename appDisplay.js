@@ -824,12 +824,11 @@ var AppIcon = {
 
         if (openNewWindow) {
             this.app.open_new_window(-1);
-        // if the app has more than one window (option: and has no window on the current workspace),
-        // don't activate the app, only move the overview to the workspace with the app's recent window
-        } else if (opt.DASH_SHOW_WINS_BEFORE && !isShiftPressed && this.app.get_n_windows() > 1 && !targetWindowOnCurrentWs) {
-            this._scroll = true;
-            this._scrollTime = Date.now();
-            //const appWS = this.app.get_windows()[0].get_workspace();
+        // if DASH_SHOW_WINS_BEFORE, the app has more than one window and has no window on the current workspace,
+        // don't activate the app immediately, only move the overview to the workspace with the app's recent window
+        } else if (opt.DASH_SHOW_WINS_BEFORE && !isShiftPressed && this.app.get_n_windows() > 1 && !targetWindowOnCurrentWs && !(opt.OVERVIEW_MODE && !opt.WORKSPACE_MODE)) {
+            //this._scroll = true;
+            //this._scrollTime = Date.now();
             Main.wm.actionMoveWorkspace(appRecentWorkspace);
             Main.overview.dash.showAppsButton.checked = false;
             return;
