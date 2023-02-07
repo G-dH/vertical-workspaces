@@ -337,11 +337,7 @@ function _applySettings(key) {
     if (key === 'fix-ubuntu-dock')
         _fixUbuntuDock(opt.get('fixUbuntuDock', true));
     if (key === 'ws-thumbnails-position') {
-        OverviewControlsOverride.update();
-        WorkspaceThumbnailOverride.update();
-        WorkspacesViewOverride.update();
-        WorkspaceSwitcherPopupOverride.update();
-        SwipeTrackerOverride.update();
+        _updateOverrides();
     }
     if (key?.includes('app-grid')) {
         AppDisplayOverride.update();
