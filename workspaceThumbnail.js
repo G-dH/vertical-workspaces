@@ -53,6 +53,7 @@ function update(reset = false) {
     _overrides = new _Util.Overrides();
 
     _overrides.addOverride('WorkspaceThumbnail', WorkspaceThumbnail.WorkspaceThumbnail.prototype, WorkspaceThumbnailCommon);
+    _overrides.addOverride('ThumbnailsBoxCommon', WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxCommon);
 
     if (opt.ORIENTATION === Clutter.Orientation.VERTICAL) {
         _overrides.addOverride('ThumbnailsBox', WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxVertical);
@@ -238,18 +239,30 @@ var WorkspaceThumbnailCommon = {
     }
 }
 
-// ThumbnailsBox Vertical
-
-var ThumbnailsBoxVertical = {
-    _activateThumbnailAtPoint: function(stageX, stageY, time) {
+const ThumbnailsBoxCommon = {
+    _activateThumbnailAtPoint: function(stageX, stageY, time, activateCurrent = false) {
+        if (activateCurrent) {
+            const thumbnail = this._thumbnails.find(t => t.metaWorkspace.active);
+            if (thumbnail)
+                thumbnail.activate(time);
+            return;
+        }
         const [r_, x, y] = this.transform_stage_point(stageX, stageY);
 
-        const thumbnail = this._thumbnails.find(t => y >= t.y && y <= t.y + t.height);
+        let thumbnail;
+
+        if (opt.ORIENTATION) {
+            thumbnail = this._thumbnails.find(t => y >= t.y && y <= t.y + t.height);
+        } else {
+            thumbnail = this._thumbnails.find(t => x >= t.x && x <= t.x + t.width);
+        }
         if (thumbnail) {
             thumbnail.activate(time);
         }
     },
+}
 
+var ThumbnailsBoxVertical = {
     _getPlaceholderTarget: function(index, spacing, rtl) {
         const workspace = this._thumbnails[index];
 
@@ -349,6 +362,10 @@ var ThumbnailsBoxVertical = {
     //vfunc_get_preferred_width: function(forHeight) {
     // override of this vfunc doesn't work for some reason (tested on Ubuntu and Fedora), it's not reachable
     get_preferred_custom_width: function(forHeight) {
+        if (!this.visible) {
+            return [0, 0];
+        }
+
         if (forHeight === -1)
             return this.get_preferred_custom_height(forHeight);
 
@@ -371,6 +388,10 @@ var ThumbnailsBoxVertical = {
     },
 
     get_preferred_custom_height: function(_forWidth) {
+        if (!this.visible) {
+            return [0, 0];
+        }
+
         // Note that for getPreferredHeight/Width we cheat a bit and skip propagating
         // the size request to our children because we know how big they are and know
         // that the actors aren't depending on the virtual functions being called.
@@ -580,6 +601,10 @@ var ThumbnailsBoxHorizontal = {
         // Note that for getPreferredHeight/Width we cheat a bit and skip propagating
         // the size request to our children because we know how big they are and know
         // that the actors aren't depending on the virtual functions being called.
+        if (!this.visible) {
+            return [0, 0];
+        }
+
         let themeNode = this.get_theme_node();
 
         let spacing = themeNode.get_length('spacing');

@@ -1,7 +1,7 @@
 /**
  * Vertical Workspaces
  * workspacesView.js
- * 
+ *
  * @author     GdH <G-dH@github.com>
  * @copyright  2022 - 2023
  * @license    GPL-3.0
@@ -52,6 +52,7 @@ function update(reset = false) {
 
     _overrides.addOverride('WorkspacesView', WorkspacesView.WorkspacesView.prototype, WorkspacesViewCommon);
     _overrides.addOverride('WorkspacesDisplay', WorkspacesView.WorkspacesDisplay.prototype, WorkspacesDisplay);
+    _overrides.addOverride('ExtraWorkspaceView', WorkspacesView.ExtraWorkspaceView.prototype, ExtraWorkspaceView);
 
     if (opt.ORIENTATION) {
         // switch internal workspace orientation in GS
@@ -270,7 +271,7 @@ var SecondaryMonitorDisplayVertical = {
     },
 
     _getThumbnailsWidth: function(box, spacing) {
-        if (!this._thumbnails.visible)
+        if (opt.SEC_WS_TMB_HIDDEN)
             return 0;
 
         const [width, height] = box.get_size();
@@ -296,7 +297,7 @@ var SecondaryMonitorDisplayVertical = {
             }
 
             let wWidth = Math.round(width - thumbnailsWidth - 5 * spacing);
-            let wHeight = Math.round(Math.min(wWidth / (width / height), height - 1.7 * padding));
+            let wHeight = Math.round(Math.min(wWidth / (width / height), height - padding));
             wWidth *= opt.WS_PREVIEW_SCALE;
             wHeight *= opt.WS_PREVIEW_SCALE;
 
@@ -332,7 +333,7 @@ var SecondaryMonitorDisplayVertical = {
         let [, thumbnailsHeight] = this._thumbnails.get_preferred_custom_height(thumbnailsWidth);
         thumbnailsHeight = Math.min(thumbnailsHeight, height - 2 * spacing);
 
-        this._thumbnails.visible = opt.SHOW_WS_TMB;
+        this._thumbnails.visible = !opt.SEC_WS_TMB_HIDDEN;
         if (this._thumbnails.visible) {
             let wsTmbX;
             if (opt.SEC_WS_TMB_LEFT) { // left
@@ -378,8 +379,7 @@ var SecondaryMonitorDisplayVertical = {
             this.set_child_above_sibling(this._thumbnails, null);
         }
 
-        const visible = !(this._settings.get_boolean('workspaces-only-on-primary') ||
-                            opt.SEC_WS_TMB_POSITION === 3); // 3 - disabled
+        const visible = !opt.SEC_WS_TMB_HIDDEN;
 
         if (this._thumbnails.visible === visible)
             return;
@@ -397,14 +397,14 @@ var SecondaryMonitorDisplayVertical = {
     },
 
     _updateThumbnailParams: function() {
+        if (opt.SEC_WS_TMB_HIDDEN)
+            return;
+
         // workaround for upstream bug - secondary thumbnails boxes don't catch 'showing' signal on the shell startup and don't populate the box with thumbnails
         // the tmbBox contents is also destroyed when overview state adjustment gets above 1 when swiping gesture from window picker to app grid
         if (!this._thumbnails._thumbnails.length) {
             this._thumbnails._createThumbnails();
         }
-
-        if (!this._thumbnails.visible)
-            return;
 
         const { initialState, finalState, progress } =
             this._overviewAdjustment.getStateTransitionParams();
@@ -436,10 +436,12 @@ var SecondaryMonitorDisplayVertical = {
             this._workspacesView.destroy();
 
         if (this._settings.get_boolean('workspaces-only-on-primary')) {
+            opt.SEC_WS_TMB_HIDDEN = true;
             this._workspacesView = new WorkspacesView.ExtraWorkspaceView(
                 this._monitorIndex,
                 this._overviewAdjustment);
         } else {
+            opt.SEC_WS_TMB_HIDDEN  = !opt.SHOW_SEC_WS_TMB;
             this._workspacesView = new WorkspacesView.WorkspacesView(
                 this._monitorIndex,
                 this._controls,
@@ -505,8 +507,8 @@ var SecondaryMonitorDisplayHorizontal = {
                 break;
             }
 
-            let wHeight = Math.round(Math.min(height - thumbnailsHeight - 5 * spacing));
-            let wWidth = Math.round(Math.min(wHeight * (width / height), width - 1.7 * padding));
+            let wHeight = Math.round(height - (thumbnailsHeight ? thumbnailsHeight + 5 * spacing : padding));
+            let wWidth = Math.round(Math.min(wHeight * (width / height), width - padding));
             wWidth *= opt.WS_PREVIEW_SCALE;
             wHeight *= opt.WS_PREVIEW_SCALE;
 
@@ -529,7 +531,7 @@ var SecondaryMonitorDisplayHorizontal = {
     },
 
     _getThumbnailsHeight: function(box) {
-        if (!this._thumbnails.visible)
+        if (opt.SEC_WS_TMB_HIDDEN)
             return 0;
 
         const [width, height] = box.get_size();
@@ -554,7 +556,7 @@ var SecondaryMonitorDisplayHorizontal = {
         let [, thumbnailsWidth] = this._thumbnails.get_preferred_custom_width(thumbnailsHeight);
         thumbnailsWidth = Math.min(thumbnailsWidth, width - 2 * spacing);
 
-        this._thumbnails.visible = opt.SHOW_WS_TMB;
+        this._thumbnails.visible = !opt.SEC_WS_TMB_HIDDEN;
         if (this._thumbnails.visible) {
             let wsTmbY;
             if (opt.SEC_WS_TMB_TOP) {
@@ -596,14 +598,14 @@ var SecondaryMonitorDisplayHorizontal = {
     _updateThumbnailVisibility: SecondaryMonitorDisplayVertical._updateThumbnailVisibility,
 
     _updateThumbnailParams: function() {
+        if (opt.SEC_WS_TMB_HIDDEN)
+            return;
+
         // workaround for upstream bug - secondary thumbnails boxes don't catch 'showing' signal on the shell startup and don't populate the box with thumbnails
         // the tmbBox contents is also destroyed when overview state adjustment gets above 1 when swiping gesture from window picker to app grid
         if (!this._thumbnails._thumbnails.length) {
             this._thumbnails._createThumbnails();
         }
-
-        if (!this._thumbnails.visible)
-            return;
 
         const { initialState, finalState, progress } =
             this._overviewAdjustment.getStateTransitionParams();
@@ -635,10 +637,12 @@ var SecondaryMonitorDisplayHorizontal = {
             this._workspacesView.destroy();
 
         if (this._settings.get_boolean('workspaces-only-on-primary')) {
+            opt.SEC_WS_TMB_HIDDEN = true;
             this._workspacesView = new WorkspacesView.ExtraWorkspaceView(
                 this._monitorIndex,
                 this._overviewAdjustment);
         } else {
+            opt.SEC_WS_TMB_HIDDEN  = !opt.SHOW_SEC_WS_TMB;
             this._workspacesView = new WorkspacesView.WorkspacesView(
                 this._monitorIndex,
                 this._controls,
@@ -656,6 +660,28 @@ var SecondaryMonitorDisplayHorizontal = {
         }
         this.add_child(this._workspacesView);
         this._thumbnails.opacity = 0;
+    }
+}
+
+const ExtraWorkspaceView = {
+    _updateWorkspaceMode: function() {
+        const overviewState = this._overviewAdjustment.value;
+
+        const progress = Math.clamp(overviewState,
+            ControlsState.HIDDEN,
+            opt.OVERVIEW_MODE && !opt.WORKSPACE_MODE ? ControlsState.HIDDEN : ControlsState.WINDOW_PICKER);
+
+        this._workspace.stateAdjustment.value = progress;
+
+        // force ws preview bg corner radiuses where GS doesn't do it
+        if (opt.SHOW_WS_PREVIEW_BG && opt.OVERVIEW_MODE === 1) {
+            this._workspace._background._updateBorderRadius(Math.min(1, this._workspace._overviewAdjustment.value));
+        }
+
+        // hide workspace background
+        if (!opt.SHOW_WS_PREVIEW_BG && this._workspace._background.opacity) {
+            this._workspace._background.opacity = 0;
+        }
     }
 }
 
@@ -711,16 +737,18 @@ var WorkspacesDisplay = {
             return Clutter.EVENT_PROPAGATE;
 
         const isShiftPressed = (event.get_state() & Clutter.ModifierType.SHIFT_MASK) != 0;
-        /*const isCtrlPressed = (event.get_state() & Clutter.ModifierType.CONTROL_MASK) != 0;
+        const isCtrlPressed = (event.get_state() & Clutter.ModifierType.CONTROL_MASK) != 0;
         const isAltPressed = (event.get_state() & Clutter.ModifierType.MOD1_MASK) != 0;
         const noModifiersPressed = !(isCtrlPressed && isShiftPressed && isAltPressed);
 
-        if (OVERVIEW_MODE2 && noModifiersPressed) {
-            Main.overview.hide();
+        let direction = event.get_scroll_direction();
+
+        /*if (direction !== Clutter.ScrollDirection.SMOOTH && opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE && noModifiersPressed) {
+            Main.overview._overview.controls._thumbnailsBox._activateThumbnailAtPoint(0, 0, 0, true);
+            //Main.overview.hide();
             return Clutter.EVENT_STOP;
         }*/
 
-        let direction = event.get_scroll_direction();
 
         if (/*SHIFT_REORDERS_WS && */isShiftPressed) {
             if (direction === Clutter.ScrollDirection.UP) {
@@ -733,7 +761,7 @@ var WorkspacesDisplay = {
             }
 
             if (direction) {
-                _reorderWorkspace(direction);
+                _Util.reorderWorkspace(direction);
                 // make all workspaces on primary monitor visible for case the new position is hidden
                 Main.overview._overview._controls._workspacesDisplay._workspacesViews[0]._workspaces.forEach(w => w.visible = true);
                 return Clutter.EVENT_STOP;
@@ -760,7 +788,11 @@ var WorkspacesDisplay = {
 
         let which;
         switch (symbol) {
-        /*case Clutter.KEY_Return:*/
+        case Clutter.KEY_Return:
+        case Clutter.KEY_KP_Enter:
+            if (isCtrlPressed)
+                Main.ctrlAltTabManager._items.forEach(i => {if (i.sortGroup === 1 && i.name === 'Dash') Main.ctrlAltTabManager.focusGroup(i)});
+            return Clutter.EVENT_STOP;
         case Clutter.KEY_Page_Up:
             if (vertical)
                 which = Meta.MotionDirection.UP;
@@ -800,8 +832,9 @@ var WorkspacesDisplay = {
         case Clutter.KEY_Up:
             if (Main.overview._overview._controls._searchController.searchActive) {
                 Main.overview.searchEntry.grab_key_focus();
-            } else /*if (OVERVIEW_MODE && !WORKSPACE_MODE)*/ {
-                Main.ctrlAltTabManager._items.forEach(i => {if (i.sortGroup === 1 && i.name === 'Dash') Main.ctrlAltTabManager.focusGroup(i)});
+            } else if (opt.OVERVIEW_MODE && !opt.WORKSPACE_MODE) {
+                Main.overview._overview.controls._thumbnailsBox._activateThumbnailAtPoint(0, 0, global.get_current_time(), true);
+                Main.ctrlAltTabManager._items.forEach(i => {if (i.sortGroup === 1 && i.name === 'Windows') Main.ctrlAltTabManager.focusGroup(i)});
             }
             return Clutter.EVENT_STOP;
         default:
@@ -823,7 +856,7 @@ var WorkspacesDisplay = {
             else if (which === Meta.MotionDirection.DOWN || which === Meta.MotionDirection.RIGHT)
                 direction = 1;
             if (direction)
-                _reorderWorkspace(direction);
+                _Util.reorderWorkspace(direction);
                 // make all workspaces on primary monitor visible for case the new position is hidden
                 Main.overview._overview._controls._workspacesDisplay._workspacesViews[0]._workspaces.forEach(w => w.visible = true);
                 return Clutter.EVENT_STOP;
@@ -849,16 +882,5 @@ function _getFitModeForState(state) {
             return FitMode.SINGLE;
     default:
         return FitMode.SINGLE;
-    }
-}
-
-// ------------------ Reorder Workspaces - callback for Dash and workspacesDisplay -----------------------------------
-
-function _reorderWorkspace(direction = 0) {
-    let activeWs = global.workspace_manager.get_active_workspace();
-    let activeWsIdx = activeWs.index();
-    let targetIdx = activeWsIdx + direction;
-    if (targetIdx > -1 && targetIdx < (global.workspace_manager.get_n_workspaces())) {
-        global.workspace_manager.reorder_workspace(activeWs, targetIdx);
     }
 }

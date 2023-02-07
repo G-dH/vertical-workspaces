@@ -187,7 +187,7 @@ var Options = class Options {
         return gSettings.get_default_value(key).deep_unpack();
     }
 
-    _updateSettings(settings, key) {
+    _updateSettings() {
         this.DASH_POSITION = this.get('dashPosition', true);
         this.DASH_TOP = this.DASH_POSITION === 0;
         this.DASH_RIGHT = this.DASH_POSITION === 1;
@@ -220,6 +220,7 @@ var Options = class Options {
         this.WS_TMB_LEFT = this.WS_TMB_POSITION === 3;
         this.WS_TMB_POSITION_ADJUSTMENT = this.get('wsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
         this.SEC_WS_TMB_POSITION = this.get('secondaryWsThumbnailsPosition', true);
+        this.SHOW_SEC_WS_TMB = this.SEC_WS_TMB_POSITION !== 3 && this.SHOW_WS_TMB;
         this.SEC_WS_TMB_TOP = (this.SEC_WS_TMB_POSITION === 0 && !this.ORIENTATION) || (this.SEC_WS_TMB_POSITION === 2 && this.WS_TMB_TOP);
         this.SEC_WS_TMB_RIGHT = (this.SEC_WS_TMB_POSITION === 1 && this.ORIENTATION) || (this.SEC_WS_TMB_POSITION === 2 && this.WS_TMB_RIGHT);
         this.SEC_WS_TMB_BOTTOM = (this.SEC_WS_TMB_POSITION === 1 && !this.ORIENTATION) || (this.SEC_WS_TMB_POSITION === 2 && this.WS_TMB_BOTTOM);

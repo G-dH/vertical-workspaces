@@ -268,3 +268,14 @@ function dashNotDefault() {
 function dashIsDashToDock() {
     return Main.overview.dash._isHorizontal !== undefined;
 }
+
+// ------------------ Reorder Workspaces - callback for Dash and workspacesDisplay -----------------------------------
+
+function reorderWorkspace(direction = 0) {
+    let activeWs = global.workspace_manager.get_active_workspace();
+    let activeWsIdx = activeWs.index();
+    let targetIdx = activeWsIdx + direction;
+    if (targetIdx > -1 && targetIdx < (global.workspace_manager.get_n_workspaces())) {
+        global.workspace_manager.reorder_workspace(activeWs, targetIdx);
+    }
+}

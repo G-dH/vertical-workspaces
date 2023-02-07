@@ -126,8 +126,10 @@ var WindowPreviewInjections = {
                         });
                     }
                 }
+                this.disconnect(this._wsStateConId);
             });
         }
+
         if (opt.OVERVIEW_MODE) {
             // show window icon and title on ws windows spread
             this._stateAdjustmentSigId = this._workspace.stateAdjustment.connect('notify::value', this._updateIconScale.bind(this));
@@ -178,23 +180,24 @@ var WindowPreviewCommon = {
 
         let scale = visible
             ? (currentState >= 1 ? 1 : currentState % 1) : 0;
-        if (!primaryMonitor &&
+        if (!primaryMonitor && opt.WORKSPACE_MODE &&
             ((initialState === ControlsState.WINDOW_PICKER && finalState === ControlsState.APP_GRID) ||
             (initialState === ControlsState.APP_GRID && finalState === ControlsState.WINDOW_PICKER))
             ) {
             scale = 1;
+        } else if (!primaryMonitor && opt.OVERVIEW_MODE && !opt.WORKSPACE_MODE) {
+            scale = 0;
         /*} else if (primaryMonitor && ((initialState === ControlsState.WINDOW_PICKER && finalState === ControlsState.APP_GRID) ||
             initialState === ControlsState.APP_GRID && finalState === ControlsState.HIDDEN)) {*/
         } else if (primaryMonitor && currentState > ControlsState.WINDOW_PICKER) {
             scale = 0;
         }
 
-        // in static workspace mode show icon and title on ws windows spread
+        // in static workspace mode show icon and title on windows expose
         if (opt.OVERVIEW_MODE) {
-            const windowsSpread = this._workspace.stateAdjustment.value;
             if (currentState === 1) {
-                scale = windowsSpread;
-            } else if (finalState === 1 || (finalState === 0 && !windowsSpread)) {
+                scale = opt.WORKSPACE_MODE;
+            } else if (finalState === 1 || (finalState === 0 && !opt.WORKSPACE_MODE)) {
                 return;
             }
         }
