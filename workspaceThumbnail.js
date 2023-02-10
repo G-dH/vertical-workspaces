@@ -48,7 +48,8 @@ function update(reset = false) {
     opt = Me.imports.settings.opt;
 
     MAX_THUMBNAIL_SCALE = opt.MAX_THUMBNAIL_SCALE;
-    WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = MAX_THUMBNAIL_SCALE;
+    // don't limit max thumbnail scale for other clients than overview, for example AATWS.
+    WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = 1;
 
     _overrides = new _Util.Overrides();
 
@@ -218,13 +219,6 @@ var WorkspaceThumbnailCommon = {
                         duration: 200,
                         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     });
-
-                    /*const adjustment = Main.overview._overview.controls._workspacesDisplay._workspacesViews[0]._workspaces[wsIndex].stateAdjustment;
-                    adjustment.value = 0;
-                    adjustment.ease(1, {
-                        duration: 200,
-                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    });*/
                 } else {
                     // switch ws
                     this.metaWorkspace.activate(time);
