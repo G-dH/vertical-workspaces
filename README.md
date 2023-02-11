@@ -1,6 +1,6 @@
 # V-Shell (former Vertical Workspaces)
 
-A GNOME Shell extension that lets you customize your desktop interface to suit your workflow and style. You can change the horizontal stacking of workspaces to vertical, but also change layout, content, appearance and behavior of the Shell. Forget Dash to Dock and similar dock extensions, with V-Shell you don't need it, just use Static Workspace option.
+A GNOME Shell extension that lets you customize your desktop interface to suit your workflow and style. You can change the horizontal stacking of workspaces to vertical, but also change layout, content, appearance and behavior of the Shell.
 
 Supported GNOME versions: 42, 43 (dropped support for 40, 41  - not tested).
 
