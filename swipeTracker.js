@@ -1,7 +1,7 @@
 /**
  * Vertical Workspaces
  * swipeTracker.js
- * 
+ *
  * @author     GdH <G-dH@github.com>
  * @copyright  2022 - 2023
  * @license    GPL-3.0
@@ -56,11 +56,11 @@ function update(reset = false) {
     }
 }
 
-//---- SwipeTracker -----------------------------------------------------------------------------------
+// ---- SwipeTracker -----------------------------------------------------------------------------------
 // switch overview's state gesture direction
 var SwipeTrackerVertical = {
-    _updateGesture: function(gesture, time, delta, distance) {
-        if (this._state !== 1) //State.SCROLLING)
+    _updateGesture(gesture, time, delta, distance) {
+        if (this._state !== 1) // State.SCROLLING)
             return;
 
         if ((this._allowedModes & Main.actionMode) === 0 || !this.enabled) {
@@ -75,5 +75,5 @@ var SwipeTrackerVertical = {
 
         this._progress = Math.clamp(this._progress, ...this._getBounds(this._initialProgress));
         this.emit('update', this._progress);
-    }
-}
+    },
+};

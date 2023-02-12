@@ -1,7 +1,7 @@
 /**
  * Vertical Workspaces
  * search.js
- * 
+ *
  * @author     GdH <G-dH@github.com>
  * @copyright  2022 - 2023
  * @license    GPL-3.0
@@ -31,7 +31,6 @@ function update(reset = false) {
         Main.overview.searchEntry.opacity = 255;
         _overrides = null;
         opt = null;
-        return;
     }
 }
 

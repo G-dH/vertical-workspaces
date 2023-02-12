@@ -105,7 +105,7 @@ var Options = class Options {
             dashShowWindowsBeforeActivation: ['int', 'dash-show-windows-before-activation'],
             panelVisibility: ['int', 'panel-visibility'],
             panelPosition: ['int', 'panel-position'],
-        }
+        };
         this.cachedOptions = {};
 
         this.shellVersion = shellVersion;
@@ -125,24 +125,24 @@ var Options = class Options {
         }
     }
 
-    _updateCachedSettings(settings, key) {
+    _updateCachedSettings() {
         Object.keys(this.options).forEach(v => this.get(v, true));
     }
 
     get(option, updateCache = false) {
         if (!this.options[option]) {
             log(`[${Me.metadata.name}] Error: Option ${option} is undefined.`);
-            return;
+            return null;
         }
 
         if (updateCache || this.cachedOptions[option] === undefined) {
-            const [format, key, settings] = this.options[option];
+            const [, key, settings] = this.options[option];
             let gSettings;
-            if (settings !== undefined) {
+            if (settings !== undefined)
                 gSettings = settings();
-            } else {
+            else
                 gSettings = this._gsettings;
-            }
+
 
             this.cachedOptions[option] = gSettings.get_value(key).deep_unpack();
         }
@@ -155,34 +155,34 @@ var Options = class Options {
 
         let gSettings = this._gsettings;
 
-        if (settings !== undefined) {
+        if (settings !== undefined)
             gSettings = settings();
-        }
+
 
         switch (format) {
-            case 'boolean':
-                gSettings.set_boolean(key, value);
-                break;
-            case 'int':
-                gSettings.set_int(key, value);
-                break;
-            case 'string':
-                gSettings.set_string(key, value);
-                break;
-            case 'strv':
-                gSettings.set_strv(key, value);
-                break;
+        case 'boolean':
+            gSettings.set_boolean(key, value);
+            break;
+        case 'int':
+            gSettings.set_int(key, value);
+            break;
+        case 'string':
+            gSettings.set_string(key, value);
+            break;
+        case 'strv':
+            gSettings.set_strv(key, value);
+            break;
         }
     }
 
     getDefault(option) {
-        const [format, key, settings] = this.options[option];
+        const [, key, settings] = this.options[option];
 
         let gSettings = this._gsettings;
 
-        if (settings !== undefined) {
+        if (settings !== undefined)
             gSettings = settings();
-        }
+
 
         return gSettings.get_default_value(key).deep_unpack();
     }
@@ -208,11 +208,11 @@ var Options = class Options {
         this.WS_TMB_POSITION = this.get('workspaceThumbnailsPosition', true);
         this.ORIENTATION = this.WS_TMB_POSITION > 4 ? 0 : 1;
         this.WORKSPACE_MAX_SPACING = this.get('wsMaxSpacing', true);
-                                //ORIENTATION || DASH_LEFT || DASH_RIGHT ? 350 : 80;
+        // ORIENTATION || DASH_LEFT || DASH_RIGHT ? 350 : 80;
         this.SHOW_WS_TMB = ![4, 9].includes(this.WS_TMB_POSITION); // 4, 9 - disable
         this.WS_TMB_FULL = this.get('WsThumbnailsFull', true);
         // translate ws tmb position to 0 top, 1 right, 2 bottom, 3 left
-        //0L 1R, 2LF, 3RF, 4DV, 5T, 6B, 7TF, 8BF, 9DH
+        // 0L 1R, 2LF, 3RF, 4DV, 5T, 6B, 7TF, 8BF, 9DH
         this.WS_TMB_POSITION = [3, 1, 3, 1, 4, 0, 2, 0, 2, 8][this.WS_TMB_POSITION];
         this.WS_TMB_TOP = this.WS_TMB_POSITION === 0;
         this.WS_TMB_RIGHT = this.WS_TMB_POSITION === 1;
@@ -244,13 +244,13 @@ var Options = class Options {
         this.SHOW_SEARCH_ENTRY = this.get('showSearchEntry', true);
         this.CENTER_SEARCH_VIEW = this.get('centerSearch', true);
         this.APP_GRID_ANIMATION = this.get('appGridAnimation', true);
-        if (this.APP_GRID_ANIMATION === 4) {
+        if (this.APP_GRID_ANIMATION === 4)
             this.APP_GRID_ANIMATION = this._getAnimationDirection();
-        }
+
         this.SEARCH_VIEW_ANIMATION = this.get('searchViewAnimation', true);
-        if (this.SEARCH_VIEW_ANIMATION === 4) {
+        if (this.SEARCH_VIEW_ANIMATION === 4)
             this.SEARCH_VIEW_ANIMATION = 3;
-        }
+
         this.WS_ANIMATION = this.get('workspaceAnimation', true);
 
         this.WIN_PREVIEW_ICON_SIZE = [64, 48, 32, 22, 8][this.get('winPreviewIconSize', true)];
@@ -281,7 +281,7 @@ var Options = class Options {
         this.APP_GRID_ROWS = this.get('appGridRows', true);
         this.APP_GRID_ORDER = this.get('appGridOrder', true);
         this.APP_GRID_INCLUDE_DASH = this.get('appGridIncludeDash', true);
-        
+
         this.APP_GRID_FOLDER_ICON_SIZE = this.get('appGridFolderIconSize', true);
         this.APP_GRID_FOLDER_COLUMNS = this.get('appGridFolderColumns', true);
         this.APP_GRID_FOLDER_ROWS = this.get('appGridFolderRows', true);
@@ -299,11 +299,9 @@ var Options = class Options {
     }
 
     _getAnimationDirection() {
-        if (this.ORIENTATION) {
-            return (this.WS_TMB_LEFT || !this.SHOW_WS_TMB) ? 1 : 2; // 1 right, 2 left
-        } else {
-            return (this.WS_TMB_TOP  || !this.SHOW_WS_TMB) ? 3 : 5; // 3 bottom, 5 top
-        }
+        if (this.ORIENTATION)
+            return this.WS_TMB_LEFT || !this.SHOW_WS_TMB ? 1 : 2; // 1 right, 2 left
+        else
+            return this.WS_TMB_TOP  || !this.SHOW_WS_TMB ? 3 : 5; // 3 bottom, 5 top
     }
-
 };

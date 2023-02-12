@@ -1,7 +1,7 @@
 /**
  * Vertical Workspaces
  * workspace.js
- * 
+ *
  * @author     GdH <G-dH@github.com>
  * @copyright  2022 - 2023
  * @license    GPL-3.0
@@ -28,9 +28,9 @@ const BACKGROUND_CORNER_RADIUS_PIXELS = 40;
 
 
 function update(reset = false) {
-    if (_overrides) {
+    if (_overrides)
         _overrides.removeAll();
-    }
+
 
     if (reset) {
         Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = 0.95;
@@ -64,7 +64,7 @@ function update(reset = false) {
 // on multi-monitor system can be visible unwanted scaling of windows on workspace in WORKSPACE_MODE 0 (windows not spread)
 // when leaving overview while any other workspace is in the WORKSPACE_MODE 1.
 var WorkspaceLayoutInjections = {
-    _init: function() {
+    _init() {
         if (opt.OVERVIEW_MODE === 1) {
             this._stateAdjustment.connect('notify::value', () => {
                 // scale 0.1 for window state 0 just needs to be smaller then possible scale of any window in spread view
@@ -78,12 +78,12 @@ var WorkspaceLayoutInjections = {
                 }
             });
         }
-    }
-}
+    },
+};
 
 var WorkspaceLayout = {
     // this fixes wrong size and position calculation of window clones while moving overview to the next (+1) workspace if vertical ws orientation is enabled in GS
-    _adjustSpacingAndPadding: function(rowSpacing, colSpacing, containerBox) {
+    _adjustSpacingAndPadding(rowSpacing, colSpacing, containerBox) {
         if (this._sortedWindows.length === 0)
             return [rowSpacing, colSpacing, containerBox];
 
@@ -107,11 +107,11 @@ var WorkspaceLayout = {
             const monitor = Main.layoutManager.monitors[this._monitorIndex];
 
             const bottomPoint = new Graphene.Point3D();
-            if (vertical) {
+            if (vertical)
                 bottomPoint.x = containerBox.x2;
-            } else {
+            else
                 bottomPoint.y = containerBox.y2;
-            }
+
 
             const transformedBottomPoint =
                 this._container.apply_transform_to_point(bottomPoint);
@@ -121,30 +121,29 @@ var WorkspaceLayout = {
 
             const [, bottomOverlap] = window.overlapHeights();
 
-            if ((bottomOverlap + oversize) > bottomFreeSpace && !vertical) {
+            if ((bottomOverlap + oversize) > bottomFreeSpace && !vertical)
                 containerBox.y2 -= (bottomOverlap + oversize) - bottomFreeSpace;
-            }
         }
 
         return [rowSpacing, colSpacing, containerBox];
-    }
-}
+    },
+};
 
 var WorkspaceBackground = {
-    _updateBorderRadius: function(value = false) {
+    _updateBorderRadius(value = false) {
         // don't round already rounded corners during exposing windows
-        if (value === false && opt.OVERVIEW_MODE === 1) {
+        if (value === false && opt.OVERVIEW_MODE === 1)
             return;
-        }
+
         const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
         const cornerRadius = scaleFactor * BACKGROUND_CORNER_RADIUS_PIXELS;
 
         const backgroundContent = this._bgManager.backgroundActor.content;
-        value = (value !==false)
-                ? value
-                : this._stateAdjustment.value;
+        value = value !== false
+            ? value
+            : this._stateAdjustment.value;
 
         backgroundContent.rounded_clip_radius =
             Util.lerp(0, cornerRadius, value);
-    }
-}
+    },
+};

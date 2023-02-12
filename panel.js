@@ -1,7 +1,7 @@
 /**
  * Vertical Workspaces
  * panel.js
- * 
+ *
  * @author     GdH <G-dH@github.com>
  * @copyright  2022 - 2023
  * @license    GPL-3.0
@@ -26,19 +26,19 @@ function update(reset = false) {
     const panelHeight = Main.panel.height; // panelBox height can be 0 after shell start
 
     const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
-    if (reset || opt.PANEL_POSITION_TOP) {
+    if (reset || opt.PANEL_POSITION_TOP)
         panelBox.set_position(geometry.x, geometry.y);
-    } else {
+    else
         panelBox.set_position(geometry.x, geometry.y + geometry.height - panelHeight);
-    }
 
-    if (!_styleChangedConId) {
-        Main.panel.connect('style-changed', ()=> Main.panel.remove_style_pseudo_class('overview'));
-    }
+
+    if (!_styleChangedConId)
+        Main.panel.connect('style-changed', () => Main.panel.remove_style_pseudo_class('overview'));
+
 
     if (reset || opt.PANEL_MODE === 0) {
-        //_disconnectPanel();
-        _disconnectOverview()
+        // _disconnectPanel();
+        _disconnectOverview();
         _reparentPanel(false);
         _showPanel();
 
@@ -64,18 +64,18 @@ function update(reset = false) {
             // if ws preview bg is disabled, panel can stay in uiGroup
             _reparentPanel(false);
             _showPanel(false);
-            if (!_hidingOverviewConId)
+            if (!_hidingOverviewConId) {
                 _hidingOverviewConId = Main.overview.connect('hiding', () => {
-                    if ((!opt.SHOW_WS_PREVIEW_BG || opt.OVERVIEW_MODE2)) {
+                    if (!opt.SHOW_WS_PREVIEW_BG || opt.OVERVIEW_MODE2)
                         _showPanel(false);
-                    }
-            });
-            if (!_showingOverviewConId)
+                });
+            }
+            if (!_showingOverviewConId) {
                 _showingOverviewConId = Main.overview.connect('showing', () => {
-                    if ((!opt.SHOW_WS_PREVIEW_BG || opt.OVERVIEW_MODE2)) {
+                    if (!opt.SHOW_WS_PREVIEW_BG || opt.OVERVIEW_MODE2)
                         _showPanel(true);
-                    }
-            });
+                });
+            }
         }
 
         _connectPanel();
@@ -120,7 +120,7 @@ function _setPanelStructs(state) {
     // workaround to force maximized windows to resize after removing affectsStruts
     // simulation of minimal swipe gesture to the opposite direction
     // todo - needs better solution!!!!!!!!!!!
-    /*const direction = _getAppGridAnimationDirection() === 2 ? 1 : -1;
+    /* const direction = _getAppGridAnimationDirection() === 2 ? 1 : -1;
     Main.overview._swipeTracker._beginTouchSwipe(null, global.get_current_time(), 1, 1);
     Main.overview._swipeTracker._updateGesture(null, global.get_current_time(), direction, 1);
     GLib.timeout_add(0, 50, () => Main.overview._swipeTracker._endGesture(global.get_current_time(), 1, true));*/
@@ -134,9 +134,8 @@ function _showPanel(show = true) {
             translation_y: 0,
             onComplete: () => {
                 _setPanelStructs(opt.PANEL_MODE === 0);
-            }
+            },
         });
-
     } else {
         const panelHeight = Main.panel.height;
         Main.layoutManager.panelBox.ease({
@@ -145,14 +144,14 @@ function _showPanel(show = true) {
             onComplete: () => {
                 Main.panel.opacity = 0;
                 _setPanelStructs(opt.PANEL_MODE === 0);
-            }
+            },
         });
     }
 }
 
 function _connectPanel() {
     // not reliable, disabled for now
-    /*if (!_panelEnterSigId) {
+    /* if (!_panelEnterSigId) {
         _panelEnterSigId = Main.panel.connect('enter-event', () => {
             if (!Main.overview._shown)
                 _showPanel(true);
@@ -167,7 +166,7 @@ function _connectPanel() {
 }
 
 function _disconnectPanel() {
-    /*if (_panelEnterSigId) {
+    /* if (_panelEnterSigId) {
         Main.panel.disconnect(_panelEnterSigId);
         _panelEnterSigId = 0;
     }

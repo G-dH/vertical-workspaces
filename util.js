@@ -5,7 +5,7 @@
  * @author     GdH <G-dH@github.com>
  * @copyright  2022 - 2023
  * @license    GPL-3.0
- * 
+ *
  */
 
 'use strict';
@@ -50,25 +50,28 @@ var Overrides = class {
                         .funcName2
     */
     addInjection(className, prototype, injections) {
-        if (!this._injections[className])
+        if (!this._injections[className]) {
             this._injections[className] = {
                 prototype,
                 injections: {},
             };
+        }
 
         for (let name in injections) {
             this._injections[className].injections[name] = {
                 original: this.injectToFunction(prototype, name, injections[name]),
-            }
+            };
         }
     }
 
     removeInjection(className, funcName) {
-        if (this._injections[className]) return false;
+        if (this._injections[className])
+            return false;
         const prototype = this._injections[className].prototype;
 
         const injection = this._injections[className].injections[funcName];
-        if (!injection) return false;
+        if (!injection)
+            return false;
 
         prototype[funcName] = injection.original;
         this._injections[funcName] = undefined;
@@ -84,9 +87,9 @@ var Overrides = class {
         for (let className in this._injections) {
             const injt = this._injections[className];
             const prototype = injt.prototype;
-            for (let funcName in injt.injections) {
+            for (let funcName in injt.injections)
                 prototype[funcName] = injt.injections[funcName].original;
-            }
+
             this._injections[className] = undefined;
         }
     }
@@ -102,25 +105,22 @@ var Overrides = class {
             if (symbol.startsWith('after_')) {
                 const actualSymbol = symbol.slice('after_'.length);
                 const fn = proto[actualSymbol];
-                const afterFn = overrides[symbol]
-                proto[actualSymbol] = function() {
-                    const args = Array.prototype.slice.call(arguments);
+                const afterFn = overrides[symbol];
+                proto[actualSymbol] = function (...args) {
+                    args = Array.prototype.slice.call(args);
                     const res = fn.apply(this, args);
                     afterFn.apply(this, args);
                     return res;
                 };
                 backup[actualSymbol] = fn;
-            }
-            else {
+            } else {
                 backup[symbol] = proto[symbol];
                 if (symbol.startsWith('vfunc')) {
-                    if (shellVersion < 42) {
+                    if (shellVersion < 42)
                         this.hookVfunc(proto, symbol.slice(6), overrides[symbol]);
-                    } else {
+                    else
                         this.hookVfunc(proto[Gi.gobject_prototype_symbol], symbol.slice(6), overrides[symbol]);
-                    }
-                }
-                else {
+                } else {
                     proto[symbol] = overrides[symbol];
                 }
             }
@@ -130,85 +130,85 @@ var Overrides = class {
 
     injectToFunction(parent, name, func) {
         let origin = parent[name];
-        parent[name] = function() {
+        parent[name] = function (...args) {
             let ret;
-            ret = origin.apply(this, arguments);
-            func.apply(this, arguments);
+            ret = origin.apply(this, args);
+            func.apply(this, args);
             return ret;
-        }
+        };
 
         return origin;
     }
-}
+};
 
-//------- Common functions -----------------------------------------------------------------------
+// ------- Common functions -----------------------------------------------------------------------
 
 function getOverviewTranslations(opt, dash, tmbBox, searchEntryBin) {
-    //const tmbBox = Main.overview._overview._controls._thumbnailsBox;
-    let searchTranslation_y = 0;
+    // const tmbBox = Main.overview._overview._controls._thumbnailsBox;
+    let searchTranslationY = 0;
     if (searchEntryBin.visible) {
-        const offset = (dash.visible && (!opt.DASH_VERTICAL ? dash.height + 12 : 0))
-            + (opt.WS_TMB_TOP ? tmbBox.height + 12 : 0);
-        searchTranslation_y = - searchEntryBin.height - offset - 30;
+        const offset = (dash.visible && (!opt.DASH_VERTICAL ? dash.height + 12 : 0)) +
+            (opt.WS_TMB_TOP ? tmbBox.height + 12 : 0);
+        searchTranslationY = -searchEntryBin.height - offset - 30;
     }
 
-    let tmbTranslation_x = 0;
-    let tmbTranslation_y = 0;
+    let tmbTranslationX = 0;
+    let tmbTranslationY = 0;
     let offset;
     if (tmbBox.visible) {
         switch (opt.WS_TMB_POSITION) {
-            case 3: // left
-                offset = 10 + ((dash?.visible && opt.DASH_LEFT) ? dash.width : 0);
-                tmbTranslation_x = - tmbBox.width - offset;
-                tmbTranslation_y = 0;
-                break;
-            case 1: // right
-                offset = 10 + ((dash?.visible && opt.DASH_RIGHT) ? dash.width : 0);
-                tmbTranslation_x = tmbBox.width + offset;
-                tmbTranslation_y = 0;
-                break;
-            case 0: // top
-                offset = 10 + ((dash?.visible && opt.DASH_TOP) ? dash.height : 0) + Main.panel.height;
-                tmbTranslation_x = 0;
-                tmbTranslation_y = - tmbBox.height - offset;
-                break;
-            case 2: // bottom
-                offset = 10 + ((dash?.visible && opt.DASH_BOTTOM) ? dash.height : 0) + Main.panel.height;  // just for case the panel is at bottom
-                tmbTranslation_x = 0;
-                tmbTranslation_y = tmbBox.height + offset;
-                break;
+        case 3: // left
+            offset = 10 + (dash?.visible && opt.DASH_LEFT ? dash.width : 0);
+            tmbTranslationX = -tmbBox.width - offset;
+            tmbTranslationY = 0;
+            break;
+        case 1: // right
+            offset = 10 + (dash?.visible && opt.DASH_RIGHT ? dash.width : 0);
+            tmbTranslationX = tmbBox.width + offset;
+            tmbTranslationY = 0;
+            break;
+        case 0: // top
+            offset = 10 + (dash?.visible && opt.DASH_TOP ? dash.height : 0) + Main.panel.height;
+            tmbTranslationX = 0;
+            tmbTranslationY = -tmbBox.height - offset;
+            break;
+        case 2: // bottom
+            offset = 10 + (dash?.visible && opt.DASH_BOTTOM ? dash.height : 0) + Main.panel.height;  // just for case the panel is at bottom
+            tmbTranslationX = 0;
+            tmbTranslationY = tmbBox.height + offset;
+            break;
         }
     }
 
-    let dashTranslation_x = 0;
-    let dashTranslation_y = 0;
+    let dashTranslationX = 0;
+    let dashTranslationY = 0;
     let position = opt.DASH_POSITION;
     // if DtD replaced the original Dash, read its position
-    if (dashIsDashToDock()) {
+    if (dashIsDashToDock())
         position = dash._position;
-    }
+
     if (dash?.visible) {
         switch (position) {
-            case 0: // top
-                dashTranslation_x = 0;
-                dashTranslation_y = - dash.height - dash.margin_bottom - Main.panel.height;
-                break;
-            case 1: // right
-                dashTranslation_x = dash.width;
-                dashTranslation_y = 0;
-                break;
-            case 2: // bottom
-                dashTranslation_x = 0;
-                dashTranslation_y = dash.height + dash.margin_bottom + Main.panel.height;
-                break;
-            case 3: // left
-                dashTranslation_x = - dash.width;
-                dashTranslation_y = 0;
-                break;
+        case 0: // top
+            dashTranslationX = 0;
+            dashTranslationY = -dash.height - dash.margin_bottom - Main.panel.height;
+            break;
+        case 1: // right
+            dashTranslationX = dash.width;
+            dashTranslationY = 0;
+            break;
+        case 2: // bottom
+            dashTranslationX = 0;
+            dashTranslationY = dash.height + dash.margin_bottom + Main.panel.height;
+            break;
+        case 3: // left
+            dashTranslationX = -dash.width;
+            dashTranslationY = 0;
+            break;
         }
     }
 
-    return [tmbTranslation_x, tmbTranslation_y, dashTranslation_x, dashTranslation_y, searchTranslation_y];
+    return [tmbTranslationX, tmbTranslationY, dashTranslationX, dashTranslationY, searchTranslationY];
 }
 
 function openPreferences() {
@@ -251,7 +251,7 @@ function openPreferences() {
 function activateSearchProvider(prefix = '') {
     const searchEntry = Main.overview.searchEntry;
     if (!searchEntry.get_text() || !searchEntry.get_text().startsWith(prefix)) {
-        prefix = _(prefix + ' ');
+        prefix = `${prefix} `;
         const position = prefix.length;
         searchEntry.set_text(prefix);
         searchEntry.get_first_child().set_cursor_position(position);
@@ -275,7 +275,6 @@ function reorderWorkspace(direction = 0) {
     let activeWs = global.workspace_manager.get_active_workspace();
     let activeWsIdx = activeWs.index();
     let targetIdx = activeWsIdx + direction;
-    if (targetIdx > -1 && targetIdx < (global.workspace_manager.get_n_workspaces())) {
+    if (targetIdx > -1 && targetIdx < global.workspace_manager.get_n_workspaces())
         global.workspace_manager.reorder_workspace(activeWs, targetIdx);
-    }
 }

@@ -1,7 +1,7 @@
 /**
  * Vertical Workspaces
  * windowManager.js
- * 
+ *
  * @author     GdH <G-dH@github.com>
  * @copyright  2022 - 2023
  * @license    GPL-3.0
@@ -24,9 +24,9 @@ const MINIMIZE_WINDOW_ANIMATION_MODE = WindowManager.MINIMIZE_WINDOW_ANIMATION_M
 let opt;
 
 function update(reset = false) {
-    if (_overrides) {
+    if (_overrides)
         _overrides.removeAll();
-    }
+
 
     _replaceMinimizeFunction(reset);
 
@@ -43,7 +43,7 @@ function update(reset = false) {
     _overrides.addOverride('WindowManager', WindowManager.WindowManager.prototype, WindowManagerCommon);
 }
 
-//------------- Fix and adapt minimize/unminimize animations --------------------------------------
+// ------------- Fix and adapt minimize/unminimize animations --------------------------------------
 
 let _originalMinimizeSigId;
 let _minimizeSigId;
@@ -61,7 +61,6 @@ function _replaceMinimizeFunction(reset = false) {
         _unminimizeSigId = 0;
         Main.wm._shellwm.unblock_signal_handler(_originalUnminimizeSigId);
         _originalUnminimizeSigId = 0;
-
     } else if (!_minimizeSigId) {
         _originalMinimizeSigId = GObject.signal_handler_find(Main.wm._shellwm, { signalId: 'minimize' });
         if (_originalMinimizeSigId) {
@@ -82,7 +81,7 @@ function _replaceMinimizeFunction(reset = false) {
 // anyway, animation is better, even if the Activities button is not visible...
 // and also add support for bottom position of the panel
 const WindowManagerCommon = {
-    _minimizeWindow: function(shellwm, actor) {
+    _minimizeWindow(shellwm, actor) {
         const types = [
             Meta.WindowType.NORMAL,
             Meta.WindowType.MODAL_DIALOG,
@@ -97,48 +96,48 @@ const WindowManagerCommon = {
 
         this._minimizing.add(actor);
 
-        if (false/*actor.meta_window.is_monitor_sized()*/) {
+        /* if (actor.meta_window.is_monitor_sized()) {
             actor.get_first_child().ease({
                 opacity: 0,
                 duration: MINIMIZE_WINDOW_ANIMATION_TIME,
                 mode: MINIMIZE_WINDOW_ANIMATION_MODE,
                 onStopped: () => this._minimizeWindowDone(shellwm, actor),
             });
+        } else { */
+        let xDest, yDest, xScale, yScale;
+        let [success, geom] = actor.meta_window.get_icon_geometry();
+        if (success) {
+            xDest = geom.x;
+            yDest = geom.y;
+            xScale = geom.width / actor.width;
+            yScale = geom.height / actor.height;
         } else {
-            let xDest, yDest, xScale, yScale;
-            let [success, geom] = actor.meta_window.get_icon_geometry();
-            if (success) {
-                xDest = geom.x;
-                yDest = geom.y;
-                xScale = geom.width / actor.width;
-                yScale = geom.height / actor.height;
-            } else {
-                let monitor = Main.layoutManager.monitors[actor.meta_window.get_monitor()];
-                if (!monitor) {
-                    this._minimizeWindowDone();
-                    return;
-                }
-                xDest = monitor.x;
-                yDest = opt.PANEL_POSITION_TOP ? monitor.y : monitor.y + monitor.height;
-                if (Clutter.get_default_text_direction() == Clutter.TextDirection.RTL)
-                    xDest += monitor.width;
-                xScale = 0;
-                yScale = 0;
+            let monitor = Main.layoutManager.monitors[actor.meta_window.get_monitor()];
+            if (!monitor) {
+                this._minimizeWindowDone();
+                return;
             }
-
-            actor.ease({
-                scale_x: xScale,
-                scale_y: yScale,
-                x: xDest,
-                y: yDest,
-                duration: MINIMIZE_WINDOW_ANIMATION_TIME,
-                mode: MINIMIZE_WINDOW_ANIMATION_MODE,
-                onStopped: () => this._minimizeWindowDone(shellwm, actor),
-            });
+            xDest = monitor.x;
+            yDest = opt.PANEL_POSITION_TOP ? monitor.y : monitor.y + monitor.height;
+            if (Clutter.get_default_text_direction() === Clutter.TextDirection.RTL)
+                xDest += monitor.width;
+            xScale = 0;
+            yScale = 0;
         }
+
+        actor.ease({
+            scale_x: xScale,
+            scale_y: yScale,
+            x: xDest,
+            y: yDest,
+            duration: MINIMIZE_WINDOW_ANIMATION_TIME,
+            mode: MINIMIZE_WINDOW_ANIMATION_MODE,
+            onStopped: () => this._minimizeWindowDone(shellwm, actor),
+        });
+        // }
     },
 
-    _minimizeWindowDone: function(shellwm, actor) {
+    _minimizeWindowDone(shellwm, actor) {
         if (this._minimizing.delete(actor)) {
             actor.remove_all_transitions();
             actor.set_scale(1.0, 1.0);
@@ -149,7 +148,7 @@ const WindowManagerCommon = {
         }
     },
 
-    _unminimizeWindow: function(shellwm, actor) {
+    _unminimizeWindow(shellwm, actor) {
         const types = [
             Meta.WindowType.NORMAL,
             Meta.WindowType.MODAL_DIALOG,
@@ -162,7 +161,7 @@ const WindowManagerCommon = {
 
         this._unminimizing.add(actor);
 
-        if (false/*actor.meta_window.is_monitor_sized()*/) {
+        /* if (false/* actor.meta_window.is_monitor_sized()) {
             actor.opacity = 0;
             actor.set_scale(1.0, 1.0);
             actor.ease({
@@ -171,38 +170,38 @@ const WindowManagerCommon = {
                 mode: MINIMIZE_WINDOW_ANIMATION_MODE,
                 onStopped: () => this._unminimizeWindowDone(shellwm, actor),
             });
+        } else { */
+        let [success, geom] = actor.meta_window.get_icon_geometry();
+        if (success) {
+            actor.set_position(geom.x, geom.y);
+            actor.set_scale(geom.width / actor.width,
+                geom.height / actor.height);
         } else {
-            let [success, geom] = actor.meta_window.get_icon_geometry();
-            if (success) {
-                actor.set_position(geom.x, geom.y);
-                actor.set_scale(geom.width / actor.width,
-                                geom.height / actor.height);
-            } else {
-                let monitor = Main.layoutManager.monitors[actor.meta_window.get_monitor()];
-                if (!monitor) {
-                    actor.show();
-                    this._unminimizeWindowDone();
-                    return;
-                }
-                actor.set_position(monitor.x, opt.PANEL_POSITION_TOP ? monitor.y : monitor.y + monitor.height);
-                if (Clutter.get_default_text_direction() == Clutter.TextDirection.RTL)
-                    actor.x += monitor.width;
-                actor.set_scale(0, 0);
+            let monitor = Main.layoutManager.monitors[actor.meta_window.get_monitor()];
+            if (!monitor) {
+                actor.show();
+                this._unminimizeWindowDone();
+                return;
             }
-
-            let rect = actor.meta_window.get_buffer_rect();
-            let [xDest, yDest] = [rect.x, rect.y];
-
-            actor.show();
-            actor.ease({
-                scale_x: 1,
-                scale_y: 1,
-                x: xDest,
-                y: yDest,
-                duration: MINIMIZE_WINDOW_ANIMATION_TIME,
-                mode: MINIMIZE_WINDOW_ANIMATION_MODE,
-                onStopped: () => this._unminimizeWindowDone(shellwm, actor),
-            });
+            actor.set_position(monitor.x, opt.PANEL_POSITION_TOP ? monitor.y : monitor.y + monitor.height);
+            if (Clutter.get_default_text_direction() === Clutter.TextDirection.RTL)
+                actor.x += monitor.width;
+            actor.set_scale(0, 0);
         }
-    }
-}
+
+        let rect = actor.meta_window.get_buffer_rect();
+        let [xDest, yDest] = [rect.x, rect.y];
+
+        actor.show();
+        actor.ease({
+            scale_x: 1,
+            scale_y: 1,
+            x: xDest,
+            y: yDest,
+            duration: MINIMIZE_WINDOW_ANIMATION_TIME,
+            mode: MINIMIZE_WINDOW_ANIMATION_MODE,
+            onStopped: () => this._unminimizeWindowDone(shellwm, actor),
+        });
+        // }
+    },
+};

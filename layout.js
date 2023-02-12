@@ -1,7 +1,7 @@
 /**
  * Vertical Workspaces
  * layout.js
- * 
+ *
  * panel barrier should follow panel position
  * or disable it to not collide with Custom Hot Corners barriers
  *
@@ -25,9 +25,9 @@ let _overrides;
 let opt;
 
 function update(reset = false) {
-    if (_overrides) {
+    if (_overrides)
         _overrides.removeAll();
-    }
+
 
     if (reset) {
         _overrides = null;
@@ -45,16 +45,16 @@ function update(reset = false) {
 }
 
 var LayoutManager = {
-    _updatePanelBarrier: function() {
+    _updatePanelBarrier() {
         if (this._rightPanelBarrier) {
             this._rightPanelBarrier.destroy();
             this._rightPanelBarrier = null;
         }
 
         // disable the barrier
-        return;
 
-        if (!this.primaryMonitor)
+
+        /* if (!this.primaryMonitor)
             return;
 
         if (this.panelBox.height) {
@@ -66,6 +66,6 @@ var LayoutManager = {
                 x2: primary.x + primary.width, y2: opt.PANEL_POSITION_TOP ? primary.y + this.panelBox.height : primary.y + primary.height,
                 directions: Meta.BarrierDirection.NEGATIVE_X,
             });
-        }
-    }
-}
+        } */
+    },
+};

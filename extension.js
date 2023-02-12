@@ -79,7 +79,7 @@ function enable() {
         GLib.PRIORITY_DEFAULT,
         200,
         () => {
-            activate();
+            activateVShell();
             log(`${Me.metadata.name}: enabled`);
             _enableTimeoutId = 0;
             return GLib.SOURCE_REMOVE;
@@ -92,15 +92,15 @@ function disable() {
         GLib.source_remove(_enableTimeoutId);
         _enableTimeoutId = 0;
     } else {
-        reset();
+        resetVShell();
     }
     global.verticalWorkspacesEnabled = undefined;
     log(`${Me.metadata.name}: disabled`);
 }
 
-//------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------
 
-function activate() {
+function activateVShell() {
     _enabled = true;
 
     _bgManagers = [];
@@ -141,7 +141,7 @@ function activate() {
     Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
 }
 
-function reset() {
+function resetVShell() {
     _enabled = 0;
 
     _fixUbuntuDock(false);
@@ -194,7 +194,7 @@ function _updateOverrides(reset = false) {
     WorkspaceOverride.update(reset);
     WindowPreviewOverride.update(reset);
     WindowManagerOverride.update(reset);
-    
+
     AppDisplayOverride.update(reset);
     LayoutOverride.update(reset);
     DashOverride.update(reset);
@@ -217,9 +217,8 @@ function _onShowingOverview() {
     if (opt.FIX_UBUNTU_DOCK) {
         // workaround for Ubuntu Dock breaking overview allocations after changing position
         const dash = Main.overview.dash;
-        if (_prevDash.dash !== dash || _prevDash.position !== dash._position) {
+        if (_prevDash.dash !== dash || _prevDash.position !== dash._position)
             _resetExtensionIfEnabled(0);
-        }
     }
 }
 
@@ -231,18 +230,18 @@ function _resetExtension(timeout = 200) {
         timeout,
         () => {
             if (!_enabled)
-                return;
+                return GLib.SOURCE_REMOVE;
 
             const dash = Main.overview.dash;
             if (!timeout && _prevDash.dash && dash !== _prevDash.dash) { // !timeout means DtD workaround callback
                 _prevDash.dash = dash;
                 log(`[${Me.metadata.name}]: Dash has been replaced, resetting extension...`);
-                reset();
-                activate();
+                resetVShell();
+                activateVShell();
             } else if (timeout) {
                 log(`[${Me.metadata.name}]: resetting extension...`);
-                reset();
-                activate();
+                resetVShell();
+                activateVShell();
             }
             _resetTimeoutId = 0;
             return GLib.SOURCE_REMOVE;
@@ -250,7 +249,7 @@ function _resetExtension(timeout = 200) {
     );
 }
 
-//-----------------------------------------------------
+// -----------------------------------------------------
 
 function _fixUbuntuDock(activate = true) {
     // Workaround for Ubuntu Dock breaking overview allocations after changing monitor configuration and deactivating dock
@@ -267,11 +266,11 @@ function _fixUbuntuDock(activate = true) {
 
     _resetExtensionIfEnabled = () => {};
 
-    if (!activate) {
+    if (!activate)
         return;
-    }
 
-    _shellSettings = ExtensionUtils.getSettings( 'org.gnome.shell');
+
+    _shellSettings = ExtensionUtils.getSettings('org.gnome.shell');
     _watchDockSigId = _shellSettings.connect('changed::enabled-extensions', () => _resetExtension());
     _resetExtensionIfEnabled = _resetExtension;
 }
@@ -299,20 +298,20 @@ function _updateSettings(settings, key) {
 
     imports.ui.workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = opt.OVERVIEW_MODE === 1 ? 0.1 : 0.95;
 
-    if (!_Util.dashIsDashToDock()) {// DtD has its own opacity control
+    if (!_Util.dashIsDashToDock()) { // DtD has its own opacity control
         Main.overview.dash._background.opacity = Math.round(opt.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
         const radius = opt.get('dashBgRadius', true);
         if (radius) {
             let style;
             switch (opt.DASH_POSITION) {
             case 1:
-                style = `border-radius: ${radius}px 0 0 ${radius}px;`
+                style = `border-radius: ${radius}px 0 0 ${radius}px;`;
                 break;
             case 3:
-                style = `border-radius: 0 ${radius}px ${radius}px 0;`
+                style = `border-radius: 0 ${radius}px ${radius}px 0;`;
                 break;
             default:
-                style = `border-radius: ${radius}px;`
+                style = `border-radius: ${radius}px;`;
             }
             Main.overview.dash._background.set_style(style);
         } else {
@@ -323,8 +322,8 @@ function _updateSettings(settings, key) {
     Main.overview.searchEntry.visible = opt.SHOW_SEARCH_ENTRY;
     St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
     imports.ui.search.MAX_LIST_SEARCH_RESULTS_ROWS = opt.SEARCH_MAX_ROWS;
-    opt.START_Y_OFFSET = (opt.PANEL_MODE === 1 && opt.PANEL_POSITION_TOP) ? Main.panel.height : 0;
-   
+    opt.START_Y_OFFSET = opt.PANEL_MODE === 1 && opt.PANEL_POSITION_TOP ? Main.panel.height : 0;
+
     if (settings)
         _applySettings(key);
 }
@@ -336,21 +335,20 @@ function _applySettings(key) {
 
     if (key === 'fix-ubuntu-dock')
         _fixUbuntuDock(opt.get('fixUbuntuDock', true));
-    if (key === 'ws-thumbnails-position') {
+    if (key === 'ws-thumbnails-position')
         _updateOverrides();
-    }
-    if (key?.includes('app-grid')) {
+
+    if (key?.includes('app-grid'))
         AppDisplayOverride.update();
-    }
-    if (key?.includes('panel')) {
+
+    if (key?.includes('panel'))
         PanelOverride.update();
-    }
-    if (key?.includes('dash') || key?.includes('app')) {
+
+    if (key?.includes('dash') || key?.includes('app'))
         DashOverride.update();
-    }
-    if (key === 'workspace-animation') {
+
+    if (key === 'workspace-animation')
         WorkspaceAnimationOverride.update();
-    }
 }
 
 function _switchPageShortcuts() {
@@ -358,7 +356,7 @@ function _switchPageShortcuts() {
         return;
 
     const vertical = global.workspaceManager.layout_rows === -1;
-    const schema  = 'org.gnome.desktop.wm.keybindings';
+    const schema = 'org.gnome.desktop.wm.keybindings';
     const settings = ExtensionUtils.getSettings(schema);
 
     const keyLeft = 'switch-to-workspace-left';
@@ -387,25 +385,41 @@ function _switchPageShortcuts() {
     let moveDown = settings.get_strv(keyMoveDown);
 
     if (vertical) {
-        switchLeft.includes(switchPrevSc)  && switchLeft.splice(switchLeft.indexOf(switchPrevSc), 1);
-        switchRight.includes(switchNextSc) && switchRight.splice(switchRight.indexOf(switchNextSc), 1);
-        moveLeft.includes(movePrevSc)      && moveLeft.splice(moveLeft.indexOf(movePrevSc), 1);
-        moveRight.includes(moveNextSc)     && moveRight.splice(moveRight.indexOf(moveNextSc), 1);
+        if (switchLeft.includes(switchPrevSc))
+            switchLeft.splice(switchLeft.indexOf(switchPrevSc), 1);
+        if (switchRight.includes(switchNextSc))
+            switchRight.splice(switchRight.indexOf(switchNextSc), 1);
+        if (moveLeft.includes(movePrevSc))
+            moveLeft.splice(moveLeft.indexOf(movePrevSc), 1);
+        if (moveRight.includes(moveNextSc))
+            moveRight.splice(moveRight.indexOf(moveNextSc), 1);
 
-        switchUp.includes(switchPrevSc)    || switchUp.push(switchPrevSc);
-        switchDown.includes(switchNextSc)  || switchDown.push(switchNextSc);
-        moveUp.includes(movePrevSc)        || moveUp.push(movePrevSc);
-        moveDown.includes(moveNextSc)      || moveDown.push(moveNextSc);
+        if (!switchUp.includes(switchPrevSc))
+            switchUp.push(switchPrevSc);
+        if (!switchDown.includes(switchNextSc))
+            switchDown.push(switchNextSc);
+        if (!moveUp.includes(movePrevSc))
+            moveUp.push(movePrevSc);
+        if (!moveDown.includes(moveNextSc))
+            moveDown.push(moveNextSc);
     } else {
-        switchLeft.includes(switchPrevSc)  || switchLeft.push(switchPrevSc);
-        switchRight.includes(switchNextSc) || switchRight.push(switchNextSc);
-        moveLeft.includes(movePrevSc)      || moveLeft.push(movePrevSc);
-        moveRight.includes(moveNextSc)     || moveRight.push(moveNextSc);
+        if (!switchLeft.includes(switchPrevSc))
+            switchLeft.push(switchPrevSc);
+        if (!switchRight.includes(switchNextSc))
+            switchRight.push(switchNextSc);
+        if (!moveLeft.includes(movePrevSc))
+            moveLeft.push(movePrevSc);
+        if (!moveRight.includes(moveNextSc))
+            moveRight.push(moveNextSc);
 
-        switchUp.includes(switchPrevSc)    && switchUp.splice(switchUp.indexOf(switchPrevSc), 1);
-        switchDown.includes(switchNextSc)  && switchDown.splice(switchDown.indexOf(switchNextSc), 1);
-        moveUp.includes(movePrevSc)        && moveUp.splice(moveUp.indexOf(movePrevSc), 1);
-        moveDown.includes(moveNextSc)      && moveDown.splice(moveDown.indexOf(moveNextSc), 1);
+        if (switchUp.includes(switchPrevSc))
+            switchUp.splice(switchUp.indexOf(switchPrevSc), 1);
+        if (switchDown.includes(switchNextSc))
+            switchDown.splice(switchDown.indexOf(switchNextSc), 1);
+        if (moveUp.includes(movePrevSc))
+            moveUp.splice(moveUp.indexOf(movePrevSc), 1);
+        if (moveDown.includes(moveNextSc))
+            moveDown.splice(moveDown.indexOf(moveNextSc), 1);
     }
 
     settings.set_strv(keyLeft, switchLeft);
@@ -439,18 +453,18 @@ function _updateOverviewTranslations(dash = null, tmbBox = null, searchEntryBin 
         return;
     }
 
-    const [tmbTranslation_x, tmbTranslation_y, dashTranslation_x, dashTranslation_y, searchTranslation_y] = _Util.getOverviewTranslations(opt, dash, tmbBox, searchEntryBin);
-    tmbBox.translation_x = tmbTranslation_x;
-    tmbBox.translation_y = tmbTranslation_y;
+    const [tmbTranslationX, tmbTranslationY, dashTranslationX, dashTranslationY, searchTranslationY] = _Util.getOverviewTranslations(opt, dash, tmbBox, searchEntryBin);
+    tmbBox.translation_x = tmbTranslationX;
+    tmbBox.translation_y = tmbTranslationY;
     if (!_Util.dashNotDefault()) { // only if dash is not dash to dock
-        dash.translation_x = dashTranslation_x;
-        dash.translation_y = dashTranslation_y;
+        dash.translation_x = dashTranslationX;
+        dash.translation_y = dashTranslationY;
     }
-    searchEntryBin.translation_y = searchTranslation_y;
+    searchEntryBin.translation_y = searchTranslationY;
 }
 
 function _setStaticBackground(reset = false) {
-    _bgManagers.forEach((bg)=> {
+    _bgManagers.forEach(bg => {
         Main.overview._overview._controls._stateAdjustment.disconnect(bg._fadeSignal);
         bg.destroy();
     });
@@ -461,19 +475,19 @@ function _setStaticBackground(reset = false) {
         return;
 
     for (const monitor of Main.layoutManager.monitors) {
-		const bgManager = new Background.BackgroundManager({
-			monitorIndex: monitor.index,
-			container: Main.layoutManager.overviewGroup,
-			vignette: true,
-		});
+        const bgManager = new Background.BackgroundManager({
+            monitorIndex: monitor.index,
+            container: Main.layoutManager.overviewGroup,
+            vignette: true,
+        });
 
         bgManager.backgroundActor.content.vignette_sharpness = 0;
         bgManager.backgroundActor.content.brightness = 1;
 
 
-        bgManager._fadeSignal = Main.overview._overview._controls._stateAdjustment.connect('notify::value', (v) => {
+        bgManager._fadeSignal = Main.overview._overview._controls._stateAdjustment.connect('notify::value', v => {
             _updateStaticBackground(bgManager, v.value, v);
-		});
+        });
 
         if (monitor.index === global.display.get_primary_monitor()) {
             bgManager._primary = true;
@@ -499,11 +513,10 @@ function _updateStaticBackground(bgManager, stateValue, stateAdjustment = null) 
         } else {
             VIGNETTE = 0.2;
             BRIGHTNESS = 0.95;
-            if (opt.OVERVIEW_MODE2 && stateValue > 1 && !opt.WORKSPACE_MODE) {
+            if (opt.OVERVIEW_MODE2 && stateValue > 1 && !opt.WORKSPACE_MODE)
                 bgValue = stateValue - 1;
-            } else {
+            else
                 bgValue = stateValue;
-            }
         }
 
         let blurEffect = bgManager.backgroundActor.get_effect('blur');
@@ -512,22 +525,22 @@ function _updateStaticBackground(bgManager, stateValue, stateAdjustment = null) 
                 brightness: 1,
                 sigma: 0,
                 mode: Shell.BlurMode.ACTOR,
-            })
+            });
             bgManager.backgroundActor.add_effect_with_name('blur', blurEffect);
         }
 
         bgManager.backgroundActor.content.vignette_sharpness = VIGNETTE;
         bgManager.backgroundActor.content.brightness = BRIGHTNESS;
 
-        let vignetteInit, brightnessInit, sigmaInit;
+        let vignetteInit, brightnessInit;// , sigmaInit;
         if (opt.SHOW_BG_IN_OVERVIEW && opt.SHOW_WS_PREVIEW_BG) {
             vignetteInit = VIGNETTE;
             brightnessInit = BRIGHTNESS;
-            sigmaInit = opt.OVERVIEW_BG_BLUR_SIGMA;
+            // sigmaInit = opt.OVERVIEW_BG_BLUR_SIGMA;
         } else {
             vignetteInit = 0;
             brightnessInit = 1;
-            sigmaInit = 0
+            // sigmaInit = 0;
         }
 
         if (opt.OVERVIEW_MODE2) {
@@ -547,14 +560,12 @@ function _updateStaticBackground(bgManager, stateValue, stateAdjustment = null) 
                     blurEffect.sigma = opt.OVERVIEW_BG_BLUR_SIGMA;
             } else if (stateValue < 1) {
                 const sigma = Math.round(Util.lerp(0, opt.OVERVIEW_BG_BLUR_SIGMA, progress));
-                if (sigma !== blurEffect.sigma) {
+                if (sigma !== blurEffect.sigma)
                     blurEffect.sigma = sigma;
-                }
             } else if (stateValue > 1  && bgManager._primary) {
                 const sigma = Math.round(Util.lerp(opt.OVERVIEW_BG_BLUR_SIGMA, opt.APP_GRID_BG_BLUR_SIGMA, progress - 1));
-                if (sigma !== blurEffect.sigma) {
+                if (sigma !== blurEffect.sigma)
                     blurEffect.sigma = sigma;
-                }
             } else if (stateValue === 1) {
                 blurEffect.sigma = opt.OVERVIEW_BG_BLUR_SIGMA;
             } else if (stateValue === 0) {

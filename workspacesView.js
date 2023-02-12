@@ -15,9 +15,9 @@ const { GObject, Clutter, Meta, St } = imports.gi;
 const Main = imports.ui.main;
 const Util = imports.misc.util;
 const WorkspacesView = imports.ui.workspacesView;
-//const SecondaryMonitorDisplay = WorkspacesView.SecondaryMonitorDisplay;
+// const SecondaryMonitorDisplay = WorkspacesView.SecondaryMonitorDisplay;
 // first call of item defined using const in other module returns undefined
-WorkspacesView.SecondaryMonitorDisplay;
+const dummy = WorkspacesView.SecondaryMonitorDisplay;
 const ControlsState = imports.ui.overviewControls.ControlsState;
 const FitMode = imports.ui.workspacesView.FitMode;
 
@@ -64,7 +64,7 @@ function update(reset = false) {
 }
 
 var WorkspacesViewCommon = {
-    _getFirstFitSingleWorkspaceBox: function(box, spacing, vertical) {
+    _getFirstFitSingleWorkspaceBox(box, spacing, vertical) {
         let [width, height] = box.get_size();
         const [workspace] = this._workspaces;
 
@@ -75,8 +75,8 @@ var WorkspacesViewCommon = {
 
         // Single fit mode implies centered too
         let [x1, y1] = box.get_origin();
-        const [, workspaceWidth] = workspace ? workspace.get_preferred_width(Math.floor(height)) : [,width];
-        const [, workspaceHeight] = workspace ? workspace.get_preferred_height(workspaceWidth) : [,height];
+        const [, workspaceWidth] = workspace ? workspace.get_preferred_width(Math.floor(height)) : [0, width];
+        const [, workspaceHeight] = workspace ? workspace.get_preferred_height(workspaceWidth) : [0, height];
 
         if (vertical) {
             x1 += (width - workspaceWidth) / 2;
@@ -86,7 +86,7 @@ var WorkspacesViewCommon = {
             x1 -= currentWorkspace * (workspaceWidth + spacing);
         }
 
-        const fitSingleBox = new Clutter.ActorBox({x1, y1});
+        const fitSingleBox = new Clutter.ActorBox({ x1, y1 });
 
         fitSingleBox.set_size(workspaceWidth, workspaceHeight);
 
@@ -94,11 +94,12 @@ var WorkspacesViewCommon = {
     },
 
     // set spacing between ws previews
-    _getSpacing: function(box, fitMode, vertical) {
+    _getSpacing(box, fitMode, vertical) {
         const [width, height] = box.get_size();
         const [workspace] = this._workspaces;
 
-        if (!workspace) return;
+        if (!workspace)
+            return 0;
 
         let availableSpace;
         let workspaceSize;
@@ -118,12 +119,12 @@ var WorkspacesViewCommon = {
     },
 
     // this function has duplicate in OverviewControls so we use one function for both to avoid issues with syncing them
-    _getFitModeForState: function(state) {
+    _getFitModeForState(state) {
         return _getFitModeForState(state);
     },
 
     // normal view 0, spread windows 1
-    _getWorkspaceModeForOverviewState: function(state) {
+    _getWorkspaceModeForOverviewState(state) {
 
         switch (state) {
         case ControlsState.HIDDEN:
@@ -131,13 +132,13 @@ var WorkspacesViewCommon = {
         case ControlsState.WINDOW_PICKER:
             return opt.WORKSPACE_MODE;
         case ControlsState.APP_GRID:
-            return ((this._monitorIndex !== global.display.get_primary_monitor() || !opt.WS_ANIMATION) && !opt.OVERVIEW_MODE) ? 1 : 0;
+            return (this._monitorIndex !== global.display.get_primary_monitor() || !opt.WS_ANIMATION) && !opt.OVERVIEW_MODE ? 1 : 0;
         }
 
         return 0;
     },
 
-    _updateVisibility: function() {
+    _updateVisibility() {
         let workspaceManager = global.workspace_manager;
         let active = workspaceManager.get_active_workspace_index();
 
@@ -148,16 +149,15 @@ var WorkspacesViewCommon = {
             let workspace = this._workspaces[w];
 
             if (this._animating || this._gestureActive || !singleFitMode) {
-                //workspace.show();
+                // workspace.show();
             } else {
                 workspace.visible = Math.abs(w - active) <= opt.NUMBER_OF_VISIBLE_NEIGHBORS;
             }
-
         }
     },
 
     // disable scaling and hide inactive workspaces
-    _updateWorkspacesState: function() {
+    _updateWorkspacesState() {
         const adj = this._scrollAdjustment;
         const fitMode = this._fitModeAdjustment.value;
 
@@ -174,7 +174,7 @@ var WorkspacesViewCommon = {
 
         // define the transition values here to save time in each ws
         let scaleX, scaleY;
-        if (opt.ORIENTATION) { //vertical 1 / horizontal 0
+        if (opt.ORIENTATION) { // vertical 1 / horizontal 0
             scaleX = 1;
             scaleY = 0.1;
         } else {
@@ -188,7 +188,7 @@ var WorkspacesViewCommon = {
         this._workspaces.forEach((w, index) => {
             if (!(blockSecondaryAppGrid && secondaryMonitor))
                 w.stateAdjustment.value = workspaceMode;
-            //w.stateAdjustment.value = workspaceMode;
+            // w.stateAdjustment.value = workspaceMode;
 
             const distanceToCurrentWorkspace = Math.abs(adj.value - index);
 
@@ -205,10 +205,10 @@ var WorkspacesViewCommon = {
             // in order to keep animations as smooth as possible, hide all ws that cannot/shouldn't be visible at the given time
             } else {
                 //
-                w.visible = w.monitorIndex !== currentMonitor || scaleProgress || (!opt.WS_ANIMATION && distanceToCurrentWorkspace < opt.NUMBER_OF_VISIBLE_NEIGHBORS)
-                    || (distanceToCurrentWorkspace < opt.NUMBER_OF_VISIBLE_NEIGHBORS && currentState <= ControlsState.WINDOW_PICKER
-                        && ((initialState < ControlsState.APP_GRID && finalState < ControlsState.APP_GRID))
-                );
+                w.visible = w.monitorIndex !== currentMonitor || scaleProgress || (!opt.WS_ANIMATION && distanceToCurrentWorkspace < opt.NUMBER_OF_VISIBLE_NEIGHBORS) ||
+                    (distanceToCurrentWorkspace < opt.NUMBER_OF_VISIBLE_NEIGHBORS && currentState <= ControlsState.WINDOW_PICKER &&
+                        ((initialState < ControlsState.APP_GRID && finalState < ControlsState.APP_GRID))
+                    );
 
                 // after transition from APP_GRID to WINDOW_PICKER state,
                 // adjacent workspaces are hidden and we need them to show up
@@ -228,49 +228,48 @@ var WorkspacesViewCommon = {
             }
 
             // force ws preview bg corner radiuses where GS doesn't do it
-            if (opt.SHOW_WS_PREVIEW_BG && opt.OVERVIEW_MODE === 1 && distanceToCurrentWorkspace < 2) {
+            if (opt.SHOW_WS_PREVIEW_BG && opt.OVERVIEW_MODE === 1 && distanceToCurrentWorkspace < 2)
                 w._background._updateBorderRadius(Math.min(1, w._overviewAdjustment.value));
-            }
+
 
             // hide workspace background
-            if (!opt.SHOW_WS_PREVIEW_BG && w._background.opacity) {
+            if (!opt.SHOW_WS_PREVIEW_BG && w._background.opacity)
                 w._background.opacity = 0;
-            }
         });
-    }
-}
+    },
+};
 
 //  SecondaryMonitorDisplay Vertical
 var SecondaryMonitorDisplayVertical = {
-    _getThumbnailParamsForState: function(state) {
+    _getThumbnailParamsForState(state) {
 
-        let opacity, scale, translation_x;
+        let opacity, scale, translationX;
         switch (state) {
         case ControlsState.HIDDEN:
             opacity = 255;
             scale = 1;
-            translation_x = 0;
-            if (!Main.layoutManager._startingUp && (!opt.SHOW_WS_PREVIEW_BG || opt.OVERVIEW_MODE2)) {
-                translation_x = this._thumbnails.width * (opt.SEC_WS_TMB_LEFT ? -1 : 1);
-            }
+            translationX = 0;
+            if (!Main.layoutManager._startingUp && (!opt.SHOW_WS_PREVIEW_BG || opt.OVERVIEW_MODE2))
+                translationX = this._thumbnails.width * (opt.SEC_WS_TMB_LEFT ? -1 : 1);
+
             break;
         case ControlsState.WINDOW_PICKER:
         case ControlsState.APP_GRID:
             opacity = 255;
             scale = 1;
-            translation_x = 0;
+            translationX = 0;
             break;
         default:
             opacity = 255;
             scale = 1;
-            translation_x = 0;
+            translationX = 0;
             break;
         }
 
-        return { opacity, scale, translation_x };
+        return { opacity, scale, translationX };
     },
 
-    _getThumbnailsWidth: function(box, spacing) {
+    _getThumbnailsWidth(box, spacing) {
         if (opt.SEC_WS_TMB_HIDDEN)
             return 0;
 
@@ -282,34 +281,34 @@ var SecondaryMonitorDisplayVertical = {
             width * opt.MAX_THUMBNAIL_SCALE);
     },
 
-    _getWorkspacesBoxForState: function(state, box, padding, thumbnailsWidth, spacing) {
-        //const { ControlsState } = OverviewControls;
+    _getWorkspacesBoxForState(state, box, padding, thumbnailsWidth, spacing) {
+        // const { ControlsState } = OverviewControls;
         const workspaceBox = box.copy();
         const [width, height] = workspaceBox.get_size();
 
+        let wWidth, wHeight, wsbX, wsbY, offset;
         switch (state) {
         case ControlsState.HIDDEN:
             break;
         case ControlsState.WINDOW_PICKER:
         case ControlsState.APP_GRID:
-            if (opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE) {
+            if (opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE)
                 break;
-            }
 
-            let wWidth = Math.round(width - thumbnailsWidth - 5 * spacing);
-            let wHeight = Math.round(Math.min(wWidth / (width / height), height - padding));
+
+            wWidth = Math.round(width - thumbnailsWidth - 5 * spacing);
+            wHeight = Math.round(Math.min(wWidth / (width / height), height - padding));
             wWidth *= opt.WS_PREVIEW_SCALE;
             wHeight *= opt.WS_PREVIEW_SCALE;
 
-            let wsbX;
-            let offset = Math.round(width - thumbnailsWidth - wWidth) / 2;
-            if (opt.SEC_WS_TMB_LEFT) {
+            offset = Math.round(width - thumbnailsWidth - wWidth) / 2;
+            if (opt.SEC_WS_TMB_LEFT)
                 wsbX = thumbnailsWidth + offset;
-            } else {
+            else
                 wsbX = offset;
-            }
 
-            const wsbY = Math.round((height - wHeight) / 2);
+
+            wsbY = Math.round((height - wHeight) / 2);
 
             workspaceBox.set_origin(wsbX, wsbY);
             workspaceBox.set_size(wWidth, wHeight);
@@ -319,7 +318,7 @@ var SecondaryMonitorDisplayVertical = {
         return workspaceBox;
     },
 
-    vfunc_allocate: function(box) {
+    vfunc_allocate(box) {
         this.set_allocation(box);
 
         const themeNode = this.get_theme_node();
@@ -374,10 +373,10 @@ var SecondaryMonitorDisplayVertical = {
         this._workspacesView.allocate(workspacesBox);
     },
 
-    _updateThumbnailVisibility: function() {
-        if (opt.OVERVIEW_MODE2) {
+    _updateThumbnailVisibility() {
+        if (opt.OVERVIEW_MODE2)
             this.set_child_above_sibling(this._thumbnails, null);
-        }
+
 
         const visible = !opt.SEC_WS_TMB_HIDDEN;
 
@@ -396,15 +395,15 @@ var SecondaryMonitorDisplayVertical = {
         });
     },
 
-    _updateThumbnailParams: function() {
+    _updateThumbnailParams() {
         if (opt.SEC_WS_TMB_HIDDEN)
             return;
 
         // workaround for upstream bug - secondary thumbnails boxes don't catch 'showing' signal on the shell startup and don't populate the box with thumbnails
         // the tmbBox contents is also destroyed when overview state adjustment gets above 1 when swiping gesture from window picker to app grid
-        if (!this._thumbnails._thumbnails.length) {
+        if (!this._thumbnails._thumbnails.length)
             this._thumbnails._createThumbnails();
-        }
+
 
         const { initialState, finalState, progress } =
             this._overviewAdjustment.getStateTransitionParams();
@@ -412,26 +411,26 @@ var SecondaryMonitorDisplayVertical = {
         const initialParams = this._getThumbnailParamsForState(initialState);
         const finalParams = this._getThumbnailParamsForState(finalState);
 
-        /*const opacity =
+        /* const opacity =
             Util.lerp(initialParams.opacity, finalParams.opacity, progress);
         const scale =
             Util.lerp(initialParams.scale, finalParams.scale, progress);*/
 
         // OVERVIEW_MODE 2 should animate dash and wsTmbBox only if WORKSPACE_MODE === 0 (windows not spread)
         const animateOverviewMode2 = opt.OVERVIEW_MODE2 && !(finalState === 1 && opt.WORKSPACE_MODE);
-        const translation_x = (!Main.layoutManager._startingUp && ((!opt.SHOW_WS_PREVIEW_BG && !(opt.OVERVIEW_MODE2)) || animateOverviewMode2))
-            ? Util.lerp(initialParams.translation_x, finalParams.translation_x, progress)
+        const translationX = !Main.layoutManager._startingUp && ((!opt.SHOW_WS_PREVIEW_BG && !opt.OVERVIEW_MODE2) || animateOverviewMode2)
+            ? Util.lerp(initialParams.translationX, finalParams.translationX, progress)
             : 0;
 
         this._thumbnails.set({
             opacity: 255,
-            //scale_x: scale,
-            //scale_y: scale,
-            translation_x,
+            // scale_x: scale,
+            // scale_y: scale,
+            translation_x: translationX,
         });
     },
 
-    _updateWorkspacesView: function() {
+    _updateWorkspacesView() {
         if (this._workspacesView)
             this._workspacesView.destroy();
 
@@ -447,80 +446,79 @@ var SecondaryMonitorDisplayVertical = {
                 this._controls,
                 this._scrollAdjustment,
                 // Secondary monitors don't need FitMode.ALL since there is workspace switcher always visible
-                //this._fitModeAdjustment,
+                // this._fitModeAdjustment,
                 new St.Adjustment({
                     actor: this,
-                    value: 0,//FitMode.SINGLE,
-                    lower: 0,//FitMode.SINGLE,
-                    upper: 0,//FitMode.SINGLE,
+                    value: 0, // FitMode.SINGLE,
+                    lower: 0, // FitMode.SINGLE,
+                    upper: 0, // FitMode.SINGLE,
                 }),
-                //secondaryOverviewAdjustment);
+                // secondaryOverviewAdjustment);
                 this._overviewAdjustment);
         }
         this.add_child(this._workspacesView);
         this._thumbnails.opacity = 0;
-    }
-}
+    },
+};
 
 //  SecondaryMonitorDisplay Horizontal
 var SecondaryMonitorDisplayHorizontal = {
-    _getThumbnailParamsForState: function(state) {
-        //const { ControlsState } = OverviewControls;
+    _getThumbnailParamsForState(state) {
+        // const { ControlsState } = OverviewControls;
 
-        let opacity, scale, translation_y;
+        let opacity, scale, translationY;
         switch (state) {
         case ControlsState.HIDDEN:
             opacity = 255;
             scale = 1;
-            translation_y = 0;
-            if (!Main.layoutManager._startingUp && (!opt.SHOW_WS_PREVIEW_BG || opt.OVERVIEW_MODE2)) {
-                translation_y = this._thumbnails.height * (opt.SEC_WS_TMB_TOP ? -1 : 1);
-            }
+            translationY = 0;
+            if (!Main.layoutManager._startingUp && (!opt.SHOW_WS_PREVIEW_BG || opt.OVERVIEW_MODE2))
+                translationY = this._thumbnails.height * (opt.SEC_WS_TMB_TOP ? -1 : 1);
+
             break;
         case ControlsState.WINDOW_PICKER:
         case ControlsState.APP_GRID:
             opacity = 255;
             scale = 1;
-            translation_y = 0;
+            translationY = 0;
             break;
         default:
             opacity = 255;
             scale = 1;
-            translation_y = 0;
+            translationY = 0;
             break;
         }
 
-        return { opacity, scale, translation_y };
+        return { opacity, scale, translationY };
     },
 
-    _getWorkspacesBoxForState: function(state, box, padding, thumbnailsHeight, spacing) {
-        //const { ControlsState } = OverviewControls;
+    _getWorkspacesBoxForState(state, box, padding, thumbnailsHeight, spacing) {
+        // const { ControlsState } = OverviewControls;
         const workspaceBox = box.copy();
         const [width, height] = workspaceBox.get_size();
 
+        let wWidth, wHeight, wsbX, wsbY, offset;
         switch (state) {
         case ControlsState.HIDDEN:
             break;
         case ControlsState.WINDOW_PICKER:
         case ControlsState.APP_GRID:
-            if (opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE) {
+            if (opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE)
                 break;
-            }
 
-            let wHeight = Math.round(height - (thumbnailsHeight ? thumbnailsHeight + 5 * spacing : padding));
-            let wWidth = Math.round(Math.min(wHeight * (width / height), width - padding));
+            wHeight = Math.round(height - (thumbnailsHeight ? thumbnailsHeight + 5 * spacing : padding));
+            wWidth = Math.round(Math.min(wHeight * (width / height), width - padding));
             wWidth *= opt.WS_PREVIEW_SCALE;
             wHeight *= opt.WS_PREVIEW_SCALE;
 
-            let wsbY;
-            let offset = Math.round((height - thumbnailsHeight - wHeight) / 2);
-            if (opt.WS_TMB_TOP) {
+            offset = Math.round((height - thumbnailsHeight - wHeight) / 2);
+            if (opt.WS_TMB_TOP)
                 wsbY = thumbnailsHeight + offset;
-            } else {
+            else
                 wsbY = offset;
-            }
 
-            const wsbX = Math.round((width - wWidth) / 2);
+
+            wsbX = Math.round((width - wWidth) / 2);
 
             workspaceBox.set_origin(wsbX, wsbY);
             workspaceBox.set_size(wWidth, wHeight);
@@ -530,7 +528,7 @@ var SecondaryMonitorDisplayHorizontal = {
         return workspaceBox;
     },
 
-    _getThumbnailsHeight: function(box) {
+    _getThumbnailsHeight(box) {
         if (opt.SEC_WS_TMB_HIDDEN)
             return 0;
 
@@ -542,7 +540,7 @@ var SecondaryMonitorDisplayHorizontal = {
             height * opt.MAX_THUMBNAIL_SCALE);
     },
 
-    vfunc_allocate: function(box) {
+    vfunc_allocate(box) {
         this.set_allocation(box);
 
         const themeNode = this.get_theme_node();
@@ -559,11 +557,11 @@ var SecondaryMonitorDisplayHorizontal = {
         this._thumbnails.visible = !opt.SEC_WS_TMB_HIDDEN;
         if (this._thumbnails.visible) {
             let wsTmbY;
-            if (opt.SEC_WS_TMB_TOP) {
+            if (opt.SEC_WS_TMB_TOP)
                 wsTmbY = Math.round(spacing / 4);
-            } else {
+            else
                 wsTmbY = Math.round(height - spacing / 4 - thumbnailsHeight);
-            }
+
 
             const childBox = new Clutter.ActorBox();
             const availSpace = width - thumbnailsWidth - 2 * spacing;
@@ -597,15 +595,15 @@ var SecondaryMonitorDisplayHorizontal = {
 
     _updateThumbnailVisibility: SecondaryMonitorDisplayVertical._updateThumbnailVisibility,
 
-    _updateThumbnailParams: function() {
+    _updateThumbnailParams() {
         if (opt.SEC_WS_TMB_HIDDEN)
             return;
 
         // workaround for upstream bug - secondary thumbnails boxes don't catch 'showing' signal on the shell startup and don't populate the box with thumbnails
         // the tmbBox contents is also destroyed when overview state adjustment gets above 1 when swiping gesture from window picker to app grid
-        if (!this._thumbnails._thumbnails.length) {
+        if (!this._thumbnails._thumbnails.length)
             this._thumbnails._createThumbnails();
-        }
+
 
         const { initialState, finalState, progress } =
             this._overviewAdjustment.getStateTransitionParams();
@@ -613,26 +611,26 @@ var SecondaryMonitorDisplayHorizontal = {
         const initialParams = this._getThumbnailParamsForState(initialState);
         const finalParams = this._getThumbnailParamsForState(finalState);
 
-        /*const opacity =
+        /* const opacity =
             Util.lerp(initialParams.opacity, finalParams.opacity, progress);
         const scale =
             Util.lerp(initialParams.scale, finalParams.scale, progress);*/
 
         // OVERVIEW_MODE 2 should animate dash and wsTmbBox only if WORKSPACE_MODE === 0 (windows not spread)
         const animateOverviewMode2 = opt.OVERVIEW_MODE2 && !(finalState === 1 && opt.WORKSPACE_MODE);
-        const translation_y = (!Main.layoutManager._startingUp && ((!opt.SHOW_WS_PREVIEW_BG && !(opt.OVERVIEW_MODE2)) || animateOverviewMode2))
-            ? Util.lerp(initialParams.translation_y, finalParams.translation_y, progress)
+        const translationY = !Main.layoutManager._startingUp && ((!opt.SHOW_WS_PREVIEW_BG && !opt.OVERVIEW_MODE2) || animateOverviewMode2)
+            ? Util.lerp(initialParams.translationY, finalParams.translationY, progress)
             : 0;
 
         this._thumbnails.set({
             opacity: 255,
-            //scale_x: scale,
-            //scale_y: scale,
-            translation_y,
+            // scale_x: scale,
+            // scale_y: scale,
+            translation_y: translationY,
         });
     },
 
-    _updateWorkspacesView: function() {
+    _updateWorkspacesView() {
         if (this._workspacesView)
             this._workspacesView.destroy();
 
@@ -648,23 +646,23 @@ var SecondaryMonitorDisplayHorizontal = {
                 this._controls,
                 this._scrollAdjustment,
                 // Secondary monitors don't need FitMode.ALL since there is workspace switcher always visible
-                //this._fitModeAdjustment,
+                // this._fitModeAdjustment,
                 new St.Adjustment({
                     actor: this,
-                    value: 0,//FitMode.SINGLE,
-                    lower: 0,//FitMode.SINGLE,
-                    upper: 0,//FitMode.SINGLE,
+                    value: 0, // FitMode.SINGLE,
+                    lower: 0, // FitMode.SINGLE,
+                    upper: 0, // FitMode.SINGLE,
                 }),
-                //secondaryOverviewAdjustment);
+                // secondaryOverviewAdjustment);
                 this._overviewAdjustment);
         }
         this.add_child(this._workspacesView);
         this._thumbnails.opacity = 0;
-    }
-}
+    },
+};
 
 const ExtraWorkspaceView = {
-    _updateWorkspaceMode: function() {
+    _updateWorkspaceMode() {
         const overviewState = this._overviewAdjustment.value;
 
         const progress = Math.clamp(overviewState,
@@ -674,19 +672,18 @@ const ExtraWorkspaceView = {
         this._workspace.stateAdjustment.value = progress;
 
         // force ws preview bg corner radiuses where GS doesn't do it
-        if (opt.SHOW_WS_PREVIEW_BG && opt.OVERVIEW_MODE === 1) {
+        if (opt.SHOW_WS_PREVIEW_BG && opt.OVERVIEW_MODE === 1)
             this._workspace._background._updateBorderRadius(Math.min(1, this._workspace._overviewAdjustment.value));
-        }
+
 
         // hide workspace background
-        if (!opt.SHOW_WS_PREVIEW_BG && this._workspace._background.opacity) {
+        if (!opt.SHOW_WS_PREVIEW_BG && this._workspace._background.opacity)
             this._workspace._background.opacity = 0;
-        }
-    }
-}
+    },
+};
 
 var WorkspacesDisplay = {
-    _updateWorkspacesViews: function() {
+    _updateWorkspacesViews() {
         for (let i = 0; i < this._workspacesViews.length; i++)
             this._workspacesViews[i].destroy();
 
@@ -710,12 +707,12 @@ var WorkspacesDisplay = {
                     this._controls,
                     this._scrollAdjustment,
                     // Secondary monitors don't need FitMode.ALL since there is workspace switcher always visible
-                    //this._fitModeAdjustment,
+                    // this._fitModeAdjustment,
                     new St.Adjustment({
                         actor: this,
-                        value: 0,//FitMode.SINGLE,
-                        lower: 0,//FitMode.SINGLE,
-                        upper: 0,//FitMode.SINGLE,
+                        value: 0, // FitMode.SINGLE,
+                        lower: 0, // FitMode.SINGLE,
+                        upper: 0, // FitMode.SINGLE,
                     }),
                     this._overviewAdjustment);
                 Main.layoutManager.overviewGroup.add_actor(view);
@@ -725,7 +722,7 @@ var WorkspacesDisplay = {
         }
     },
 
-    _onScrollEvent: function(actor, event) {
+    _onScrollEvent(actor, event) {
         if (this._swipeTracker.canHandleScrollEvent(event))
             return Clutter.EVENT_PROPAGATE;
 
@@ -733,37 +730,39 @@ var WorkspacesDisplay = {
             return Clutter.EVENT_PROPAGATE;
 
         if (this._workspacesOnlyOnPrimary &&
-            this._getMonitorIndexForEvent(event) != this._primaryIndex)
+            this._getMonitorIndexForEvent(event) !== this._primaryIndex)
             return Clutter.EVENT_PROPAGATE;
 
-        const isShiftPressed = (event.get_state() & Clutter.ModifierType.SHIFT_MASK) != 0;
-        const isCtrlPressed = (event.get_state() & Clutter.ModifierType.CONTROL_MASK) != 0;
+        const isShiftPressed = (event.get_state() & Clutter.ModifierType.SHIFT_MASK) !== 0;
+        /* const isCtrlPressed = (event.get_state() & Clutter.ModifierType.CONTROL_MASK) != 0;
         const isAltPressed = (event.get_state() & Clutter.ModifierType.MOD1_MASK) != 0;
-        const noModifiersPressed = !(isCtrlPressed && isShiftPressed && isAltPressed);
+        const noModifiersPressed = !(isCtrlPressed && isShiftPressed && isAltPressed);*/
 
         let direction = event.get_scroll_direction();
 
-        /*if (direction !== Clutter.ScrollDirection.SMOOTH && opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE && noModifiersPressed) {
+        /* if (direction !== Clutter.ScrollDirection.SMOOTH && opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE && noModifiersPressed) {
             Main.overview._overview.controls._thumbnailsBox._activateThumbnailAtPoint(0, 0, 0, true);
             //Main.overview.hide();
             return Clutter.EVENT_STOP;
         }*/
 
 
-        if (/*SHIFT_REORDERS_WS && */isShiftPressed) {
-            if (direction === Clutter.ScrollDirection.UP) {
+        if (/* SHIFT_REORDERS_WS && */isShiftPressed) {
+            if (direction === Clutter.ScrollDirection.UP)
                 direction = -1;
-            }
-            else if (direction === Clutter.ScrollDirection.DOWN) {
+
+            else if (direction === Clutter.ScrollDirection.DOWN)
                 direction = 1;
-            } else {
+            else
                 direction = 0;
-            }
+
 
             if (direction) {
                 _Util.reorderWorkspace(direction);
                 // make all workspaces on primary monitor visible for case the new position is hidden
-                Main.overview._overview._controls._workspacesDisplay._workspacesViews[0]._workspaces.forEach(w => w.visible = true);
+                Main.overview._overview._controls._workspacesDisplay._workspacesViews[0]._workspaces.forEach(w => {
+                    w.visible = true;
+                });
                 return Clutter.EVENT_STOP;
             }
         }
@@ -771,17 +770,17 @@ var WorkspacesDisplay = {
         return Main.wm.handleWorkspaceScroll(event);
     },
 
-    _onKeyPressEvent: function(actor, event) {
+    _onKeyPressEvent(actor, event) {
         const symbol = event.get_key_symbol();
-        /*const { ControlsState } = OverviewControls;
+        /* const { ControlsState } = OverviewControls;
         if (this._overviewAdjustment.value !== ControlsState.WINDOW_PICKER && symbol !== Clutter.KEY_space)
             return Clutter.EVENT_PROPAGATE;*/
 
-        /*if (!this.reactive)
+        /* if (!this.reactive)
             return Clutter.EVENT_PROPAGATE;**/
-        const isCtrlPressed = (event.get_state() & Clutter.ModifierType.CONTROL_MASK) != 0;
-        const isShiftPressed = (event.get_state() & Clutter.ModifierType.SHIFT_MASK) != 0;
-        const isAltPressed = (event.get_state() & Clutter.ModifierType.MOD1_MASK) != 0;
+        const isCtrlPressed = (event.get_state() & Clutter.ModifierType.CONTROL_MASK) !== 0;
+        const isShiftPressed = (event.get_state() & Clutter.ModifierType.SHIFT_MASK) !== 0;
+        const isAltPressed = (event.get_state() & Clutter.ModifierType.MOD1_MASK) !== 0;
         const { workspaceManager } = global;
         const vertical = workspaceManager.layout_rows === -1;
         const rtl = this.get_text_direction() === Clutter.TextDirection.RTL;
@@ -790,8 +789,12 @@ var WorkspacesDisplay = {
         switch (symbol) {
         case Clutter.KEY_Return:
         case Clutter.KEY_KP_Enter:
-            if (isCtrlPressed)
-                Main.ctrlAltTabManager._items.forEach(i => {if (i.sortGroup === 1 && i.name === 'Dash') Main.ctrlAltTabManager.focusGroup(i)});
+            if (isCtrlPressed) {
+                Main.ctrlAltTabManager._items.forEach(i => {
+                    if (i.sortGroup === 1 && i.name === 'Dash')
+                        Main.ctrlAltTabManager.focusGroup(i);
+                });
+            }
             return Clutter.EVENT_STOP;
         case Clutter.KEY_Page_Up:
             if (vertical)
@@ -819,12 +822,16 @@ var WorkspacesDisplay = {
             if (isCtrlPressed && isShiftPressed) {
                 _Util.openPreferences();
             } else if (isAltPressed) {
-                Main.ctrlAltTabManager._items.forEach(i => {if (i.sortGroup === 1 && i.name === 'Dash') Main.ctrlAltTabManager.focusGroup(i)});
+                Main.ctrlAltTabManager._items.forEach(i => {
+                    if (i.sortGroup === 1 && i.name === 'Dash')
+                        Main.ctrlAltTabManager.focusGroup(i);
+                });
             } else if (opt.RECENT_FILES_SEARCH_PROVIDER_ENABLED && isCtrlPressed) {
                 _Util.activateSearchProvider(SEARCH_RECENT_FILES_PREFIX);
             } else if (opt.WINDOW_SEARCH_PROVIDER_ENABLED/* && SEARCH_WINDOWS_SPACE*/) {
                 _Util.activateSearchProvider(SEARCH_WINDOWS_PREFIX);
             }
+
             return Clutter.EVENT_STOP;
         case Clutter.KEY_Down:
         case Clutter.KEY_Left:
@@ -834,7 +841,10 @@ var WorkspacesDisplay = {
                 Main.overview.searchEntry.grab_key_focus();
             } else if (opt.OVERVIEW_MODE && !opt.WORKSPACE_MODE) {
                 Main.overview._overview.controls._thumbnailsBox._activateThumbnailAtPoint(0, 0, global.get_current_time(), true);
-                Main.ctrlAltTabManager._items.forEach(i => {if (i.sortGroup === 1 && i.name === 'Windows') Main.ctrlAltTabManager.focusGroup(i)});
+                Main.ctrlAltTabManager._items.forEach(i => {
+                    if (i.sortGroup === 1 && i.name === 'Windows')
+                        Main.ctrlAltTabManager.focusGroup(i);
+                });
             }
             return Clutter.EVENT_STOP;
         default:
@@ -849,7 +859,7 @@ var WorkspacesDisplay = {
             // Otherwise it is a workspace index
             ws = workspaceManager.get_workspace_by_index(which);
 
-        if (/*SHIFT_REORDERS_WS && */isShiftPressed) {
+        if (/* SHIFT_REORDERS_WS && */isShiftPressed) {
             let direction;
             if (which === Meta.MotionDirection.UP || which === Meta.MotionDirection.LEFT)
                 direction = -1;
@@ -858,8 +868,10 @@ var WorkspacesDisplay = {
             if (direction)
                 _Util.reorderWorkspace(direction);
                 // make all workspaces on primary monitor visible for case the new position is hidden
-                Main.overview._overview._controls._workspacesDisplay._workspacesViews[0]._workspaces.forEach(w => w.visible = true);
-                return Clutter.EVENT_STOP;
+            Main.overview._overview._controls._workspacesDisplay._workspacesViews[0]._workspaces.forEach(w => {
+                w.visible = true;
+            });
+            return Clutter.EVENT_STOP;
         }
 
         if (ws)
@@ -867,7 +879,7 @@ var WorkspacesDisplay = {
 
         return Clutter.EVENT_STOP;
     },
-}
+};
 
 // same copy of this function should be available in OverviewControls and WorkspacesView
 function _getFitModeForState(state) {

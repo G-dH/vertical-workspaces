@@ -1,7 +1,7 @@
 /**
  * Vertical Workspaces
  * workspacesSwitcherPopup.js
- * 
+ *
  * @author     GdH <G-dH@github.com>
  * @copyright  2022 - 2023
  * @license    GPL-3.0
@@ -23,9 +23,9 @@ let opt;
 var _activateSearchProvider;
 
 function update(reset = false) {
-    if (_overrides) {
+    if (_overrides)
         _overrides.removeAll();
-    }
+
 
     if (reset) {
         _overrides = null;
@@ -37,7 +37,7 @@ function update(reset = false) {
 
     _overrides = new _Util.Overrides();
 
-    if (opt.ORIENTATION) {// 1-VERTICAL, 0-HORIZONTAL
+    if (opt.ORIENTATION) { // 1-VERTICAL, 0-HORIZONTAL
         const settings = ExtensionUtils.getSettings('org.gnome.shell');
         const enabled = settings.get_strv('enabled-extensions');
         const allowWsPopupInjection = !(enabled.includes('workspace-switcher-manager@G-dH.github.com') || enabled.includes('WsSwitcherPopupManager@G-dH.github.com-dev'));
@@ -47,9 +47,8 @@ function update(reset = false) {
 }
 
 const WorkspaceSwitcherPopupInjections = {
-    _init: function() {
-        if (this._list) {
+    _init() {
+        if (this._list)
             this._list.vertical = true;
-        }
-    }
-}
+    },
+};

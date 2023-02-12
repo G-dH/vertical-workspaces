@@ -1,7 +1,7 @@
 /**
  * Vertical Workspaces
  * workspaceThumbnail.js
- * 
+ *
  * @author     GdH <G-dH@github.com>
  * @copyright  2022 - 2023
  * @license    GPL-3.0
@@ -26,20 +26,20 @@ const _Util = Me.imports.util;
 let _overrides;
 
 const WORKSPACE_CUT_SIZE = 10;
-const original_MAX_THUMBNAIL_SCALE = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
+const _originalMaxThumbnailScale = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
 let MAX_THUMBNAIL_SCALE;
 
 var opt = null;
 
 
 function update(reset = false) {
-    if (_overrides) {
+    if (_overrides)
         _overrides.removeAll();
-    }
+
 
     if (reset) {
-        if (original_MAX_THUMBNAIL_SCALE)
-            WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = original_MAX_THUMBNAIL_SCALE;
+        if (_originalMaxThumbnailScale)
+            WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = _originalMaxThumbnailScale;
         _overrides = null;
         opt = null;
         return;
@@ -56,18 +56,17 @@ function update(reset = false) {
     _overrides.addOverride('WorkspaceThumbnail', WorkspaceThumbnail.WorkspaceThumbnail.prototype, WorkspaceThumbnailCommon);
     _overrides.addOverride('ThumbnailsBoxCommon', WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxCommon);
 
-    if (opt.ORIENTATION === Clutter.Orientation.VERTICAL) {
+    if (opt.ORIENTATION === Clutter.Orientation.VERTICAL)
         _overrides.addOverride('ThumbnailsBox', WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxVertical);
-    } else {
+    else
         _overrides.addOverride('ThumbnailsBox', WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxHorizontal);
-    }
 }
 
 
 var WorkspaceThumbnailCommon = {
-    after__init: function () {
+    after__init() {
 
-        //radius of ws thumbnail background
+        // radius of ws thumbnail background
         this.add_style_class_name('ws-tmb');
 
         // add workspace thumbnails labels if enabled
@@ -79,15 +78,14 @@ var WorkspaceThumbnailCommon = {
             if (opt.SHOW_WS_TMB_BG)
                 this.add_style_class_name('ws-tmb-labeled');
 
-            const getLabel = function() {
+            const getLabel = function () {
                 const wsIndex = this.metaWorkspace.index();
                 let label = `${wsIndex + 1}`;
                 if (opt.SHOW_WST_LABELS === 2) { // 2 - index + workspace name
                     const settings = ExtensionUtils.getSettings('org.gnome.desktop.wm.preferences');
                     const wsLabels = settings.get_strv('workspace-names');
-                    if (wsLabels.length > wsIndex && wsLabels[wsIndex]) {
+                    if (wsLabels.length > wsIndex && wsLabels[wsIndex])
                         label += `: ${wsLabels[wsIndex]}`;
-                    }
                 } else if (opt.SHOW_WST_LABELS === 3) { // 3- index + app name
                     // global.display.get_tab_list offers workspace filtering using the second argument, but...
                     // ... it sometimes includes windows from other workspaces, like minimized VBox machines, after Shell restarts
@@ -102,9 +100,8 @@ var WorkspaceThumbnailCommon = {
                     const metaWin = global.display.get_tab_list(0, null).filter(
                         w => w.get_monitor() === this.monitorIndex && w.get_workspace().index() === wsIndex)[0];
 
-                    if (metaWin) {
+                    if (metaWin)
                         label += `: ${metaWin.title}`;
-                    }
                 }
                 return label;
             }.bind(this);
@@ -136,15 +133,15 @@ var WorkspaceThumbnailCommon = {
             if (opt.SHOW_WST_LABELS_ON_HOVER) {
                 this._wsLabel.opacity = 0;
                 this.reactive = true;
-                this.connect('enter-event', ()=> this._wsLabel.ease({
+                this.connect('enter-event', () => this._wsLabel.ease({
                     duration: 100,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    opacity: this._wsLabel._maxOpacity
+                    opacity: this._wsLabel._maxOpacity,
                 }));
-                this.connect('leave-event', ()=> this._wsLabel.ease({
+                this.connect('leave-event', () => this._wsLabel.ease({
                     duration: 100,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    opacity: 0
+                    opacity: 0,
                 }));
             }
         }
@@ -159,16 +156,16 @@ var WorkspaceThumbnailCommon = {
 
             this._viewport.set_child_below_sibling(this._bgManager.backgroundActor, null);
 
-            this.connect('destroy', function () {
+            this.connect('destroy', () => {
                 if (this._bgManager)
                     this._bgManager.destroy();
                 this._bgManager = null;
-            }.bind(this));
+            });
 
             this._bgManager.backgroundActor.opacity = 220;
 
             // this all is just for the small border radius...
-            /*const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
+            /* const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
             const cornerRadius = scaleFactor * BACKGROUND_CORNER_RADIUS_PIXELS;
             const backgroundContent = this._bgManager.backgroundActor.content;
             backgroundContent.rounded_clip_radius = cornerRadius;
@@ -184,7 +181,7 @@ var WorkspaceThumbnailCommon = {
         }
     },
 
-    activate: function(time) {
+    activate(time) {
         if (this.state > ThumbnailState.NORMAL)
             return;
 
@@ -201,40 +198,37 @@ var WorkspaceThumbnailCommon = {
             } else {
                 this.metaWorkspace.activate(time);
             }
-        } else {
-            if (opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE && wsIndex < lastWsIndex) {
-                if (stateAdjustment.value > 1) {
-                    stateAdjustment.value = 1;
-                }
+        } else if (opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE && wsIndex < lastWsIndex) {
+            if (stateAdjustment.value > 1)
+                stateAdjustment.value = 1;
 
-                // spread windows
-                // in OVERVIEW MODE 2 windows are not spread and workspace is not scaled
-                // we need to repeat transition to the overview state 1 (window picker), but with spreading windows animation
-                if (this.metaWorkspace.active) {
-                    opt.WORKSPACE_MODE = 1;
-                    const stateAdjustment = Main.overview._overview.controls._stateAdjustment
-                    // setting value to 0 would reset WORKSPACE_MODE
-                    stateAdjustment.value = 0.01;
-                    stateAdjustment.ease(1, {
-                        duration: 200,
-                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    });
-                } else {
-                    // switch ws
-                    this.metaWorkspace.activate(time);
-                }
-            // a click on the current workspace should go back to the main view
-            } else if (this.metaWorkspace.active) {
-                Main.overview.hide();
+
+            // spread windows
+            // in OVERVIEW MODE 2 windows are not spread and workspace is not scaled
+            // we need to repeat transition to the overview state 1 (window picker), but with spreading windows animation
+            if (this.metaWorkspace.active) {
+                opt.WORKSPACE_MODE = 1;
+                // setting value to 0 would reset WORKSPACE_MODE
+                stateAdjustment.value = 0.01;
+                stateAdjustment.ease(1, {
+                    duration: 200,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                });
             } else {
+                // switch ws
                 this.metaWorkspace.activate(time);
             }
+            // a click on the current workspace should go back to the main view
+        } else if (this.metaWorkspace.active) {
+            Main.overview.hide();
+        } else {
+            this.metaWorkspace.activate(time);
         }
-    }
-}
+    },
+};
 
 const ThumbnailsBoxCommon = {
-    _activateThumbnailAtPoint: function(stageX, stageY, time, activateCurrent = false) {
+    _activateThumbnailAtPoint(stageX, stageY, time, activateCurrent = false) {
         if (activateCurrent) {
             const thumbnail = this._thumbnails.find(t => t.metaWorkspace.active);
             if (thumbnail)
@@ -245,19 +239,18 @@ const ThumbnailsBoxCommon = {
 
         let thumbnail;
 
-        if (opt.ORIENTATION) {
+        if (opt.ORIENTATION)
             thumbnail = this._thumbnails.find(t => y >= t.y && y <= t.y + t.height);
-        } else {
+        else
             thumbnail = this._thumbnails.find(t => x >= t.x && x <= t.x + t.width);
-        }
-        if (thumbnail) {
+
+        if (thumbnail)
             thumbnail.activate(time);
-        }
     },
-}
+};
 
 var ThumbnailsBoxVertical = {
-    _getPlaceholderTarget: function(index, spacing, rtl) {
+    _getPlaceholderTarget(index, spacing, rtl) {
         const workspace = this._thumbnails[index];
 
         let targetY1;
@@ -290,7 +283,7 @@ var ThumbnailsBoxVertical = {
         return [targetY1, targetY2];
     },
 
-     _withinWorkspace: function(y, index, rtl) {
+    _withinWorkspace(y, index, rtl) {
         const length = this._thumbnails.length;
         const workspace = this._thumbnails[index];
 
@@ -307,11 +300,11 @@ var ThumbnailsBoxVertical = {
         return y > workspaceY1 && y <= workspaceY2;
     },
 
-    handleDragOver: function(source, actor, x, y, time) {
+    handleDragOver(source, actor, x, y, time) {
         if (!source.metaWindow &&
             (!source.app || !source.app.can_open_new_window()) &&
             (source.app || !source.shellWorkspaceLaunch) &&
-            source != Main.xdndHandler)
+            source !== Main.xdndHandler)
             return DND.DragMotionResult.CONTINUE;
 
         const rtl = Clutter.get_default_text_direction() === Clutter.TextDirection.RTL;
@@ -340,25 +333,25 @@ var ThumbnailsBoxVertical = {
             }
         }
 
-        if (this._dropPlaceholderPos != placeholderPos) {
+        if (this._dropPlaceholderPos !== placeholderPos) {
             this._dropPlaceholderPos = placeholderPos;
             this.queue_relayout();
         }
 
-        if (this._dropWorkspace != -1)
+        if (this._dropWorkspace !== -1)
             return this._thumbnails[this._dropWorkspace].handleDragOverInternal(source, actor, time);
-        else if (this._dropPlaceholderPos != -1)
+        else if (this._dropPlaceholderPos !== -1)
             return source.metaWindow ? DND.DragMotionResult.MOVE_DROP : DND.DragMotionResult.COPY_DROP;
         else
             return DND.DragMotionResult.CONTINUE;
     },
 
-    //vfunc_get_preferred_width: function(forHeight) {
+    // vfunc_get_preferred_width: function(forHeight) {
     // override of this vfunc doesn't work for some reason (tested on Ubuntu and Fedora), it's not reachable
-    get_preferred_custom_width: function(forHeight) {
-        if (!this.visible) {
+    get_preferred_custom_width(forHeight) {
+        if (!this.visible)
             return [0, 0];
-        }
+
 
         if (forHeight === -1)
             return this.get_preferred_custom_height(forHeight);
@@ -381,10 +374,10 @@ var ThumbnailsBoxVertical = {
         return themeNode.adjust_preferred_width(width, width);
     },
 
-    get_preferred_custom_height: function(_forWidth) {
-        if (!this.visible) {
+    get_preferred_custom_height(_forWidth) {
+        if (!this.visible)
             return [0, 0];
-        }
+
 
         // Note that for getPreferredHeight/Width we cheat a bit and skip propagating
         // the size request to our children because we know how big they are and know
@@ -399,16 +392,16 @@ var ThumbnailsBoxVertical = {
         const ratio = this._porthole.width / this._porthole.height;
         const tmbHeight = _forWidth / ratio;
 
-        const naturalheight = this._thumbnails.reduce((accumulator, thumbnail, index) => {
-            //let workspaceSpacing = 0;
+        const naturalheight = this._thumbnails.reduce((accumulator, thumbnail/* , index*/) => {
+            // let workspaceSpacing = 0;
 
             const progress = 1 - thumbnail.collapse_fraction;
-            //const height = (this._porthole.height * MAX_THUMBNAIL_SCALE + workspaceSpacing) * progress;
-            const height = (tmbHeight) * progress;
+            // const height = (this._porthole.height * MAX_THUMBNAIL_SCALE + workspaceSpacing) * progress;
+            const height = tmbHeight * progress;
             return accumulator + height;
         }, 0);
 
-        //return themeNode.adjust_preferred_height(totalSpacing, naturalheight);
+        // return themeNode.adjust_preferred_height(totalSpacing, naturalheight);
         // we need to calculate the height precisely as it need to align with the workspacesDisplay because of transition animation
         // This works perfectly for fullHD monitor, for some reason 5:4 aspect ratio monitor adds unnecessary pixels to the final height of the thumbnailsBox
         return [totalSpacing, naturalheight];
@@ -416,12 +409,12 @@ var ThumbnailsBoxVertical = {
 
     // removes extra space (extraWidth in the original function), we need the box as accurate as possible
     // for precise app grid transition animation
-    vfunc_allocate: function(box) {
+    vfunc_allocate(box) {
         this.set_allocation(box);
 
-        let rtl = Clutter.get_default_text_direction() == Clutter.TextDirection.RTL;
+        let rtl = Clutter.get_default_text_direction() === Clutter.TextDirection.RTL;
 
-        if (this._thumbnails.length == 0) // not visible
+        if (this._thumbnails.length === 0) // not visible
             return;
 
         let themeNode = this.get_theme_node();
@@ -481,7 +474,7 @@ var ThumbnailsBoxVertical = {
 
         let y = box.y1;
 
-        if (this._dropPlaceholderPos == -1) {
+        if (this._dropPlaceholderPos === -1) {
             this._dropPlaceholder.allocate_preferred_size(
                 ...this._dropPlaceholder.get_position());
 
@@ -574,7 +567,7 @@ var ThumbnailsBoxVertical = {
         this._indicator.allocate(childBox);
     },
 
-    _updateShouldShow: function() {
+    _updateShouldShow() {
         // set current workspace indicator border radius
         // here just 'cause it's easier than adding to init
         this._indicator.add_style_class_name('ws-tmb');
@@ -585,19 +578,19 @@ var ThumbnailsBoxVertical = {
 
         this._shouldShow = shouldShow;
         this.notify('should-show');
-    }
-}
+    },
+};
 
 // ThumbnailsBox Horizontal
 
 var ThumbnailsBoxHorizontal = {
-    get_preferred_custom_width: function(_forHeight) {
+    get_preferred_custom_width(_forHeight) {
         // Note that for getPreferredHeight/Width we cheat a bit and skip propagating
         // the size request to our children because we know how big they are and know
         // that the actors aren't depending on the virtual functions being called.
-        if (!this.visible) {
+        if (!this.visible)
             return [0, 0];
-        }
+
 
         let themeNode = this.get_theme_node();
 
@@ -608,7 +601,7 @@ var ThumbnailsBoxHorizontal = {
         const ratio = this._porthole.height / this._porthole.width;
         const tmbWidth = (_forHeight - 2 * spacing) / ratio;
 
-        const naturalWidth = this._thumbnails.reduce((accumulator, thumbnail, index) => {
+        const naturalWidth = this._thumbnails.reduce((accumulator, thumbnail/* , index*/) => {
             const progress = 1 - thumbnail.collapse_fraction;
             const width = tmbWidth * progress;
             return accumulator + width;
@@ -620,9 +613,9 @@ var ThumbnailsBoxHorizontal = {
     vfunc_allocate(box) {
         this.set_allocation(box);
 
-        let rtl = Clutter.get_default_text_direction() == Clutter.TextDirection.RTL;
+        let rtl = Clutter.get_default_text_direction() === Clutter.TextDirection.RTL;
 
-        if (this._thumbnails.length == 0) // not visible
+        if (this._thumbnails.length === 0) // not visible
             return;
 
         let themeNode = this.get_theme_node();
@@ -682,7 +675,7 @@ var ThumbnailsBoxHorizontal = {
 
         let x = box.x1;
 
-        if (this._dropPlaceholderPos == -1) {
+        if (this._dropPlaceholderPos === -1) {
             this._dropPlaceholder.allocate_preferred_size(
                 ...this._dropPlaceholder.get_position());
 
@@ -775,5 +768,5 @@ var ThumbnailsBoxHorizontal = {
         this._indicator.allocate(childBox);
     },
 
-    _updateShouldShow: ThumbnailsBoxVertical._updateShouldShow
-}
+    _updateShouldShow: ThumbnailsBoxVertical._updateShouldShow,
+};

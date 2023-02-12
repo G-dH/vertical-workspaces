@@ -22,7 +22,9 @@ const _  = Settings._;
 
 // libadwaita is available starting with GNOME Shell 42.
 let Adw = null;
-try { Adw = imports.gi.Adw; } catch (e) {}
+try {
+    Adw = imports.gi.Adw;
+} catch (e) {}
 
 function _newImageFromIconName(name) {
     return Gtk.Image.new_from_icon_name(name);
@@ -35,7 +37,6 @@ var ItemFactory = class ItemFactory {
     }
 
     getRowWidget(text, caption, widget, variable, options = []) {
-
         let item = [];
         let label;
         if (widget) {
@@ -55,9 +56,9 @@ var ItemFactory = class ItemFactory {
                 const captionLabel = new Gtk.Label({
                     halign: Gtk.Align.START,
                     wrap: true,
-                    /*width_chars: 80,*/
-                    xalign: 0
-                })
+                    /* width_chars: 80, */
+                    xalign: 0,
+                });
                 const context = captionLabel.get_style_context();
                 context.add_class('dim-label');
                 context.add_class('caption');
@@ -79,25 +80,24 @@ var ItemFactory = class ItemFactory {
         }
 
         if (widget) {
-            if (widget._is_switch) {
+            if (widget._isSwitch)
                 this._connectSwitch(widget, key, variable);
-            } else if (widget._is_spinbutton || widget._is_scale) {
+            else if (widget._isSpinButton || widget._isScale)
                 this._connectSpinButton(widget, key, variable);
-            } else if (widget._is_combo_box) {
+            else if (widget._isComboBox)
                 this._connectComboBox(widget, key, variable, options);
-            } else if (widget._is_drop_down) {
+            else if (widget._isDropDown)
                 this._connectDropDown(widget, key, variable, options);
-            }
         }
 
         return item;
     }
 
-    _connectSwitch(widget, key, variable) {
+    _connectSwitch(widget, key /* , variable */) {
         this._settings.bind(key, widget, 'active', Gio.SettingsBindFlags.DEFAULT);
     }
 
-    _connectSpinButton(widget, key, variable) {
+    _connectSpinButton(widget, key /* , variable */) {
         this._settings.bind(key, widget.adjustment, 'value', Gio.SettingsBindFlags.DEFAULT);
     }
 
@@ -108,9 +108,9 @@ var ItemFactory = class ItemFactory {
         for (const [label, value] of options) {
             let iter;
             model.set(iter = model.append(), [0, 1], [label, value]);
-            if (value === currentValue) {
+            if (value === currentValue)
                 widget.set_active_iter(iter);
-            }
+
             widget._comboMap[value] = iter;
         }
         this._gOptions.connect(`changed::${key}`, () => {
@@ -119,7 +119,8 @@ var ItemFactory = class ItemFactory {
         widget.connect('changed', () => {
             const [success, iter] = widget.get_active_iter();
 
-            if (!success) return;
+            if (!success)
+                return;
 
             this._gOptions.set(variable, model.get_value(iter, 1));
         });
@@ -132,23 +133,22 @@ var ItemFactory = class ItemFactory {
             const text = options[i][0];
             const id = options[i][1];
             model.append(new DropDownItem({ text, id }));
-            if (id === currentValue) {
+            if (id === currentValue)
                 widget.set_selected(i);
-            }
         }
 
         const factory = new Gtk.SignalListItemFactory();
-        factory.connect("setup", (factory, list_item) => {
-            const label = new Gtk.Label({xalign: 0});
-            list_item.set_child(label);
+        factory.connect('setup', (fact, listItem) => {
+            const label = new Gtk.Label({ xalign: 0 });
+            listItem.set_child(label);
         });
-        factory.connect("bind", (factory, list_item) => {
-            const label = list_item.get_child();
-            const item = list_item.get_item();
+        factory.connect('bind', (fact, listItem) => {
+            const label = listItem.get_child();
+            const item = listItem.get_item();
             label.set_text(item.text);
         });
 
-        widget.connect("notify::selected-item", (dropDown) => {
+        widget.connect('notify::selected-item', dropDown => {
             const item = dropDown.get_selected_item();
             this._gOptions.set(variable, item.id);
         });
@@ -157,9 +157,8 @@ var ItemFactory = class ItemFactory {
             const newId = this._gOptions.get(variable, true);
             for (let i = 0; i < options.length; i++) {
                 const id = options[i][1];
-                if (id === newId) {
+                if (id === newId)
                     widget.set_selected(i);
-                }
             }
         });
 
@@ -172,7 +171,7 @@ var ItemFactory = class ItemFactory {
             valign: Gtk.Align.CENTER,
             hexpand: true,
         });
-        sw._is_switch = true;
+        sw._isSwitch = true;
         return sw;
     }
 
@@ -185,7 +184,7 @@ var ItemFactory = class ItemFactory {
             xalign: 0.5,
         });
         spinButton.set_adjustment(adjustment);
-        spinButton._is_spinbutton = true;
+        spinButton._isSpinButton = true;
         return spinButton;
     }
 
@@ -201,20 +200,20 @@ var ItemFactory = class ItemFactory {
         const renderer = new Gtk.CellRendererText();
         comboBox.pack_start(renderer, true);
         comboBox.add_attribute(renderer, 'text', 0);
-        comboBox._is_combo_box = true;
+        comboBox._isComboBox = true;
         return comboBox;
     }
 
     newDropDown() {
         const dropDown = new Gtk.DropDown({
             model: new Gio.ListStore({
-                item_type: DropDownItem
+                item_type: DropDownItem,
             }),
             halign: Gtk.Align.END,
             valign: Gtk.Align.CENTER,
             hexpand: true,
         });
-        dropDown._is_drop_down = true;
+        dropDown._isDropDown = true;
         return dropDown;
     }
 
@@ -232,7 +231,7 @@ var ItemFactory = class ItemFactory {
         });
         scale.set_size_request(300, -1);
         scale.set_adjustment(adjustment);
-        scale._is_scale = true;
+        scale._isScale = true;
         return scale;
     }
 
@@ -264,7 +263,7 @@ var ItemFactory = class ItemFactory {
             valign: Gtk.Align.CENTER,
             hexpand: true,
             css_classes: ['destructive-action'],
-            icon_name: 'view-refresh-symbolic'
+            icon_name: 'view-refresh-symbolic',
         });
 
         btn.connect('clicked', callback);
@@ -278,7 +277,7 @@ var ItemFactory = class ItemFactory {
             valign: Gtk.Align.CENTER,
             hexpand: true,
             css_classes: ['destructive-action'],
-            icon_name: 'view-refresh-symbolic'
+            icon_name: 'view-refresh-symbolic',
         });
 
         btn.connect('clicked', () => {
@@ -290,7 +289,7 @@ var ItemFactory = class ItemFactory {
         btn._activatable = false;
         return btn;
     }
-}
+};
 
 var AdwPrefs = class {
     constructor(gOptions) {
@@ -300,13 +299,13 @@ var AdwPrefs = class {
     getFilledWindow(window, pages) {
         for (let page of pages) {
             const title = page.title;
-            const icon_name = page.iconName;
+            const iconName = page.iconName;
             const optionList = page.optionList;
 
             window.add(
                 this._getAdwPage(optionList, {
                     title,
-                    icon_name
+                    icon_name: iconName,
                 })
             );
         }
@@ -326,13 +325,13 @@ var AdwPrefs = class {
             const option = item[0];
             const widget = item[1];
             if (!widget) {
-                if (group) {
+                if (group)
                     page.add(group);
-                }
+
                 group = new Adw.PreferencesGroup({
                     title: option,
                     hexpand: true,
-                    width_request: 700
+                    width_request: 700,
                 });
                 continue;
             }
@@ -349,25 +348,25 @@ var AdwPrefs = class {
                 margin_top: 8,
                 margin_bottom: 8,
                 hexpand: true,
-            })
-            /*for (let i of item) {
+            });
+            /* for (let i of item) {
                 box.append(i);*/
             grid.attach(option, 0, 0, 1, 1);
-            if (widget) {
+            if (widget)
                 grid.attach(widget, 1, 0, 1, 1);
-            }
+
             row.set_child(grid);
-            if (widget._activatable === false) {
+            if (widget._activatable === false)
                 row.activatable = false;
-            } else {
+            else
                 row.activatable_widget = widget;
-            }
+
             group.add(row);
         }
         page.add(group);
         return page;
     }
-}
+};
 
 var LegacyPrefs = class {
     constructor(gOptions) {
@@ -376,14 +375,14 @@ var LegacyPrefs = class {
 
     getPrefsWidget(pages) {
         const prefsWidget = new Gtk.Box({
-            orientation: Gtk.Orientation.VERTICAL
+            orientation: Gtk.Orientation.VERTICAL,
         });
         const stack = new Gtk.Stack({
-            hexpand: true
+            hexpand: true,
         });
         const stackSwitcher = new Gtk.StackSwitcher({
             halign: Gtk.Align.CENTER,
-            hexpand: true
+            hexpand: true,
         });
 
         const context = stackSwitcher.get_style_context();
@@ -398,7 +397,7 @@ var LegacyPrefs = class {
             vscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
             vexpand: true,
             hexpand: true,
-            visible: true
+            visible: true,
         };
 
         const pagesBtns = [];
@@ -411,13 +410,13 @@ var LegacyPrefs = class {
 
             stack.add_named(this._getLegacyPage(optionList, pageProperties), name);
             pagesBtns.push(
-                [new Gtk.Label({ label: title}), _newImageFromIconName(iconName, Gtk.IconSize.BUTTON)]
+                [new Gtk.Label({ label: title }), _newImageFromIconName(iconName, Gtk.IconSize.BUTTON)]
             );
         }
 
         let stBtn = stackSwitcher.get_first_child ? stackSwitcher.get_first_child() : null;
         for (let i = 0; i < pagesBtns.length; i++) {
-            const box = new Gtk.Box({orientation: Gtk.Orientation.VERTICAL, spacing: 6, visible: true});
+            const box = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 6, visible: true });
             const icon = pagesBtns[i][1];
             icon.margin_start = 30;
             icon.margin_end = 30;
@@ -433,12 +432,15 @@ var LegacyPrefs = class {
             }
         }
 
-        stack.show_all && stack.show_all();
-        stackSwitcher.show_all && stackSwitcher.show_all();
+        if (stack.show_all)
+            stack.show_all();
+        if (stackSwitcher.show_all)
+            stackSwitcher.show_all();
 
         prefsWidget.append(stack);
 
-        prefsWidget.show_all && prefsWidget.show_all();
+        if (prefsWidget.show_all)
+            prefsWidget.show_all();
 
         prefsWidget._stackSwitcher = stackSwitcher;
 
@@ -457,7 +459,7 @@ var LegacyPrefs = class {
             margin_bottom: 12,
         });
 
-        const context = page.get_style_context();
+        let context = page.get_style_context();
         context.add_class('background');
 
         let frame;
@@ -472,20 +474,20 @@ var LegacyPrefs = class {
                 const lbl = new Gtk.Label({
                     label: option,
                     xalign: 0,
-                    margin_bottom: 4
+                    margin_bottom: 4,
                 });
 
-                const context = lbl.get_style_context();
+                context = lbl.get_style_context();
                 context.add_class('heading');
 
                 mainBox.append(lbl);
 
                 frame = new Gtk.Frame({
-                    margin_bottom: 16
+                    margin_bottom: 16,
                 });
 
                 frameBox = new Gtk.ListBox({
-                    selection_mode: null
+                    selection_mode: null,
                 });
 
                 mainBox.append(frame);
@@ -500,21 +502,21 @@ var LegacyPrefs = class {
                 margin_end: 8,
                 margin_top: 8,
                 margin_bottom: 8,
-                hexpand: true
-            })
+                hexpand: true,
+            });
 
             grid.attach(option, 0, 0, 5, 1);
 
-            if (widget) {
+            if (widget)
                 grid.attach(widget, 5, 0, 2, 1);
-            }
+
             frameBox.append(grid);
         }
         page.set_child(mainBox);
 
         return page;
     }
-}
+};
 
 const DropDownItem = GObject.registerClass({
     GTypeName: 'DropdownItem',
@@ -538,6 +540,7 @@ const DropDownItem = GObject.registerClass({
     get text() {
         return this._text;
     }
+
     set text(text) {
         this._text = text;
     }
@@ -545,6 +548,7 @@ const DropDownItem = GObject.registerClass({
     get id() {
         return this._id;
     }
+
     set id(id) {
         this._id = id;
     }
