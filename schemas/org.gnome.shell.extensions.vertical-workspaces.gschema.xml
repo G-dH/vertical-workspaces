@@ -122,7 +122,7 @@
       <default>64</default>
     </key>
     <key type="i" name="search-width-scale">
-      <default>103</default>
+      <default>104</default>
     </key>
     <key type="b" name="app-grid-allow-custom">
       <default>false</default>
