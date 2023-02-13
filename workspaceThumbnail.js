@@ -566,10 +566,6 @@ var ThumbnailsBoxVertical = {
     },
 
     _updateShouldShow() {
-        // set current workspace indicator border radius
-        // here just 'cause it's easier than adding to init
-        this._indicator.add_style_class_name('ws-tmb');
-
         const shouldShow = opt.SHOW_WS_TMB;
         if (this._shouldShow === shouldShow)
             return;

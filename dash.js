@@ -40,18 +40,18 @@ const DASH_ITEM_LABEL_SHOW_TIME = 150;
 let opt;
 
 function update(reset = false) {
-    if (_overrides) {
+    if (_overrides)
         _overrides.removeAll();
-    }
-    
+
+
     opt = Me.imports.settings.opt;
     const dash = Main.overview._overview._controls.layoutManager._dash;
 
     setToHorizontal();
 
-    dash.remove_style_class_name("vertical-overview");
-    dash.remove_style_class_name("vertical-overview-left");
-    dash.remove_style_class_name("vertical-overview-right");
+    dash.remove_style_class_name('vertical-overview');
+    dash.remove_style_class_name('vertical-overview-left');
+    dash.remove_style_class_name('vertical-overview-right');
 
     if (reset) {
         _moveDashAppGridIcon(reset);
@@ -73,7 +73,7 @@ function update(reset = false) {
     if (opt.DASH_VERTICAL) {
         _overrides.addOverride('Dash', Dash.Dash.prototype, DashOverride);
         setToVertical();
-        dash.add_style_class_name("vertical-overview");
+        dash.add_style_class_name('vertical-overview');
 
         if (!_newWorkId) {
             _origWorkId = dash._workId;
@@ -93,12 +93,12 @@ function update(reset = false) {
     _moveDashAppGridIcon();
     _connectShowAppsIcon();
 
-    if (dash._showWindowsIcon && !dash._showWindowsIconClickedId) {
+    if (dash._showWindowsIcon && !dash._showWindowsIconClickedId)
         dash._showWindowsIconClickedId = dash._showWindowsIcon.toggleButton.connect('clicked', (a, c) => c && Util.activateSearchProvider(WindowSearchProviderPrefix));
-    }
-    if (dash._recentFilesIcon && !dash._recentFilesIconClickedId) {
+
+    if (dash._recentFilesIcon && !dash._recentFilesIconClickedId)
         dash._recentFilesIconClickedId = dash._recentFilesIcon.toggleButton.connect('clicked', (a, c) => c && Util.activateSearchProvider(RecentFilesSearchProviderPrefix));
-    }
+
     Main.overview.dash._redisplay();
     Main.overview._overview._controls.layoutManager._dash.visible = opt.DASH_VISIBLE;
 }
@@ -134,7 +134,7 @@ function setToVertical() {
 function setToHorizontal() {
     let dash = Main.overview._overview._controls.layoutManager._dash;
     if (_origWorkId)
-        dash._workId = _origWorkId; //pretty sure this is a leak, but there no provided way to disconnect these...
+        dash._workId = _origWorkId; // pretty sure this is a leak, but there no provided way to disconnect these...
     dash._box.layout_manager.orientation = Clutter.Orientation.HORIZONTAL;
     dash._dashContainer.layout_manager.orientation = Clutter.Orientation.HORIZONTAL;
     dash._dashContainer.y_expand = true;
@@ -173,7 +173,7 @@ function _moveDashAppGridIcon(reset = false) {
         const index = dash._dashContainer.get_children().length - 1;
         dash._dashContainer.set_child_at_index(dash._showAppsIcon, index);
     }
-    if (!reset && appIconPosition === 2) {// 2 - hide
+    if (!reset && appIconPosition === 2) { // 2 - hide
         const style = opt.DASH_VERTICAL ? 'show-apps-icon-vertical-hide' : 'show-apps-icon-horizontal-hide';
         dash._showAppsIcon.add_style_class_name(style);
         // for some reason even if the icon height in vertical mode should be set to 0 by the style, it stays visible in full size returning height 1px
@@ -191,29 +191,27 @@ function _connectShowAppsIcon(reset = false) {
         Main.overview.dash._showAppsIcon.reactive = true;
         _showAppsIconBtnPressId = Main.overview.dash._showAppsIcon.connect('button-press-event', (actor, event) => {
             const button = event.get_button();
-            if (button === Clutter.BUTTON_MIDDLE) {
+            if (button === Clutter.BUTTON_MIDDLE)
                 Util.openPreferences();
-            } else if (button === Clutter.BUTTON_SECONDARY) {
+            else if (button === Clutter.BUTTON_SECONDARY)
                 Util.activateSearchProvider(WindowSearchProviderPrefix);
-            } else {
+            else
                 return Clutter.EVENT_PROPAGATE;
-            }
+            return Clutter.EVENT_STOP;
         });
-    } else {
-        if (_showAppsIconBtnPressId) {
-            Main.overview.dash._showAppsIcon.disconnect(_showAppsIconBtnPressId);
-            _showAppsIconBtnPressId = 0;
-            Main.overview.dash._showAppsIcon.reactive = false;
-        }
+    } else if (_showAppsIconBtnPressId) {
+        Main.overview.dash._showAppsIcon.disconnect(_showAppsIconBtnPressId);
+        _showAppsIconBtnPressId = 0;
+        Main.overview.dash._showAppsIcon.reactive = false;
     }
 }
 
 var DashOverride = {
-    handleDragOver: function (source, actor, _x, y, _time) {
+    handleDragOver(source, actor, _x, y, _time) {
         let app = getAppFromSource(source);
 
         // Don't allow favoriting of transient apps
-        if (app == null || app.is_window_backed())
+        if (app === null || app.is_window_backed())
             return DND.DragMotionResult.NO_DROP;
 
         if (!global.settings.is_writable('favorite-apps'))
@@ -257,7 +255,7 @@ var DashOverride = {
             this._dragPlaceholderPos = pos;
 
             // Don't allow positioning before or after self
-            if (favPos != -1 && (pos == favPos || pos == favPos + 1)) {
+            if (favPos !== -1 && (pos === favPos || pos === favPos + 1)) {
                 this._clearDragPlaceholder();
                 return DND.DragMotionResult.CONTINUE;
             }
@@ -284,7 +282,7 @@ var DashOverride = {
         if (!this._dragPlaceholder)
             return DND.DragMotionResult.NO_DROP;
 
-        let srcIsFavorite = favPos != -1;
+        let srcIsFavorite = favPos !== -1;
 
         if (srcIsFavorite)
             return DND.DragMotionResult.MOVE_DROP;
@@ -292,7 +290,7 @@ var DashOverride = {
         return DND.DragMotionResult.COPY_DROP;
     },
 
-    _redisplay: function () {
+    _redisplay() {
         let favorites = AppFavorites.getAppFavorites().getFavoriteMap();
 
         let running = this._appSystem.get_running();
@@ -343,7 +341,7 @@ var DashOverride = {
             let newApp = newApps.length > newIndex ? newApps[newIndex] : null;
 
             // No change at oldIndex/newIndex
-            if (oldApp == newApp) {
+            if (oldApp === newApp) {
                 oldIndex++;
                 newIndex++;
                 continue;
@@ -361,7 +359,7 @@ var DashOverride = {
                 addedItems.push({
                     app: newApp,
                     item: this._createAppItem(newApp),
-                    pos: newIndex
+                    pos: newIndex,
                 });
                 newIndex++;
                 continue;
@@ -370,10 +368,10 @@ var DashOverride = {
             // App moved
             let nextApp = newApps.length > newIndex + 1
                 ? newApps[newIndex + 1] : null;
-            let insertHere = nextApp && nextApp == oldApp;
+            let insertHere = nextApp && nextApp === oldApp;
             let alreadyRemoved = removedActors.reduce((result, actor) => {
                 let removedApp = actor.child._delegate.app;
-                return result || removedApp == newApp;
+                return result || removedApp === newApp;
             }, false);
 
             if (insertHere || alreadyRemoved) {
@@ -381,7 +379,7 @@ var DashOverride = {
                 addedItems.push({
                     app: newApp,
                     item: newItem,
-                    pos: newIndex + removedActors.length
+                    pos: newIndex + removedActors.length,
                 });
                 newIndex++;
             } else {
@@ -439,10 +437,10 @@ var DashOverride = {
                     width: this.iconSize,
                     height: 1,
                 });
-                this._box.add_child(this._separator)
+                this._box.add_child(this._separator);
             }
 
-            //FIXME: separator placement is broken (also in original dash)
+            // FIXME: separator placement is broken (also in original dash)
             let pos = nFavorites;
             if (this._dragPlaceholder)
                 pos++;
@@ -456,7 +454,7 @@ var DashOverride = {
         this._box.queue_relayout();
     },
 
-    _createAppItem: function (app) {
+    _createAppItem(app) {
         let appIcon = new DashIcon(app);
 
         let indicator = appIcon._dot;
@@ -480,12 +478,12 @@ var DashOverride = {
         this._hookUpLabel(item, appIcon);
 
         return item;
-    }
-}
+    },
+};
 
 var DashItemContainerOverride = {
     // move labels according dash position
-    showLabel: function() {
+    showLabel() {
         if (!this._labelText)
             return;
 
@@ -500,7 +498,7 @@ var DashItemContainerOverride = {
 
         const labelWidth = this.label.get_width();
         const labelHeight = this.label.get_height();
-        const xOffset = Math.floor((itemWidth - labelWidth) / 2);
+        let xOffset = Math.floor((itemWidth - labelWidth) / 2);
         let x = Math.clamp(stageX + xOffset, 0, global.stage.width - labelWidth);
 
         let node = this.label.get_theme_node();
@@ -509,23 +507,18 @@ var DashItemContainerOverride = {
         if (opt.DASH_TOP) {
             const yOffset = itemHeight - labelHeight + 3 * node.get_length('-y-offset');
             y = stageY + yOffset;
-
         } else  if (opt.DASH_BOTTOM) {
             const yOffset = node.get_length('-y-offset');
             y = stageY - this.label.height - yOffset;
-
         } else if (opt.DASH_RIGHT) {
             const yOffset = Math.floor((itemHeight - labelHeight) / 2);
-
-            const xOffset = 4;
+            xOffset = 4;
 
             x = stageX - xOffset - this.label.width;
             y = Math.clamp(stageY + yOffset, 0, global.stage.height - labelHeight);
-
-        } if (opt.DASH_LEFT) {
+        } else if (opt.DASH_LEFT) {
             const yOffset = Math.floor((itemHeight - labelHeight) / 2);
-
-            const xOffset = 4;
+            xOffset = 4;
 
             x = stageX + this.width + xOffset;
             y = Math.clamp(stageY + yOffset, 0, global.stage.height - labelHeight);
@@ -544,11 +537,11 @@ var DashItemContainerOverride = {
             duration: DASH_ITEM_LABEL_SHOW_TIME,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
         });
-    }
-}
+    },
+};
 
 var DashCommonOverride = {
-    _adjustIconSize: function () {
+    _adjustIconSize() {
         // For the icon size, we only consider children which are "proper"
         // icons (i.e. ignoring drag placeholders) and which are not
         // animating out (which means they will be destroyed at the end of
@@ -561,17 +554,18 @@ var DashCommonOverride = {
         });
 
         // add new custom icons into the calculation
-        if (this._showAppsIcon.visible) {
+        if (this._showAppsIcon.visible)
             iconChildren.push(this._showAppsIcon);
-        }
-        if (this._showWindowsIcon) {
-            iconChildren.push(this._showWindowsIcon);
-        }
-        if (this._recentFilesIcon) {
-            iconChildren.push(this._recentFilesIcon);
-        }
 
-        if (!iconChildren.length) return;
+        if (this._showWindowsIcon)
+            iconChildren.push(this._showWindowsIcon);
+
+        if (this._recentFilesIcon)
+            iconChildren.push(this._recentFilesIcon);
+
+
+        if (!iconChildren.length)
+            return;
 
         if (this._maxWidth === -1 || this._maxHeight === -1)
             return;
@@ -593,7 +587,8 @@ var DashCommonOverride = {
         let firstButton = iconChildren[0].child;
         let firstIcon = firstButton._delegate.icon;
 
-        if (!firstIcon.icon) return;
+        if (!firstIcon.icon)
+            return;
 
         // Enforce valid spacings during the size request
         firstIcon.icon.ensure_style();
@@ -638,7 +633,7 @@ var DashCommonOverride = {
                 newIconSize = BaseIconSizes[i];
         }
 
-        /*if (newIconSize == this.iconSize)
+        /* if (newIconSize == this.iconSize)
             return;*/
 
         let oldIconSize = this.iconSize;
@@ -665,7 +660,7 @@ var DashCommonOverride = {
             // Scale the icon's texture to the previous size and
             // tween to the new size
             icon.icon.set_size(icon.icon.width * scale,
-                               icon.icon.height * scale);
+                icon.icon.height * scale);
 
             icon.icon.ease({
                 width: targetWidth,
@@ -684,22 +679,24 @@ var DashCommonOverride = {
             });
         }
     },
-}
+};
 
 function _updateSearchWindowsIcon(show = opt.SHOW_WINDOWS_ICON) {
-
     const dash = Main.overview._overview._controls.layoutManager._dash;
     const dashContainer = dash._dashContainer;
 
     if (dash._showWindowsIcon) {
         dashContainer.remove_child(dash._showWindowsIcon);
-        dash._showWindowsIconClickedId && dash._showWindowsIcon.toggleButton.disconnect(dash._showWindowsIconClickedId);
+        if (dash._showWindowsIconClickedId)
+            dash._showWindowsIcon.toggleButton.disconnect(dash._showWindowsIconClickedId);
         dash._showWindowsIconClickedId = undefined;
-        dash._showWindowsIcon && dash._showWindowsIcon.destroy();
+        if (dash._showWindowsIcon)
+            dash._showWindowsIcon.destroy();
         dash._showWindowsIcon = undefined;
     }
 
-    if (!show || !opt.WINDOW_SEARCH_PROVIDER_ENABLED) return;
+    if (!show || !opt.WINDOW_SEARCH_PROVIDER_ENABLED)
+        return;
 
     if (!dash._showWindowsIcon) {
         dash._showWindowsIcon = new ShowWindowsIcon();
@@ -712,7 +709,7 @@ function _updateSearchWindowsIcon(show = opt.SHOW_WINDOWS_ICON) {
     if (opt.SHOW_WINDOWS_ICON === 1) {
         dashContainer.set_child_at_index(dash._showWindowsIcon, 0);
     } else if (opt.SHOW_WINDOWS_ICON === 2) {
-        index = dashContainer.get_children().length - 1;
+        const index = dashContainer.get_children().length - 1;
         dashContainer.set_child_at_index(dash._showWindowsIcon, index);
     }
 
@@ -758,19 +755,21 @@ class ShowWindowsIcon extends Dash.DashItemContainer {
 });
 
 function _updateRecentFilesIcon(show = opt.SHOW_RECENT_FILES_ICON) {
-
     const dash = Main.overview._overview._controls.layoutManager._dash;
     const dashContainer = dash._dashContainer;
 
     if (dash._recentFilesIcon) {
         dashContainer.remove_child(dash._recentFilesIcon);
-        dash._recentFilesIconClickedId && dash._recentFilesIcon.toggleButton.disconnect(dash._recentFilesIconClickedId);
+        if (dash._recentFilesIconClickedId)
+            dash._recentFilesIcon.toggleButton.disconnect(dash._recentFilesIconClickedId);
         dash._recentFilesIconClickedId = undefined;
-        dash._recentFilesIcon && dash._recentFilesIcon.destroy();
+        if (dash._recentFilesIcon)
+            dash._recentFilesIcon.destroy();
         dash._recentFilesIcon = undefined;
     }
 
-    if (!show || !opt.RECENT_FILES_SEARCH_PROVIDER_ENABLED) return;
+    if (!show || !opt.RECENT_FILES_SEARCH_PROVIDER_ENABLED)
+        return;
 
     if (!dash._recentFilesIcon) {
         dash._recentFilesIcon = new ShowRecentFilesIcon();
@@ -783,7 +782,7 @@ function _updateRecentFilesIcon(show = opt.SHOW_RECENT_FILES_ICON) {
     if (opt.SHOW_RECENT_FILES_ICON === 1) {
         dashContainer.set_child_at_index(dash._recentFilesIcon, 0);
     } else if (opt.SHOW_RECENT_FILES_ICON === 2) {
-        index = dashContainer.get_children().length - 1;
+        const index = dashContainer.get_children().length - 1;
         dashContainer.set_child_at_index(dash._recentFilesIcon, index);
     }
 

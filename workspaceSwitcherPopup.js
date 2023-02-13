@@ -42,12 +42,12 @@ function update(reset = false) {
         const enabled = settings.get_strv('enabled-extensions');
         const allowWsPopupInjection = !(enabled.includes('workspace-switcher-manager@G-dH.github.com') || enabled.includes('WsSwitcherPopupManager@G-dH.github.com-dev'));
         if (opt.shellVersion >= 42 && allowWsPopupInjection)
-            _overrides.addInjection('WorkspaceSwitcherPopup', WorkspaceSwitcherPopup.WorkspaceSwitcherPopup.prototype, WorkspaceSwitcherPopupInjections);
+            _overrides.addOverride('WorkspaceSwitcherPopup', WorkspaceSwitcherPopup.WorkspaceSwitcherPopup.prototype, WorkspaceSwitcherPopupOverride);
     }
 }
 
-const WorkspaceSwitcherPopupInjections = {
-    _init() {
+const WorkspaceSwitcherPopupOverride = {
+    after__init() {
         if (this._list)
             this._list.vertical = true;
     },

@@ -44,8 +44,6 @@ function update(reset = false) {
     _overrides = new _Util.Overrides();
 
     _overrides.addOverride('WorkspaceBackground', Workspace.WorkspaceBackground.prototype, WorkspaceBackground);
-    // fix window scaling in workspace state 0
-    _overrides.addInjection('WorkspaceLayout', Workspace.WorkspaceLayout.prototype, WorkspaceLayoutInjections);
 
     // fix overlay base for Vertical Workspaces
     _overrides.addOverride('WorkspaceLayout', Workspace.WorkspaceLayout.prototype, WorkspaceLayout);
@@ -63,8 +61,8 @@ function update(reset = false) {
 // disadvantage of following workaround - the WINDOW_PREVIEW_MAXIMUM_SCALE value is common for every workspace,
 // on multi-monitor system can be visible unwanted scaling of windows on workspace in WORKSPACE_MODE 0 (windows not spread)
 // when leaving overview while any other workspace is in the WORKSPACE_MODE 1.
-var WorkspaceLayoutInjections = {
-    _init() {
+var WorkspaceLayout = {
+    after__init() {
         if (opt.OVERVIEW_MODE === 1) {
             this._stateAdjustment.connect('notify::value', () => {
                 // scale 0.1 for window state 0 just needs to be smaller then possible scale of any window in spread view
@@ -79,9 +77,7 @@ var WorkspaceLayoutInjections = {
             });
         }
     },
-};
 
-var WorkspaceLayout = {
     // this fixes wrong size and position calculation of window clones while moving overview to the next (+1) workspace if vertical ws orientation is enabled in GS
     _adjustSpacingAndPadding(rowSpacing, colSpacing, containerBox) {
         if (this._sortedWindows.length === 0)

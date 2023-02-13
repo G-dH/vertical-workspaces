@@ -18,8 +18,8 @@ const WorkspaceAnimation = imports.ui.workspaceAnimation;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const _Util = Me.imports.util;
 
-// touching module properties defined by const/let for the first time returns undefined in GS 42, so we touch it here before we use it
-const dummy = WorkspaceAnimation.MonitorGroup;
+// first reference to constant defined using const in other module returns undefined, the MonitorGroup const will remain empty and unused
+const MonitorGroup = WorkspaceAnimation.MonitorGroup;
 
 let _origBaseDistance;
 let _wsAnimationSwipeBeginId;
@@ -45,7 +45,7 @@ function update(reset = false) {
     _connectWsAnimationSwipeTracker();
     _overrideMonitorGroupProperty();
 
-    _overrides.addInjection('WorkspaceAnimationMonitorGroup', WorkspaceAnimation.MonitorGroup.prototype, MonitorGroupInjections);
+    _overrides.addOverride('WorkspaceAnimationMonitorGroup', WorkspaceAnimation.MonitorGroup.prototype, MonitorGroupOverride);
 }
 
 // remove spacing between workspaces during transition to remove flashing wallpaper between workspaces with maximized windows
@@ -74,8 +74,8 @@ function _overrideMonitorGroupProperty(reset = false) {
         Object.defineProperty(WorkspaceAnimation.MonitorGroup.prototype, 'baseDistance', getter);
 }
 
-const MonitorGroupInjections = {
-    _init() {
+const MonitorGroupOverride = {
+    after__init() {
         // we have two options to implement static bg feature
         // one is adding background to monitorGroup
         // but this one has disadvantage - sticky windows will be always on top of animated windows

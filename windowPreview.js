@@ -45,12 +45,11 @@ function update(reset = false) {
     _overrides = new _Util.Overrides();
 
     _overrides.addOverride('WindowPreview', WindowPreview.WindowPreview.prototype, WindowPreviewCommon);
-    // move titles into window previews
-    _overrides.addInjection('WindowPreview', WindowPreview.WindowPreview.prototype, WindowPreviewInjections);
 }
 
-const WindowPreviewInjections = {
-    _init() {
+const WindowPreviewCommon = {
+    // injection to init
+    after__init() {
         const ICON_OVERLAP = 0.7;
 
         if (opt.WIN_PREVIEW_ICON_SIZE < 64) {
@@ -162,9 +161,7 @@ const WindowPreviewInjections = {
 
         this.connect('destroy', () => this._workspace.stateAdjustment.disconnect(this._stateConId));
     },
-};
 
-const WindowPreviewCommon = {
     _updateIconScale() {
         let { currentState, initialState, finalState } =
             this._overviewAdjustment.getStateTransitionParams();

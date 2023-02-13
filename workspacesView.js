@@ -15,9 +15,8 @@ const { GObject, Clutter, Meta, St } = imports.gi;
 const Main = imports.ui.main;
 const Util = imports.misc.util;
 const WorkspacesView = imports.ui.workspacesView;
-// const SecondaryMonitorDisplay = WorkspacesView.SecondaryMonitorDisplay;
-// first call of item defined using const in other module returns undefined
-const dummy = WorkspacesView.SecondaryMonitorDisplay;
+// first reference to constant defined using const in other module returns undefined, the SecondaryMonitorDisplay const will remain empty and unused
+const SecondaryMonitorDisplay = WorkspacesView.SecondaryMonitorDisplay;
 const ControlsState = imports.ui.overviewControls.ControlsState;
 const FitMode = imports.ui.workspacesView.FitMode;
 

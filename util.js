@@ -49,48 +49,10 @@ var Overrides = class {
              .injections.funcName1
                         .funcName2
     */
-    addInjection(className, prototype, injections) {
-        if (!this._injections[className]) {
-            this._injections[className] = {
-                prototype,
-                injections: {},
-            };
-        }
-
-        for (let name in injections) {
-            this._injections[className].injections[name] = {
-                original: this.injectToFunction(prototype, name, injections[name]),
-            };
-        }
-    }
-
-    removeInjection(className, funcName) {
-        if (this._injections[className])
-            return false;
-        const prototype = this._injections[className].prototype;
-
-        const injection = this._injections[className].injections[funcName];
-        if (!injection)
-            return false;
-
-        prototype[funcName] = injection.original;
-        this._injections[funcName] = undefined;
-        return true;
-    }
-
     removeAll() {
         for (let name in this._overrides) {
             this.removeOverride(name);
             this._overrides[name] = undefined;
-        }
-
-        for (let className in this._injections) {
-            const injt = this._injections[className];
-            const prototype = injt.prototype;
-            for (let funcName in injt.injections)
-                prototype[funcName] = injt.injections[funcName].original;
-
-            this._injections[className] = undefined;
         }
     }
 
@@ -126,18 +88,6 @@ var Overrides = class {
             }
         }
         return backup;
-    }
-
-    injectToFunction(parent, name, func) {
-        let origin = parent[name];
-        parent[name] = function (...args) {
-            let ret;
-            ret = origin.apply(this, args);
-            func.apply(this, args);
-            return ret;
-        };
-
-        return origin;
     }
 };
 
