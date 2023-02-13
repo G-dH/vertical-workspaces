@@ -2,20 +2,33 @@
 
 ### v24 (not released yet)
 **Added:**
-- Support for horizontally stacked workspaces, available through `Workspaces Thumbnails Position` option.
+- Support for horizontally stacked workspaces, the stacking follows `Workspaces Thumbnails Position` option.
+- `Dash Max Icon Size` menu now offers 80, 96, 112 and 128 px options.
+- Dash can use available space better if resizes its icons when there is not enough space on the screen for the chosen icon size.
+- Options `Dash Icon Click`: `Activate Last Used Window Immediately` (default behavior) and `Switch to Workspace with Recently Used Window` which allows you to see an overview of the workspace with the app window before activating it and closing the overview.
+- App Grid options - `Icon Size`, `Columns/Rows per Page`, `Apps Order` - `Custom`, `Alphabet`, `Usage`, option to `Include Dash Items`, `Reset App Grid Layout`, `Remove App Grid Folders`.
 - Options `Workspaces Scale` and `Workspaces Spacing` adjustments for workspace preview.
-- Options `App Search Icon Size` with reduced spacing between icons and `Search Results Width`.
 - Option `Workspace Switcher Animation` / `Static Backgroud` for static background while switching workspaces outside of the overview.
-- Open preferences by middle click on *Show Applications button* in the dash (default dash only).
+- Options `Main Panel Position` and `Main Panel Visibility` allows moving the main panel at the bottom of the screen, hide it, or only show it in the Activities overview.
+- Options `App Search Icon Size` with reduced spacing between icons and `Search Results Width`.
+- Option `Max Search Results Rows` allows to set maximum number of rows for all search providers (except for the app search provider that uses grid instead of the list).
+- Optional Search view transition animation.
+- Optional `Window Search Provider` directly accessible via an optional icon in the dash, by pressing the Space key in the overview, or by secondary mouse button click on the 'Show Apps' dash icon.
+- Secondary mouse button click on a window preview opens window search provider searching for the window app name.
+- Optional `Recent Files Search Provider` directly accessible via an optional icon in the dash or by pressing the Ctr+Space key in the overview.
 - Text shadow in labels of app grid view icons for better visibility on lighter backgrounds, in case you use `Show Static Background` option for the overview.
+- Open preferences by middle click on *Show Applications button* in the dash (default dash only).
+- Option to show current window title in the workspace thumbnail label.
 
 **Fixed:**
-- Improved blur effect transitions performance
+- Some options related to the workspace preview don't work for secondary monitors if workspaces set to "primary monitor only".
+- Optimized blur effect transitions.
 - Smaller single windows not properly scaling with workspace preview in `Expose Windows on Hover` mode.
 - (upstream bug) Closing windows in the overview fills log with "access to destroyed" object errors.
+- (upstream bug) Glitching transition when minimizing full-screen window.
 
-**Other changes:**
-
+**Changed:**
+- Extension renamed to V-Shell, since it's not vertical only any more.
 
 ### v23 (v19, v20, v21, v22) (2022-12-22)
 **Added:**
