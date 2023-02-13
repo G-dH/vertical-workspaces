@@ -27,7 +27,6 @@ let _overrides;
 
 const WORKSPACE_CUT_SIZE = 10;
 const _originalMaxThumbnailScale = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
-let MAX_THUMBNAIL_SCALE;
 
 var opt = null;
 
@@ -47,7 +46,6 @@ function update(reset = false) {
 
     opt = Me.imports.settings.opt;
 
-    MAX_THUMBNAIL_SCALE = opt.MAX_THUMBNAIL_SCALE;
     // don't limit max thumbnail scale for other clients than overview, for example AATWS.
     WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = 1;
 
@@ -367,7 +365,7 @@ var ThumbnailsBoxVertical = {
         const avail = forHeight - totalSpacing;
 
         let scale = (avail / nWorkspaces) / this._porthole.height;
-        scale = Math.min(scale, MAX_THUMBNAIL_SCALE);
+        scale = Math.min(scale, opt.MAX_THUMBNAIL_SCALE);
 
         const width = Math.round(this._porthole.width * scale);
 
@@ -396,7 +394,7 @@ var ThumbnailsBoxVertical = {
             // let workspaceSpacing = 0;
 
             const progress = 1 - thumbnail.collapse_fraction;
-            // const height = (this._porthole.height * MAX_THUMBNAIL_SCALE + workspaceSpacing) * progress;
+            // const height = (this._porthole.height * opt.MAX_THUMBNAIL_SCALE + workspaceSpacing) * progress;
             const height = tmbHeight * progress;
             return accumulator + height;
         }, 0);

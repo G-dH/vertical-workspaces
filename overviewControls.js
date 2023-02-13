@@ -240,7 +240,7 @@ var ControlsManager = {
             this.dash._isAbove = true;
 
             // update max tmb scale in case some other extension changed it
-            WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = opt.MAX_THUMBNAIL_SCALE;
+            // WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = opt.MAX_THUMBNAIL_SCALE;
         } else if (this.dash._isAbove && progress < 1) {
             // keep dash below for ws transition between the overview and hidden state
             this.set_child_above_sibling(this._workspacesDisplay, null);
