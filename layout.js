@@ -44,7 +44,7 @@ function update(reset = false) {
     Main.layoutManager._updatePanelBarrier();
 }
 
-var LayoutManager = {
+const LayoutManager = {
     _updatePanelBarrier() {
         if (this._rightPanelBarrier) {
             this._rightPanelBarrier.destroy();

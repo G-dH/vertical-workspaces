@@ -24,7 +24,6 @@ var shellVersion = parseFloat(Config.PACKAGE_VERSION);
 var Overrides = class {
     constructor() {
         this._overrides = {};
-        this._injections = {};
     }
 
     addOverride(name, prototype, overrideList) {
@@ -44,11 +43,6 @@ var Overrides = class {
         return true;
     }
 
-    /*
-    className.prototype
-             .injections.funcName1
-                        .funcName2
-    */
     removeAll() {
         for (let name in this._overrides) {
             this.removeOverride(name);
@@ -90,8 +84,6 @@ var Overrides = class {
         return backup;
     }
 };
-
-// ------- Common functions -----------------------------------------------------------------------
 
 function getOverviewTranslations(opt, dash, tmbBox, searchEntryBin) {
     // const tmbBox = Main.overview._overview._controls._thumbnailsBox;
@@ -219,8 +211,7 @@ function dashIsDashToDock() {
     return Main.overview.dash._isHorizontal !== undefined;
 }
 
-// ------------------ Reorder Workspaces - callback for Dash and workspacesDisplay -----------------------------------
-
+// Reorder Workspaces - callback for Dash and workspacesDisplay
 function reorderWorkspace(direction = 0) {
     let activeWs = global.workspace_manager.get_active_workspace();
     let activeWsIdx = activeWs.index();

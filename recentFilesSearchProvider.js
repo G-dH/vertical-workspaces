@@ -9,7 +9,7 @@
 
 'use strict';
 
-const { GLib, GObject, Gio, Gtk, Meta, St, Shell } = imports.gi;
+const { GLib, Gio, Meta, St, Shell, Gtk } = imports.gi;
 
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -33,13 +33,6 @@ var prefix = 'fq//';
 
 var opt;
 
-const Action = {
-    NONE: 0,
-    CLOSE: 1,
-    CLOSE_ALL: 2,
-    MOVE_TO_WS: 3,
-    MOVE_ALL_TO_WS: 4,
-};
 
 function init() {
 }
@@ -158,7 +151,7 @@ const closeAllResultsRegex = /^\/xa!$/;
 const moveToWsRegex = /^\/m[0-9]+$/;
 const moveAllToWsRegex = /^\/ma[0-9]+$/;
 
-var RecentFilesSearchProvider = class RecentFilesSearchProvider {
+const RecentFilesSearchProvider = class RecentFilesSearchProvider {
     constructor(gOptions) {
         this._gOptions = gOptions;
         this.appInfo = Gio.AppInfo.create_from_commandline('/usr/bin/nautilus -ws recent:///', 'Recent Files', null);

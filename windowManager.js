@@ -10,7 +10,7 @@
 
 'use strict';
 
-const { GObject, Clutter, Meta, Shell } = imports.gi;
+const { GObject, Clutter, Meta } = imports.gi;
 
 const Main = imports.ui.main;
 const WindowManager = imports.ui.windowManager;

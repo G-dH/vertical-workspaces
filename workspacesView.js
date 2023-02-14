@@ -62,7 +62,7 @@ function update(reset = false) {
     }
 }
 
-var WorkspacesViewCommon = {
+const WorkspacesViewCommon = {
     _getFirstFitSingleWorkspaceBox(box, spacing, vertical) {
         let [width, height] = box.get_size();
         const [workspace] = this._workspaces;
@@ -239,7 +239,7 @@ var WorkspacesViewCommon = {
 };
 
 //  SecondaryMonitorDisplay Vertical
-var SecondaryMonitorDisplayVertical = {
+const SecondaryMonitorDisplayVertical = {
     _getThumbnailParamsForState(state) {
 
         let opacity, scale, translationX;
@@ -461,7 +461,7 @@ var SecondaryMonitorDisplayVertical = {
 };
 
 //  SecondaryMonitorDisplay Horizontal
-var SecondaryMonitorDisplayHorizontal = {
+const SecondaryMonitorDisplayHorizontal = {
     _getThumbnailParamsForState(state) {
         // const { ControlsState } = OverviewControls;
 
@@ -681,7 +681,7 @@ const ExtraWorkspaceView = {
     },
 };
 
-var WorkspacesDisplay = {
+const WorkspacesDisplay = {
     _updateWorkspacesViews() {
         for (let i = 0; i < this._workspacesViews.length; i++)
             this._workspacesViews[i].destroy();

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const { Clutter, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
+const { Clutter, GLib, GObject, Meta, Shell, St } = imports.gi;
 
 const DND = imports.ui.dnd;
 const Main = imports.ui.main;
@@ -87,8 +87,6 @@ function update(reset = false) {
     _updateAppGridProperties();
     _updateAppGridDND();
 }
-
-// ---------------------------------------------------------------------------------------------------------
 
 function _setAppDisplayOrientation(vertical = false) {
     const CLUTTER_ORIENTATION = vertical ? Clutter.Orientation.VERTICAL : Clutter.Orientation.HORIZONTAL;
@@ -242,8 +240,6 @@ function _updateAppGridProperties(reset = false) {
     }
 }
 
-// ------ App Grid - DND ----------------------------------------------------------
-
 function _updateAppGridDND(reset) {
     if (opt.APP_GRID_ORDER && !reset) {
         if (!_appSystemStateConId)
@@ -252,9 +248,7 @@ function _updateAppGridDND(reset) {
         // deny dnd from dash to app grid
         if (!_origAppDisplayAcceptDrop)
             _origAppDisplayAcceptDrop = AppDisplay.AppDisplay.prototype.acceptDrop;
-        AppDisplay.AppDisplay.prototype.acceptDrop = function () {
-            return false;
-        };
+        AppDisplay.AppDisplay.prototype.acceptDrop = () => false;
 
         // deny creating folders by dnd on other icon
         if (!_origAppViewItemHandleDragOver)
@@ -322,9 +316,7 @@ function _restoreOverviewGroup() {
     Main.layoutManager.overviewGroup.hide();
 }
 
-// ------ appDisplay - Vertical --------------------------------------------------------------------------------
-
-var AppDisplayVertical = {
+const AppDisplayVertical = {
     // correction of the appGrid size when page indicators were moved from the bottom to the right
     adaptToSize(width, height) {
         const [, indicatorWidth] = this._pageIndicators.get_preferred_width(-1);
@@ -338,10 +330,9 @@ var AppDisplayVertical = {
 };
 
 
-// ------ AppDisplay.AppSearchProvider ----------------------------------------------------------------------------------
-
+// AppDisplay.AppSearchProvider
 // App search result size
-var AppSearchProvider = {
+const AppSearchProvider = {
     createResultObject(resultMeta) {
         if (resultMeta.id.endsWith('.desktop')) {
             const icon = new AppDisplay.AppIcon(this._appSys.lookup_app(resultMeta['id']), {
@@ -358,16 +349,14 @@ var AppSearchProvider = {
     },
 };
 
-var BaseAppViewVertical = {
+const BaseAppViewVertical = {
     // this fixes dnd from appDisplay to the workspace thumbnail on the left if appDisplay is on page 1 because of appgrid left overshoot
     _pageForCoords() {
         return AppDisplay.SidePages.NONE;
     },
 };
 
-// ------ AppDisplay - Custom App Grid ------------------------------------------------------------------------
-
-var AppDisplayCommon = {
+const AppDisplayCommon = {
     _ensureDefaultFolders() {
         // disable creation of default folders if user deleted them
     },
@@ -454,18 +443,11 @@ var AppDisplayCommon = {
         if (this._placeholder)
             appIcons.push(this._placeholder);
 
-        // const runningIDs = Shell.AppSystem.get_default().get_running().map(app => app.get_id());
-
-        // remove running apps
-        /* if (!APP_GRID_INCLUDE_DASH) { // !icon.app means folder
-            appIcons = appIcons.filter((icon) => this._folderIcons.includes(icon) || !(runningIDs.includes(icon.app.id) || this._appFavorites.isFavorite(icon.id)));
-        }*/
-
         return appIcons;
     },
 };
 
-var BaseAppView = {
+const BaseAppView = {
     // adds sorting options and option to add favorites and running apps
     _redisplay() {
         let oldApps = this._orderedItems.slice();
@@ -608,7 +590,7 @@ var BaseAppView = {
     },
 };
 
-var BaseAppViewGridLayout = {
+const BaseAppViewGridLayout = {
     _getIndicatorsWidth(box) {
         const [width, height] = box.get_size();
         const arrows = [
@@ -628,9 +610,7 @@ var BaseAppViewGridLayout = {
     },
 };
 
-// ------------------ AppDisplay.FolderGrid -----------------------------------------------------------------------
-
-var FolderView = {
+const FolderView = {
     _createGrid() {
         let grid;
         if (shellVersion < 43)
@@ -643,8 +623,7 @@ var FolderView = {
 };
 
 // folder columns and rows
-
-var FolderGrid = GObject.registerClass(
+const FolderGrid = GObject.registerClass(
 class FolderGrid extends IconGrid.IconGrid {
     _init() {
         super._init({
@@ -699,8 +678,9 @@ if (AppDisplay.AppGrid) {
     });
 }
 
-var FOLDER_DIALOG_ANIMATION_TIME = 200; // AppDisplay.FOLDER_DIALOG_ANIMATION_TIME
-var AppFolderDialog = {
+const FOLDER_DIALOG_ANIMATION_TIME = 200; // AppDisplay.FOLDER_DIALOG_ANIMATION_TIME
+const AppFolderDialog = {
+    // injection to _init()
     after__init() {
         const iconSize = opt.APP_GRID_FOLDER_ICON_SIZE < 0 ? 96 : opt.APP_GRID_FOLDER_ICON_SIZE;
         let width = opt.APP_GRID_FOLDER_COLUMNS * (iconSize + 64);
@@ -772,8 +752,6 @@ function _resetAppGrid(settings = null, key = null) {
         appDisplay._redisplay();
 }
 
-// ------------------ AppDisplay.AppIcon - override ---------------------------------------------------------------
-
 function _getWindowApp(metaWin) {
     const tracker = Shell.WindowTracker.get_default();
     return tracker.get_window_app(metaWin);
@@ -797,7 +775,7 @@ function _getAppRecentWorkspace(app) {
     return null;
 }
 
-var AppIcon = {
+const AppIcon = {
     activate(button) {
         const event = Clutter.get_current_event();
         const modifiers = event ? event.get_state() : 0;

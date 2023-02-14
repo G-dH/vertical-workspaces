@@ -16,6 +16,7 @@ const Me = imports.misc.extensionUtils.getCurrentExtension();
 const ANIMATION_TIME = imports.ui.overview.ANIMATION_TIME;
 
 let opt;
+
 let _showingOverviewConId;
 let _hidingOverviewConId;
 let _styleChangedConId;

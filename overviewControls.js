@@ -10,7 +10,7 @@
 
 'use strict';
 
-const { Clutter, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
+const { Clutter, GLib, GObject } = imports.gi;
 const Main = imports.ui.main;
 const Util = imports.misc.util;
 const OverviewControls = imports.ui.overviewControls;
@@ -23,7 +23,9 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
 const _Util = Me.imports.util;
+
 let _overrides;
+let opt;
 
 const ANIMATION_TIME = imports.ui.overview.ANIMATION_TIME;
 const DASH_MAX_SIZE_RATIO = 0.15;
@@ -34,8 +36,6 @@ let _startupAnimTimeoutId1;
 let _startupAnimTimeoutId2;
 let _updateAppGridTimeoutId;
 let _startupInitComplete = false;
-
-let opt;
 
 
 function update(reset = false) {
@@ -92,7 +92,7 @@ function _replaceOnSearchChanged(reset = false) {
     }
 }
 
-var ControlsManager = {
+const ControlsManager = {
     // this function is used as a callback by a signal handler, needs to be reconnected after modification as the original callback uses a copy of the original function
     /* _update: function() {
         ...
@@ -238,9 +238,6 @@ var ControlsManager = {
                 this.set_child_above_sibling(this.dash, null);
 
             this.dash._isAbove = true;
-
-            // update max tmb scale in case some other extension changed it
-            // WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = opt.MAX_THUMBNAIL_SCALE;
         } else if (this.dash._isAbove && progress < 1) {
             // keep dash below for ws transition between the overview and hidden state
             this.set_child_above_sibling(this._workspacesDisplay, null);
@@ -607,7 +604,7 @@ var ControlsManager = {
     },
 };
 
-var ControlsManagerLayoutVertical = {
+const ControlsManagerLayoutVertical = {
     _computeWorkspacesBoxForState(state, box, workAreaBox, dashWidth, dashHeight, thumbnailsWidth, searchHeight, startY) {
         const workspaceBox = box.copy();
         let [width, height] = workspaceBox.get_size();
@@ -842,8 +839,6 @@ var ControlsManagerLayoutVertical = {
         let wsTmbHeight = 0;
 
         if (this._workspacesThumbnails.visible) {
-            // const REDUCE_WS_TMB_IF_NEEDED = (this._searchController._searchActive && opt.CENTER_SEARCH_VIEW) || opt.CENTER_APP_GRID;
-
             const { expandFraction } = this._workspacesThumbnails;
             const dashHeightReservation = !opt.WS_TMB_FULL && !opt.DASH_VERTICAL ? dashHeight : 0;
             wsTmbHeight = opt.WS_TMB_FULL
@@ -855,12 +850,6 @@ var ControlsManagerLayoutVertical = {
                 wsTmbWidth * expandFraction,
                 width * opt.MAX_THUMBNAIL_SCALE
             ));
-
-            /* if (opt.REDUCE_WS_TMB_IF_NEEDED) {
-                const searchAllocation = this._searchController._searchResults._content.allocation;
-                const searchWidth = searchAllocation.x2 - searchAllocation.x1;
-                wsTmbWidth = Math.clamp((width - searchWidth) / 2 - spacing, width * 0.05, wsTmbWidth);
-            }*/
 
             wsTmbHeight = Math.round(Math.min(this._workspacesThumbnails.get_preferred_custom_height(wsTmbWidth)[1], wsTmbHeight));
 
@@ -909,9 +898,7 @@ var ControlsManagerLayoutVertical = {
                 dashX = offset;
 
                 if ((opt.WS_TMB_FULL || opt.CENTER_DASH_WS) && !this._xAlignCenter) {
-                    if (opt.WS_TMB_RIGHT) {
-                        // dashX = Math.min(dashX, width - dashWidth - (wsTmbWidth ? wsTmbWidth : 0));
-                    } else {
+                    if (!opt.WS_TMB_RIGHT) {
                         dashX = (wsTmbWidth ? wsTmbWidth : 0) + offset;
                         dashX = Math.max(dashX, wsTmbWidth ? wsTmbWidth + spacing : 0);
                         dashX = Math.min(dashX, width - dashWidth - spacing);
@@ -960,13 +947,10 @@ var ControlsManagerLayoutVertical = {
 
         // Search entry
         const searchXoffset = (opt.DASH_LEFT ? dashWidth : 0) + spacing + (opt.WS_TMB_RIGHT ? 0 : wsTmbWidth + spacing);
-        // let [searchHeight] = this._searchEntry.get_preferred_height(width - wsTmbWidth);
 
         // Y position under top Dash
         let searchEntryX, searchEntryY;
-        /* if (opt.OVERVIEW_MODE2 && !opt.DASH_TOP && !opt.WS_TMB_TOP) {
-            searchEntryY = 7;
-        } else*/ if (opt.DASH_TOP)
+        if (opt.DASH_TOP)
             searchEntryY = startY + dashHeight - spacing;
         else
             searchEntryY = startY;
@@ -988,9 +972,7 @@ var ControlsManagerLayoutVertical = {
 
         availableHeight -= searchHeight + spacing;
 
-        // AppDisplay - state, box, workAreaBox, searchHeight, dashHeight, appGridBox, wsTmbWidth
-        // if (this._appDisplay.visible) {
-
+        // if (this._appDisplay.visible)... ? Can cause problems
         params = [box, workAreaBox, searchHeight, dashWidth, dashHeight, wsTmbWidth, startY]; // send startY, can be compensated
         let appDisplayBox;
         if (!transitionParams.transitioning) {
@@ -1005,7 +987,6 @@ var ControlsManagerLayoutVertical = {
             appDisplayBox = initialBox.interpolate(finalBox, transitionParams.progress);
         }
         this._appDisplay.allocate(appDisplayBox);
-        // }
 
         // Search
         if (opt.CENTER_SEARCH_VIEW) {
@@ -1023,7 +1004,7 @@ var ControlsManagerLayoutVertical = {
     },
 };
 
-var ControlsManagerLayoutHorizontal = {
+const ControlsManagerLayoutHorizontal = {
     _computeWorkspacesBoxForState(state, box, workAreaBox, dashWidth, dashHeight, thumbnailsHeight, searchHeight, startY) {
         const workspaceBox = box.copy();
         let [width, height] = workspaceBox.get_size();
@@ -1211,7 +1192,7 @@ var ControlsManagerLayoutHorizontal = {
         box.x1 += startX;
         let [width, height] = box.get_size();
         // if panel is at bottom position,
-        // compensate the height of the available box (the box size is calculated for top panel)
+        // compensate for the height of the available box (the box size is calculated for top panel)
         height = opt.PANEL_POSITION_TOP ? height : height - Main.panel.height;
         let availableHeight = height;
 
@@ -1273,13 +1254,11 @@ var ControlsManagerLayoutHorizontal = {
             wsTmbWidth = Math.round(Math.min(this._workspacesThumbnails.get_preferred_custom_width(wsTmbHeight)[1], wsTmbWidth));
 
             let wsTmbY;
-            if (opt.WS_TMB_TOP) {
+            if (opt.WS_TMB_TOP)
                 wsTmbY = Math.round(startY + /* searchHeight + */(opt.DASH_TOP ? dashHeight : spacing / 2));
-            } else {
-                // const boxY = workArea.y - monitor.y; // startY might be compensated
-                // wsTmbY = Math.round(boxY + height - (DASH_BOTTOM ? dashHeight : 0) - wsTmbHeight);
+            else
                 wsTmbY = Math.round(startY + height - (opt.DASH_BOTTOM ? dashHeight : 0) - wsTmbHeight);
-            }
+
 
             let wstOffset = (width - wsTmbWidth) / 2;
             wstOffset -= opt.WS_TMB_POSITION_ADJUSTMENT * (wstOffset - spacing / 2);
@@ -1299,7 +1278,6 @@ var ControlsManagerLayoutHorizontal = {
 
 
         if (this._dash.visible) {
-            // const wMaxHeight = height - spacing - wsTmbHeight - 2 * spacing - (DASH_VERTICAL ? 0 : dashHeight + spacing);
             if (opt.WS_TMB_FULL && opt.DASH_VERTICAL) {
                 const wMaxHeight = height - spacing - wsTmbHeight;
                 this._dash.setMaxSize(maxDashWidth, wMaxHeight);
@@ -1326,11 +1304,9 @@ var ControlsManagerLayoutHorizontal = {
                     if (opt.WS_TMB_TOP) {
                         offset -= opt.DASH_POSITION_ADJUSTMENT * (offset - spacing / 2);
                         dashY = startY + offset + wsTmbHeight;
-                        // dashY = Math.max(dashY, startY + wsTmbHeight);
                     } else {
                         offset -= opt.DASH_POSITION_ADJUSTMENT * (offset - spacing / 2);
                         dashY = startY + offset;
-                        // dashY = Math.max(dashY, height - wsTmbHeight - dashHeight - 3 * spacing);
                     }
                 } else {
                     offset = (height - dashHeight) / 2;
@@ -1348,8 +1324,6 @@ var ControlsManagerLayoutHorizontal = {
         }
 
         availableHeight -= opt.DASH_VERTICAL ? 0 : dashHeight;
-
-        /* let [searchHeight] = this._searchEntry.get_preferred_height(width);*/
 
         // Workspaces
         let params = [box, workAreaBox, dashWidth, dashHeight, wsTmbHeight, searchHeight, startY];
@@ -1375,13 +1349,10 @@ var ControlsManagerLayoutHorizontal = {
 
         // Search entry
         const searchXoffset = (opt.DASH_LEFT ? dashWidth : 0) + spacing;
-        // let [searchHeight] = this._searchEntry.get_preferred_height(width - wsTmbWidth);
 
         // Y position under top Dash
         let searchEntryX, searchEntryY;
-        /* if (opt.OVERVIEW_MODE2 && !opt.DASH_TOP && !opt.WS_TMB_TOP) {
-            searchEntryY = 7;
-        } else */if (opt.DASH_TOP)
+        if (opt.DASH_TOP)
             searchEntryY = startY + (opt.WS_TMB_TOP ? wsTmbHeight : 0) + dashHeight - spacing;
         else
             searchEntryY = startY + (opt.WS_TMB_TOP ? wsTmbHeight + spacing : 0);
@@ -1403,8 +1374,7 @@ var ControlsManagerLayoutHorizontal = {
 
         availableHeight -= searchHeight + spacing;
 
-        // AppDisplay - state, box, workAreaBox, searchHeight, dashHeight, appGridBox, wsTmbWidth
-        // if (this._appDisplay.visible) {
+        // if (this._appDisplay.visible)... ? Can cause problems
         params = [box, workAreaBox, searchHeight, dashWidth, dashHeight, wsTmbHeight, startY];
         let appDisplayBox;
         if (!transitionParams.transitioning) {
@@ -1419,7 +1389,6 @@ var ControlsManagerLayoutHorizontal = {
             appDisplayBox = initialBox.interpolate(finalBox, transitionParams.progress);
         }
         this._appDisplay.allocate(appDisplayBox);
-        // }
 
         // Search
         if (opt.CENTER_SEARCH_VIEW) {

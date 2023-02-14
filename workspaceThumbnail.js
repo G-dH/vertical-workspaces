@@ -61,12 +61,9 @@ function update(reset = false) {
 }
 
 
-var WorkspaceThumbnailCommon = {
+const WorkspaceThumbnailCommon = {
+    // injection to _init()
     after__init() {
-
-        // radius of ws thumbnail background
-        this.add_style_class_name('ws-tmb');
-
         // add workspace thumbnails labels if enabled
         if (opt.SHOW_WST_LABELS) { // 0 - disable
             // layout manager allows aligning widget children
@@ -160,22 +157,9 @@ var WorkspaceThumbnailCommon = {
                 this._bgManager = null;
             });
 
+            // full brightness of the thumbnail bg draws unnecessary attention
+            // there is a grey bg under the wallpaper
             this._bgManager.backgroundActor.opacity = 220;
-
-            // this all is just for the small border radius...
-            /* const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
-            const cornerRadius = scaleFactor * BACKGROUND_CORNER_RADIUS_PIXELS;
-            const backgroundContent = this._bgManager.backgroundActor.content;
-            backgroundContent.rounded_clip_radius = cornerRadius;
-
-            // the original clip has some addition at the bottom
-            const rect = new Graphene.Rect();
-            rect.origin.x = this._viewport.x;
-            rect.origin.y = this._viewport.y;
-            rect.size.width = this._viewport.width;
-            rect.size.height = this._viewport.height;
-
-            this._bgManager.backgroundActor.content.set_rounded_clip_bounds(rect);*/
         }
     },
 
@@ -247,7 +231,7 @@ const ThumbnailsBoxCommon = {
     },
 };
 
-var ThumbnailsBoxVertical = {
+const ThumbnailsBoxVertical = {
     _getPlaceholderTarget(index, spacing, rtl) {
         const workspace = this._thumbnails[index];
 
@@ -577,7 +561,7 @@ var ThumbnailsBoxVertical = {
 
 // ThumbnailsBox Horizontal
 
-var ThumbnailsBoxHorizontal = {
+const ThumbnailsBoxHorizontal = {
     get_preferred_custom_width(_forHeight) {
         // Note that for getPreferredHeight/Width we cheat a bit and skip propagating
         // the size request to our children because we know how big they are and know

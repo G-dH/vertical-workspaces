@@ -10,8 +10,6 @@
 
 'use strict';
 
-const { St } = imports.gi;
-
 const Main = imports.ui.main;
 const WorkspaceSwitcherPopup = imports.ui.workspaceSwitcherPopup;
 const WorkspaceAnimation = imports.ui.workspaceAnimation;
@@ -24,6 +22,7 @@ const MonitorGroup = WorkspaceAnimation.MonitorGroup;
 let _origBaseDistance;
 let _wsAnimationSwipeBeginId;
 let _wsAnimationSwipeEndId;
+
 let _overrides;
 let opt;
 
@@ -60,7 +59,7 @@ function _overrideMonitorGroupProperty(reset = false) {
     } else {
         getter = {
             get() {
-                // const spacing = 100 * St.ThemeContext.get_for_stage(global.stage).scale_factor;
+                // const spacing = 100 * imports.gi.St.ThemeContext.get_for_stage(global.stage).scale_factor;
                 const spacing = 0;
                 if (global.workspace_manager.layout_rows === -1)
                     return this._monitor.height + spacing + (opt.PANEL_MODE ? Main.panel.height : 0); // compensation for hidden panel
@@ -75,6 +74,7 @@ function _overrideMonitorGroupProperty(reset = false) {
 }
 
 const MonitorGroupOverride = {
+    // injection to _init()
     after__init() {
         // we have two options to implement static bg feature
         // one is adding background to monitorGroup

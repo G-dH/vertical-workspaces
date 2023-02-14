@@ -13,9 +13,6 @@
 
 'use strict';
 
-const { Meta, Clutter } = imports.gi;
-
-const Main = imports.ui.main;
 const Overview = imports.ui.overview;
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();

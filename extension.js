@@ -10,7 +10,7 @@
 
 'use strict';
 
-const { GLib, GObject, Meta, Shell, St } = imports.gi;
+const { GLib, Shell, St } = imports.gi;
 
 const Main = imports.ui.main;
 
@@ -42,7 +42,7 @@ const PanelOverride = Me.imports.panel;
 const DashOverride = Me.imports.dash;
 
 
-let opt = null;
+let opt;
 
 let _bgManagers;
 let _shellSettings;
@@ -56,12 +56,6 @@ let _monitorsChangedSigId;
 let _watchDockSigId;
 
 let _resetTimeoutId;
-
-// drop control for app grid sorting modes
-let _appSystemStateSigId;
-let _origAppViewItemAcceptDrop;
-let _origAppViewItemHandleDragOver;
-let _origAppDisplayAcceptDrop;
 
 let _enableTimeoutId = 0;
 
@@ -248,8 +242,6 @@ function _resetExtension(timeout = 200) {
         }
     );
 }
-
-// -----------------------------------------------------
 
 function _fixUbuntuDock(activate = true) {
     // Workaround for Ubuntu Dock breaking overview allocations after changing monitor configuration and deactivating dock

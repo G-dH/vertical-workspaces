@@ -8,7 +8,7 @@
  * modified dash module of https://github.com/RensAlthuis/vertical-overview extension
  */
 
-const { Clutter, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
+const { Clutter, GObject, St } = imports.gi;
 const AppDisplay = imports.ui.appDisplay;
 const AppFavorites = imports.ui.appFavorites;
 const DND = imports.ui.dnd;
@@ -22,12 +22,11 @@ const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Util = Me.imports.util;
 const _ = Me.imports.settings._;
 
-let verticalOverrides = {};
 let _origWorkId;
 let _newWorkId;
 let _showAppsIconBtnPressId;
 
-// added values to achieve better ability to scale down according the available space
+// added values to achieve better ability to scale down according to the available space
 var BaseIconSizes = [16, 24, 32, 40, 44, 48, 56, 64, 72, 80, 96, 112, 128];
 
 const RecentFilesSearchProviderPrefix = Me.imports.recentFilesSearchProvider.prefix;
@@ -206,7 +205,7 @@ function _connectShowAppsIcon(reset = false) {
     }
 }
 
-var DashOverride = {
+const DashOverride = {
     handleDragOver(source, actor, _x, y, _time) {
         let app = getAppFromSource(source);
 
@@ -481,7 +480,7 @@ var DashOverride = {
     },
 };
 
-var DashItemContainerOverride = {
+const DashItemContainerOverride = {
     // move labels according dash position
     showLabel() {
         if (!this._labelText)
@@ -540,7 +539,7 @@ var DashItemContainerOverride = {
     },
 };
 
-var DashCommonOverride = {
+const DashCommonOverride = {
     _adjustIconSize() {
         // For the icon size, we only consider children which are "proper"
         // icons (i.e. ignoring drag placeholders) and which are not
@@ -716,7 +715,7 @@ function _updateSearchWindowsIcon(show = opt.SHOW_WINDOWS_ICON) {
     Main.overview._overview._controls.layoutManager._dash._adjustIconSize();
 }
 
-var ShowWindowsIcon = GObject.registerClass(
+const ShowWindowsIcon = GObject.registerClass(
 class ShowWindowsIcon extends Dash.DashItemContainer {
     _init() {
         super._init();
@@ -789,7 +788,7 @@ function _updateRecentFilesIcon(show = opt.SHOW_RECENT_FILES_ICON) {
     Main.overview._overview._controls.layoutManager._dash._adjustIconSize();
 }
 
-var ShowRecentFilesIcon = GObject.registerClass(
+const ShowRecentFilesIcon = GObject.registerClass(
 class ShowRecentFilesIcon extends Dash.DashItemContainer {
     _init() {
         super._init();

@@ -28,7 +28,7 @@ const SEARCH_WINDOWS_PREFIX = Me.imports.windowSearchProvider.prefix;
 
 const ControlsState = imports.ui.overviewControls.ControlsState;
 
-var opt = null;
+var opt;
 
 function update(reset = false) {
     if (_overrides)
@@ -48,7 +48,7 @@ function update(reset = false) {
 }
 
 const WindowPreviewCommon = {
-    // injection to init
+    // injection to _init()
     after__init() {
         const ICON_OVERLAP = 0.7;
 

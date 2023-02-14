@@ -10,7 +10,6 @@
 
 'use strict';
 
-const Main = imports.ui.main;
 const WorkspaceSwitcherPopup = imports.ui.workspaceSwitcherPopup;
 
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -20,7 +19,6 @@ const _Util = Me.imports.util;
 let _overrides;
 
 let opt;
-var _activateSearchProvider;
 
 function update(reset = false) {
     if (_overrides)
@@ -47,6 +45,7 @@ function update(reset = false) {
 }
 
 const WorkspaceSwitcherPopupOverride = {
+    // injection to _init()
     after__init() {
         if (this._list)
             this._list.vertical = true;

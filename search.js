@@ -10,14 +10,10 @@
 
 'use strict';
 
-const { Meta } = imports.gi;
-
 const Main = imports.ui.main;
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();
-const _Util = Me.imports.util;
 
-let _overrides;
 let opt;
 
 let SEARCH_MAX_WIDTH;
@@ -29,7 +25,6 @@ function update(reset = false) {
     if (reset) {
         Main.overview.searchEntry.visible = true;
         Main.overview.searchEntry.opacity = 255;
-        _overrides = null;
         opt = null;
     }
 }

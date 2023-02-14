@@ -9,7 +9,7 @@
 
 'use strict';
 
-const { GLib, GObject, Gio, Gtk, Meta, St, Shell } = imports.gi;
+const { GLib, Gio, Meta, St, Shell } = imports.gi;
 
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -161,7 +161,7 @@ const closeAllResultsRegex = /^\/xa!$/;
 const moveToWsRegex = /^\/m[0-9]+$/;
 const moveAllToWsRegex = /^\/ma[0-9]+$/;
 
-var WindowSearchProvider = class WindowSearchProvider {
+const WindowSearchProvider = class WindowSearchProvider {
     constructor(gOptions) {
         this._gOptions = gOptions;
         this.appInfo = Gio.AppInfo.create_from_commandline('true', _('Open Windows'), null);

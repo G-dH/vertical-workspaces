@@ -10,7 +10,7 @@
 
 'use strict';
 
-const { Clutter, St, Graphene } = imports.gi;
+const { St, Graphene } = imports.gi;
 
 const Main = imports.ui.main;
 const Util = imports.misc.util;
@@ -20,8 +20,8 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
 const _Util = Me.imports.util;
-let _overrides;
 
+let _overrides;
 let opt;
 
 const BACKGROUND_CORNER_RADIUS_PIXELS = 40;
@@ -61,7 +61,8 @@ function update(reset = false) {
 // disadvantage of following workaround - the WINDOW_PREVIEW_MAXIMUM_SCALE value is common for every workspace,
 // on multi-monitor system can be visible unwanted scaling of windows on workspace in WORKSPACE_MODE 0 (windows not spread)
 // when leaving overview while any other workspace is in the WORKSPACE_MODE 1.
-var WorkspaceLayout = {
+const WorkspaceLayout = {
+    // injection to _init()
     after__init() {
         if (opt.OVERVIEW_MODE === 1) {
             this._stateAdjustment.connect('notify::value', () => {
@@ -125,7 +126,7 @@ var WorkspaceLayout = {
     },
 };
 
-var WorkspaceBackground = {
+const WorkspaceBackground = {
     _updateBorderRadius(value = false) {
         // don't round already rounded corners during exposing windows
         if (value === false && opt.OVERVIEW_MODE === 1)

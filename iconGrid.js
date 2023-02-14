@@ -14,7 +14,7 @@
 
 // workaround - silence page -2 error on gnome 43 during cleaning appgrid
 
-var IconGrid = {
+const IconGrid = {
     getItemsAtPage(page) {
         if (page < 0 || page > this.nPages)
             return [];

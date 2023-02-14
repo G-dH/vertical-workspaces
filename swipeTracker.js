@@ -15,6 +15,7 @@ const Main = imports.ui.main;
 const SwipeTracker = imports.ui.swipeTracker;
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();
+
 let opt;
 
 let _vwGestureUpdateId;
@@ -56,9 +57,7 @@ function update(reset = false) {
     }
 }
 
-// ---- SwipeTracker -----------------------------------------------------------------------------------
-// switch overview's state gesture direction
-var SwipeTrackerVertical = {
+const SwipeTrackerVertical = {
     _updateGesture(gesture, time, delta, distance) {
         if (this._state !== 1) // State.SCROLLING)
             return;
