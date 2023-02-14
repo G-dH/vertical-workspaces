@@ -339,7 +339,7 @@ function _applySettings(key) {
     if (key?.includes('dash') || key?.includes('app'))
         DashOverride.update();
 
-    if (key === 'workspace-animation')
+    if (key === 'workspace-switcher-animation')
         WorkspaceAnimationOverride.update();
 }
 
