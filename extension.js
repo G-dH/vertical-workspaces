@@ -41,7 +41,6 @@ const SearchOverride = Me.imports.search;
 const PanelOverride = Me.imports.panel;
 const DashOverride = Me.imports.dash;
 
-
 let opt;
 
 let _bgManagers;
@@ -129,7 +128,7 @@ function activateVShell() {
 
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
-    _setStaticBackground(!opt.SHOW_BG_IN_OVERVIEW);
+    _setStaticBackground();
 
     // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
     Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
@@ -321,7 +320,7 @@ function _updateSettings(settings, key) {
 }
 
 function _applySettings(key) {
-    _setStaticBackground(!opt.SHOW_BG_IN_OVERVIEW);
+    _setStaticBackground();
     _updateOverviewTranslations();
     _switchPageShortcuts();
 
@@ -462,7 +461,7 @@ function _setStaticBackground(reset = false) {
     });
 
     _bgManagers = [];
-    // if (!SHOW_BG_IN_OVERVIEW && SHOW_WS_PREVIEW_BG) the background is used for static transition from wallpaper to empty bg in the overview
+    // if (!SHOW_BG_IN_OVERVIEW && !SHOW_WS_PREVIEW_BG) the background is used for static transition from wallpaper to empty bg in the overview
     if (reset || (!opt.SHOW_BG_IN_OVERVIEW && opt.SHOW_WS_PREVIEW_BG))
         return;
 
