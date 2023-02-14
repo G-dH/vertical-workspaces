@@ -62,7 +62,7 @@
       <default>48</default>
     </key>
     <key type="i" name="dash-bg-opacity">
-      <default>40</default>
+      <default>80</default>
     </key>
     <key type="i" name="dash-bg-radius">
       <default>0</default>
@@ -128,7 +128,7 @@
       <default>false</default>
     </key>
     <key type="i" name="app-grid-icon-size">
-      <default>80</default>
+      <default>-1</default>
     </key>
     <key type="i" name="app-grid-columns">
       <default>8</default>
@@ -143,7 +143,7 @@
       <default>0</default>
     </key>
     <key type="i" name="app-grid-folder-icon-size">
-      <default>80</default>
+      <default>-1</default>
     </key>
     <key type="i" name="app-grid-folder-columns">
       <default>3</default>

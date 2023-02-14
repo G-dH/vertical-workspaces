@@ -280,7 +280,7 @@ function _realizeAppDisplay() {
     // let the main loop realize previous changes before continuing
 
     // don't do this during shell startup
-    if (Main.layoutManager._startingUp)
+    if (Main.layoutManager._startingUp || !opt.APP_GRID_ALLOW_CUSTOM)
         return;
 
     if (_updateAppGridTimeoutId)
