@@ -427,7 +427,6 @@ const AppDisplayCommon = {
             let icon = this._items.get(appId);
             if (!icon) {
                 let app = appSys.lookup_app(appId);
-                if (!app)
 
                 icon = new AppDisplay.AppIcon(app, { isDraggable });
                 icon.connect('notify::pressed', () => {
