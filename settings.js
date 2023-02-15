@@ -37,7 +37,7 @@ var Options = class Options {
 
             this._writeTimeoutId = GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
-                100,
+                500,
                 () => {
                     this._gsettings.apply();
                     this._updateCachedSettings();
@@ -95,9 +95,11 @@ var Options = class Options {
             appGridFolderIconSize: ['int', 'app-grid-folder-icon-size'],
             appGridFolderColumns: ['int', 'app-grid-folder-columns'],
             appGridFolderRows: ['int', 'app-grid-folder-rows'],
+            appGridFolderIconGrid: ['int', 'app-grid-folder-icon-grid'],
             appGridIncludeDash: ['int', 'app-grid-include-dash'],
             appGridIncompletePages: ['boolean', 'app-grid-incomplete-pages'],
             appGridOrder: ['int', 'app-grid-order'],
+            appGridNamesMode: ['int', 'app-grid-names'],
             searchWindowsEnable: ['boolean', 'search-windows-enable'],
             searchRecentFilesEnable: ['boolean', 'search-recent-files-enable'],
             searchFuzzy: ['boolean', 'search-fuzzy'],
@@ -281,8 +283,10 @@ var Options = class Options {
         this.APP_GRID_ROWS = this.get('appGridRows', true);
         this.APP_GRID_ORDER = this.get('appGridOrder', true);
         this.APP_GRID_INCLUDE_DASH = this.get('appGridIncludeDash', true);
+        this.APP_GRID_NAMES_MODE = this.get('appGridNamesMode', true);
 
         this.APP_GRID_FOLDER_ICON_SIZE = this.get('appGridFolderIconSize', true);
+        this.APP_GRID_FOLDER_ICON_GRID = this.get('appGridFolderIconGrid', true);
         this.APP_GRID_FOLDER_COLUMNS = this.get('appGridFolderColumns', true);
         this.APP_GRID_FOLDER_ROWS = this.get('appGridFolderRows', true);
 

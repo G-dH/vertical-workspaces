@@ -10,7 +10,7 @@
 
 'use strict';
 
-const { Clutter, GLib, GObject, Meta, Shell, St } = imports.gi;
+const { Clutter, GLib, GObject, Meta, Shell, St, Pango } = imports.gi;
 
 const DND = imports.ui.dnd;
 const Main = imports.ui.main;
@@ -24,6 +24,9 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const IconGridOverride = Me.imports.iconGrid;
 const _Util = Me.imports.util;
+
+const DIALOG_SHADE_NORMAL = Clutter.Color.from_pixel(0x00000022);
+const DIALOG_SHADE_HIGHLIGHT = Clutter.Color.from_pixel(0x00000000);
 
 // gettext
 const _ = Me.imports.settings._;
@@ -81,6 +84,7 @@ function update(reset = false) {
     _overrides.addOverride('AppIcon', AppDisplay.AppIcon.prototype, AppIcon);
     _overrides.addOverride('BaseAppView', AppDisplay.BaseAppView.prototype, BaseAppView);
     _overrides.addOverride('AppDisplay', AppDisplay.AppDisplay.prototype, AppDisplayCommon);
+    _overrides.addOverride('AppViewItem', AppDisplay.AppViewItem.prototype, AppViewItemCommon);
 
 
     _setAppDisplayOrientation(opt.ORIENTATION === Clutter.Orientation.VERTICAL);
@@ -235,6 +239,12 @@ function _updateAppGridProperties(reset = false) {
         // force rebuild icons. size shouldn't be the same as the current one, otherwise can be arbitrary
         appDisplay._grid.layoutManager.adaptToSize(200, 200);
         appDisplay._redisplay();
+
+        // update app icon labels in case APP_GRID FULL_NAMES changed
+        appDisplay._orderedItems.forEach(icon => {
+            if (icon._updateMultiline)
+                icon._updateMultiline();
+        });
 
         // _realizeAppDisplay();
     }
@@ -461,7 +471,8 @@ const BaseAppView = {
         // Remove old app icons
         removedApps.forEach(icon => {
             this._removeItem(icon);
-            icon.destroy();
+            if (icon)
+                icon.destroy();
         });
 
         // Add new app icons, or move existing ones
@@ -619,6 +630,38 @@ const FolderView = {
 
         return grid;
     },
+
+    createFolderIcon(size) {
+        const layout = new Clutter.GridLayout({
+            row_homogeneous: true,
+            column_homogeneous: true,
+        });
+        let icon = new St.Widget({
+            layout_manager: layout,
+            x_align: Clutter.ActorAlign.CENTER,
+            style: `width: ${size}px; height: ${size}px;`,
+        });
+
+        const numItems = this._orderedItems.length;
+        // decide what number of icons switch to 3x3 grid
+        // APP_GRID_FOLDER_ICON_GRID: 3 -> more than 4
+        //                          : 4 -> more than 8
+        const threshold = opt.APP_GRID_FOLDER_ICON_GRID % 3 ? 8 : 4;
+        const gridSize = opt.APP_GRID_ALLOW_CUSTOM && opt.APP_GRID_FOLDER_ICON_GRID > 2 && numItems > threshold ? 3 : 2;
+        const FOLDER_SUBICON_FRACTION = gridSize === 2 ? 0.4 : 0.27;
+
+        let subSize = Math.floor(FOLDER_SUBICON_FRACTION * size);
+        let rtl = icon.get_text_direction() === Clutter.TextDirection.RTL;
+        for (let i = 0; i < gridSize * gridSize; i++) {
+            const style = `width: ${subSize}px; height: ${subSize}px;`;
+            let bin = new St.Bin({ style });
+            if (i < numItems)
+                bin.child = this._orderedItems[i].app.create_icon_texture(subSize);
+            layout.attach(bin, rtl ? (i + 1) % gridSize : i % gridSize, Math.floor(i / gridSize), 1, 1);
+        }
+
+        return icon;
+    },
 };
 
 // folder columns and rows
@@ -700,6 +743,28 @@ const AppFolderDialog = {
         let [dialogX, dialogY] =
             this.child.get_transformed_position();
 
+        const sourceCenterX = sourceX + this._source.width / 2;
+        const sourceCenterY = sourceY + this._source.height / 2;
+
+        // this covers the whole screen
+        const panelHeight = Main.panel.height;
+        let dialogTargetX = Math.round(sourceCenterX - this.child.width / 2);
+        dialogTargetX = Math.clamp(
+            dialogTargetX,
+            0,
+            this.width - this.child.width
+        );
+
+        let dialogTargetY = Math.round(sourceCenterY - this.child.height / 2);
+        dialogTargetY = Math.clamp(
+            dialogTargetY,
+            opt.PANEL_POSITION_TOP ? panelHeight : 0,
+            this.height - this.child.height - (opt.PANEL_POSITION_TOP ? 0 : panelHeight)
+        );
+
+        const dialogOffsetX = -dialogX + dialogTargetX;
+        const dialogOffsetY = -dialogY + dialogTargetY;
+
         this.child.set({
             translation_x: sourceX - dialogX,
             translation_y: sourceY - dialogY,
@@ -709,15 +774,19 @@ const AppFolderDialog = {
         });
 
         this.ease({
-            background_color: Clutter.Color.from_pixel(0x00000033), // DIALOG_SHADE_NORMAL
+            background_color: DIALOG_SHADE_NORMAL,
             duration: FOLDER_DIALOG_ANIMATION_TIME,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => {
+                // update folder icons name mode
+                this._view._orderedItems.forEach(icon =>
+                    icon._updateMultiline());
+            },
         });
 
-
         this.child.ease({
-            translation_x: 0,
-            translation_y: 0,
+            translation_x: dialogOffsetX,
+            translation_y: dialogOffsetY,
             scale_x: 1,
             scale_y: 1,
             opacity: 255,
@@ -731,6 +800,64 @@ const AppFolderDialog = {
             this._sourceMappedId = this._source.connect(
                 'notify::mapped', this._zoomAndFadeOut.bind(this));
         }
+    },
+
+    _zoomAndFadeOut() {
+        if (!this._isOpen)
+            return;
+
+        if (!this._source.mapped) {
+            this.hide();
+            return;
+        }
+
+        let [sourceX, sourceY] =
+            this._source.get_transformed_position();
+        let [dialogX, dialogY] =
+            this.child.get_transformed_position();
+
+        this.ease({
+            background_color: Clutter.Color.from_pixel(0x00000000),
+            duration: FOLDER_DIALOG_ANIMATION_TIME,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+        });
+
+        this.child.ease({
+            translation_x: sourceX - dialogX + this.child.translation_x,
+            translation_y: sourceY - dialogY + this.child.translation_y,
+            scale_x: this._source.width / this.child.width,
+            scale_y: this._source.height / this.child.height,
+            opacity: 0,
+            duration: FOLDER_DIALOG_ANIMATION_TIME,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => {
+                this.child.set({
+                    translation_x: 0,
+                    translation_y: 0,
+                    scale_x: 1,
+                    scale_y: 1,
+                    opacity: 255,
+                });
+                this.hide();
+
+                this._popdownCallbacks.forEach(func => func());
+                this._popdownCallbacks = [];
+            },
+        });
+
+        this._needsZoomAndFade = false;
+    },
+
+    _setLighterBackground(lighter) {
+        const backgroundColor = lighter
+            ? DIALOG_SHADE_HIGHLIGHT
+            : DIALOG_SHADE_NORMAL;
+
+        this.ease({
+            backgroundColor,
+            duration: FOLDER_DIALOG_ANIMATION_TIME,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+        });
     },
 };
 
@@ -918,4 +1045,48 @@ const AppIcon = {
 
         return false;
     },
+};
+
+const AppViewItemCommon = {
+    _updateMultiline() {
+        const { label } = this.icon;
+        if (label)
+            label.opacity = 255;
+        if (!this._expandTitleOnHover || !this.icon.label)
+            return;
+
+        const { clutterText } = label;
+
+        const isHighlighted = this.has_key_focus() || this.hover || this._forcedHighlight;
+
+        if (opt.APP_GRID_NAMES_MODE === 2 && this._expandTitleOnHover) { // !_expandTitleOnHover indicates search result icon
+            label.opacity = isHighlighted || !this.app ? 255 : 0;
+        }
+        if (isHighlighted)
+            this.get_parent().set_child_above_sibling(this, null);
+
+        const layout = clutterText.get_layout();
+        if (!layout.is_wrapped() && !layout.is_ellipsized())
+            return;
+
+        label.remove_transition('allocation');
+
+        const id = label.connect('notify::allocation', () => {
+            label.restore_easing_state();
+            label.disconnect(id);
+        });
+
+        const expand = opt.APP_GRID_NAMES_MODE === 1 || this._forcedHighlight || this.hover || this.has_key_focus();
+
+        label.save_easing_state();
+        label.set_easing_duration(expand
+            ? AppDisplay.APP_ICON_TITLE_EXPAND_TIME
+            : AppDisplay.APP_ICON_TITLE_COLLAPSE_TIME);
+        clutterText.set({
+            line_wrap: expand,
+            line_wrap_mode: expand ? Pango.WrapMode.WORD_CHAR : Pango.WrapMode.NONE,
+            ellipsize: expand ? Pango.EllipsizeMode.NONE : Pango.EllipsizeMode.END,
+        });
+    },
+
 };
