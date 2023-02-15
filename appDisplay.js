@@ -236,7 +236,7 @@ function _updateAppGridProperties(reset = false) {
         appDisplay._grid.layoutManager.adaptToSize(200, 200);
         appDisplay._redisplay();
 
-        _realizeAppDisplay();
+        // _realizeAppDisplay();
     }
 }
 
@@ -289,7 +289,7 @@ function _realizeAppDisplay() {
 
     _updateAppGridTimeoutId = GLib.timeout_add(
         GLib.PRIORITY_DEFAULT,
-        1000,
+        200,
         () => {
             Main.layoutManager.overviewGroup.opacity = 1;
             Main.layoutManager.overviewGroup.scale_x = 0.1;
