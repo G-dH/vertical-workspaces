@@ -188,6 +188,8 @@ function _updateOverrides(reset = false) {
     WindowPreviewOverride.update(reset);
     WindowManagerOverride.update(reset);
 
+    // IconGrid needs to be patched before AppDisplay
+    IconGridOverride.update(reset);
     AppDisplayOverride.update(reset);
     LayoutOverride.update(reset);
     DashOverride.update(reset);

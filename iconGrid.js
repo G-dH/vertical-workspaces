@@ -10,11 +10,30 @@
 
 'use strict';
 
-// ------------------ IconGrid - override -------------------------------------------------------------------------
+const IconGrid = imports.ui.iconGrid;
+const Me = imports.misc.extensionUtils.getCurrentExtension();
+const _Util = Me.imports.util;
+const shellVersion = _Util.shellVersion;
 
-// workaround - silence page -2 error on gnome 43 during cleaning appgrid
+let _overrides;
 
-const IconGrid = {
+function update(reset = false) {
+    if (_overrides)
+        _overrides.removeAll();
+
+
+    if (reset || shellVersion < 43) {
+        _overrides = null;
+        return;
+    }
+
+    _overrides = new _Util.Overrides();
+
+    _overrides.addOverride('IconGrid', IconGrid.IconGrid.prototype, IconGrid43);
+}
+// workaround - silence page -2 error on gnome 43 while cleaning app grid
+
+const IconGrid43 = {
     getItemsAtPage(page) {
         if (page < 0 || page > this.nPages)
             return [];
