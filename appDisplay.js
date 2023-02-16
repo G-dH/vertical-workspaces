@@ -663,8 +663,8 @@ const FolderView = {
                     bin.connect('enter-event', () => {
                         bin.ease({
                             duration: 100,
-                            scale_x: 1.2,
-                            scale_y: 1.2,
+                            scale_x: 1.14,
+                            scale_y: 1.14,
                             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                         });
                     });
@@ -676,15 +676,22 @@ const FolderView = {
                             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                         });
                     });
-                    bin.connect('button-press-event', () => {
+
+                    const clickAction = new Clutter.ClickAction();
+                    clickAction.connect('clicked', () => {
                         this._orderedItems[i].app.activate();
                         Main.overview.hide();
                         return Clutter.EVENT_STOP;
                     });
+                    bin.add_action(clickAction);
                 }
             }
             layout.attach(bin, rtl ? (i + 1) % gridSize : i % gridSize, Math.floor(i / gridSize), 1, 1);
         }
+
+        // if folder content changed, update folder size
+        if (this._dialog && this._dialog._designCapacity !== this._orderedItems.length)
+            this._dialog._updateFolderSize();
 
         return icon;
     },
@@ -750,11 +757,28 @@ const FOLDER_DIALOG_ANIMATION_TIME = 200; // AppDisplay.FOLDER_DIALOG_ANIMATION_
 const AppFolderDialog = {
     // injection to _init()
     after__init() {
-        this._view.reactive = true;
-        this._view.connect('button-release-event', () => this.toggle());
+        // delegate this dialog to the FolderIcon._view
+        // so its _createFolderIcon function can update the dialog if folder content changed
+        this._view._dialog = this;
 
-        if (!opt.APP_GRID_ALLOW_CUSTOM)
-            return;
+        // click into the folder popup should close it
+        this.child.reactive = true;
+        const clickAction = new Clutter.ClickAction();
+        clickAction.connect('clicked', () => {
+            const [x, y] = clickAction.get_coords();
+            const actor = global.stage.get_actor_at_pos(Clutter.PickMode.ALL, x, y);
+            // if it's not entry for editing folder title
+            if (actor !== this._entry)
+                this.popdown();
+        });
+
+        this.child.add_action(clickAction);
+
+        if (opt.APP_GRID_ALLOW_CUSTOM)
+            this._updateFolderSize();
+    },
+
+    _updateFolderSize() {
         // adapt folder size according to the settings and number of icons
         const view = this._view;
 
@@ -781,10 +805,8 @@ const AppFolderDialog = {
         view._grid.layoutManager.columns_per_page = columns;
         view._redisplay();
 
-        this._setFolderSize(columns, rows);
-    },
+        this._folderCapacity = columns * rows;
 
-    _setFolderSize(columns, rows) {
         const iconSize = opt.APP_GRID_FOLDER_ICON_SIZE < 0 ? 96 : opt.APP_GRID_FOLDER_ICON_SIZE;
         let width = columns * (iconSize + 64);
         width = Math.max(540, Math.round(width + width / 10));
@@ -796,6 +818,8 @@ const AppFolderDialog = {
                 padding: 30px;
             `);
         }
+        // store original item count
+        this._designCapacity = nItems;
     },
 
     _zoomAndFadeIn() {
