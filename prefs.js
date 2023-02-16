@@ -625,6 +625,9 @@ function _getAppearanceOptionList() {
             'appGridIconSize',
             [
                 [_('Adaptive (Default)'), -1],
+                [_('256'), 256],
+                [_('224'), 224],
+                [_('208'), 208],
                 [_('192'), 192],
                 [_('176'), 176],
                 [_('160'), 160],
@@ -635,7 +638,7 @@ function _getAppearanceOptionList() {
                 [_('80'), 80],
                 [_('64'), 64],
                 [_('48'), 48],
-                [_('32'), 32],
+                // [_('32'), 32],
             ]
         )
     );
@@ -703,30 +706,30 @@ function _getAppearanceOptionList() {
 
     const folderColumnsAdjustment = new Gtk.Adjustment({
         upper: 8,
-        lower: 2,
+        lower: 0,
         step_increment: 1,
         page_increment: 1,
     });
 
     const folderColumnsSpinBtn = itemFactory.newSpinButton(folderColumnsAdjustment);
     optionList.push(itemFactory.getRowWidget(
-        _('Folder Columns per Page'),
-        _('Number of columns in folder grid.'),
+        _('Folder Columns per Page (0 for adaptive size)'),
+        _('Number of columns in folder grid. If you leave the value on 0, the number of columns will be calculated to fit all folder icons.'),
         folderColumnsSpinBtn,
         'appGridFolderColumns'
     ));
 
     const folderRowsAdjustment = new Gtk.Adjustment({
         upper: 8,
-        lower: 2,
+        lower: 0,
         step_increment: 1,
         page_increment: 1,
     });
 
     const folderRowsSpinBtn = itemFactory.newSpinButton(folderRowsAdjustment);
     optionList.push(itemFactory.getRowWidget(
-        _('Folder Rows per Page'),
-        _('Number of rows in folder grid.'),
+        _('Folder Rows per Page (0 for adaptive size)'),
+        _('Number of rows in folder grid. If you leave the value on 0, the number of rows will be calculated to fit all folder icons.'),
         folderRowsSpinBtn,
         'appGridFolderRows'
     ));
@@ -735,7 +738,7 @@ function _getAppearanceOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Max App Folder Icon Grid Size'),
-            _('Each folder icon shows (up to) 4 app icons as an preview of the folder content, this option allows you to increase the number to 9 icons if folder contains more than 4 apps or 8 apps. The latter avoids half empty folder icons.'),
+            _('Each folder icon shows (up to) 4 app icons as a preview of the folder content, this option allows you to increase the number to 9 icons if folder contains more than 4 or 8 apps. The latter avoids half empty folder icons.'),
             folderIconGridCombo,
             // itemFactory.newDropDown(),
             'appGridFolderIconGrid',
@@ -964,6 +967,16 @@ function _getBehaviorOptionList() {
                 [_('Enable'), 1],
                 [_('Enable - Sort First'), 2],
             ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Active Icons in Folder Preview'),
+            _('If enabled, icons in the folder preview will be clickable, so you can activate an app even without opening the folder.'),
+            itemFactory.newSwitch(),
+            // itemFactory.newDropDown(),
+            'appGridActivePreview'
         )
     );
 

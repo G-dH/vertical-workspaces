@@ -160,6 +160,9 @@
     <key type="i" name="app-grid-folder-icon-grid">
       <default>2</default>
     </key>
+    <key type="b" name="app-grid-active-preview">
+      <default>true</default>
+    </key>
     <key type="i" name="dash-show-windows-before-activation">
       <default>1</default>
     </key>

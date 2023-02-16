@@ -10,7 +10,7 @@
 
 'use strict';
 
-const { Clutter, GLib, GObject, Meta, Shell, St, Pango } = imports.gi;
+const { Clutter, GLib, GObject, Meta, Shell, St, Graphene, Pango } = imports.gi;
 
 const DND = imports.ui.dnd;
 const Main = imports.ui.main;
@@ -655,8 +655,34 @@ const FolderView = {
         for (let i = 0; i < gridSize * gridSize; i++) {
             const style = `width: ${subSize}px; height: ${subSize}px;`;
             let bin = new St.Bin({ style });
-            if (i < numItems)
+            if (i < numItems) {
                 bin.child = this._orderedItems[i].app.create_icon_texture(subSize);
+                if (opt.APP_GRID_ACTIVE_PREVIEW) {
+                    bin.pivot_point = new Graphene.Point({ x: 0.5, y: 0.5 });
+                    bin.reactive = true;
+                    bin.connect('enter-event', () => {
+                        bin.ease({
+                            duration: 100,
+                            scale_x: 1.2,
+                            scale_y: 1.2,
+                            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                        });
+                    });
+                    bin.connect('leave-event', () => {
+                        bin.ease({
+                            duration: 100,
+                            scale_x: 1,
+                            scale_y: 1,
+                            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                        });
+                    });
+                    bin.connect('button-press-event', () => {
+                        this._orderedItems[i].app.activate();
+                        Main.overview.hide();
+                        return Clutter.EVENT_STOP;
+                    });
+                }
+            }
             layout.attach(bin, rtl ? (i + 1) % gridSize : i % gridSize, Math.floor(i / gridSize), 1, 1);
         }
 
@@ -670,8 +696,8 @@ class FolderGrid extends IconGrid.IconGrid {
     _init() {
         super._init({
             allow_incomplete_pages: false,
-            columns_per_page: opt.APP_GRID_ALLOW_CUSTOM ? opt.APP_GRID_FOLDER_COLUMNS : 3,
-            rows_per_page: opt.APP_GRID_ALLOW_CUSTOM ? opt.APP_GRID_FOLDER_ROWS : 3,
+            columns_per_page: opt.APP_GRID_ALLOW_CUSTOM && opt.APP_GRID_FOLDER_COLUMNS ? opt.APP_GRID_FOLDER_COLUMNS : 3,
+            rows_per_page: opt.APP_GRID_ALLOW_CUSTOM && opt.APP_GRID_FOLDER_ROWS ? opt.APP_GRID_FOLDER_ROWS : 3,
             page_halign: Clutter.ActorAlign.CENTER,
             page_valign: Clutter.ActorAlign.CENTER,
         });
@@ -696,8 +722,8 @@ if (AppDisplay.AppGrid) {
         _init() {
             super._init({
                 allow_incomplete_pages: false,
-                columns_per_page: opt.APP_GRID_ALLOW_CUSTOM ? opt.APP_GRID_FOLDER_COLUMNS : 3,
-                rows_per_page: opt.APP_GRID_ALLOW_CUSTOM ? opt.APP_GRID_FOLDER_ROWS : 3,
+                columns_per_page: opt.APP_GRID_ALLOW_CUSTOM && opt.APP_GRID_FOLDER_COLUMNS ? opt.APP_GRID_FOLDER_COLUMNS : 3,
+                rows_per_page: opt.APP_GRID_ALLOW_CUSTOM && opt.APP_GRID_FOLDER_ROWS ? opt.APP_GRID_FOLDER_ROWS : 3,
                 page_halign: Clutter.ActorAlign.CENTER,
                 page_valign: Clutter.ActorAlign.CENTER,
             });
@@ -724,10 +750,45 @@ const FOLDER_DIALOG_ANIMATION_TIME = 200; // AppDisplay.FOLDER_DIALOG_ANIMATION_
 const AppFolderDialog = {
     // injection to _init()
     after__init() {
+        this._view.reactive = true;
+        this._view.connect('button-release-event', () => this.toggle());
+
+        if (!opt.APP_GRID_ALLOW_CUSTOM)
+            return;
+        // adapt folder size according to the settings and number of icons
+        const view = this._view;
+
+        const nItems = view._orderedItems.length;
+        let columns = opt.APP_GRID_FOLDER_COLUMNS;
+        let rows = opt.APP_GRID_FOLDER_ROWS;
+
+        if (!columns && !rows) {
+            columns = Math.round(Math.sqrt(nItems) + 0.49);
+            rows = columns;
+            if (columns * (columns - 1) >= nItems) {
+                rows = columns - 1;
+            } else if ((columns + 1) * (columns - 1) >= nItems) {
+                rows = columns - 1;
+                columns += 1;
+            }
+        } else if (!columns && rows) {
+            columns = Math.ceil(nItems / rows);
+        } else if (columns && !rows) {
+            rows = Math.ceil(nItems / columns);
+        }
+
+        view._grid.layoutManager.rows_per_page = rows;
+        view._grid.layoutManager.columns_per_page = columns;
+        view._redisplay();
+
+        this._setFolderSize(columns, rows);
+    },
+
+    _setFolderSize(columns, rows) {
         const iconSize = opt.APP_GRID_FOLDER_ICON_SIZE < 0 ? 96 : opt.APP_GRID_FOLDER_ICON_SIZE;
-        let width = opt.APP_GRID_FOLDER_COLUMNS * (iconSize + 64);
-        width = Math.max(640, Math.round(width + width / 10));
-        let height = opt.APP_GRID_FOLDER_ROWS * (iconSize + 64) + 150;
+        let width = columns * (iconSize + 64);
+        width = Math.max(540, Math.round(width + width / 10));
+        let height = rows * (iconSize + 64) + 150;
         if (opt.APP_GRID_ALLOW_CUSTOM) {
             this.child.set_style(`
                 width: ${width}px;

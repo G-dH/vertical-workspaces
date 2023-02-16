@@ -100,6 +100,7 @@ var Options = class Options {
             appGridIncompletePages: ['boolean', 'app-grid-incomplete-pages'],
             appGridOrder: ['int', 'app-grid-order'],
             appGridNamesMode: ['int', 'app-grid-names'],
+            appGridActivePreview: ['bool', 'app-grid-active-preview'],
             searchWindowsEnable: ['boolean', 'search-windows-enable'],
             searchRecentFilesEnable: ['boolean', 'search-recent-files-enable'],
             searchFuzzy: ['boolean', 'search-fuzzy'],
@@ -289,6 +290,7 @@ var Options = class Options {
         this.APP_GRID_FOLDER_ICON_GRID = this.get('appGridFolderIconGrid', true);
         this.APP_GRID_FOLDER_COLUMNS = this.get('appGridFolderColumns', true);
         this.APP_GRID_FOLDER_ROWS = this.get('appGridFolderRows', true);
+        this.APP_GRID_ACTIVE_PREVIEW = this.get('appGridActivePreview', true);
 
         this.DASH_SHOW_WINS_BEFORE = this.get('dashShowWindowsBeforeActivation', true);
         this.DASH_SHIFT_CLICK_MV = true;
