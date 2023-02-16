@@ -982,6 +982,16 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Center Open Folders'),
+            _('App folder may open in the center of the screen or above the source folder icon.'),
+            itemFactory.newSwitch(),
+            // itemFactory.newDropDown(),
+            'appGridFolderCenter'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Allow Incomplete Pages'),
             _('If disabled, icons from the next page (if any) are automatically moved to fill any empty slot left after an icon was (re)moved (to a folder for example).'),
             itemFactory.newSwitch(),

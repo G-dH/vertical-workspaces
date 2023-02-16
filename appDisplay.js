@@ -81,6 +81,7 @@ function update(reset = false) {
         _overrides.addOverride('IconGrid', IconGrid.IconGrid.prototype, IconGridOverride.IconGrid);
     }
     _overrides.addOverride('FolderView', AppDisplay.FolderView.prototype, FolderView);
+    _overrides.addOverride('FolderIcon', AppDisplay.FolderIcon.prototype, FolderIcon);
     _overrides.addOverride('AppIcon', AppDisplay.AppIcon.prototype, AppIcon);
     _overrides.addOverride('BaseAppView', AppDisplay.BaseAppView.prototype, BaseAppView);
     _overrides.addOverride('AppDisplay', AppDisplay.AppDisplay.prototype, AppDisplayCommon);
@@ -620,6 +621,12 @@ const BaseAppViewGridLayout = {
     },
 };
 
+const FolderIcon = {
+    after__init() {
+        this.view._folderIcon = this;
+    },
+};
+
 const FolderView = {
     _createGrid() {
         let grid;
@@ -678,10 +685,20 @@ const FolderView = {
                     });
 
                     const clickAction = new Clutter.ClickAction();
-                    clickAction.connect('clicked', () => {
-                        this._orderedItems[i].app.activate();
-                        Main.overview.hide();
-                        return Clutter.EVENT_STOP;
+                    clickAction.connect('clicked', act => {
+                        const button = act.get_button();
+                        if (button === Clutter.BUTTON_PRIMARY) {
+                            this._orderedItems[i].app.activate();
+                            Main.overview.hide();
+                            return Clutter.EVENT_STOP;
+                        } else if (button === Clutter.BUTTON_SECONDARY) {
+                            if (!this._folderIcon._dialog)
+                                this._folderIcon._ensureFolderDialog();
+
+                            this._folderIcon._dialog.toggle();
+                            return Clutter.EVENT_STOP;
+                        }
+                        return Clutter.EVENT_PROPAGATE;
                     });
                     bin.add_action(clickAction);
                 }
@@ -831,22 +848,25 @@ const AppFolderDialog = {
         const sourceCenterX = sourceX + this._source.width / 2;
         const sourceCenterY = sourceY + this._source.height / 2;
 
-        // this covers the whole screen
-        const panelHeight = Main.panel.height;
-        let dialogTargetX = Math.round(sourceCenterX - this.child.width / 2);
-        dialogTargetX = Math.clamp(
-            dialogTargetX,
-            0,
-            this.width - this.child.width
-        );
+        // this. covers the whole screen
+        let dialogTargetX = dialogX;
+        let dialogTargetY = dialogY;
+        if (!opt.APP_GRID_FOLDER_CENTER) {
+            const panelHeight = Main.panel.height;
+            dialogTargetX = Math.round(sourceCenterX - this.child.width / 2);
+            dialogTargetX = Math.clamp(
+                dialogTargetX,
+                0,
+                this.width - this.child.width
+            );
 
-        let dialogTargetY = Math.round(sourceCenterY - this.child.height / 2);
-        dialogTargetY = Math.clamp(
-            dialogTargetY,
-            opt.PANEL_POSITION_TOP ? panelHeight : 0,
-            this.height - this.child.height - (opt.PANEL_POSITION_TOP ? 0 : panelHeight)
-        );
-
+            dialogTargetY = Math.round(sourceCenterY - this.child.height / 2);
+            dialogTargetY = Math.clamp(
+                dialogTargetY,
+                opt.PANEL_POSITION_TOP ? panelHeight : 0,
+                this.height - this.child.height - (opt.PANEL_POSITION_TOP ? 0 : panelHeight)
+            );
+        }
         const dialogOffsetX = -dialogX + dialogTargetX;
         const dialogOffsetY = -dialogY + dialogTargetY;
 
