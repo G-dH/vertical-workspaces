@@ -212,30 +212,15 @@ function _updateAppGridProperties(reset = false) {
             _appGridLayoutSettings = ExtensionUtils.getSettings('org.gnome.shell');
             _appGridLayoutConId = _appGridLayoutSettings.connect('changed::app-picker-layout', _resetAppGrid);
         }
-
+        appDisplay._grid.layoutManager.allow_incomplete_pages = opt.APP_GRID_ALLOW_INCOMPLETE_PAGES;
         // remove icons from App Grid
         _resetAppGrid();
 
-        const updateGrid = (rows, columns) => {
-            if (rows === -1 || columns === -1) {
-                appDisplay._grid.setGridModes();
-            } else {
-                appDisplay._grid.setGridModes(
-                    [{ rows, columns }]
-                );
-            }
-            appDisplay._grid._setGridMode(0);
-        };
-
+        // force redisplay
         appDisplay._grid._currentMode = -1;
-        if (opt.APP_GRID_ALLOW_CUSTOM) {
-            updateGrid(opt.APP_GRID_ROWS, opt.APP_GRID_COLUMNS);
-        } else {
-            appDisplay._grid.setGridModes();
-            updateGrid(-1, -1);
-        }
+        appDisplay._grid.setGridModes();
         appDisplay._grid.layoutManager.fixedIconSize = opt.APP_GRID_ICON_SIZE;
-        appDisplay._grid.layoutManager.allow_incomplete_pages = opt.APP_GRID_ALLOW_INCOMPLETE_PAGES;
+
 
         // force rebuild icons. size shouldn't be the same as the current one, otherwise can be arbitrary
         appDisplay._grid.layoutManager.adaptToSize(200, 200);
@@ -291,7 +276,7 @@ function _realizeAppDisplay() {
     // let the main loop realize previous changes before continuing
 
     // don't do this during shell startup
-    if (Main.layoutManager._startingUp || !opt.APP_GRID_ALLOW_CUSTOM)
+    if (Main.layoutManager._startingUp)
         return;
 
     if (_updateAppGridTimeoutId)
@@ -624,6 +609,12 @@ const BaseAppViewGridLayout = {
 const FolderIcon = {
     after__init() {
         this.view._folderIcon = this;
+        // If folder preview icons are clickable,
+        // disable opening the folder with primary mouse button and enable the secondary one
+        const buttonMask = opt.APP_GRID_ACTIVE_PREVIEW
+            ? St.ButtonMask.THREE | St.ButtonMask.TWO
+            : St.ButtonMask.ONE | St.ButtonMask.TWO;
+        this.button_mask = buttonMask;
     },
 };
 
@@ -654,7 +645,7 @@ const FolderView = {
         // APP_GRID_FOLDER_ICON_GRID: 3 -> more than 4
         //                          : 4 -> more than 8
         const threshold = opt.APP_GRID_FOLDER_ICON_GRID % 3 ? 8 : 4;
-        const gridSize = opt.APP_GRID_ALLOW_CUSTOM && opt.APP_GRID_FOLDER_ICON_GRID > 2 && numItems > threshold ? 3 : 2;
+        const gridSize = opt.APP_GRID_FOLDER_ICON_GRID > 2 && numItems > threshold ? 3 : 2;
         const FOLDER_SUBICON_FRACTION = gridSize === 2 ? 0.4 : 0.27;
 
         let subSize = Math.floor(FOLDER_SUBICON_FRACTION * size);
@@ -720,14 +711,14 @@ class FolderGrid extends IconGrid.IconGrid {
     _init() {
         super._init({
             allow_incomplete_pages: false,
-            columns_per_page: opt.APP_GRID_ALLOW_CUSTOM && opt.APP_GRID_FOLDER_COLUMNS ? opt.APP_GRID_FOLDER_COLUMNS : 3,
-            rows_per_page: opt.APP_GRID_ALLOW_CUSTOM && opt.APP_GRID_FOLDER_ROWS ? opt.APP_GRID_FOLDER_ROWS : 3,
+            columns_per_page: opt.APP_GRID_FOLDER_COLUMNS ? opt.APP_GRID_FOLDER_COLUMNS : 3,
+            rows_per_page: opt.APP_GRID_FOLDER_ROWS ? opt.APP_GRID_FOLDER_ROWS : 3,
             page_halign: Clutter.ActorAlign.CENTER,
             page_valign: Clutter.ActorAlign.CENTER,
         });
 
-        if (opt.APP_GRID_ALLOW_CUSTOM)
-            this.set_style('column-spacing: 10px; row-spacing: 10px;');
+        // if (!opt.APP_GRID_FOLDER_DEFAULT)
+        this.set_style('column-spacing: 10px; row-spacing: 10px;');
         this.layout_manager.fixedIconSize = opt.APP_GRID_FOLDER_ICON_SIZE;
     }
 
@@ -746,20 +737,20 @@ if (AppDisplay.AppGrid) {
         _init() {
             super._init({
                 allow_incomplete_pages: false,
-                columns_per_page: opt.APP_GRID_ALLOW_CUSTOM && opt.APP_GRID_FOLDER_COLUMNS ? opt.APP_GRID_FOLDER_COLUMNS : 3,
-                rows_per_page: opt.APP_GRID_ALLOW_CUSTOM && opt.APP_GRID_FOLDER_ROWS ? opt.APP_GRID_FOLDER_ROWS : 3,
+                columns_per_page: opt.APP_GRID_FOLDER_COLUMNS ? opt.APP_GRID_FOLDER_COLUMNS : 3,
+                rows_per_page: opt.APP_GRID_FOLDER_ROWS ? opt.APP_GRID_FOLDER_ROWS : 3,
                 page_halign: Clutter.ActorAlign.CENTER,
                 page_valign: Clutter.ActorAlign.CENTER,
             });
 
-            if (opt.APP_GRID_ALLOW_CUSTOM)
-                this.set_style('column-spacing: 10px; row-spacing: 10px;');
+            // if (!opt.APP_GRID_FOLDER_DEFAULT)
+            this.set_style('column-spacing: 10px; row-spacing: 10px;');
             this.layout_manager.fixedIconSize = opt.APP_GRID_FOLDER_ICON_SIZE;
 
             this.setGridModes([
                 {
-                    rows: opt.APP_GRID_ALLOW_CUSTOM ? opt.APP_GRID_FOLDER_ROWS : 3,
-                    columns: opt.APP_GRID_ALLOW_CUSTOM ? opt.APP_GRID_FOLDER_COLUMNS : 3,
+                    columns: opt.APP_GRID_FOLDER_COLUMNS ? opt.APP_GRID_FOLDER_COLUMNS : 3,
+                    rows: opt.APP_GRID_FOLDER_ROWS ? opt.APP_GRID_FOLDER_ROWS : 3,
                 },
             ]);
         }
@@ -791,8 +782,7 @@ const AppFolderDialog = {
 
         this.child.add_action(clickAction);
 
-        if (opt.APP_GRID_ALLOW_CUSTOM)
-            this._updateFolderSize();
+        this._updateFolderSize();
     },
 
     _updateFolderSize() {
@@ -820,22 +810,22 @@ const AppFolderDialog = {
 
         view._grid.layoutManager.rows_per_page = rows;
         view._grid.layoutManager.columns_per_page = columns;
-        view._redisplay();
 
-        this._folderCapacity = columns * rows;
+        // this line is required by GS 43
+        view._grid.setGridModes([{ columns, rows }]);
 
         const iconSize = opt.APP_GRID_FOLDER_ICON_SIZE < 0 ? 96 : opt.APP_GRID_FOLDER_ICON_SIZE;
-        let width = columns * (iconSize + 64);
+        let width = columns * (iconSize + /* icon padding*/64) + /* padding for nav arrows*/64;
         width = Math.max(540, Math.round(width + width / 10));
-        let height = rows * (iconSize + 64) + 150;
-        if (opt.APP_GRID_ALLOW_CUSTOM) {
-            this.child.set_style(`
-                width: ${width}px;
-                height: ${height}px;
-                padding: 30px;
-            `);
-        }
+        let height = rows * (iconSize + /* icon padding*/64) + /* header*/75 + /* padding*/100;
+        this.child.set_style(`
+            width: ${width}px;
+            height: ${height}px;
+            padding: 30px;
+        `);
+
         // store original item count
+        view._redisplay();
         this._designCapacity = nItems;
     },
 

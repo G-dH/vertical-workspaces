@@ -279,10 +279,11 @@ var Options = class Options {
         this.SEARCH_MAX_ROWS = this.get('searchMaxResultsRows', true);
 
         this.APP_GRID_ALLOW_INCOMPLETE_PAGES = false;
-        this.APP_GRID_ALLOW_CUSTOM = this.get('appGridAllowCustom', true);
+        // this.APP_GRID_ALLOW_CUSTOM = this.get('appGridAllowCustom', true);
         this.APP_GRID_ICON_SIZE = this.get('appGridIconSize', true);
         this.APP_GRID_COLUMNS = this.get('appGridColumns', true);
         this.APP_GRID_ROWS = this.get('appGridRows', true);
+        this.APP_GRID_ADAPTIVE = !this.APP_GRID_COLUMNS && !this.APP_GRID_ROWS;
         this.APP_GRID_ORDER = this.get('appGridOrder', true);
         this.APP_GRID_INCLUDE_DASH = this.get('appGridIncludeDash', true);
         this.APP_GRID_NAMES_MODE = this.get('appGridNamesMode', true);
@@ -291,6 +292,7 @@ var Options = class Options {
         this.APP_GRID_FOLDER_ICON_GRID = this.get('appGridFolderIconGrid', true);
         this.APP_GRID_FOLDER_COLUMNS = this.get('appGridFolderColumns', true);
         this.APP_GRID_FOLDER_ROWS = this.get('appGridFolderRows', true);
+        this.APP_GRID_FOLDER_DEFAULT = this.APP_GRID_FOLDER_ROWS === 3 && this.APP_GRID_FOLDER_COLUMNS === 3;
         this.APP_GRID_ACTIVE_PREVIEW = this.get('appGridActivePreview', true);
         this.APP_GRID_FOLDER_CENTER = this.get('appGridFolderCenter', true);
 

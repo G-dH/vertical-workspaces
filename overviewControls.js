@@ -254,6 +254,12 @@ const ControlsManager = {
         if (this.dash.showAppsButton.checked)
             this._searchTransition = false;
 
+        // update App Grid after settings changed
+        // only if the App Grid is currently visible on the screen, the paging updates correctly
+        if (currentState === ControlsState.APP_GRID && this._appDisplay.visible && opt._appGridNeedsRedisplay) {
+            opt._appGridNeedsRedisplay = false;
+            Me.imports.appDisplay._updateAppGridProperties();
+        }
         // if !APP_GRID_ANIMATION, appGrid needs to be hidden in WINDOW_PICKER mode (1)
         // but needs to be visible for transition from HIDDEN (0) to APP_GRID (2)
         this._appDisplay.visible =

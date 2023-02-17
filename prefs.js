@@ -663,7 +663,23 @@ function _getAppearanceOptionList() {
         )
     );
 
-    const customGridSwitch = itemFactory.newSwitch();
+    const folderIconGridCombo = itemFactory.newComboBox();
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Max App Folder Icon Grid Size'),
+            _('Each folder icon shows (up to) 4 app icons as a preview of the folder content, this option allows you to increase the number to 9 icons if folder contains more than 4 or 8 apps. The latter avoids half empty folder icons.'),
+            folderIconGridCombo,
+            // itemFactory.newDropDown(),
+            'appGridFolderIconGrid',
+            [
+                [_('2x2 (Default)'), 2],
+                [_('3x3 for 5+ apps'), 3],
+                [_('3x3 for 9+ apps'), 4],
+            ]
+        )
+    );
+
+    /* const customGridSwitch = itemFactory.newSwitch();
     optionList.push(
         itemFactory.getRowWidget(
             _('Enable Custom Grid Size'),
@@ -672,34 +688,34 @@ function _getAppearanceOptionList() {
             // itemFactory.newDropDown(),
             'appGridAllowCustom'
         )
-    );
+    );*/
 
     const columnsAdjustment = new Gtk.Adjustment({
         upper: 15,
-        lower: 2,
+        lower: 0,
         step_increment: 1,
         page_increment: 1,
     });
 
     const columnsSpinBtn = itemFactory.newSpinButton(columnsAdjustment);
     optionList.push(itemFactory.getRowWidget(
-        _('Columns per Page'),
-        _('Number of columns in application grid.'),
+        _('Columns per Page (0 for adaptive number)'),
+        _('Number of columns in application grid. If set to 0 (default setting) the number will be set automatically to fit available height.'),
         columnsSpinBtn,
         'appGridColumns'
     ));
 
     const rowsAdjustment = new Gtk.Adjustment({
         upper: 15,
-        lower: 2,
+        lower: 0,
         step_increment: 1,
         page_increment: 1,
     });
 
     const rowsSpinBtn = itemFactory.newSpinButton(rowsAdjustment);
     optionList.push(itemFactory.getRowWidget(
-        _('Rows per Page'),
-        _('Number of rows in application grid.'),
+        _('Rows per Page (0 for adaptive number)'),
+        _('Number of rows in application grid. If set to 0 (default setting) the number will be set automatically to fit available height.'),
         rowsSpinBtn,
         'appGridRows'
     ));
@@ -733,36 +749,6 @@ function _getAppearanceOptionList() {
         folderRowsSpinBtn,
         'appGridFolderRows'
     ));
-
-    const folderIconGridCombo = itemFactory.newComboBox();
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Max App Folder Icon Grid Size'),
-            _('Each folder icon shows (up to) 4 app icons as a preview of the folder content, this option allows you to increase the number to 9 icons if folder contains more than 4 or 8 apps. The latter avoids half empty folder icons.'),
-            folderIconGridCombo,
-            // itemFactory.newDropDown(),
-            'appGridFolderIconGrid',
-            [
-                [_('2x2 (Default)'), 2],
-                [_('3x3 for 5+ apps'), 3],
-                [_('3x3 for 9+ apps'), 4],
-            ]
-        )
-    );
-
-    const _setOptionsSensitivity = () => {
-        columnsSpinBtn.sensitive = customGridSwitch.active;
-        rowsSpinBtn.sensitive = customGridSwitch.active;
-        folderColumnsSpinBtn.sensitive = customGridSwitch.active;
-        folderRowsSpinBtn.sensitive = customGridSwitch.active;
-        folderIconGridCombo.sensitive = customGridSwitch.active;
-    };
-
-    _setOptionsSensitivity();
-    customGridSwitch.connect('notify::active', () => {
-        _setOptionsSensitivity();
-    });
-
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -958,7 +944,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Include Dash Items'),
-            _('Include favorite / running apps currently present in the Dash in the app grid.'),
+            _('Include favorite / running apps currently present in the Dash to the app grid.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'appGridIncludeDash',
@@ -973,7 +959,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Active Icons in Folder Preview'),
-            _('If enabled, icons in the folder preview will be clickable, so you can activate an app even without opening the folder.'),
+            _('If enabled, clicking an app icon in a folder preview will directly open the application without having to open the folder first. In this case, you can open the folder with the right mouse button.'),
             itemFactory.newSwitch(),
             // itemFactory.newDropDown(),
             'appGridActivePreview'

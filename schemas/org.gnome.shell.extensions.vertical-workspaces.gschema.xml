@@ -131,10 +131,10 @@
       <default>-1</default>
     </key>
     <key type="i" name="app-grid-columns">
-      <default>8</default>
+      <default>0</default>
     </key>
     <key type="i" name="app-grid-rows">
-      <default>4</default>
+      <default>0</default>
     </key>
     <key type="i" name="app-grid-order">
       <default>0</default>
@@ -146,10 +146,10 @@
       <default>-1</default>
     </key>
     <key type="i" name="app-grid-folder-columns">
-      <default>3</default>
+      <default>0</default>
     </key>
     <key type="i" name="app-grid-folder-rows">
-      <default>3</default>
+      <default>0</default>
     </key>
     <key type="b" name="app-grid-incomplete-pages">
       <default>true</default>
@@ -158,10 +158,10 @@
       <default>0</default>
     </key>
     <key type="i" name="app-grid-folder-icon-grid">
-      <default>2</default>
+      <default>3</default>
     </key>
     <key type="b" name="app-grid-active-preview">
-      <default>true</default>
+      <default>false</default>
     </key>
     <key type="b" name="app-grid-folder-center">
       <default>false</default>
