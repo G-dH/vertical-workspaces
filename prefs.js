@@ -182,7 +182,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Open Windows Icon Position'),
-            _('This option adds "Search Open Windows" icon into dash so you can directly toggle window search provider results. Even if you disable this icon, you can use the secondary mouse button click on the Show Apps Icon, or the Space hotkey to access this feature.'),
+            _('This option adds "Search Open Windows" icon into dash (if window search provider enabled on the Behavior tab) so you can directly toggle window search provider results. Even if you disable this icon, you can use the secondary mouse button click on the Show Apps Icon, or the Space hotkey to access this feature.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'dashShowWindowsIcon',
@@ -197,7 +197,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Recent Files Icon Position'),
-            _('This option adds "Search Recent Files" icon into dash so you can directly toggle recent files search provider results. Even if you disable this icon, you can use the secondary mouse button click on the Show Apps Icon, or the Ctrl + Space hotkey to access this feature.'),
+            _('This option adds "Search Recent Files" icon into dash (if recent files search provider enabled on the Behavior tab) so you can directly toggle recent files search provider results. Even if you disable this icon, you can use Ctrl + Space hotkey to access this feature.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'dashShowRecentFilesIcon',
@@ -699,7 +699,7 @@ function _getAppearanceOptionList() {
 
     const columnsSpinBtn = itemFactory.newSpinButton(columnsAdjustment);
     optionList.push(itemFactory.getRowWidget(
-        _('Columns per Page (0 for adaptive number)'),
+        _('Columns per Page (0 for adaptive grid)'),
         _('Number of columns in application grid. If set to 0 (default setting) the number will be set automatically to fit available height.'),
         columnsSpinBtn,
         'appGridColumns'
@@ -714,7 +714,7 @@ function _getAppearanceOptionList() {
 
     const rowsSpinBtn = itemFactory.newSpinButton(rowsAdjustment);
     optionList.push(itemFactory.getRowWidget(
-        _('Rows per Page (0 for adaptive number)'),
+        _('Rows per Page (0 for adaptive grid)'),
         _('Number of rows in application grid. If set to 0 (default setting) the number will be set automatically to fit available height.'),
         rowsSpinBtn,
         'appGridRows'
@@ -729,7 +729,7 @@ function _getAppearanceOptionList() {
 
     const folderColumnsSpinBtn = itemFactory.newSpinButton(folderColumnsAdjustment);
     optionList.push(itemFactory.getRowWidget(
-        _('Folder Columns per Page (0 for adaptive size)'),
+        _('Folder Columns per Page (0 for adaptive grid)'),
         _('Number of columns in folder grid. If you leave the value on 0, the number of columns will be calculated to fit all folder icons.'),
         folderColumnsSpinBtn,
         'appGridFolderColumns'
@@ -744,7 +744,7 @@ function _getAppearanceOptionList() {
 
     const folderRowsSpinBtn = itemFactory.newSpinButton(folderRowsAdjustment);
     optionList.push(itemFactory.getRowWidget(
-        _('Folder Rows per Page (0 for adaptive size)'),
+        _('Folder Rows per Page (0 for adaptive grid)'),
         _('Number of rows in folder grid. If you leave the value on 0, the number of rows will be calculated to fit all folder icons.'),
         folderRowsSpinBtn,
         'appGridFolderRows'

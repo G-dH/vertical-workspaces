@@ -340,7 +340,7 @@ function _applySettings(key) {
     if (key?.includes('panel'))
         PanelOverride.update();
 
-    if (key?.includes('dash') || key?.includes('app'))
+    if (key?.includes('dash') || key?.includes('search') || key?.includes('icon'))
         DashOverride.update();
 
     if (key === 'workspace-switcher-animation')

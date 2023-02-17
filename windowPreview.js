@@ -28,7 +28,7 @@ const SEARCH_WINDOWS_PREFIX = Me.imports.windowSearchProvider.prefix;
 
 const ControlsState = imports.ui.overviewControls.ControlsState;
 
-var opt;
+let opt;
 
 function update(reset = false) {
     if (_overrides)
