@@ -606,6 +606,13 @@ const BaseAppViewGridLayout = {
     },
 };
 
+function _openFolderDialog(folderIcon) {
+    if (!folderIcon._dialog)
+        folderIcon._ensureFolderDialog();
+
+    folderIcon._dialog.toggle();
+}
+
 const FolderIcon = {
     after__init() {
         this.view._folderIcon = this;
@@ -616,6 +623,7 @@ const FolderIcon = {
             : St.ButtonMask.ONE | St.ButtonMask.TWO;
         this.button_mask = buttonMask;
     },
+
 };
 
 const FolderView = {
@@ -676,20 +684,51 @@ const FolderView = {
                     });
 
                     const clickAction = new Clutter.ClickAction();
-                    clickAction.connect('clicked', act => {
-                        const button = act.get_button();
-                        if (button === Clutter.BUTTON_PRIMARY) {
-                            this._orderedItems[i].app.activate();
-                            Main.overview.hide();
+                    clickAction.connect('clicked', action => {
+                        const button = action.get_button();
+                        const middleButton = button === Clutter.BUTTON_MIDDLE;
+                        const primaryButton = button === Clutter.BUTTON_PRIMARY;
+                        if (primaryButton || middleButton) {
+                            const app = this._orderedItems[i].app;
+                            const state = Clutter.get_current_event().get_state();
+                            const isCtrlPressed = (state & Clutter.ModifierType.CONTROL_MASK) !== 0;
+                            const isShiftPressed = (state & Clutter.ModifierType.SHIFT_MASK) !== 0;
+                            const appRunning = app.state === Shell.AppState.RUNNING;
+                            const openNewWindow = app.can_open_new_window() &&
+                                    appRunning && (isCtrlPressed || middleButton);
+                            if (openNewWindow) {
+                                app.open_new_window(-1);
+                            } else {
+                                // Shift moves all app windows to the current workspace, like normal app icon
+                                if (isShiftPressed && appRunning) {
+                                    app.get_windows().forEach(win => {
+                                        win.change_workspace(global.workspace_manager.get_active_workspace());
+                                    });
+                                } else if ((isCtrlPressed || middleButton) && appRunning) {
+                                    // if Ctrl is pressed, overview won't close on activation, even if the app cannot open new window
+                                    app.get_windows()[0].change_workspace(global.workspace_manager.get_active_workspace());
+                                }
+
+                                // Shift only moves existing app
+                                if (!isShiftPressed) {
+                                    app.activate();
+                                    if (primaryButton)
+                                        Main.overview.hide();
+                                }
+                            }
                             return Clutter.EVENT_STOP;
                         } else if (button === Clutter.BUTTON_SECONDARY) {
-                            if (!this._folderIcon._dialog)
-                                this._folderIcon._ensureFolderDialog();
-
-                            this._folderIcon._dialog.toggle();
+                            _openFolderDialog(this._folderIcon);
                             return Clutter.EVENT_STOP;
                         }
                         return Clutter.EVENT_PROPAGATE;
+                    });
+                    clickAction.connect('long-press', (action, actor, state) => {
+                        if (action.get_button() === Clutter.BUTTON_PRIMARY && state === Clutter.LongPressState.ACTIVATE) {
+                            _openFolderDialog(this._folderIcon);
+                            return false;
+                        }
+                        return true;
                     });
                     bin.add_action(clickAction);
                 }
@@ -1120,7 +1159,7 @@ const AppIcon = {
             }
 
             if (/* opt.APP_MENU_MV_TO_WS && */this._windowsOnOtherWs())
-                popupItems.push([_('Move App to Current Workspace'), this._moveAppToCurrentWorkspace]);
+                popupItems.push([_('Move App to Current Workspace ( Shift + Click )'), this._moveAppToCurrentWorkspace]);
         }
 
         this._addedMenuItems = [];

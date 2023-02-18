@@ -959,7 +959,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Active Icons in Folder Preview'),
-            _('If enabled, clicking an app icon in a folder preview will directly open the application without having to open the folder first. In this case, you can open the folder with the right mouse button.'),
+            _('If enabled, clicking an app icon in a folder preview directly opens the app without having to open the folder first. Middle button opens new window of the app without closing the overview, so you can open multiple apps in a row on the current workspace and secondary button opens the folder.'),
             itemFactory.newSwitch(),
             // itemFactory.newDropDown(),
             'appGridActivePreview'
