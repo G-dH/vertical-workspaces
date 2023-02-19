@@ -98,12 +98,8 @@ const WindowPreviewCommon = {
             this._title.opacity = 0;
         }
 
-        if (opt.ALWAYS_SHOW_WIN_TITLES) {
+        if (opt.ALWAYS_SHOW_WIN_TITLES)
             this._title.show();
-            this._stateConId = this._workspace._background._stateAdjustment.connect('notify::value', adj => {
-                this._title.opacity = Math.floor(adj.value) * 255;
-            });
-        }
 
         if (opt.OVERVIEW_MODE === 1) {
             // spread windows on hover
@@ -113,16 +109,8 @@ const WindowPreviewCommon = {
                     return;
 
                 const adjustment = this._workspace._background._stateAdjustment;
-                if (!adjustment.value && !Main.overview._animationInProgress) {
-                    opt.WORKSPACE_MODE = 1;
-                    if (adjustment.value === 0) {
-                        adjustment.value = 0;
-                        adjustment.ease(1, {
-                            duration: 200,
-                            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                        });
-                    }
-                }
+                opt.WORKSPACE_MODE = 1;
+                _Util.exposeWindows(adjustment, false);
                 this.disconnect(this._wsStateConId);
             });
         }
@@ -158,8 +146,6 @@ const WindowPreviewCommon = {
             }
             return Clutter.EVENT_PROPAGATE;
         });
-
-        this.connect('destroy', () => this._workspace.stateAdjustment.disconnect(this._stateConId));
     },
 
     _updateIconScale() {
@@ -198,17 +184,29 @@ const WindowPreviewCommon = {
                 return;
         }
 
-        this._icon.set({
-            scale_x: scale,
-            scale_y: scale,
-        });
+        if (scale === 1) {
+            this._icon.ease({
+                duration: 100,
+                scale_x: scale,
+                scale_y: scale,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            });
+            this._title.ease({
+                duration: 100,
+                opacity: 255,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            });
+        } else if (this._icon.scale_x !== 0) {
+            this._icon.set({
+                scale_x: 0,
+                scale_y: 0,
+            });
+            this._title.opacity = 0;
+        }
 
         // if titles are in 'always show' mode, we need to add transition between visible/invisible state
         // but the transition is quite expensive,
         // showing the titles at the end of the transition is good enough and workspace preview transition is much smoother
-        this._title.set({
-            opacity: Math.floor(scale) * 255,
-        });
     },
 
     showOverlay(animate) {

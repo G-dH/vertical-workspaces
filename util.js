@@ -11,7 +11,7 @@
 'use strict';
 
 const Gi = imports._gi;
-const { Shell, Meta } = imports.gi;
+const { Shell, Meta, Clutter } = imports.gi;
 
 const Config = imports.misc.config;
 const Main =  imports.ui.main;
@@ -218,4 +218,25 @@ function reorderWorkspace(direction = 0) {
     let targetIdx = activeWsIdx + direction;
     if (targetIdx > -1 && targetIdx < global.workspace_manager.get_n_workspaces())
         global.workspace_manager.reorder_workspace(activeWs, targetIdx);
+}
+
+function exposeWindows(adjustment, activateKeyboard) {
+    // expose windows for static overview modes
+    if (!adjustment.value && !Main.overview._animationInProgress) {
+        if (adjustment.value === 0) {
+            adjustment.value = 0;
+            adjustment.ease(1, {
+                duration: 200,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                onComplete: () => {
+                    if (activateKeyboard) {
+                        Main.ctrlAltTabManager._items.forEach(i => {
+                            if (i.sortGroup === 1 && i.name === 'Windows')
+                                Main.ctrlAltTabManager.focusGroup(i);
+                        });
+                    }
+                },
+            });
+        }
+    }
 }

@@ -838,13 +838,26 @@ const WorkspacesDisplay = {
         case Clutter.KEY_Up:
             if (Main.overview._overview._controls._searchController.searchActive) {
                 Main.overview.searchEntry.grab_key_focus();
-            } else if (opt.OVERVIEW_MODE && !opt.WORKSPACE_MODE) {
+            } else if (opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE) {
+                // expose windows by "clicking" on ws thumbnail
+                // in this case overview stateAdjustment will be used for transition
                 Main.overview._overview.controls._thumbnailsBox._activateThumbnailAtPoint(0, 0, global.get_current_time(), true);
                 Main.ctrlAltTabManager._items.forEach(i => {
                     if (i.sortGroup === 1 && i.name === 'Windows')
                         Main.ctrlAltTabManager.focusGroup(i);
                 });
+            } else if (opt.OVERVIEW_MODE && !opt.WORKSPACE_MODE) {
+                // expose windows for OVERVIEW_MODE 1
+                const adjustment = this._workspacesViews[0]._workspaces[global.workspace_manager.get_active_workspace().index()]._background._stateAdjustment;
+                opt.WORKSPACE_MODE = 1;
+                _Util.exposeWindows(adjustment, true);
+            } else {
+                Main.ctrlAltTabManager._items.forEach(i => {
+                    if (i.sortGroup === 1 && i.name === 'Windows')
+                        Main.ctrlAltTabManager.focusGroup(i);
+                });
             }
+
             return Clutter.EVENT_STOP;
         default:
             return Clutter.EVENT_PROPAGATE;
