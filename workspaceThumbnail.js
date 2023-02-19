@@ -10,7 +10,7 @@
 
 'use strict';
 
-const { Clutter, Graphene, Meta, Shell, St } = imports.gi;
+const { GLib, Clutter, Graphene, Meta, Shell, St } = imports.gi;
 const DND = imports.ui.dnd;
 const Main = imports.ui.main;
 const Background = imports.ui.background;
@@ -64,15 +64,15 @@ function update(reset = false) {
 const WorkspaceThumbnailCommon = {
     // injection to _init()
     after__init() {
+        // layout manager allows aligning widget children
+        this.layout_manager = new Clutter.BinLayout();
+        // adding layout manager to tmb widget breaks wallpaper background aligning and rounded corners
+        // unless border is removed
+        if (opt.SHOW_WS_TMB_BG)
+            this.add_style_class_name('ws-tmb-labeled');
+
         // add workspace thumbnails labels if enabled
         if (opt.SHOW_WST_LABELS) { // 0 - disable
-            // layout manager allows aligning widget children
-            this.layout_manager = new Clutter.BinLayout();
-            // adding layout manager to tmb widget breaks wallpaper background aligning and rounded corners
-            // unless border is removed
-            if (opt.SHOW_WS_TMB_BG)
-                this.add_style_class_name('ws-tmb-labeled');
-
             const getLabel = function () {
                 const wsIndex = this.metaWorkspace.index();
                 let label = `${wsIndex + 1}`;
@@ -88,8 +88,9 @@ const WorkspaceThumbnailCommon = {
                         w => w.get_monitor() === this.monitorIndex && w.get_workspace().index() === wsIndex)[0];
 
                     if (metaWin) {
-                        let tracker = Shell.WindowTracker.get_default();
-                        label += `: ${tracker.get_window_app(metaWin).get_name()}`;
+                        const tracker = Shell.WindowTracker.get_default();
+                        const app = tracker.get_window_app(metaWin);
+                        label += `: ${app ? app.get_name() : ''}`;
                     }
                 } else if (opt.SHOW_WST_LABELS === 4) {
                     const metaWin = global.display.get_tab_list(0, null).filter(
@@ -118,28 +119,91 @@ const WorkspaceThumbnailCommon = {
             this.add_child(this._wsLabel);
             this.set_child_above_sibling(this._wsLabel, null);
 
-            this._wsIndexSigId = this.metaWorkspace.connect('notify::workspace-index', () => {
+            this._wsIndexConId = this.metaWorkspace.connect('notify::workspace-index', () => {
                 const newLabel = getLabel();
                 this._wsLabel.text = newLabel;
+                // avoid possibility of accessing non existing ws
+                if (this._updateLabelTimeout) {
+                    GLib.source_remove(this._updateLabelTimeout);
+                    this._updateLabelTimeout = 0;
+                }
             });
+            this._nWindowsConId = this.metaWorkspace.connect('notify::n-windows', () => {
+                // wait for new information
+                this._updateLabelTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 250, () => {
+                    const newLabel = getLabel();
+                    this._wsLabel.text = newLabel;
+                    this._updateLabelTimeout = 0;
+                    return GLib.SOURCE_REMOVE;
+                });
+            });
+        }
 
-            this.connect('destroy', () => this.metaWorkspace.disconnect(this._wsIndexSigId));
+        // close all windows on this workspace
+        const closeButton = new St.Icon({
+            style_class: 'workspace-close-button',
+            icon_name: 'window-close-symbolic',
+            x_align: Clutter.ActorAlign.END,
+            y_align: Clutter.ActorAlign.START,
+            x_expand: true,
+            y_expand: true,
+            reactive: true,
+            opacity: 0,
+        });
 
+        closeButton.connect('button-release-event', () => {
+            if (Meta.prefs_get_dynamic_workspaces() && global.workspace_manager.get_n_workspaces() - 1 !== this.metaWorkspace.index()) {
+                this._closeWorkspace();
+                return Clutter.EVENT_STOP;
+            } else {
+                return Clutter.EVENT_PROPAGATE;
+            }
+        });
+
+        closeButton.connect('button-press-event', () => {
+            return Clutter.EVENT_STOP;
+        });
+
+        closeButton.connect('enter-event', () => {
+            if (Meta.prefs_get_dynamic_workspaces() && global.workspace_manager.get_n_workspaces() - 1 !== this.metaWorkspace.index()) {
+                closeButton.opacity = 255;
+                closeButton.add_style_class_name('workspace-close-button-hover');
+            }
+        });
+        closeButton.connect('leave-event', () => {
+            closeButton.remove_style_class_name('workspace-close-button-hover');
+        });
+        this.add_child(closeButton);
+        this._closeButton = closeButton;
+
+        this.reactive = true;
+
+        if (opt.SHOW_WST_LABELS_ON_HOVER)
+            this._wsLabel.opacity = 0;
+
+        this.connect('enter-event', () => {
+            if (Meta.prefs_get_dynamic_workspaces() && global.workspace_manager.get_n_workspaces() - 1 !== this.metaWorkspace.index())
+                this._closeButton.opacity = 255;
             if (opt.SHOW_WST_LABELS_ON_HOVER) {
-                this._wsLabel.opacity = 0;
-                this.reactive = true;
-                this.connect('enter-event', () => this._wsLabel.ease({
+                this._wsLabel.ease({
                     duration: 100,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     opacity: this._wsLabel._maxOpacity,
-                }));
-                this.connect('leave-event', () => this._wsLabel.ease({
+                });
+            }
+        });
+
+        this.connect('leave-event', () => {
+            this._closeButton.opacity = 0;
+            if (opt.SHOW_WST_LABELS_ON_HOVER) {
+                this._wsLabel.ease({
                     duration: 100,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     opacity: 0,
-                }));
+                });
             }
-        }
+        });
+
 
         if (opt.SHOW_WS_TMB_BG) {
             this._bgManager = new Background.BackgroundManager({
@@ -160,6 +224,32 @@ const WorkspaceThumbnailCommon = {
             // full brightness of the thumbnail bg draws unnecessary attention
             // there is a grey bg under the wallpaper
             this._bgManager.backgroundActor.opacity = 220;
+        }
+
+        this.connect('destroy', () => {
+            if (this._wsIndexConId)
+                this.metaWorkspace.disconnect(this._wsIndexConId);
+
+            if (this._nWindowsConId)
+                this.metaWorkspace.disconnect(this._nWindowsConId);
+
+            if (this._updateLabelTimeout)
+                GLib.source_remove(this._updateLabelTimeout);
+
+            if (this._bgManager)
+                this._bgManager.destroy();
+        });
+    },
+
+    _closeWorkspace() {
+        // close windows on this monitor
+        const windows = global.display.get_tab_list(0, null).filter(
+            w => w.get_monitor() === this.monitorIndex && w.get_workspace() === this.metaWorkspace
+        );
+
+        for (let i = 0; i < windows.length; i++) {
+            if (!windows[i].is_on_all_workspaces())
+                windows[i].delete(global.get_current_time() + i);
         }
     },
 
