@@ -57,7 +57,7 @@ let _watchDockSigId;
 let _resetTimeoutId;
 
 let _enableTimeoutId = 0;
-
+let _sessionLockActive = false;
 
 
 function init() {
@@ -70,9 +70,10 @@ function enable() {
 
     _enableTimeoutId = GLib.timeout_add(
         GLib.PRIORITY_DEFAULT,
-        200,
+        400,
         () => {
             activateVShell();
+            _sessionLockActive = Main.sessionMode.isLocked;
             log(`${Me.metadata.name}: enabled`);
             _enableTimeoutId = 0;
             return GLib.SOURCE_REMOVE;
@@ -81,12 +82,14 @@ function enable() {
 }
 
 function disable() {
+    _sessionLockActive = Main.sessionMode.isLocked;
     if (_enableTimeoutId) {
         GLib.source_remove(_enableTimeoutId);
         _enableTimeoutId = 0;
     } else {
         resetVShell();
     }
+
     global.verticalWorkspacesEnabled = undefined;
     log(`${Me.metadata.name}: disabled`);
 }
@@ -189,9 +192,12 @@ function _updateOverrides(reset = false) {
     WindowPreviewOverride.update(reset);
     WindowManagerOverride.update(reset);
 
-    // IconGrid needs to be patched before AppDisplay
-    IconGridOverride.update(reset);
-    AppDisplayOverride.update(reset);
+    // don't rebuild app grid on every screen lock
+    if (!_sessionLockActive) {
+        // IconGrid needs to be patched before AppDisplay
+        IconGridOverride.update(reset);
+        AppDisplayOverride.update(reset);
+    }
     LayoutOverride.update(reset);
     DashOverride.update(reset);
     PanelOverride.update(reset);
