@@ -257,7 +257,7 @@ function _getLayoutOptionList() {
             _('Reserve Full Screen Height/Width for Thumbnails'),
             _('The whole screen height/width will be reserved for workspaces thumbnails at the expense of space available for Dash (if the Dash is oriented in a different axis).'),
             itemFactory.newSwitch(),
-            'WsThumbnailsFull'
+            'wsThumbnailsFull'
         )
     );
 
@@ -919,6 +919,27 @@ function _getBehaviorOptionList() {
         )
     );
 
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Thumbnails')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Close Workspace Button'),
+            _('The Close Workspace button appears on the workspace thumbnail when you hover over it and allows you to close all windows on the workspace. You can choose a safety lock to prevent accidental use.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'closeWsButtonMode',
+            [
+                [_('Disable'), 0],
+                [_('Single Click'), 1],
+                [_('Double Click'), 2],
+                [_('Ctrl Key + Click'), 3],
+            ]
+        )
+    );
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -943,15 +964,16 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Include Dash Items'),
-            _('Include favorite / running apps currently present in the Dash to the app grid.'),
+            _('Exclude Dash Items'),
+            _('Exclude favorite / running apps currently present in the Dash to the app grid. The default Shell setting only removes favorite apps. Option "Favorites and Runnings First" only works with the Alphabet and Usage sorting.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'appGridIncludeDash',
             [
-                [_('Disable'), 0],
-                [_('Enable'), 1],
-                [_('Enable - Sort First'), 2],
+                [_('Include All'), 0],
+                [_('Include All - Favorites and Runnings First'), 1],
+                [_('Exclude Favorites (Default)'), 2],
+                [_('Exclude Favorites and Runnings'), 3],
             ]
         )
     );

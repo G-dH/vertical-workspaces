@@ -43,6 +43,9 @@
     <key type="i" name="sec-wst-position-adjust">
       <default>0</default>
     </key>
+    <key type="i" name="close-ws-button-mode">
+      <default>2</default>
+    </key>
     <key type="b" name="center-dash-to-ws">
       <default>false</default>
     </key>
@@ -140,7 +143,7 @@
       <default>0</default>
     </key>
     <key type="i" name="app-grid-include-dash">
-      <default>0</default>
+      <default>2</default>
     </key>
     <key type="i" name="app-grid-folder-icon-size">
       <default>-1</default>

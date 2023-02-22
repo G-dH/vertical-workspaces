@@ -22,6 +22,9 @@ const ControlsState = imports.ui.overviewControls.ControlsState;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
+// gettext
+const _ = Me.imports.settings._;
+
 const _Util = Me.imports.util;
 let _overrides;
 
@@ -139,51 +142,57 @@ const WorkspaceThumbnailCommon = {
             });
         }
 
-        // close all windows on this workspace
-        const closeButton = new St.Icon({
-            style_class: 'workspace-close-button',
-            icon_name: 'window-close-symbolic',
-            x_align: Clutter.ActorAlign.END,
-            y_align: Clutter.ActorAlign.START,
-            x_expand: true,
-            y_expand: true,
-            reactive: true,
-            opacity: 0,
-        });
+        if (opt.CLOSE_WS_BUTTON_MODE) {
+            const closeButton = new St.Icon({
+                style_class: 'workspace-close-button',
+                icon_name: 'window-close-symbolic',
+                x_align: Clutter.ActorAlign.END,
+                y_align: Clutter.ActorAlign.START,
+                x_expand: true,
+                y_expand: true,
+                reactive: true,
+                opacity: 0,
+            });
 
-        closeButton.connect('button-release-event', () => {
-            if (Meta.prefs_get_dynamic_workspaces() && global.workspace_manager.get_n_workspaces() - 1 !== this.metaWorkspace.index()) {
-                this._closeWorkspace();
+            closeButton.connect('button-release-event', () => {
+                if (opt.CLOSE_WS_BUTTON_MODE) {
+                    this._closeWorkspace();
+                    return Clutter.EVENT_STOP;
+                } else {
+                    return Clutter.EVENT_PROPAGATE;
+                }
+            });
+
+            closeButton.connect('button-press-event', () => {
                 return Clutter.EVENT_STOP;
-            } else {
-                return Clutter.EVENT_PROPAGATE;
-            }
-        });
+            });
 
-        closeButton.connect('button-press-event', () => {
-            return Clutter.EVENT_STOP;
-        });
-
-        closeButton.connect('enter-event', () => {
-            if (Meta.prefs_get_dynamic_workspaces() && global.workspace_manager.get_n_workspaces() - 1 !== this.metaWorkspace.index()) {
+            closeButton.connect('enter-event', () => {
                 closeButton.opacity = 255;
-                closeButton.add_style_class_name('workspace-close-button-hover');
-            }
-        });
-        closeButton.connect('leave-event', () => {
-            closeButton.remove_style_class_name('workspace-close-button-hover');
-        });
-        this.add_child(closeButton);
-        this._closeButton = closeButton;
+                if (!Meta.prefs_get_dynamic_workspaces() || (Meta.prefs_get_dynamic_workspaces() && global.workspace_manager.get_n_workspaces() - 1 !== this.metaWorkspace.index())) {
+                    // color the button red if ready to react on clicks
+                    if (opt.CLOSE_WS_BUTTON_MODE < 3 || (opt.CLOSE_WS_BUTTON_MODE === 3 && _Util.isCtrlPressed()))
+                        closeButton.add_style_class_name('workspace-close-button-hover');
+                }
+            });
 
-        this.reactive = true;
+            closeButton.connect('leave-event', () => {
+                closeButton.remove_style_class_name('workspace-close-button-hover');
+            });
+
+            this.add_child(closeButton);
+            this._closeButton = closeButton;
+
+            this.reactive = true;
+            this._lastCloseClickTime = 0;
+        }
 
         if (opt.SHOW_WST_LABELS_ON_HOVER)
             this._wsLabel.opacity = 0;
 
         this.connect('enter-event', () => {
-            if (Meta.prefs_get_dynamic_workspaces() && global.workspace_manager.get_n_workspaces() - 1 !== this.metaWorkspace.index())
-                this._closeButton.opacity = 255;
+            if (opt.CLOSE_WS_BUTTON_MODE && (!Meta.prefs_get_dynamic_workspaces() || (Meta.prefs_get_dynamic_workspaces() && global.workspace_manager.get_n_workspaces() - 1 !== this.metaWorkspace.index())))
+                this._closeButton.opacity = 200;
             if (opt.SHOW_WST_LABELS_ON_HOVER) {
                 this._wsLabel.ease({
                     duration: 100,
@@ -203,7 +212,6 @@ const WorkspaceThumbnailCommon = {
                 });
             }
         });
-
 
         if (opt.SHOW_WS_TMB_BG) {
             this._bgManager = new Background.BackgroundManager({
@@ -242,6 +250,19 @@ const WorkspaceThumbnailCommon = {
     },
 
     _closeWorkspace() {
+        // CLOSE_WS_BUTTON_MODE 1: single click, 2: double-click, 3: Ctrl
+
+        if (opt.CLOSE_WS_BUTTON_MODE === 2) {
+            const doubleClickTime = Clutter.Settings.get_default().double_click_time;
+            const clickDelay = Date.now() - this._lastCloseClickTime;
+            if (clickDelay > doubleClickTime) {
+                this._lastCloseClickTime = Date.now();
+                return;
+            }
+        } else if (opt.CLOSE_WS_BUTTON_MODE === 3 && !_Util.isCtrlPressed()) {
+            return;
+        }
+
         // close windows on this monitor
         const windows = global.display.get_tab_list(0, null).filter(
             w => w.get_monitor() === this.monitorIndex && w.get_workspace() === this.metaWorkspace

@@ -41,6 +41,7 @@ let _updateAppGridTimeoutId;
 let _origAppDisplayAcceptDrop;
 let _origAppViewItemAcceptDrop;
 let _origAppViewItemHandleDragOver;
+let _updateFolderIcons;
 
 let opt;
 let shellVersion = _Util.shellVersion;
@@ -83,10 +84,9 @@ function update(reset = false) {
     _overrides.addOverride('FolderView', AppDisplay.FolderView.prototype, FolderView);
     _overrides.addOverride('FolderIcon', AppDisplay.FolderIcon.prototype, FolderIcon);
     _overrides.addOverride('AppIcon', AppDisplay.AppIcon.prototype, AppIcon);
-    _overrides.addOverride('BaseAppView', AppDisplay.BaseAppView.prototype, BaseAppView);
     _overrides.addOverride('AppDisplay', AppDisplay.AppDisplay.prototype, AppDisplayCommon);
     _overrides.addOverride('AppViewItem', AppDisplay.AppViewItem.prototype, AppViewItemCommon);
-
+    _overrides.addOverride('BaseAppViewCommon', AppDisplay.BaseAppView.prototype, BaseAppViewCommon);
 
     _setAppDisplayOrientation(opt.ORIENTATION === Clutter.Orientation.VERTICAL);
     _updateAppGridProperties();
@@ -183,8 +183,14 @@ function _updateAppGridProperties(reset = false) {
     const appDisplay = Main.overview._overview._controls._appDisplay;
     appDisplay.visible = true;
 
+    /*  APP_GRID_INCLUDE_DASH
+            0 - Include All
+            1 - Include All - Favorites and Runnings First
+            2 - Exclude Favorites (Default)
+            3 - Exclude Favorites and Runnings
+    */
     // replace isFavorite function to always return false to allow dnd with favorite apps
-    if (!reset && opt.APP_GRID_INCLUDE_DASH) {
+    if (!reset && opt.APP_GRID_INCLUDE_DASH <= 1) {
         if (!appDisplay._appFavorites._backupIsFavorite)
             appDisplay._appFavorites._backupIsFavorite = appDisplay._appFavorites.isFavorite;
 
@@ -237,10 +243,21 @@ function _updateAppGridProperties(reset = false) {
 }
 
 function _updateAppGridDND(reset) {
+    if (!reset) {
+        if (!_appSystemStateConId && opt.APP_GRID_INCLUDE_DASH === 3) {
+            _appSystemStateConId = Shell.AppSystem.get_default().connect(
+                'app-state-changed',
+                () => {
+                    _updateFolderIcons = true;
+                    Main.overview._overview._controls._appDisplay._redisplay();
+                }
+            );
+        }
+    } else if (_appSystemStateConId) {
+        Shell.AppSystem.get_default().disconnect(_appSystemStateConId);
+        _appSystemStateConId = 0;
+    }
     if (opt.APP_GRID_ORDER && !reset) {
-        if (!_appSystemStateConId)
-            _appSystemStateConId = Shell.AppSystem.get_default().connect('app-state-changed', () => Main.overview._overview._controls._appDisplay._redisplay());
-
         // deny dnd from dash to app grid
         if (!_origAppDisplayAcceptDrop)
             _origAppDisplayAcceptDrop = AppDisplay.AppDisplay.prototype.acceptDrop;
@@ -255,11 +272,6 @@ function _updateAppGridDND(reset) {
             _origAppViewItemAcceptDrop = AppDisplay.AppViewItem.prototype.acceptDrop;
         AppDisplay.AppViewItem.prototype.acceptDrop = () => false;
     } else {
-        if (_appSystemStateConId) {
-            Shell.AppSystem.get_default().disconnect(_appSystemStateConId);
-            _appSystemStateConId = 0;
-        }
-
         if (_origAppDisplayAcceptDrop)
             AppDisplay.AppDisplay.prototype.acceptDrop = _origAppDisplayAcceptDrop;
 
@@ -345,13 +357,6 @@ const AppSearchProvider = {
     },
 };
 
-const BaseAppViewVertical = {
-    // this fixes dnd from appDisplay to the workspace thumbnail on the left if appDisplay is on page 1 because of appgrid left overshoot
-    _pageForCoords() {
-        return AppDisplay.SidePages.NONE;
-    },
-};
-
 const AppDisplayCommon = {
     _ensureDefaultFolders() {
         // disable creation of default folders if user deleted them
@@ -360,14 +365,28 @@ const AppDisplayCommon = {
     // apps load adapted for custom sorting and including dash items
     _loadApps() {
         let appIcons = [];
+        const runningApps = Shell.AppSystem.get_default().get_running().map(a => a.id);
+        /*  APP_GRID_INCLUDE_DASH
+            0 - Include All
+            1 - Include All - Favorites and Runnings First
+            2 - Exclude Favorites (Default)
+            3 - Exclude Favorites and Runnings
+        */
+        const removeFavorites = opt.APP_GRID_INCLUDE_DASH >= 2;
+        const removeRunnings = opt.APP_GRID_INCLUDE_DASH === 3;
+
         this._appInfoList = Shell.AppSystem.get_default().get_installed().filter(appInfo => {
             try {
                 appInfo.get_id(); // catch invalid file encodings
             } catch (e) {
                 return false;
             }
-            return (opt.APP_GRID_INCLUDE_DASH || !this._appFavorites.isFavorite(appInfo.get_id())) &&
-                this._parentalControlsManager.shouldShowApp(appInfo);
+
+            const appIsRunning = runningApps.includes(appInfo.get_id());
+            const appIsFavorite = this._appFavorites.isFavorite(appInfo.get_id());
+            const excludeApp = (removeRunnings && appIsRunning) || (removeFavorites && appIsFavorite);
+
+            return this._parentalControlsManager.shouldShowApp(appInfo) && !excludeApp;
         });
 
         let apps = this._appInfoList.map(app => app.get_id());
@@ -391,6 +410,9 @@ const AppDisplayCommon = {
                         if (icon.pressed)
                             this.updateDragFocus(icon);
                     });
+                } else if (_updateFolderIcons && opt.APP_GRID_INCLUDE_DASH === 3) {
+                    // if any app changed its running state, update folder icon
+                    icon.icon.update();
                 }
 
                 // Don't try to display empty folders
@@ -405,6 +427,8 @@ const AppDisplayCommon = {
                 icon.getAppIds().forEach(appId => appsInsideFolders.add(appId));
             });
         }
+        // reset request for active icon update
+        _updateFolderIcons = false;
 
         // Allow dragging of the icon only if the Dash would accept a drop to
         // change favorite-apps. There are no other possible drop targets from
@@ -442,7 +466,14 @@ const AppDisplayCommon = {
     },
 };
 
-const BaseAppView = {
+const BaseAppViewVertical = {
+    // this fixes dnd from appDisplay to the workspace thumbnail on the left if appDisplay is on page 1 because of appgrid left overshoot
+    _pageForCoords() {
+        return AppDisplay.SidePages.NONE;
+    },
+};
+
+const BaseAppViewCommon = {
     // adds sorting options and option to add favorites and running apps
     _redisplay() {
         let oldApps = this._orderedItems.slice();
@@ -456,7 +487,10 @@ const BaseAppView = {
 
         // Remove old app icons
         removedApps.forEach(icon => {
-            this._removeItem(icon);
+            try {
+                this._removeItem(icon);
+            } catch (error) {}
+
             if (icon)
                 icon.destroy();
         });
@@ -480,8 +514,14 @@ const BaseAppView = {
             if (opt.APP_GRID_ORDER === 2)
                 appIcons.sort((a, b) => Shell.AppUsage.get_default().compare(a.app.id, b.app.id));
 
+            /*  APP_GRID_INCLUDE_DASH
+                0 - Include All
+                1 - Include All - Favorites and Runnings First
+                2 - Exclude Favorites (Default)
+                3 - Exclude Favorites and Runnings
+            */
             // sort favorites first
-            if (opt.APP_GRID_INCLUDE_DASH === 2) {
+            if (opt.APP_GRID_INCLUDE_DASH === 1) {
                 const fav = Object.keys(this._appFavorites._favorites);
                 appIcons.sort((a, b) => {
                     let aFav = fav.indexOf(a.id);
@@ -495,7 +535,7 @@ const BaseAppView = {
             }
 
             // sort running first
-            if (opt.APP_GRID_INCLUDE_DASH === 2)
+            if (opt.APP_GRID_INCLUDE_DASH === 1)
                 appIcons.sort((a, b) => a.app.get_state() !== Shell.AppState.RUNNING && b.app.get_state() === Shell.AppState.RUNNING);
 
 
@@ -512,7 +552,7 @@ const BaseAppView = {
     },
 
     _canAccept(source) {
-        return opt.APP_GRID_ORDER ? false : source instanceof AppDisplay.AppViewItem;
+        return opt.APP_GRID_ORDER ? false : source instanceof AppDisplay.AppViewItem || source instanceof ActiveFolderIcon;
     },
 
     // GS <= 42 only, Adapt app grid so it can use all available space
@@ -584,6 +624,60 @@ const BaseAppView = {
         this._pageArrowOffset = Math.max(
             leftPadding - 80, 0); // 80 is AppDisplay.PAGE_PREVIEW_MAX_ARROW_OFFSET
     },
+
+    _maybeMoveItem(dragEvent) {
+        const [success, x, y] =
+            this._grid.transform_stage_point(dragEvent.x, dragEvent.y);
+
+        if (!success)
+            return;
+
+        let { source } = dragEvent;
+        // replace active folder item with the one from the folder
+        if (source._sourceItem) {
+            source = source._sourceItem;
+            // to-do
+            // canceling for now, because even with the "original" source it's giving different draglocations and drag to main grid doesn't work
+            // needs more work
+            return;
+        }
+
+        const [page, position, dragLocation] =
+            this._getDropTarget(x, y, source);
+        const item = position !== -1
+            ? this._grid.getItemAt(page, position) : null;
+
+        // Dragging over invalid parts of the grid cancels the timeout
+        if (item === source ||
+            dragLocation === IconGrid.DragLocation.INVALID ||
+            dragLocation === IconGrid.DragLocation.ON_ICON) {
+            this._removeDelayedMove();
+            return;
+        }
+
+        if (!this._delayedMoveData ||
+            this._delayedMoveData.page !== page ||
+            this._delayedMoveData.position !== position) {
+            // Update the item with a small delay
+            this._removeDelayedMove();
+            this._delayedMoveData = {
+                page,
+                position,
+                source,
+                destroyId: source.connect('destroy', () => this._removeDelayedMove()),
+                timeoutId: GLib.timeout_add(GLib.PRIORITY_DEFAULT,
+                    200, () => {
+                        this._moveItem(source, page, position, true);
+                        if (this._delayedMoveData) {
+                            this._delayedMoveData.timeoutId = 0;
+                            this._removeDelayedMove();
+                        }
+
+                        return GLib.SOURCE_REMOVE;
+                    }),
+            };
+        }
+    },
 };
 
 const BaseAppViewGridLayout = {
@@ -609,21 +703,35 @@ const BaseAppViewGridLayout = {
 function _openFolderDialog(folderIcon) {
     if (!folderIcon._dialog)
         folderIcon._ensureFolderDialog();
+    else if (folderIcon._dialog._designCapacity !== folderIcon._orderedItems.length)
+        folderIcon._dialog._updateFolderSize();
 
     folderIcon._dialog.toggle();
 }
 
 const FolderIcon = {
     after__init() {
-        this.view._folderIcon = this;
-        // If folder preview icons are clickable,
+        /* // If folder preview icons are clickable,
         // disable opening the folder with primary mouse button and enable the secondary one
-        const buttonMask = opt.APP_GRID_ACTIVE_PREVIEW
-            ? St.ButtonMask.THREE | St.ButtonMask.TWO
+         const buttonMask = opt.APP_GRID_ACTIVE_PREVIEW
+            ? St.ButtonMask.TWO | St.ButtonMask.THREE
             : St.ButtonMask.ONE | St.ButtonMask.TWO;
-        this.button_mask = buttonMask;
+        this.button_mask = buttonMask;*/
+        this.button_mask = St.ButtonMask.ONE | St.ButtonMask.TWO;
+
+        // build the folders now to avoid node errors when dragging active folder preview icons
+        if (opt.APP_GRID_ACTIVE_PREVIEW)
+            this._ensureFolderDialog();
     },
 
+    open() {
+        this._ensureFolderDialog();
+        if (this._dialog._designCapacity !== this.view._orderedItems.length)
+            this._dialog._updateFolderSize();
+
+        this.view._scrollView.vscroll.adjustment.value = 0;
+        this._dialog.popup();
+    },
 };
 
 const FolderView = {
@@ -642,6 +750,7 @@ const FolderView = {
             row_homogeneous: true,
             column_homogeneous: true,
         });
+
         let icon = new St.Widget({
             layout_manager: layout,
             x_align: Clutter.ActorAlign.CENTER,
@@ -660,12 +769,22 @@ const FolderView = {
         let rtl = icon.get_text_direction() === Clutter.TextDirection.RTL;
         for (let i = 0; i < gridSize * gridSize; i++) {
             const style = `width: ${subSize}px; height: ${subSize}px;`;
-            let bin = new St.Bin({ style });
+            let bin = new St.Bin({ style, reactive: true });
+            bin.pivot_point = new Graphene.Point({ x: 0.5, y: 0.5 });
             if (i < numItems) {
-                bin.child = this._orderedItems[i].app.create_icon_texture(subSize);
-                if (opt.APP_GRID_ACTIVE_PREVIEW) {
-                    bin.pivot_point = new Graphene.Point({ x: 0.5, y: 0.5 });
-                    bin.reactive = true;
+                if (!opt.APP_GRID_ACTIVE_PREVIEW) {
+                    bin.child = this._orderedItems[i].app.create_icon_texture(subSize);
+                } else {
+                    const app = this._orderedItems[i].app;
+                    const child = new ActiveFolderIcon(app);
+                    child._sourceItem = this._orderedItems[i];
+                    child._sourceFolder = this;
+                    child.icon.style_class = '';
+                    child.icon.set_style('margin: 0; padding: 0;');
+                    child.icon.setIconSize(subSize);
+
+                    bin.child = child;
+
                     bin.connect('enter-event', () => {
                         bin.ease({
                             duration: 100,
@@ -682,57 +801,9 @@ const FolderView = {
                             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                         });
                     });
-
-                    const clickAction = new Clutter.ClickAction();
-                    clickAction.connect('clicked', action => {
-                        const button = action.get_button();
-                        const middleButton = button === Clutter.BUTTON_MIDDLE;
-                        const primaryButton = button === Clutter.BUTTON_PRIMARY;
-                        if (primaryButton || middleButton) {
-                            const app = this._orderedItems[i].app;
-                            const state = Clutter.get_current_event().get_state();
-                            const isCtrlPressed = (state & Clutter.ModifierType.CONTROL_MASK) !== 0;
-                            const isShiftPressed = (state & Clutter.ModifierType.SHIFT_MASK) !== 0;
-                            const appRunning = app.state === Shell.AppState.RUNNING;
-                            const openNewWindow = app.can_open_new_window() &&
-                                    appRunning && (isCtrlPressed || middleButton);
-                            if (openNewWindow) {
-                                app.open_new_window(-1);
-                            } else {
-                                // Shift moves all app windows to the current workspace, like normal app icon
-                                if (isShiftPressed && appRunning) {
-                                    app.get_windows().forEach(win => {
-                                        win.change_workspace(global.workspace_manager.get_active_workspace());
-                                    });
-                                } else if ((isCtrlPressed || middleButton) && appRunning) {
-                                    // if Ctrl is pressed, overview won't close on activation, even if the app cannot open new window
-                                    app.get_windows()[0].change_workspace(global.workspace_manager.get_active_workspace());
-                                }
-
-                                // Shift only moves existing app
-                                if (!isShiftPressed) {
-                                    app.activate();
-                                    if (primaryButton)
-                                        Main.overview.hide();
-                                }
-                            }
-                            return Clutter.EVENT_STOP;
-                        } else if (button === Clutter.BUTTON_SECONDARY) {
-                            _openFolderDialog(this._folderIcon);
-                            return Clutter.EVENT_STOP;
-                        }
-                        return Clutter.EVENT_PROPAGATE;
-                    });
-                    clickAction.connect('long-press', (action, actor, state) => {
-                        if (action.get_button() === Clutter.BUTTON_PRIMARY && state === Clutter.LongPressState.ACTIVATE) {
-                            _openFolderDialog(this._folderIcon);
-                            return false;
-                        }
-                        return true;
-                    });
-                    bin.add_action(clickAction);
                 }
             }
+
             layout.attach(bin, rtl ? (i + 1) % gridSize : i % gridSize, Math.floor(i / gridSize), 1, 1);
         }
 
@@ -741,6 +812,59 @@ const FolderView = {
             this._dialog._updateFolderSize();
 
         return icon;
+    },
+
+    _getFolderApps() {
+        const appIds = [];
+        const excludedApps = this._folder.get_strv('excluded-apps');
+        const appSys = Shell.AppSystem.get_default();
+        const addAppId = appId => {
+            if (excludedApps.includes(appId))
+                return;
+
+            /*  APP_GRID_INCLUDE_DASH
+                0 - Include All
+                1 - Include All - Favorites and Runnings First
+                2 - Exclude Favorites (Default)
+                3 - Exclude Favorites and Runnings
+            */
+
+            if (opt.APP_GRID_INCLUDE_DASH >= 2 && this._appFavorites.isFavorite(appId))
+                return;
+
+            if (opt.APP_GRID_INCLUDE_DASH === 3) {
+                const runningApps = Shell.AppSystem.get_default().get_running().map(a => a.id);
+                if (runningApps.includes(appId))
+                    return;
+            }
+
+            const app = appSys.lookup_app(appId);
+            if (!app)
+                return;
+
+            if (!this._parentalControlsManager.shouldShowApp(app.get_app_info()))
+                return;
+
+            if (appIds.indexOf(appId) !== -1)
+                return;
+
+            appIds.push(appId);
+        };
+
+        const folderApps = this._folder.get_strv('apps');
+        folderApps.forEach(addAppId);
+
+        const folderCategories = this._folder.get_strv('categories');
+        const appInfos = this._parentView.getAppInfos();
+        appInfos.forEach(appInfo => {
+            let appCategories = AppDisplay._getCategories(appInfo);
+            if (!AppDisplay._listsIntersect(folderCategories, appCategories))
+                return;
+
+            addAppId(appInfo.get_id());
+        });
+
+        return appIds;
     },
 };
 
@@ -1223,4 +1347,41 @@ const AppViewItemCommon = {
         });
     },
 
+    // added - remove app from the source folder after dnd to other folder
+    acceptDrop(source, _actor, x) {
+        this._setHoveringByDnd(false);
+
+        if (!this._canAccept(source))
+            return false;
+
+        if (this._withinLeeways(x))
+            return false;
+
+        // remove app from the source folder after dnd to other folder
+        if (source._sourceItem) {
+            const app = source._sourceItem.app;
+            source._sourceFolder.removeApp(app);
+        }
+
+        return true;
+    },
+
 };
+
+const ActiveFolderIcon = GObject.registerClass(
+class ActiveFolderIcon extends AppDisplay.AppIcon {
+    _init(app) {
+        super._init(app, {
+            setSizeManually: true,
+            showLabel: false,
+        });
+    }
+
+    handleDragOver() {
+        return DND.DragMotionResult.CONTINUE;
+    }
+
+    acceptDrop() {
+        return false;
+    }
+});

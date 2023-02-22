@@ -50,13 +50,14 @@ var Options = class Options {
             workspaceThumbnailsPosition: ['int', 'ws-thumbnails-position'],
             wsMaxSpacing: ['int', 'ws-max-spacing'],
             wsPreviewScale: ['int', 'ws-preview-scale'],
-            WsThumbnailsFull: ['bool', 'ws-thumbnails-full'],
+            wsThumbnailsFull: ['bool', 'ws-thumbnails-full'],
             secondaryWsThumbnailsPosition: ['int', 'secondary-ws-thumbnails-position'],
             dashPosition: ['int', 'dash-position'],
             dashPositionAdjust: ['int', 'dash-position-adjust'],
             wsTmbPositionAdjust: ['int', 'wst-position-adjust'],
             showWsTmbLabels: ['int', 'show-wst-labels'],
             showWsTmbLabelsOnHover: ['boolean', 'show-wst-labels-on-hover'],
+            closeWsButtonMode: ['int', 'close-ws-button-mode'],
             SecWsTmbPositionAdjust: ['int', 'sec-wst-position-adjust'],
             dashMaxIconSize: ['int', 'dash-max-icon-size'],
             dashShowWindowsIcon: ['int', 'dash-show-windows-icon'],
@@ -214,7 +215,7 @@ var Options = class Options {
         this.WORKSPACE_MAX_SPACING = this.get('wsMaxSpacing', true);
         // ORIENTATION || DASH_LEFT || DASH_RIGHT ? 350 : 80;
         this.SHOW_WS_TMB = ![4, 9].includes(this.WS_TMB_POSITION); // 4, 9 - disable
-        this.WS_TMB_FULL = this.get('WsThumbnailsFull', true);
+        this.WS_TMB_FULL = this.get('wsThumbnailsFull', true);
         // translate ws tmb position to 0 top, 1 right, 2 bottom, 3 left
         // 0L 1R, 2LF, 3RF, 4DV, 5T, 6B, 7TF, 8BF, 9DH
         this.WS_TMB_POSITION = [3, 1, 3, 1, 4, 0, 2, 0, 2, 8][this.WS_TMB_POSITION];
@@ -233,6 +234,7 @@ var Options = class Options {
         this.SEC_WS_TMB_POSITION_ADJUSTMENT = this.get('SecWsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
         this.SHOW_WST_LABELS = this.get('showWsTmbLabels', true);
         this.SHOW_WST_LABELS_ON_HOVER = this.get('showWsTmbLabelsOnHover', true);
+        this.CLOSE_WS_BUTTON_MODE = this.get('closeWsButtonMode', true);
 
         this.MAX_THUMBNAIL_SCALE = this.get('wsThumbnailScale', true) / 100;
 

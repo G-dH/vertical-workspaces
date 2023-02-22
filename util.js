@@ -240,3 +240,15 @@ function exposeWindows(adjustment, activateKeyboard) {
         }
     }
 }
+
+function isShiftPressed(state = null) {
+    if (state === null)
+        [,, state] = global.get_pointer();
+    return (state & Clutter.ModifierType.SHIFT_MASK) !== 0;
+}
+
+function isCtrlPressed(state = null) {
+    if (state === null)
+        [,, state] = global.get_pointer();
+    return (state & Clutter.ModifierType.CONTROL_MASK) !== 0;
+}
