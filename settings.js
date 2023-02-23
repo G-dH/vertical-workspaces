@@ -89,7 +89,6 @@ var Options = class Options {
             workspaceSwitcherAnimation: ['int', 'workspace-switcher-animation'],
             searchIconSize: ['int', 'search-icon-size'],
             searchViewScale: ['int', 'search-width-scale'],
-            appGridAllowCustom: ['int', 'app-grid-allow-custom'],
             appGridIconSize: ['int', 'app-grid-icon-size'],
             appGridColumns: ['int', 'app-grid-columns'],
             appGridRows: ['int', 'app-grid-rows'],
@@ -279,9 +278,9 @@ var Options = class Options {
         this.SEARCH_ICON_SIZE = this.get('searchIconSize', true);
         this.SEARCH_VIEW_SCALE = this.get('searchViewScale', true) / 100;
         this.SEARCH_MAX_ROWS = this.get('searchMaxResultsRows', true);
+        this.SEARCH_FUZZY = this.get('searchFuzzy', true);
 
         this.APP_GRID_ALLOW_INCOMPLETE_PAGES = false;
-        // this.APP_GRID_ALLOW_CUSTOM = this.get('appGridAllowCustom', true);
         this.APP_GRID_ICON_SIZE = this.get('appGridIconSize', true);
         this.APP_GRID_COLUMNS = this.get('appGridColumns', true);
         this.APP_GRID_ROWS = this.get('appGridRows', true);
