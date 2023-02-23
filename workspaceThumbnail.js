@@ -26,6 +26,8 @@ const Me = ExtensionUtils.getCurrentExtension();
 const _ = Me.imports.settings._;
 
 const _Util = Me.imports.util;
+const shellVersion = _Util.shellVersion;
+
 let _overrides;
 
 const WORKSPACE_CUT_SIZE = 10;
@@ -571,9 +573,16 @@ const ThumbnailsBoxVertical = {
             this._dropPlaceholder.allocate_preferred_size(
                 ...this._dropPlaceholder.get_position());
 
-            Meta.later_add(Meta.LaterType.BEFORE_REDRAW, () => {
-                this._dropPlaceholder.hide();
-            });
+            if (shellVersion >= 44) {
+                const laters = global.compositor.get_laters();
+                laters.add(Meta.LaterType.BEFORE_REDRAW, () => {
+                    this._dropPlaceholder.hide();
+                });
+            } else {
+                Meta.later_add(Meta.LaterType.BEFORE_REDRAW, () => {
+                    this._dropPlaceholder.hide();
+                });
+            }
         }
 
         let childBox = new Clutter.ActorBox();
@@ -601,9 +610,16 @@ const ThumbnailsBoxVertical = {
 
                 this._dropPlaceholder.allocate(childBox);
 
-                Meta.later_add(Meta.LaterType.BEFORE_REDRAW, () => {
-                    this._dropPlaceholder.show();
-                });
+                if (shellVersion >= 44) {
+                    const laters = global.compositor.get_laters();
+                    laters.add(Meta.LaterType.BEFORE_REDRAW, () => {
+                        this._dropPlaceholder.show();
+                    });
+                } else {
+                    Meta.later_add(Meta.LaterType.BEFORE_REDRAW, () => {
+                        this._dropPlaceholder.show();
+                    });
+                }
                 y += placeholderHeight + spacing;
             }
 
@@ -768,9 +784,16 @@ const ThumbnailsBoxHorizontal = {
             this._dropPlaceholder.allocate_preferred_size(
                 ...this._dropPlaceholder.get_position());
 
-            Meta.later_add(Meta.LaterType.BEFORE_REDRAW, () => {
-                this._dropPlaceholder.hide();
-            });
+            if (shellVersion >= 44) {
+                const laters = global.compositor.get_laters();
+                laters.add(Meta.LaterType.BEFORE_REDRAW, () => {
+                    this._dropPlaceholder.hide();
+                });
+            } else {
+                Meta.later_add(Meta.LaterType.BEFORE_REDRAW, () => {
+                    this._dropPlaceholder.hide();
+                });
+            }
         }
 
         let childBox = new Clutter.ActorBox();
@@ -798,9 +821,16 @@ const ThumbnailsBoxHorizontal = {
 
                 this._dropPlaceholder.allocate(childBox);
 
-                Meta.later_add(Meta.LaterType.BEFORE_REDRAW, () => {
-                    this._dropPlaceholder.show();
-                });
+                if (shellVersion >= 44) {
+                    const laters = global.compositor.get_laters();
+                    laters.add(Meta.LaterType.BEFORE_REDRAW, () => {
+                        this._dropPlaceholder.show();
+                    });
+                } else {
+                    Meta.later_add(Meta.LaterType.BEFORE_REDRAW, () => {
+                        this._dropPlaceholder.show();
+                    });
+                }
                 x += placeholderWidth + spacing;
             }
 

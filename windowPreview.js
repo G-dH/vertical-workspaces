@@ -19,6 +19,8 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
 const _Util = Me.imports.util;
+const shellVersion = _Util.shellVersion;
+
 let _overrides;
 
 const WINDOW_SCALE_TIME = imports.ui.windowPreview.WINDOW_SCALE_TIME;
@@ -136,8 +138,13 @@ const WindowPreviewCommon = {
                 // this action cancels long-press event and the 'long-press-cancel' event is used by the Shell to actually initiate DnD
                 // so the dnd initiation needs to be removed
                 if (this._longPressLater) {
-                    Meta.later_remove(this._longPressLater);
-                    delete this._longPressLater;
+                    if (shellVersion >= 44) {
+                        const laters = global.compositor.get_laters();
+                        laters.remove(this._longPressLater);
+                    } else {
+                        Meta.later_remove(this._longPressLater);
+                        delete this._longPressLater;
+                    }
                 }
                 const tracker = Shell.WindowTracker.get_default();
                 const appName = tracker.get_window_app(this.metaWindow).get_name();
@@ -311,8 +318,14 @@ const WindowPreviewCommon = {
         this._delegate = null;
 
         if (this._longPressLater) {
-            Meta.later_remove(this._longPressLater);
-            delete this._longPressLater;
+            if (shellVersion >= 44) {
+                const laters = global.compositor.get_laters();
+                laters.remove(this._longPressLater);
+                delete this._longPressLater;
+            } else {
+                Meta.later_remove(this._longPressLater);
+                delete this._longPressLater;
+            }
         }
 
         if (this._idleHideOverlayId > 0) {
