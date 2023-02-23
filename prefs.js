@@ -679,17 +679,6 @@ function _getAppearanceOptionList() {
         )
     );
 
-    /* const customGridSwitch = itemFactory.newSwitch();
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Enable Custom Grid Size'),
-            _('Apply following grid parameters.'),
-            customGridSwitch,
-            // itemFactory.newDropDown(),
-            'appGridAllowCustom'
-        )
-    );*/
-
     const columnsAdjustment = new Gtk.Adjustment({
         upper: 15,
         lower: 0,
@@ -964,8 +953,8 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Exclude Dash Items'),
-            _('Exclude favorite / running apps currently present in the Dash to the app grid. The default Shell setting only removes favorite apps. Option "Favorites and Runnings First" only works with the Alphabet and Usage sorting.'),
+            _('App Grid Content'),
+            _('The default Shell removes favorite apps, this option lets you duplicate them in the grid or remove also running applications. Option "Favorites and Runnings First" only works with the Alphabet and Usage sorting.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'appGridIncludeDash',
@@ -1075,7 +1064,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Enable Fuzzy Match'),
-            _('Enabling the fuzzy match allows you to skip letters in the pattern you are searching for and find "Firefox" even if you type "ffx". Works only for the Window and Recent files search providers.'),
+            _('Enabling the fuzzy match allows you to skip letters in the pattern you are searching for and find "Firefox" even if you type "ffx". Works only for the App, Window and Recent files search providers.'),
             itemFactory.newSwitch(),
             'searchFuzzy'
         )

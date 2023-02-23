@@ -122,13 +122,10 @@
       <default>0</default>
     </key>
     <key type="i" name="search-icon-size">
-      <default>64</default>
+      <default>96</default>
     </key>
     <key type="i" name="search-width-scale">
       <default>104</default>
-    </key>
-    <key type="b" name="app-grid-allow-custom">
-      <default>false</default>
     </key>
     <key type="i" name="app-grid-icon-size">
       <default>-1</default>
