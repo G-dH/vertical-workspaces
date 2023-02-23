@@ -71,8 +71,6 @@ function update(reset = false) {
         _overrides.addOverride('BaseAppViewVertical', AppDisplay.BaseAppView.prototype, BaseAppViewVertical);
     }
 
-    _overrides.addOverride('AppSearchProvider', AppDisplay.AppSearchProvider.prototype, AppSearchProvider);
-
     // Custom App Grid
     _overrides.addOverride('AppFolderDialog', AppDisplay.AppFolderDialog.prototype, AppFolderDialog);
     if (shellVersion >= 43) {
@@ -334,26 +332,6 @@ const AppDisplayVertical = {
 
         const adaptToSize = AppDisplay.BaseAppView.prototype.adaptToSize.bind(this);
         adaptToSize(width, height);
-    },
-};
-
-
-// AppDisplay.AppSearchProvider
-// App search result size
-const AppSearchProvider = {
-    createResultObject(resultMeta) {
-        if (resultMeta.id.endsWith('.desktop')) {
-            const icon = new AppDisplay.AppIcon(this._appSys.lookup_app(resultMeta['id']), {
-                expandTitleOnHover: false,
-            });
-            icon.icon.setIconSize(opt.SEARCH_ICON_SIZE);
-            return icon;
-        } else {
-            const icon = new AppDisplay.SystemActionIcon(this, resultMeta);
-            icon.icon._setSizeManually = true;
-            icon.icon.setIconSize(opt.SEARCH_ICON_SIZE);
-            return icon;
-        }
     },
 };
 

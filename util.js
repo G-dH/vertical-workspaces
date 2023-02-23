@@ -252,3 +252,74 @@ function isCtrlPressed(state = null) {
         [,, state] = global.get_pointer();
     return (state & Clutter.ModifierType.CONTROL_MASK) !== 0;
 }
+
+function fuzzyMatch(term, text) {
+    let pos = -1;
+    const matches = [];
+    // convert all accented chars to their basic form and to lower case
+    const _text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const _term =  term.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+    // if term matches the substring exactly, gains the highest weight
+    if (_text.includes(_term))
+        return 0;
+
+    for (let i = 0; i < _term.length; i++) {
+        let c = _term[i];
+        let p;
+        if (pos > 0)
+            p = _term[i - 1];
+        while (true) {
+            pos += 1;
+            if (pos >= _text.length)
+                return -1;
+
+            if (_text[pos] === c) {
+                matches.push(pos);
+                break;
+            } else if (_text[pos] === p) {
+                matches.pop();
+                matches.push(pos);
+            }
+        }
+    }
+
+    // add all position to get a weight of the result
+    // results closer to the beginning of the text and term characters closer to each other will gain more weight.
+    return matches.reduce((r, p) => r + p) - matches.length * matches[0] + matches[0];
+}
+
+function strictMatch(term, text) {
+    // remove diacritics and accents from letters
+    let s = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    let p = term.toLowerCase();
+    let ps = p.split(/ +/);
+
+    // allows to use multiple exact patterns separated by a space in arbitrary order
+    for (let w of ps) {  // escape regex control chars
+        if (!s.match(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+            return -1;
+    }
+    return 0;
+}
+
+function isMoreRelevant(stringA, stringB, pattern) {
+    let regex = /[^a-zA-Z\d]/;
+    let strSplitA = stringA.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().split(regex);
+    let strSplitB = stringB.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().split(regex);
+    let aAny = false;
+    strSplitA.forEach(w => {
+        aAny = aAny || w.startsWith(pattern);
+    });
+    let bAny = false;
+    strSplitB.forEach(w => {
+        bAny = bAny || w.startsWith(pattern);
+    });
+
+    // if both strings contain a word that starts with the pattern
+    // prefer the one whose first word starts with the pattern
+    if (aAny && bAny)
+        return !strSplitA[0].startsWith(pattern) && strSplitB[0].startsWith(pattern);
+    else
+        return !aAny && bAny;
+}

@@ -9,16 +9,24 @@
  */
 
 'use strict';
-
+const { Shell } = imports.gi;
 const Main = imports.ui.main;
 
+const AppDisplay = imports.ui.appDisplay;
+
 const Me = imports.misc.extensionUtils.getCurrentExtension();
+const _Util = Me.imports.util;
+const shellVersion = _Util.shellVersion;
 
 let opt;
+let _overrides;
 
 let SEARCH_MAX_WIDTH;
 
 function update(reset = false) {
+    if (_overrides)
+        _overrides.removeAll();
+
     opt = Me.imports.settings.opt;
     _updateSearchViewWidth(reset);
 
@@ -26,7 +34,13 @@ function update(reset = false) {
         Main.overview.searchEntry.visible = true;
         Main.overview.searchEntry.opacity = 255;
         opt = null;
+        _overrides = null;
+        return;
     }
+
+    _overrides = new _Util.Overrides();
+
+    _overrides.addOverride('AppSearchProvider', AppDisplay.AppSearchProvider.prototype, AppSearchProvider);
 }
 
 function _updateSearchViewWidth(reset = false) {
@@ -44,3 +58,103 @@ function _updateSearchViewWidth(reset = false) {
         searchContent.set_style(`max-width: ${width}px;`);
     }
 }
+
+// AppDisplay.AppSearchProvider
+const AppSearchProvider = {
+    getInitialResultSet(terms, callback, _cancellable) {
+        // Defer until the parental controls manager is initialised, so the
+        // results can be filtered correctly.
+        if (!this._parentalControlsManager.initialized) {
+            let initializedId = this._parentalControlsManager.connect('app-filter-changed', () => {
+                if (this._parentalControlsManager.initialized) {
+                    this._parentalControlsManager.disconnect(initializedId);
+                    this.getInitialResultSet(terms, callback, _cancellable);
+                }
+            });
+            return;
+        }
+
+
+        const pattern = terms.join(' ');
+        let appInfoList = Shell.AppSystem.get_default().get_installed();
+
+        let weightList = {};
+        appInfoList = appInfoList.filter(appInfo => {
+            try {
+                appInfo.get_id(); // catch invalid file encodings
+            } catch (e) {
+                return false;
+            }
+
+            // let name = appInfo.get_name() || '';
+            let string = '';
+            let name;
+            let shouldShow = false;
+            if (appInfo.get_display_name) {
+                let exec = appInfo.get_commandline() || '';
+
+                // show only launchers that should be visible in this DE and invisible launchers of Gnome Settings items
+                shouldShow = (appInfo.should_show() || exec.includes('gnome-control-center', 0)) && this._parentalControlsManager.shouldShowApp(appInfo);
+
+                if (shouldShow) {
+                    let dispName = appInfo.get_display_name() || '';
+                    let gName = appInfo.get_generic_name() || '';
+                    // let exec = appInfo.get_executable() || '';
+                    let description = appInfo.get_description() || '';
+                    let categories = appInfo.get_string('Categories') || '';
+                    let keywords = appInfo.get_string('Keywords') || '';
+                    name = dispName;
+                    string = `${dispName} ${gName} ${exec} ${description} ${categories} ${keywords}`;
+                }
+            }
+
+            let m = -1;
+            if (shouldShow && opt.SEARCH_FUZZY) {
+                m = _Util.fuzzyMatch(pattern, name);
+                m = (m + _Util.strictMatch(pattern, string)) / 2;
+            } else if (shouldShow) {
+                m = _Util.strictMatch(pattern, string);
+            }
+
+
+            if (m !== -1)
+                weightList[appInfo.get_id()] = m;
+
+
+            return shouldShow && (m !== -1);
+        });
+
+        appInfoList.sort((a, b) => weightList[a.get_id()] > weightList[b.get_id()]);
+
+        const usage = Shell.AppUsage.get_default();
+        // sort apps by usage list
+        appInfoList.sort((a, b) => usage.compare(a.get_id(), b.get_id()));
+        // prefer apps where any word in their name starts with the pattern
+        appInfoList.sort((a, b) => _Util.isMoreRelevant(a.get_display_name(), b.get_display_name(), pattern));
+
+        let results = appInfoList.map(app => app.get_id());
+
+        results = results.concat(this._systemActions.getMatchingActions(terms));
+
+        if (shellVersion < 43)
+            callback(results);
+        else
+            return new Promise(resolve => resolve(results));
+    },
+
+    // App search result size
+    createResultObject(resultMeta) {
+        if (resultMeta.id.endsWith('.desktop')) {
+            const icon = new AppDisplay.AppIcon(this._appSys.lookup_app(resultMeta['id']), {
+                expandTitleOnHover: false,
+            });
+            icon.icon.setIconSize(opt.SEARCH_ICON_SIZE);
+            return icon;
+        } else {
+            const icon = new AppDisplay.SystemActionIcon(this, resultMeta);
+            icon.icon._setSizeManually = true;
+            icon.icon.setIconSize(opt.SEARCH_ICON_SIZE);
+            return icon;
+        }
+    },
+};

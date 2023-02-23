@@ -15,6 +15,7 @@ const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Settings = Me.imports.settings;
+const _Util = Me.imports.util;
 
 // gettext
 const _ = Settings._;
@@ -89,57 +90,6 @@ function disable() {
     }
 }
 
-function fuzzyMatch(term, text) {
-    let pos = -1;
-    const matches = [];
-    // convert all accented chars to their basic form and to lower case
-    const _text = text;// .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-    const _term =  term.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-
-    // if term matches the substring exactly, gains the highest weight
-    if (_text.includes(_term))
-        return 0;
-
-
-    for (let i = 0; i < _term.length; i++) {
-        let c = _term[i];
-        let p;
-        if (pos > 0)
-            p = _term[i - 1];
-        while (true) {
-            pos += 1;
-            if (pos >= _text.length)
-                return -1;
-
-            if (_text[pos] === c) {
-                matches.push(pos);
-                break;
-            } else if (_text[pos] === p) {
-                matches.pop();
-                matches.push(pos);
-            }
-        }
-    }
-
-    // add all position to get a weight of the result
-    // results closer to the beginning of the text and term characters closer to each other will gain more weight.
-    return matches.reduce((r, p) => r + p) - matches.length * matches[0] + matches[0];
-}
-
-function strictMatch(term, text) {
-    // remove diacritics and accents from letters
-    let s = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-    let p = term.toLowerCase();
-    let ps = p.split(/ +/);
-
-    // allows to use multiple exact patterns separated by a space in arbitrary order
-    for (let w of ps) {  // escape regex control chars
-        if (!s.match(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
-            return -1;
-    }
-    return 0;
-}
-
 function makeResult(window, i) {
     const app = Shell.WindowTracker.get_default().get_window_app(window);
     const appName = app ? app.get_name() : 'Unknown';
@@ -162,8 +112,7 @@ const moveToWsRegex = /^\/m[0-9]+$/;
 const moveAllToWsRegex = /^\/ma[0-9]+$/;
 
 const WindowSearchProvider = class WindowSearchProvider {
-    constructor(gOptions) {
-        this._gOptions = gOptions;
+    constructor() {
         this.appInfo = Gio.AppInfo.create_from_commandline('true', _('Open Windows'), null);
         this.appInfo.get_description = () => _('List of open windows');
         this.appInfo.get_name = () => _('Open Windows');
@@ -219,10 +168,10 @@ const WindowSearchProvider = class WindowSearchProvider {
         const results = [];
         let m;
         for (let key in candidates) {
-            if (this._gOptions.get('searchFuzzy'))
-                m = fuzzyMatch(term, candidates[key].name);
+            if (opt.SEARCH_FUZZY)
+                m = _Util.fuzzyMatch(term, candidates[key].name);
             else
-                m = strictMatch(term, candidates[key].name);
+                m = _Util.strictMatch(term, candidates[key].name);
 
             if (m !== -1)
                 results.push({ weight: m, id: key });
