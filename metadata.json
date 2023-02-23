@@ -4,7 +4,8 @@
   "description": "An extension that allows you to customize your desktop interface to suit your workflow and eyes. You can change the horizontal stacking of workspaces to vertical, but also change layout, content, appearance and behavior of Activities overview and workspace switcher.",
   "shell-version": [
     "42",
-    "43"
+    "43",
+    "44"
   ],
   "url": "https://github.com/G-dH/vertical-workspaces",
   "gettext-domain": "vertical-workspaces",
