@@ -351,6 +351,9 @@ function _applySettings(key) {
 
     if (key === 'workspace-switcher-animation')
         WorkspaceAnimationOverride.update();
+
+    if (key === 'search-width-scale')
+        SearchOverride.update();
 }
 
 function _switchPageShortcuts() {
