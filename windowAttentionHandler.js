@@ -11,9 +11,7 @@
 'use strict';
 
 const Main = imports.ui.main;
-const Util = imports.misc.util;
 const WindowAttentionHandler = imports.ui.windowAttentionHandler;
-const MessageTray = imports.ui.messageTray;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -52,7 +50,6 @@ function _onWindowDemandsAttention(display, window) {
         Main.activateWindow(window);
     // Deny attention notifications if the App Grid is open, to avoid notification spree when opening a folder
     // or if user disabled them
-    else if (!(Main.overview._shown && Main.overview.dash.showAppsButton.checked) || opt.WINDOW_ATTENTION_DISABLE_NOTIFICATIONS)
-        WindowAttentionHandler.WindowAttentionHandler.prototype._onWindowDemandsAttention();
+    else if (!((Main.overview._shown && Main.overview.dash.showAppsButton.checked) || opt.WINDOW_ATTENTION_DISABLE_NOTIFICATIONS))
+        Main.windowAttentionHandler._onWindowDemandsAttention(display, window);
 }
-
