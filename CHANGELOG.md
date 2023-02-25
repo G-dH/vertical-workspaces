@@ -2,13 +2,19 @@
 
 ### v24 (not released yet)
 **Added:**
+- Support of GNOME Shell 44.
 - Support for horizontally stacked workspaces, the stacking follows `Workspaces Thumbnails Position` option.
 - `Dash Max Icon Size` menu now offers 80, 96, 112 and 128 px options.
 - Dash can use available space better if resizes its icons when there is not enough space on the screen for the chosen icon size.
 - Options `Dash Icon Click`: `Activate Last Used Window Immediately` (default behavior) and `Switch to Workspace with Recently Used Window` which allows you to see an overview of the workspace with the app window before activating it and closing the overview.
 - App Grid options - `Icon Size`, `Columns/Rows per Page`, `Apps Order` - `Custom`, `Alphabet`, `Usage`, option to `Include Dash Items`, `Reset App Grid Layout`, `Remove App Grid Folders`.
+- App Grid's *Include Dash Items* option changed to `App Grid Content` and allows exclude favorites and/or running apps from the grid also in the default custom mode.
+- Option `App Labels Behavior` offers setting App Grid app labels to show always expanded or hide them if the app icon is not selected.
+- Option `Active Icons in Preview Folders` allows you using icons in the folder preview as normal app icons without opening the folder.
+- App folder preview icons can be displayed in 3x3 grid instead of 2x2 and icon/folder size can be set up to 256px to make Active folder icons really usable.
+- Improved app search, now you can find *Firefox* even if you enter *fox* and with the (pseudo) fuzzy search enabled, you'll find it even if you enter *ffx*.
 - Options `Workspaces Scale` and `Workspaces Spacing` adjustments for workspace preview.
-- Option `Workspace Switcher Animation` / `Static Backgroud` for static background while switching workspaces outside of the overview.
+- Option `Workspace Switcher Animation` / `Static Background` for static background while switching workspaces outside of the overview.
 - Options `Main Panel Position` and `Main Panel Visibility` allows moving the main panel at the bottom of the screen, hide it, or only show it in the Activities overview.
 - Options `App Search Icon Size` with reduced spacing between icons and `Search Results Width`.
 - Option `Max Search Results Rows` allows to set maximum number of rows for all search providers (except for the app search provider that uses grid instead of the list).
@@ -19,6 +25,7 @@
 - Text shadow in labels of app grid view icons for better visibility on lighter backgrounds, in case you use `Show Static Background` option for the overview.
 - Open preferences by middle click on *Show Applications button* in the dash (default dash only).
 - Option to show current window title in the workspace thumbnail label.
+- `Close Workspace Button` option can add close button to workspace thumbnails that allows you to close all windows on the workspace/monitor. You can choose whether it close on single click, double-click or single click while holding down the Ctrl key.
 
 **Fixed:**
 - Some options related to the workspace preview don't work for secondary monitors if workspaces set to "primary monitor only".

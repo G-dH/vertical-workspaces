@@ -2,26 +2,26 @@
 
 A GNOME Shell extension that lets you customize your desktop interface to suit your workflow and style. You can change the horizontal stacking of workspaces to vertical, but also change layout, content, appearance and behavior of the Shell.
 
-Supported GNOME versions: 42, 43 (dropped support for 40, 41  - not tested).
+Supported GNOME versions: 42, 43, 44 (dropped support for 40, 41  - not tested).
 
 ## Features
 - Vertically or horizontally stacked workspaces.
-- Position, orientation, scale and visibility of the overview content.
-- Support for secondary monitors, workspaces thumbnails can be placed on the opposite side relative to primary monitor. Removes unnecessary transitions.
-- Static background with blur adjustments.
-- 2 overview modes with static windows/workspace that expose windows on hover/click on workspace thumbnail. The *Static Workspace* option allows you to use dash like a dock with auto-hide but with all advantages of the activities overview.
-- Custom dash icons size and behavior when clicked.
+- Adjust position, orientation, scale and visibility of overview content.
+- Support for secondary monitors, workspace thumbnails can be placed on the opposite side than on the primary monitor.
+- Static background with adjustable blur effect.
+- 2 overview modes with static windows/workspace. The *Static Workspace* option allows you to use dash like a dock with auto-hide, but with all advantages of the activities overview.
+- Custom Dash icon size and on-click behavior.
 - Dash background transparency and corner radius adjustments.
-- App grid icon size, number of columns and rows.
+- Adjustable app grid icon size, number of columns and rows, content, optional active and draggable icons in folder preview in optional 3x3 grid.
 - Custom search view width, app results icons size and number of result lists rows.
+- Improved app search.
 - Workspace thumbnails can show background wallpaper and labels (always or on mouse hover) with combination of workspace index, workspace name, name of the current application and current window title.
-- Title captions of window previews moves into the preview (originally beneath the preview) and can be set as always visible.
+- Title captions of window previews moved into the preview (originally beneath the preview) and can be set as always visible. Adjustable window preview icon.
 - Static background in workspace switcher (outside overview). Keeps Conky below, DING desktop icons stay visible (if not covered by windows).
-- More efficient and visually appealing transition animations (compared to the original Shell) that can be customized or disabled.
-- Animation/transition speed adjustment.
+- Control over transition animations, including speed
 - Window search provider with *Space* hotkey allows quick window navigation.
 - Recent files search provider with *Ctrl + Space* hotkey.
-- Reorder workspaces in overview using *Shift + Scroll* or *Shift + Page Up/Down*
+- Reorder workspaces in overview using *Shift + Scroll* or *Shift + Page Up/Down*.
 - Adds *Force Quit*, *Close Windows on Current Workspace* and *Move Windows to Current Workspace* items to app icon menu. The latter action can be activated using *Shift + click* on app icon.
 
 
