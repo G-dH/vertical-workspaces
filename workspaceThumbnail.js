@@ -320,6 +320,75 @@ const WorkspaceThumbnailCommon = {
             this.metaWorkspace.activate(time);
         }
     },
+
+    // Draggable target interface used only by ThumbnailsBox
+    handleDragOverInternal(source, actor, time) {
+        if (source === Main.xdndHandler) {
+            this.metaWorkspace.activate(time);
+            return DND.DragMotionResult.CONTINUE;
+        }
+
+        if (this.state > ThumbnailState.NORMAL)
+            return DND.DragMotionResult.CONTINUE;
+
+        if (source.metaWindow &&
+                !this._isMyWindow(source.metaWindow.get_compositor_private()))
+            return DND.DragMotionResult.MOVE_DROP;
+        if (source.app && source.app.can_open_new_window())
+            return DND.DragMotionResult.COPY_DROP;
+        if (!source.app && source.shellWorkspaceLaunch)
+            return DND.DragMotionResult.COPY_DROP;
+
+        if (source instanceof imports.ui.appDisplay.FolderIcon)
+            return DND.DragMotionResult.COPY_DROP;
+
+
+        return DND.DragMotionResult.CONTINUE;
+    },
+
+    acceptDropInternal(source, actor, time) {
+        if (this.state > ThumbnailState.NORMAL)
+            return false;
+
+        if (source.metaWindow) {
+            let win = source.metaWindow.get_compositor_private();
+            if (this._isMyWindow(win))
+                return false;
+
+            let metaWindow = win.get_meta_window();
+            Main.moveWindowToMonitorAndWorkspace(metaWindow,
+                this.monitorIndex, this.metaWorkspace.index());
+            return true;
+        } else if (source.app && source.app.can_open_new_window()) {
+            if (source.animateLaunchAtPos)
+                source.animateLaunchAtPos(actor.x, actor.y);
+
+            source.app.open_new_window(this.metaWorkspace.index());
+            return true;
+        } else if (!source.app && source.shellWorkspaceLaunch) {
+            // While unused in our own drag sources, shellWorkspaceLaunch allows
+            // extensions to define custom actions for their drag sources.
+            source.shellWorkspaceLaunch({
+                workspace: this.metaWorkspace.index(),
+                timestamp: time,
+            });
+            return true;
+        } else if (source instanceof imports.ui.appDisplay.FolderIcon) {
+            if (shellVersion >= 44) {
+                for (let app of source.view._apps) {
+                    // const app = Shell.AppSystem.get_default().lookup_app(id);
+                    app.open_new_window(this.metaWorkspace.index());
+                }
+            } else {
+                for (let id of source.view._appIds) {
+                    const app = Shell.AppSystem.get_default().lookup_app(id);
+                    app.open_new_window(this.metaWorkspace.index());
+                }
+            }
+        }
+
+        return false;
+    },
 };
 
 const ThumbnailsBoxCommon = {
@@ -342,10 +411,136 @@ const ThumbnailsBoxCommon = {
         if (thumbnail)
             thumbnail.activate(time);
     },
+
+    acceptDrop(source, actor, x, y, time) {
+        if (this._dropWorkspace !== -1) {
+            return this._thumbnails[this._dropWorkspace].acceptDropInternal(source, actor, time);
+        } else if (this._dropPlaceholderPos !== -1) {
+            if (!source.metaWindow &&
+                (!source.app || !source.app.can_open_new_window()) &&
+                (source.app || !source.shellWorkspaceLaunch) &&
+                !(source instanceof imports.ui.appDisplay.FolderIcon))
+                return false;
+
+
+            let isWindow = !!source.metaWindow;
+
+            let newWorkspaceIndex;
+            [newWorkspaceIndex, this._dropPlaceholderPos] = [this._dropPlaceholderPos, -1];
+            this._spliceIndex = newWorkspaceIndex;
+
+            Main.wm.insertWorkspace(newWorkspaceIndex);
+
+            if (isWindow) {
+                // Move the window to our monitor first if necessary.
+                let thumbMonitor = this._thumbnails[newWorkspaceIndex].monitorIndex;
+                Main.moveWindowToMonitorAndWorkspace(source.metaWindow,
+                    thumbMonitor, newWorkspaceIndex, true);
+            } else if (source.app && source.app.can_open_new_window()) {
+                if (source.animateLaunchAtPos)
+                    source.animateLaunchAtPos(actor.x, actor.y);
+
+                source.app.open_new_window(newWorkspaceIndex);
+            } else if (!source.app && source.shellWorkspaceLaunch) {
+                // While unused in our own drag sources, shellWorkspaceLaunch allows
+                // extensions to define custom actions for their drag sources.
+                source.shellWorkspaceLaunch({
+                    workspace: newWorkspaceIndex,
+                    timestamp: time,
+                });
+            } else if (source instanceof imports.ui.appDisplay.FolderIcon) {
+                if (shellVersion >= 44) {
+                    for (let app of source.view._apps) {
+                        // const app = Shell.AppSystem.get_default().lookup_app(id);
+                        app.open_new_window(newWorkspaceIndex);
+                    }
+                } else {
+                    for (let id of source.view._appIds) {
+                        const app = Shell.AppSystem.get_default().lookup_app(id);
+                        app.open_new_window(newWorkspaceIndex);
+                    }
+                }
+            }
+
+            if (source.app || (!source.app && source.shellWorkspaceLaunch)) {
+                // This new workspace will be automatically removed if the application fails
+                // to open its first window within some time, as tracked by Shell.WindowTracker.
+                // Here, we only add a very brief timeout to avoid the _immediate_ removal of the
+                // workspace while we wait for the startup sequence to load.
+                let workspaceManager = global.workspace_manager;
+                Main.wm.keepWorkspaceAlive(workspaceManager.get_workspace_by_index(newWorkspaceIndex),
+                    WorkspaceThumbnail.WORKSPACE_KEEP_ALIVE_TIME);
+            }
+
+            // Start the animation on the workspace (which is actually
+            // an old one which just became empty)
+            let thumbnail = this._thumbnails[newWorkspaceIndex];
+            this._setThumbnailState(thumbnail, ThumbnailState.NEW);
+            thumbnail.slide_position = 1;
+            thumbnail.collapse_fraction = 1;
+
+            this._queueUpdateStates();
+
+            return true;
+        } else {
+            return false;
+        }
+    },
+
+    handleDragOver(source, actor, x, y, time) {
+        // switch axis for vertical orientation
+        if (opt.ORIENTATION)
+            x = y;
+
+        if (!source.metaWindow &&
+            (!source.app || !source.app.can_open_new_window()) &&
+            (source.app || !source.shellWorkspaceLaunch) &&
+            source !== Main.xdndHandler && !(source instanceof imports.ui.appDisplay.FolderIcon))
+            return DND.DragMotionResult.CONTINUE;
+
+        const rtl = Clutter.get_default_text_direction() === Clutter.TextDirection.RTL;
+        let canCreateWorkspaces = Meta.prefs_get_dynamic_workspaces();
+        let spacing = this.get_theme_node().get_length('spacing');
+
+        this._dropWorkspace = -1;
+        let placeholderPos = -1;
+        let length = this._thumbnails.length;
+        for (let i = 0; i < length; i++) {
+            const index = rtl ? length - i - 1 : i;
+
+            if (canCreateWorkspaces && source !== Main.xdndHandler) {
+                const [targetStart, targetEnd] =
+                    this._getPlaceholderTarget(index, spacing, rtl);
+
+                if (x > targetStart && x <= targetEnd) {
+                    placeholderPos = index;
+                    break;
+                }
+            }
+
+            if (this._withinWorkspace(x, index, rtl)) {
+                this._dropWorkspace = index;
+                break;
+            }
+        }
+
+        if (this._dropPlaceholderPos !== placeholderPos) {
+            this._dropPlaceholderPos = placeholderPos;
+            this.queue_relayout();
+        }
+
+        if (this._dropWorkspace !== -1)
+            return this._thumbnails[this._dropWorkspace].handleDragOverInternal(source, actor, time);
+        else if (this._dropPlaceholderPos !== -1)
+            return source.metaWindow ? DND.DragMotionResult.MOVE_DROP : DND.DragMotionResult.COPY_DROP;
+        else
+            return DND.DragMotionResult.CONTINUE;
+    },
 };
 
 const ThumbnailsBoxVertical = {
     _getPlaceholderTarget(index, spacing, rtl) {
+        this._dropPlaceholder.add_style_class_name('placeholder-vertical');
         const workspace = this._thumbnails[index];
 
         let targetY1;
@@ -393,52 +588,6 @@ const ThumbnailsBoxVertical = {
         }
 
         return y > workspaceY1 && y <= workspaceY2;
-    },
-
-    handleDragOver(source, actor, x, y, time) {
-        if (!source.metaWindow &&
-            (!source.app || !source.app.can_open_new_window()) &&
-            (source.app || !source.shellWorkspaceLaunch) &&
-            source !== Main.xdndHandler)
-            return DND.DragMotionResult.CONTINUE;
-
-        const rtl = Clutter.get_default_text_direction() === Clutter.TextDirection.RTL;
-        let canCreateWorkspaces = Meta.prefs_get_dynamic_workspaces();
-        let spacing = this.get_theme_node().get_length('spacing');
-
-        this._dropWorkspace = -1;
-        let placeholderPos = -1;
-        let length = this._thumbnails.length;
-        for (let i = 0; i < length; i++) {
-            const index = rtl ? length - i - 1 : i;
-
-            if (canCreateWorkspaces && source !== Main.xdndHandler) {
-                const [targetStart, targetEnd] =
-                    this._getPlaceholderTarget(index, spacing, rtl);
-
-                if (y > targetStart && y <= targetEnd) {
-                    placeholderPos = index;
-                    break;
-                }
-            }
-
-            if (this._withinWorkspace(y, index, rtl)) {
-                this._dropWorkspace = index;
-                break;
-            }
-        }
-
-        if (this._dropPlaceholderPos !== placeholderPos) {
-            this._dropPlaceholderPos = placeholderPos;
-            this.queue_relayout();
-        }
-
-        if (this._dropWorkspace !== -1)
-            return this._thumbnails[this._dropWorkspace].handleDragOverInternal(source, actor, time);
-        else if (this._dropPlaceholderPos !== -1)
-            return source.metaWindow ? DND.DragMotionResult.MOVE_DROP : DND.DragMotionResult.COPY_DROP;
-        else
-            return DND.DragMotionResult.CONTINUE;
     },
 
     // vfunc_get_preferred_width: function(forHeight) {
@@ -596,7 +745,7 @@ const ThumbnailsBoxVertical = {
             const x2 = x1 + thumbnailWidth;
 
             if (i === this._dropPlaceholderPos) {
-                let [, placeholderHeight] = this._dropPlaceholder.get_preferred_height(-1);
+                let [, placeholderHeight] = this._dropPlaceholder.get_preferred_width(-1);
                 childBox.x1 = x1;
                 childBox.x2 = x2;
 
