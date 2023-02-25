@@ -181,3 +181,8 @@ StButton#vhandle {
 .workspace-close-button-hover {
 	background-color: rgb(255, 0, 0);
 }
+
+.placeholder-vertical {
+    background-size: contain;
+    height: 18px;
+  }
