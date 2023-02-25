@@ -192,12 +192,6 @@ function _updateOverrides(reset = false) {
     WindowPreviewOverride.update(reset);
     WindowManagerOverride.update(reset);
 
-    // don't rebuild app grid on every screen lock
-    if (!_sessionLockActive) {
-        // IconGrid needs to be patched before AppDisplay
-        IconGridOverride.update(reset);
-        AppDisplayOverride.update(reset);
-    }
     LayoutOverride.update(reset);
     DashOverride.update(reset);
     PanelOverride.update(reset);
@@ -210,6 +204,13 @@ function _updateOverrides(reset = false) {
     SearchOverride.update(reset);
     WindowSearchProvider.update(reset);
     RecentFilesSearchProvider.update(reset);
+
+    // don't rebuild app grid on every screen lock
+    if (!_sessionLockActive) {
+        // IconGrid needs to be patched before AppDisplay
+        IconGridOverride.update(reset);
+        AppDisplayOverride.update(reset);
+    }
 }
 
 function _onShowingOverview() {
