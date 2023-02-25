@@ -103,14 +103,15 @@ const moveAllToWsRegex = /^\/ma[0-9]+$/;
 
 const RecentFilesSearchProvider = class RecentFilesSearchProvider {
     constructor() {
+        this.id = `recent-files@${Me.metadata.uuid}`;
         this.appInfo = Gio.AppInfo.create_from_commandline('/usr/bin/nautilus -ws recent:///', 'Recent Files', null);
         // this.appInfo = Shell.AppSystem.get_default().lookup_app('org.gnome.Nautilus.desktop').appInfo;
         this.appInfo.get_description = () => _('Search recent files');
         this.appInfo.get_name = () => _('Recent Files');
-        this.appInfo.get_id = () => 'org.gnome.Nautilus.desktop';
+        this.appInfo.get_id = () => this.id;
         this.appInfo.get_icon = () => Gio.icon_new_for_string('document-open-recent-symbolic');
         this.appInfo.should_show = () => true;
-        // this.title = _('Recent Files Search Provider'),
+
         this.canLaunchSearch = true;
         this.isRemoteProvider = false;
     }

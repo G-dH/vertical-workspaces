@@ -113,13 +113,14 @@ const moveAllToWsRegex = /^\/ma[0-9]+$/;
 
 const WindowSearchProvider = class WindowSearchProvider {
     constructor() {
+        this.id = `open-windows@${Me.metadata.uuid}`;
         this.appInfo = Gio.AppInfo.create_from_commandline('true', _('Open Windows'), null);
         this.appInfo.get_description = () => _('List of open windows');
         this.appInfo.get_name = () => _('Open Windows');
-        this.appInfo.get_id = () => `${Me.metadata.uuid} ${this.title}`;
+        this.appInfo.get_id = () => this.id;
         this.appInfo.get_icon = () => Gio.icon_new_for_string('focus-windows-symbolic');
         this.appInfo.should_show = () => true;
-        // this.title = 'Window Search Provider',
+
         this.canLaunchSearch = true;
         this.isRemoteProvider = false;
 
