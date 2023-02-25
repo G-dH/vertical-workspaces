@@ -109,6 +109,7 @@ var Options = class Options {
             dashShowWindowsBeforeActivation: ['int', 'dash-show-windows-before-activation'],
             panelVisibility: ['int', 'panel-visibility'],
             panelPosition: ['int', 'panel-position'],
+            windowAttentionMode: ['int', 'window-attention-mode'],
         };
         this.cachedOptions = {};
 
@@ -319,6 +320,10 @@ var Options = class Options {
         this.PANEL_MODE = this.get('panelVisibility', true);
         this.START_Y_OFFSET = 0; // set from main module
         this.FIX_UBUNTU_DOCK = this.get('fixUbuntuDock', true);
+
+        this.WINDOW_ATTENTION_MODE = this.get('windowAttentionMode', true);
+        this.WINDOW_ATTENTION_DISABLE_NOTIFICATIONS = this.WINDOW_ATTENTION_MODE === 1;
+        this.WINDOW_ATTENTION_FOCUS_IMMEDIATELY = this.WINDOW_ATTENTION_MODE === 2;
     }
 
     _getAnimationDirection() {

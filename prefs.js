@@ -1171,6 +1171,28 @@ function _getBehaviorOptionList() {
         )
     );
 
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Window Manager')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Window Attention Handler'),
+            _('When window requires attention (often a new window you just opened), GNOME Shell send you a notification about it. You can disable these messages or focus the source window immediately instead.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'windowAttentionMode',
+            [
+                [_('Show Notifications (Default)'), 0],
+                [_('Disable Notifications'), 1],
+                [_('Immediately Focus Window'), 2],
+            ]
+        )
+    );
+
     return optionList;
 }
 
