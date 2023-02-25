@@ -40,6 +40,7 @@ const WorkspaceSwitcherPopupOverride = Me.imports.workspaceSwitcherPopup;
 const SearchOverride = Me.imports.search;
 const PanelOverride = Me.imports.panel;
 const DashOverride = Me.imports.dash;
+const WindowAttentionHandlerOverride = Me.imports.windowAttentionHandler;
 
 let opt;
 
@@ -91,7 +92,7 @@ function disable() {
     }
 
     global.verticalWorkspacesEnabled = undefined;
-    log(`${Me.metadata.name}: disabled`);
+    log(`${Me.metadata.name}: ${_sessionLockActive ? 'suspended' : 'disabled'}`);
 }
 
 // ------------------------------------------------------------------------------------------
@@ -211,6 +212,8 @@ function _updateOverrides(reset = false) {
         IconGridOverride.update(reset);
         AppDisplayOverride.update(reset);
     }
+
+    WindowAttentionHandlerOverride.update(reset);
 }
 
 function _onShowingOverview() {
