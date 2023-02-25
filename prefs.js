@@ -954,15 +954,16 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('App Grid Content'),
-            _('The default Shell removes favorite apps, this option lets you duplicate them in the grid or remove also running applications. Option "Favorites and Runnings First" only works with the Alphabet and Usage sorting.'),
+            _('The default Shell removes favorite apps, this option lets you duplicate them in the grid or remove also running applications. Option "Favorites and Running First" only works with the Alphabet and Usage sorting.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
-            'appGridIncludeDash',
+            'appGridContent',
             [
                 [_('Include All'), 0],
-                [_('Include All - Favorites and Runnings First'), 1],
+                [_('Include All - Favorites and Running First'), 1],
                 [_('Exclude Favorites (Default)'), 2],
-                [_('Exclude Favorites and Runnings'), 3],
+                [_('Exclude Running'), 3],
+                [_('Exclude Favorites and Running'), 4],
             ]
         )
     );
@@ -999,7 +1000,7 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('App Names Behavior'),
+            _('App Labels Behavior'),
             _('Choose how and when to display app names.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),

@@ -96,7 +96,7 @@ var Options = class Options {
             appGridFolderColumns: ['int', 'app-grid-folder-columns'],
             appGridFolderRows: ['int', 'app-grid-folder-rows'],
             appGridFolderIconGrid: ['int', 'app-grid-folder-icon-grid'],
-            appGridIncludeDash: ['int', 'app-grid-include-dash'],
+            appGridContent: ['int', 'app-grid-content'],
             appGridIncompletePages: ['boolean', 'app-grid-incomplete-pages'],
             appGridOrder: ['int', 'app-grid-order'],
             appGridNamesMode: ['int', 'app-grid-names'],
@@ -286,7 +286,19 @@ var Options = class Options {
         this.APP_GRID_ROWS = this.get('appGridRows', true);
         this.APP_GRID_ADAPTIVE = !this.APP_GRID_COLUMNS && !this.APP_GRID_ROWS;
         this.APP_GRID_ORDER = this.get('appGridOrder', true);
-        this.APP_GRID_INCLUDE_DASH = this.get('appGridIncludeDash', true);
+
+        this.APP_GRID_INCLUDE_DASH = this.get('appGridContent', true);
+        /*  APP_GRID_INCLUDE_DASH
+                0 - Include All
+                1 - Include All - Favorites and Runnings First
+                2 - Exclude Favorites (Default)
+                3 - Exclude Running
+                4 - Exclude Favorites and Running
+        */
+        this.APP_GRID_EXCLUDE_FAVORITES = this.APP_GRID_INCLUDE_DASH === 2 || this.APP_GRID_INCLUDE_DASH === 4;
+        this.APP_GRID_EXCLUDE_RUNNING = this.APP_GRID_INCLUDE_DASH === 3 || this.APP_GRID_INCLUDE_DASH === 4;
+        this.APP_GRID_DASH_FIRST = this.APP_GRID_INCLUDE_DASH === 1;
+
         this.APP_GRID_NAMES_MODE = this.get('appGridNamesMode', true);
 
         this.APP_GRID_FOLDER_ICON_SIZE = this.get('appGridFolderIconSize', true);

@@ -38,9 +38,7 @@ let _appDisplayScrollConId;
 let _appSystemStateConId;
 let _appGridLayoutConId;
 let _updateAppGridTimeoutId;
-let _origAppDisplayAcceptDrop;
 let _origAppViewItemAcceptDrop;
-let _origAppViewItemHandleDragOver;
 let _updateFolderIcons;
 
 let opt;
@@ -161,7 +159,7 @@ function _setAppDisplayOrientation(vertical = false) {
 
     // no need to connect already connected signal (wasn't removed the original one before)
     if (!vertical) {
-        // reset used appdisplay properties
+        // reset used appDisplay properties
         Main.overview._overview._controls._appDisplay.scale_y = 1;
         Main.overview._overview._controls._appDisplay.scale_x = 1;
         Main.overview._overview._controls._appDisplay.opacity = 255;
@@ -181,14 +179,8 @@ function _updateAppGridProperties(reset = false) {
     const appDisplay = Main.overview._overview._controls._appDisplay;
     appDisplay.visible = true;
 
-    /*  APP_GRID_INCLUDE_DASH
-            0 - Include All
-            1 - Include All - Favorites and Runnings First
-            2 - Exclude Favorites (Default)
-            3 - Exclude Favorites and Runnings
-    */
     // replace isFavorite function to always return false to allow dnd with favorite apps
-    if (!reset && opt.APP_GRID_INCLUDE_DASH <= 1) {
+    if (!reset && !opt.APP_GRID_EXCLUDE_FAVORITES) {
         if (!appDisplay._appFavorites._backupIsFavorite)
             appDisplay._appFavorites._backupIsFavorite = appDisplay._appFavorites.isFavorite;
 
@@ -242,7 +234,7 @@ function _updateAppGridProperties(reset = false) {
 
 function _updateAppGridDND(reset) {
     if (!reset) {
-        if (!_appSystemStateConId && opt.APP_GRID_INCLUDE_DASH === 3) {
+        if (!_appSystemStateConId && opt.APP_GRID_INCLUDE_DASH >= 3) {
             _appSystemStateConId = Shell.AppSystem.get_default().connect(
                 'app-state-changed',
                 () => {
@@ -256,28 +248,11 @@ function _updateAppGridDND(reset) {
         _appSystemStateConId = 0;
     }
     if (opt.APP_GRID_ORDER && !reset) {
-        // deny dnd from dash to app grid
-        if (!_origAppDisplayAcceptDrop)
-            _origAppDisplayAcceptDrop = AppDisplay.AppDisplay.prototype.acceptDrop;
-        AppDisplay.AppDisplay.prototype.acceptDrop = () => false;
-
-        // deny creating folders by dnd on other icon
-        if (!_origAppViewItemHandleDragOver)
-            _origAppViewItemHandleDragOver = AppDisplay.AppViewItem.prototype.handleDragOver;
-        AppDisplay.AppViewItem.prototype.handleDragOver = () => DND.DragMotionResult.NO_DROP;
-
         if (!_origAppViewItemAcceptDrop)
             _origAppViewItemAcceptDrop = AppDisplay.AppViewItem.prototype.acceptDrop;
         AppDisplay.AppViewItem.prototype.acceptDrop = () => false;
-    } else {
-        if (_origAppDisplayAcceptDrop)
-            AppDisplay.AppDisplay.prototype.acceptDrop = _origAppDisplayAcceptDrop;
-
-        if (_origAppViewItemHandleDragOver)
-            AppDisplay.AppViewItem.prototype.handleDragOver = _origAppViewItemHandleDragOver;
-
-        if (_origAppViewItemAcceptDrop)
-            AppDisplay.AppViewItem.prototype.acceptDrop = _origAppViewItemAcceptDrop;
+    } else if (_origAppViewItemAcceptDrop) {
+        AppDisplay.AppViewItem.prototype.acceptDrop = _origAppViewItemAcceptDrop;
     }
 }
 
@@ -344,14 +319,6 @@ const AppDisplayCommon = {
     _loadApps() {
         let appIcons = [];
         const runningApps = Shell.AppSystem.get_default().get_running().map(a => a.id);
-        /*  APP_GRID_INCLUDE_DASH
-            0 - Include All
-            1 - Include All - Favorites and Runnings First
-            2 - Exclude Favorites (Default)
-            3 - Exclude Favorites and Runnings
-        */
-        const removeFavorites = opt.APP_GRID_INCLUDE_DASH >= 2;
-        const removeRunnings = opt.APP_GRID_INCLUDE_DASH === 3;
 
         this._appInfoList = Shell.AppSystem.get_default().get_installed().filter(appInfo => {
             try {
@@ -362,7 +329,7 @@ const AppDisplayCommon = {
 
             const appIsRunning = runningApps.includes(appInfo.get_id());
             const appIsFavorite = this._appFavorites.isFavorite(appInfo.get_id());
-            const excludeApp = (removeRunnings && appIsRunning) || (removeFavorites && appIsFavorite);
+            const excludeApp = (opt.APP_GRID_EXCLUDE_RUNNING && appIsRunning) || (opt.APP_GRID_EXCLUDE_FAVORITES && appIsFavorite);
 
             return this._parentalControlsManager.shouldShowApp(appInfo) && !excludeApp;
         });
@@ -388,7 +355,7 @@ const AppDisplayCommon = {
                         if (icon.pressed)
                             this.updateDragFocus(icon);
                     });
-                } else if (_updateFolderIcons && opt.APP_GRID_INCLUDE_DASH === 3) {
+                } else if (_updateFolderIcons && opt.APP_GRID_EXCLUDE_RUNNING) {
                     // if any app changed its running state, update folder icon
                     icon.icon.update();
                 }
@@ -440,12 +407,116 @@ const AppDisplayCommon = {
         if (this._placeholder)
             appIcons.push(this._placeholder);
 
+
         return appIcons;
+    },
+
+    // support active preview icons
+    _onDragBegin(overview, source) {
+        if (source._sourceItem)
+            source = source._sourceItem;
+
+        this._dragMonitor = {
+            dragMotion: this._onDragMotion.bind(this),
+        };
+        DND.addDragMonitor(this._dragMonitor);
+        if (shellVersion < 43)
+            this._slideSidePages(AppDisplay.SidePages.PREVIOUS | AppDisplay.SidePages.NEXT | AppDisplay.SidePages.DND);
+        else
+            this._appGridLayout.showPageIndicators();
+        this._dragFocus = null;
+        this._swipeTracker.enabled = false;
+
+        // When dragging from a folder dialog, the dragged app icon doesn't
+        // exist in AppDisplay. We work around that by adding a placeholder
+        // icon that is either destroyed on cancel, or becomes the effective
+        // new icon when dropped.
+        if (AppDisplay._getViewFromIcon(source) instanceof AppDisplay.FolderView ||
+            this._appFavorites.isFavorite(source.id))
+            this._ensurePlaceholder(source);
+    },
+
+    _ensurePlaceholder(source) {
+        if (this._placeholder)
+            return;
+
+        if (source._sourceItem)
+            source = source._sourceItem;
+
+        const appSys = Shell.AppSystem.get_default();
+        const app = appSys.lookup_app(source.id);
+
+        const isDraggable =
+            global.settings.is_writable('favorite-apps') ||
+            global.settings.is_writable('app-picker-layout');
+
+        this._placeholder = new AppDisplay.AppIcon(app, { isDraggable });
+        this._placeholder.connect('notify::pressed', () => {
+            if (this._placeholder?.pressed)
+                this.updateDragFocus(this._placeholder);
+        });
+        this._placeholder.scaleAndFade();
+        this._redisplay();
+    },
+
+    // accept source from active preview
+    acceptDrop(source) {
+        if (opt.APP_GRID_ORDER)
+            return false;
+        if (source._sourceItem)
+            source = source._sourceItem;
+
+        let dropTarget = null;
+        if (shellVersion >= 43) {
+            dropTarget = this._dropTarget;
+            delete this._dropTarget;
+        }
+
+        if (!this._canAccept(source))
+            return false;
+
+        if ((shellVersion < 43 && this._dropPage) ||
+            (shellVersion >= 43 && (dropTarget === this._prevPageIndicator ||
+            dropTarget === this._nextPageIndicator))) {
+            let increment;
+
+            if (shellVersion < 43)
+                increment = this._dropPage === AppDisplay.SidePages.NEXT ? 1 : -1;
+            else
+                increment = dropTarget === this._prevPageIndicator ? -1 : 1;
+
+            const { currentPage, nPages } = this._grid;
+            const page = Math.min(currentPage + increment, nPages);
+            const position = page < nPages ? -1 : 0;
+
+            this._moveItem(source, page, position);
+            this.goToPage(page);
+        } else if (this._delayedMoveData) {
+            // Dropped before the icon was moved
+            const { page, position } = this._delayedMoveData;
+
+            this._moveItem(source, page, position);
+            this._removeDelayedMove();
+        }
+
+        this._savePages();
+
+        let view = AppDisplay._getViewFromIcon(source);
+        if (view instanceof AppDisplay.FolderView)
+            view.removeApp(source.app);
+
+        if (this._currentDialog)
+            this._currentDialog.popdown();
+
+        if (this._appFavorites.isFavorite(source.id))
+            this._appFavorites.removeFavorite(source.id);
+
+        return true;
     },
 };
 
 const BaseAppViewVertical = {
-    // this fixes dnd from appDisplay to the workspace thumbnail on the left if appDisplay is on page 1 because of appgrid left overshoot
+    // <= 42 only, this fixes dnd from appDisplay to the workspace thumbnail on the left if appDisplay is on page 1 because of appgrid left overshoot
     _pageForCoords() {
         return AppDisplay.SidePages.NONE;
     },
@@ -467,19 +538,35 @@ const BaseAppViewCommon = {
         removedApps.forEach(icon => {
             try {
                 this._removeItem(icon);
-            } catch (error) {}
+            } catch (e) {
+                log(`Warning:${e}`);
+            }
 
-            if (icon)
-                icon.destroy();
+            if (icon) {
+                try {
+                    icon.destroy();
+                } catch (e) {
+                    log(`Warning:${e}`);
+                }
+            }
         });
 
         // Add new app icons, or move existing ones
         newApps.forEach(icon => {
             const [page, position] = this._getItemPosition(icon);
-            if (addedApps.includes(icon))
-                this._addItem(icon, page, position);
-            else if (page !== -1 && position !== -1)
-                this._moveItem(icon, page, position);
+            if (addedApps.includes(icon)) {
+                try {
+                    this._addItem(icon, page, position);
+                } catch (e) {
+                    log(`Warning:${e}`);
+                }
+            } else if (page !== -1 && position !== -1) {
+                try {
+                    this._moveItem(icon, page, position);
+                } catch (e) {
+                    log(`Warning:${e}`);
+                }
+            }
         });
 
         // Reorder App Grid by usage
@@ -492,14 +579,8 @@ const BaseAppViewCommon = {
             if (opt.APP_GRID_ORDER === 2)
                 appIcons.sort((a, b) => Shell.AppUsage.get_default().compare(a.app.id, b.app.id));
 
-            /*  APP_GRID_INCLUDE_DASH
-                0 - Include All
-                1 - Include All - Favorites and Runnings First
-                2 - Exclude Favorites (Default)
-                3 - Exclude Favorites and Runnings
-            */
             // sort favorites first
-            if (opt.APP_GRID_INCLUDE_DASH === 1) {
+            if (opt.APP_GRID_DASH_FIRST) {
                 const fav = Object.keys(this._appFavorites._favorites);
                 appIcons.sort((a, b) => {
                     let aFav = fav.indexOf(a.id);
@@ -513,14 +594,18 @@ const BaseAppViewCommon = {
             }
 
             // sort running first
-            if (opt.APP_GRID_INCLUDE_DASH === 1)
+            if (opt.APP_GRID_DASH_FIRST)
                 appIcons.sort((a, b) => a.app.get_state() !== Shell.AppState.RUNNING && b.app.get_state() === Shell.AppState.RUNNING);
 
 
             appIcons.forEach((icon, i) => {
                 const page = Math.floor(i / itemsPerPage);
                 const position = i % itemsPerPage;
-                this._moveItem(icon, page, position);
+                try {
+                    this._moveItem(icon, page, position);
+                } catch (e) {
+                    log(`Warning:${e}`);
+                }
             });
 
             this._orderedItems = appIcons;
@@ -530,7 +615,83 @@ const BaseAppViewCommon = {
     },
 
     _canAccept(source) {
-        return opt.APP_GRID_ORDER ? false : source instanceof AppDisplay.AppViewItem || source instanceof ActiveFolderIcon;
+        return opt.APP_GRID_ORDER ? false : source instanceof AppDisplay.AppViewItem;
+    },
+
+    // support active preview icons
+    acceptDrop(source) {
+        if (!this._canAccept(source))
+            return false;
+
+        if (source._sourceItem)
+            source = source._sourceItem;
+
+
+        if (this._dropPage) {
+            const increment = this._dropPage === AppDisplay.SidePages.NEXT ? 1 : -1;
+            const { currentPage, nPages } = this._grid;
+            const page = Math.min(currentPage + increment, nPages);
+            const position = page < nPages ? -1 : 0;
+
+            this._moveItem(source, page, position);
+            this.goToPage(page);
+        } else if (this._delayedMoveData) {
+            // Dropped before the icon was moved
+            const { page, position } = this._delayedMoveData;
+
+            this._moveItem(source, page, position);
+            this._removeDelayedMove();
+        }
+
+        return true;
+    },
+
+    // support active preview icons
+    _onDragMotion(dragEvent) {
+        if (!(dragEvent.source instanceof AppDisplay.AppViewItem))
+            return DND.DragMotionResult.CONTINUE;
+
+        if (dragEvent.source._sourceItem)
+            dragEvent.source = dragEvent.source._sourceItem;
+
+        const appIcon = dragEvent.source;
+
+        if (shellVersion < 43) {
+            this._dropPage = this._pageForCoords(dragEvent.x, dragEvent.y);
+            if (this._dropPage &&
+               this._dropPage === AppDisplay.SidePages.PREVIOUS &&
+               this._grid.currentPage === 0) {
+                delete this._dropPage;
+                return DND.DragMotionResult.NO_DROP;
+            }
+        }
+
+        if (appIcon instanceof AppDisplay.AppViewItem) {
+            if (shellVersion < 44) {
+                // Handle the drag overshoot. When dragging to above the
+                // icon grid, move to the page above; when dragging below,
+                // move to the page below.
+                this._handleDragOvershoot(dragEvent);
+            } else if (!this._dragMaybeSwitchPageImmediately(dragEvent)) {
+                // Two ways of switching pages during DND:
+                // 1) When "bumping" the cursor against the monitor edge, we switch
+                //    page immediately.
+                // 2) When hovering over the next-page indicator for a certain time,
+                //    we also switch page.
+
+                const { targetActor } = dragEvent;
+
+                if (targetActor === this._prevPageIndicator ||
+                            targetActor === this._nextPageIndicator)
+                    this._maybeSetupDragPageSwitchInitialTimeout(dragEvent);
+                else
+                    this._resetDragPageSwitch();
+            }
+        }
+
+        this._maybeMoveItem(dragEvent);
+
+        return DND.DragMotionResult.CONTINUE;
     },
 
     // GS <= 42 only, Adapt app grid so it can use all available space
@@ -601,60 +762,6 @@ const BaseAppViewCommon = {
         this._pageIndicatorOffset = leftPadding;
         this._pageArrowOffset = Math.max(
             leftPadding - 80, 0); // 80 is AppDisplay.PAGE_PREVIEW_MAX_ARROW_OFFSET
-    },
-
-    _maybeMoveItem(dragEvent) {
-        const [success, x, y] =
-            this._grid.transform_stage_point(dragEvent.x, dragEvent.y);
-
-        if (!success)
-            return;
-
-        let { source } = dragEvent;
-        // replace active folder item with the one from the folder
-        if (source._sourceItem) {
-            source = source._sourceItem;
-            // to-do
-            // canceling for now, because even with the "original" source it's giving different draglocations and drag to main grid doesn't work
-            // needs more work
-            return;
-        }
-
-        const [page, position, dragLocation] =
-            this._getDropTarget(x, y, source);
-        const item = position !== -1
-            ? this._grid.getItemAt(page, position) : null;
-
-        // Dragging over invalid parts of the grid cancels the timeout
-        if (item === source ||
-            dragLocation === IconGrid.DragLocation.INVALID ||
-            dragLocation === IconGrid.DragLocation.ON_ICON) {
-            this._removeDelayedMove();
-            return;
-        }
-
-        if (!this._delayedMoveData ||
-            this._delayedMoveData.page !== page ||
-            this._delayedMoveData.position !== position) {
-            // Update the item with a small delay
-            this._removeDelayedMove();
-            this._delayedMoveData = {
-                page,
-                position,
-                source,
-                destroyId: source.connect('destroy', () => this._removeDelayedMove()),
-                timeoutId: GLib.timeout_add(GLib.PRIORITY_DEFAULT,
-                    200, () => {
-                        this._moveItem(source, page, position, true);
-                        if (this._delayedMoveData) {
-                            this._delayedMoveData.timeoutId = 0;
-                            this._removeDelayedMove();
-                        }
-
-                        return GLib.SOURCE_REMOVE;
-                    }),
-            };
-        }
     },
 };
 
@@ -800,17 +907,10 @@ const FolderView = {
             if (excludedApps.includes(appId))
                 return;
 
-            /*  APP_GRID_INCLUDE_DASH
-                0 - Include All
-                1 - Include All - Favorites and Runnings First
-                2 - Exclude Favorites (Default)
-                3 - Exclude Favorites and Runnings
-            */
-
-            if (opt.APP_GRID_INCLUDE_DASH >= 2 && this._appFavorites.isFavorite(appId))
+            if (opt.APP_GRID_EXCLUDE_FAVORITES && this._appFavorites.isFavorite(appId))
                 return;
 
-            if (opt.APP_GRID_INCLUDE_DASH === 3) {
+            if (opt.APP_GRID_EXCLUDE_RUNNING) {
                 const runningApps = Shell.AppSystem.get_default().get_running().map(a => a.id);
                 if (runningApps.includes(appId))
                     return;
@@ -976,6 +1076,7 @@ const AppFolderDialog = {
         let [dialogX, dialogY] =
             this.child.get_transformed_position();
 
+        // const monitor = global.display.get_monitor_geometry(global.display.get_primary_monitor());
         const sourceCenterX = sourceX + this._source.width / 2;
         const sourceCenterY = sourceY + this._source.height / 2;
 
@@ -983,19 +1084,19 @@ const AppFolderDialog = {
         let dialogTargetX = dialogX;
         let dialogTargetY = dialogY;
         if (!opt.APP_GRID_FOLDER_CENTER) {
-            const panelHeight = Main.panel.height;
+            const appDisplay = this._source._parentView;
             dialogTargetX = Math.round(sourceCenterX - this.child.width / 2);
             dialogTargetX = Math.clamp(
                 dialogTargetX,
-                0,
-                this.width - this.child.width
+                this.x + appDisplay.x,
+                this.x + appDisplay.x + appDisplay.width - this.child.width
             );
 
             dialogTargetY = Math.round(sourceCenterY - this.child.height / 2);
             dialogTargetY = Math.clamp(
                 dialogTargetY,
-                opt.PANEL_POSITION_TOP ? panelHeight : 0,
-                this.height - this.child.height - (opt.PANEL_POSITION_TOP ? 0 : panelHeight)
+                this.y + appDisplay.y,
+                this.y + appDisplay.y + appDisplay.height - this.child.height
             );
         }
         const dialogOffsetX = -dialogX + dialogTargetX;
@@ -1106,8 +1207,13 @@ function _resetAppGrid(settings = null, key = null) {
     }
     const appDisplay = Main.overview._overview._controls._appDisplay;
     const items = appDisplay._orderedItems;
-    for (let i = items.length - 1; i > -1; i--)
-        Main.overview._overview._controls._appDisplay._removeItem(items[i]);
+    for (let i = items.length - 1; i > -1; i--) {
+        try {
+            Main.overview._overview._controls._appDisplay._removeItem(items[i]);
+        } catch (e) {
+            log(`Warning:${e}`);
+        }
+    }
 
     // redisplay only from callback
     if (settings)
@@ -1281,6 +1387,17 @@ const AppIcon = {
 
         return false;
     },
+
+    // avoid accepting by placeholder when dragging active preview
+    _canAccept(source) {
+        if (source._sourceItem)
+            source = source._sourceItem;
+        let view = AppDisplay._getViewFromIcon(source);
+
+        return source !== this &&
+               (source instanceof this.constructor) &&
+               (view instanceof AppDisplay.AppDisplay);
+    },
 };
 
 const AppViewItemCommon = {
@@ -1325,8 +1442,11 @@ const AppViewItemCommon = {
         });
     },
 
-    // added - remove app from the source folder after dnd to other folder
+    // support active preview icons
     acceptDrop(source, _actor, x) {
+        if (opt.APP_GRID_ORDER)
+            return DND.DragMotionResult.NO_DROP;
+
         this._setHoveringByDnd(false);
 
         if (!this._canAccept(source))
@@ -1335,7 +1455,7 @@ const AppViewItemCommon = {
         if (this._withinLeeways(x))
             return false;
 
-        // remove app from the source folder after dnd to other folder
+        // added - remove app from the source folder after dnd to other folder
         if (source._sourceItem) {
             const app = source._sourceItem.app;
             source._sourceFolder.removeApp(app);
@@ -1361,5 +1481,11 @@ class ActiveFolderIcon extends AppDisplay.AppIcon {
 
     acceptDrop() {
         return false;
+    }
+
+    _onDragEnd() {
+        this._dragging = false;
+        this.undoScaleAndFade();
+        Main.overview.endItemDrag(this._sourceItem.icon);
     }
 });

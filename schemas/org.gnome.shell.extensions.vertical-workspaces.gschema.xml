@@ -139,7 +139,7 @@
     <key type="i" name="app-grid-order">
       <default>0</default>
     </key>
-    <key type="i" name="app-grid-include-dash">
+    <key type="i" name="app-grid-content">
       <default>2</default>
     </key>
     <key type="i" name="app-grid-folder-icon-size">
