@@ -1,7 +1,7 @@
 {
   "name": "V-Shell (Vertical Workspaces)",
   "uuid": "vertical-workspaces@G-dH.github.com",
-  "description": "An extension that allows you to customize your desktop interface to suit your workflow and eyes. You can change the horizontal stacking of workspaces to vertical, but also change layout, content, appearance and behavior of Activities overview and workspace switcher.",
+  "description": "Customize your GNOME Shell UX to suit your workflow, whether you like horizontally or vertically stacked workspaces.",
   "shell-version": [
     "42",
     "43",
