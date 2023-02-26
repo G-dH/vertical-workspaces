@@ -596,7 +596,6 @@ const ThumbnailsBoxVertical = {
         if (!this.visible)
             return [0, 0];
 
-
         if (forHeight === -1)
             return this.get_preferred_custom_height(forHeight);
 
@@ -614,14 +613,12 @@ const ThumbnailsBoxVertical = {
         scale = Math.min(scale, opt.MAX_THUMBNAIL_SCALE);
 
         const width = Math.round(this._porthole.width * scale);
-
-        return themeNode.adjust_preferred_width(width, width);
+        return themeNode.adjust_preferred_height(width, width);
     },
 
     get_preferred_custom_height(_forWidth) {
         if (!this.visible)
             return [0, 0];
-
 
         // Note that for getPreferredHeight/Width we cheat a bit and skip propagating
         // the size request to our children because we know how big they are and know
@@ -631,24 +628,19 @@ const ThumbnailsBoxVertical = {
         let spacing = themeNode.get_length('spacing');
         let nWorkspaces = this._thumbnails.length;
 
-        let totalSpacing = (nWorkspaces - 1) * spacing;
+        // remove also top/bottom box padding
+        let totalSpacing = (nWorkspaces - 3) * spacing;
 
         const ratio = this._porthole.width / this._porthole.height;
-        const tmbHeight = _forWidth / ratio;
+        const tmbHeight = themeNode.adjust_for_width(_forWidth) / ratio;
 
         const naturalheight = this._thumbnails.reduce((accumulator, thumbnail/* , index*/) => {
-            // let workspaceSpacing = 0;
-
             const progress = 1 - thumbnail.collapse_fraction;
-            // const height = (this._porthole.height * opt.MAX_THUMBNAIL_SCALE + workspaceSpacing) * progress;
             const height = tmbHeight * progress;
             return accumulator + height;
         }, 0);
 
-        // return themeNode.adjust_preferred_height(totalSpacing, naturalheight);
-        // we need to calculate the height precisely as it need to align with the workspacesDisplay because of transition animation
-        // This works perfectly for fullHD monitor, for some reason 5:4 aspect ratio monitor adds unnecessary pixels to the final height of the thumbnailsBox
-        return [totalSpacing, naturalheight];
+        return themeNode.adjust_preferred_width(totalSpacing, naturalheight);
     },
 
     // removes extra space (extraWidth in the original function), we need the box as accurate as possible
@@ -841,6 +833,24 @@ const ThumbnailsBoxVertical = {
 // ThumbnailsBox Horizontal
 
 const ThumbnailsBoxHorizontal = {
+    get_preferred_custom_height(forWidth) {
+        let themeNode = this.get_theme_node();
+
+        forWidth = themeNode.adjust_for_width(forWidth);
+
+        let spacing = themeNode.get_length('spacing');
+        let nWorkspaces = this._thumbnails.length;
+        let totalSpacing = (nWorkspaces - 1) * spacing;
+
+        const avail = forWidth - totalSpacing;
+
+        let scale = (avail / nWorkspaces) / this._porthole.width;
+        scale = Math.min(scale, opt.MAX_THUMBNAIL_SCALE);
+
+        const height = Math.round(this._porthole.height * scale);
+        return themeNode.adjust_preferred_height(height, height);
+    },
+
     get_preferred_custom_width(_forHeight) {
         // Note that for getPreferredHeight/Width we cheat a bit and skip propagating
         // the size request to our children because we know how big they are and know
@@ -848,22 +858,22 @@ const ThumbnailsBoxHorizontal = {
         if (!this.visible)
             return [0, 0];
 
-
         let themeNode = this.get_theme_node();
 
         let spacing = themeNode.get_length('spacing');
         let nWorkspaces = this._thumbnails.length;
-        let totalSpacing = (nWorkspaces - 1) * spacing;
+        // remove also left/right box padding from the total spacing
+        let totalSpacing = (nWorkspaces - 3) * spacing;
 
         const ratio = this._porthole.height / this._porthole.width;
-        const tmbWidth = (_forHeight - 2 * spacing) / ratio;
 
-        const naturalWidth = this._thumbnails.reduce((accumulator, thumbnail/* , index*/) => {
+        const tmbWidth = themeNode.adjust_for_height(_forHeight) / ratio;
+
+        const naturalWidth = this._thumbnails.reduce((accumulator, thumbnail) => {
             const progress = 1 - thumbnail.collapse_fraction;
             const width = tmbWidth * progress;
             return accumulator + width;
         }, 0);
-
         return themeNode.adjust_preferred_width(totalSpacing, naturalWidth);
     },
 

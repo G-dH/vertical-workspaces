@@ -302,6 +302,8 @@ const ControlsManager = {
             this._workspacesDisplay.setPrimaryWorkspaceVisible(true);
         } else {
             this._searchController.show();
+            entry.visible = true;
+            entry.opacity = 255;
         }
 
         this._searchTransition = true;
@@ -317,7 +319,6 @@ const ControlsManager = {
             let translationX = 0;
             let translationY = 0;
             const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
-
 
             if (currentState < ControlsState.APP_GRID) {
                 switch (opt.SEARCH_VIEW_ANIMATION) {
@@ -845,19 +846,20 @@ const ControlsManagerLayoutVertical = {
         let wsTmbHeight = 0;
 
         if (this._workspacesThumbnails.visible) {
-            const { expandFraction } = this._workspacesThumbnails;
+            // const { expandFraction } = this._workspacesThumbnails;
             const dashHeightReservation = !opt.WS_TMB_FULL && !opt.DASH_VERTICAL ? dashHeight : 0;
-            wsTmbHeight = opt.WS_TMB_FULL
-                ? height - spacing
-                : height - (opt.DASH_VERTICAL ? 0 : dashHeightReservation) - spacing;
 
-            wsTmbWidth = this._workspacesThumbnails.get_preferred_custom_width(wsTmbHeight)[0];
-            wsTmbWidth = Math.round(Math.min(
-                wsTmbWidth * expandFraction,
-                width * opt.MAX_THUMBNAIL_SCALE
-            ));
+            wsTmbWidth = width * opt.MAX_THUMBNAIL_SCALE;
+            let totalTmbSpacing;
+            [totalTmbSpacing, wsTmbHeight] = this._workspacesThumbnails.get_preferred_custom_height(wsTmbWidth);
+            wsTmbHeight += totalTmbSpacing;
 
-            wsTmbHeight = Math.round(Math.min(this._workspacesThumbnails.get_preferred_custom_height(wsTmbWidth)[1], wsTmbHeight));
+            const wsTmbHeightMax = height - dashHeightReservation;
+
+            if (wsTmbHeight > wsTmbHeightMax) {
+                wsTmbHeight = wsTmbHeightMax;
+                wsTmbWidth = this._workspacesThumbnails.get_preferred_custom_width(wsTmbHeight)[1];
+            }
 
             let wsTmbX;
             if (opt.WS_TMB_RIGHT)
@@ -871,7 +873,7 @@ const ControlsManagerLayoutVertical = {
             let wsTmbY = Math.round(startY + (dashHeightReservation && opt.DASH_TOP ? dashHeight : 0) + wstOffset);
 
             childBox.set_origin(wsTmbX, wsTmbY);
-            childBox.set_size(wsTmbWidth, wsTmbHeight);
+            childBox.set_size(Math.round(wsTmbWidth), Math.round(wsTmbHeight));
 
             this._workspacesThumbnails.allocate(childBox);
         }
@@ -1244,27 +1246,28 @@ const ControlsManagerLayoutHorizontal = {
         let wsTmbHeight = 0;
 
         if (this._workspacesThumbnails.visible) {
-            const { expandFraction } = this._workspacesThumbnails;
+            // const { expandFraction } = this._workspacesThumbnails;
             const dashWidthReservation = !opt.WS_TMB_FULL && opt.DASH_VERTICAL ? dashWidth : 0;
 
-            wsTmbWidth = opt.WS_TMB_FULL
+            wsTmbHeight = height * opt.MAX_THUMBNAIL_SCALE;
+            let totalTmbSpacing;
+            [totalTmbSpacing, wsTmbWidth] = this._workspacesThumbnails.get_preferred_custom_width(wsTmbHeight);
+            wsTmbWidth += totalTmbSpacing;
+
+            const wsTmbWidthMax = opt.WS_TMB_FULL
                 ? width
                 : width - (opt.DASH_VERTICAL ? 0 : dashWidthReservation);
 
-            wsTmbHeight = this._workspacesThumbnails.get_preferred_height(wsTmbWidth)[0];
-            wsTmbHeight = Math.round(Math.min(
-                wsTmbHeight * expandFraction,
-                height * opt.MAX_THUMBNAIL_SCALE
-            ));
-
-            wsTmbWidth = Math.round(Math.min(this._workspacesThumbnails.get_preferred_custom_width(wsTmbHeight)[1], wsTmbWidth));
+            if (wsTmbWidth > wsTmbWidthMax) {
+                wsTmbWidth = wsTmbWidthMax;
+                wsTmbHeight = this._workspacesThumbnails.get_preferred_custom_height(wsTmbWidth)[1];
+            }
 
             let wsTmbY;
             if (opt.WS_TMB_TOP)
                 wsTmbY = Math.round(startY + /* searchHeight + */(opt.DASH_TOP ? dashHeight : spacing / 2));
             else
                 wsTmbY = Math.round(startY + height - (opt.DASH_BOTTOM ? dashHeight : 0) - wsTmbHeight);
-
 
             let wstOffset = (width - wsTmbWidth) / 2;
             wstOffset -= opt.WS_TMB_POSITION_ADJUSTMENT * (wstOffset - spacing / 2);
@@ -1275,7 +1278,7 @@ const ControlsManagerLayoutHorizontal = {
             ));
 
             childBox.set_origin(wsTmbX, wsTmbY);
-            childBox.set_size(wsTmbWidth, wsTmbHeight);
+            childBox.set_size(Math.round(wsTmbWidth), Math.round(wsTmbHeight));
 
             this._workspacesThumbnails.allocate(childBox);
 
