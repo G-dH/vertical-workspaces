@@ -668,16 +668,19 @@ const ThumbnailsBoxVertical = {
         const portholeHeight = this._porthole.height;
         const spacing = themeNode.get_length('spacing');
 
-        const nWorkspaces = this._thumbnails.length;
+        /* const nWorkspaces = this._thumbnails.length;*/
 
         // Compute the scale we'll need once everything is updated,
         // unless we are currently transitioning
         if (this._expandFraction === 1) {
-            const totalSpacing = (nWorkspaces - 1) * spacing;
-            const availableHeight = (box.get_height() - totalSpacing) / nWorkspaces;
+            // remove size "breathing" during adding/removing workspaces
+
+            /* const totalSpacing = (nWorkspaces - 1) * spacing;
+            const availableHeight = (box.get_height() - totalSpacing) / nWorkspaces; */
 
             const hScale = box.get_width() / portholeWidth;
-            const vScale = availableHeight / portholeHeight;
+            /* const vScale = availableHeight / portholeHeight;*/
+            const vScale = box.get_height() / portholeHeight;
             const newScale = Math.min(hScale, vScale);
 
             if (newScale !== this._targetScale) {
@@ -879,15 +882,18 @@ const ThumbnailsBoxHorizontal = {
         const portholeHeight = this._porthole.height;
         const spacing = themeNode.get_length('spacing');
 
-        const nWorkspaces = this._thumbnails.length;
+        /* const nWorkspaces = this._thumbnails.length; */
 
         // Compute the scale we'll need once everything is updated,
         // unless we are currently transitioning
         if (this._expandFraction === 1) {
-            const totalSpacing = (nWorkspaces - 1) * spacing;
+            // remove size "breathing" during adding/removing workspaces
+
+            /* const totalSpacing = (nWorkspaces - 1) * spacing;
             const availableWidth = (box.get_width() - totalSpacing) / nWorkspaces;
 
-            const hScale = availableWidth / portholeWidth;
+            const hScale = availableWidth / portholeWidth; */
+            const hScale = box.get_width() / portholeWidth;
             const vScale = box.get_height() / portholeHeight;
             const newScale = Math.min(hScale, vScale);
 
