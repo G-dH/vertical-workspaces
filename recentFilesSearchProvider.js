@@ -103,7 +103,7 @@ const moveAllToWsRegex = /^\/ma[0-9]+$/;
 
 const RecentFilesSearchProvider = class RecentFilesSearchProvider {
     constructor() {
-        this.id = `recent-files@${Me.metadata.uuid}`;
+        this.id = 'org.gnome.Nautilus.desktop';
         this.appInfo = Gio.AppInfo.create_from_commandline('/usr/bin/nautilus -ws recent:///', 'Recent Files', null);
         // this.appInfo = Shell.AppSystem.get_default().lookup_app('org.gnome.Nautilus.desktop').appInfo;
         this.appInfo.get_description = () => _('Search recent files');
