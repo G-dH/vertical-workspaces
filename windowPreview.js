@@ -107,7 +107,7 @@ const WindowPreviewCommon = {
             // spread windows on hover
             this._wsStateConId = this.connect('enter-event', () => {
                 // don't spread windows if user don't use pointer device at this moment
-                if (global.get_pointer()[0] === opt.showingPointerX)
+                if (global.get_pointer()[0] === opt.showingPointerX || Main.overview._overview._controls._stateAdjustment.value < 1)
                     return;
 
                 const adjustment = this._workspace._background._stateAdjustment;
