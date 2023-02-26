@@ -12,7 +12,7 @@
 
 const Main = imports.ui.main;
 const WindowAttentionHandler = imports.ui.windowAttentionHandler;
-
+const MessageTray = imports.ui.messageTray;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
@@ -36,8 +36,8 @@ function _updateConnections(reset) {
     global.display.disconnectObject(Main.windowAttentionHandler);
 
     const handlerFnc = reset
-        ? WindowAttentionHandler.WindowAttentionHandler.prototype._onWindowDemandsAttention
-        : _onWindowDemandsAttention;
+        ? Main.windowAttentionHandler._onWindowDemandsAttention
+        : WindowAttentionHandlerCommon._onWindowDemandsAttention;
 
     global.display.connectObject(
         'window-demands-attention', handlerFnc.bind(Main.windowAttentionHandler),
@@ -45,11 +45,37 @@ function _updateConnections(reset) {
         Main.windowAttentionHandler);
 }
 
-function _onWindowDemandsAttention(display, window) {
-    if (opt.WINDOW_ATTENTION_FOCUS_IMMEDIATELY)
-        Main.activateWindow(window);
-    // Deny attention notifications if the App Grid is open, to avoid notification spree when opening a folder
-    // or if user disabled them
-    else if (!((Main.overview._shown && Main.overview.dash.showAppsButton.checked) || opt.WINDOW_ATTENTION_DISABLE_NOTIFICATIONS))
-        Main.windowAttentionHandler._onWindowDemandsAttention(display, window);
-}
+const WindowAttentionHandlerCommon = {
+    _onWindowDemandsAttention(display, window) {
+        // Deny attention notifications if the App Grid is open, to avoid notification spree when opening a folder
+        if (Main.overview._shown && Main.overview.dash.showAppsButton.checked) {
+            return;
+        } else if (opt.WINDOW_ATTENTION_FOCUS_IMMEDIATELY) {
+            Main.activateWindow(window);
+            return;
+        }
+
+        const app = this._tracker.get_window_app(window);
+        const source = new WindowAttentionHandler.WindowAttentionSource(app, window);
+        Main.messageTray.add(source);
+
+        let [title, banner] = this._getTitleAndBanner(app, window);
+
+        const notification = new MessageTray.Notification(source, title, banner);
+        notification.connect('activated', () => {
+            source.open();
+        });
+        notification.setForFeedback(true);
+
+        if (opt.WINDOW_ATTENTION_DISABLE_NOTIFICATIONS)
+            // just push the notification to the message tray without showing notification
+            source.pushNotification(notification);
+        else
+            source.showNotification(notification);
+
+        window.connectObject('notify::title', () => {
+            [title, banner] = this._getTitleAndBanner(app, window);
+            notification.update(title, banner);
+        }, source);
+    },
+};
