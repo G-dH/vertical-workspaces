@@ -16,6 +16,12 @@
     <key type="i" name="ws-preview-scale">
       <default>100</default>
     </key>
+    <key type="i" name="secondary-ws-preview-scale">
+      <default>100</default>
+    </key>
+    <key type="b" name="secondary-ws-preview-shift">
+      <default>false</default>
+    </key>
     <key type="i" name="dash-position">
       <default>0</default>
     </key>
@@ -59,6 +65,9 @@
       <default>false</default>
     </key>
     <key type="i" name="ws-thumbnail-scale">
+      <default>13</default>
+    </key>
+    <key type="i" name="secondary-ws-thumbnail-scale">
       <default>13</default>
     </key>
     <key type="i" name="dash-max-icon-size">

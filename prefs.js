@@ -164,50 +164,6 @@ function _getLayoutOptionList() {
         )
     );
 
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Show Apps Icon Position'),
-            _('Sets the position of the "Show Applications" icon in the Dash.'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
-            'showAppsIconPosition',
-            [
-                [_('Hide'), 2],
-                [_('Start'), 0],
-                [_('End'), 1],
-            ]
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Open Windows Icon Position'),
-            _('This option adds "Search Open Windows" icon into dash (if window search provider enabled on the Behavior tab) so you can directly toggle window search provider results. Even if you disable this icon, you can use the secondary mouse button click on the Show Apps Icon, or the Space hotkey to access this feature.'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
-            'dashShowWindowsIcon',
-            [
-                [_('Hide'), 0],
-                [_('Start'), 1],
-                [_('End'), 2],
-            ]
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Recent Files Icon Position'),
-            _('This option adds "Search Recent Files" icon into dash (if recent files search provider enabled on the Behavior tab) so you can directly toggle recent files search provider results. Even if you disable this icon, you can use Ctrl + Space hotkey to access this feature.'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
-            'dashShowRecentFilesIcon',
-            [
-                [_('Hide'), 0],
-                [_('Start'), 1],
-                [_('End'), 2],
-            ]
-        )
-    );
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -218,7 +174,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Thumbnails Position / Workspaces Orientation'),
-            _('Position of the workspaces thumbnails on the screen also sets orientation of the workspaces to vertical or horizontal. You have two options to disable workspaces thumbnails, one sets workspaces to the vertical orientation, the second one to horizontal.'),
+            _('Position of the workspace thumbnails on the screen also sets orientation of the workspaces to vertical or horizontal. You have two options to disable workspace thumbnails, one sets workspaces to the vertical orientation, the second one to horizontal.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'workspaceThumbnailsPosition',
@@ -246,7 +202,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Fine Tune Workspaces Thumbnails Position'),
-            _('Adjusts workspaces thumbnails vertical position.'),
+            _('Adjusts workspace thumbnails vertical position.'),
             wstPositionScale,
             'wsTmbPositionAdjust'
         )
@@ -255,7 +211,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Reserve Full Screen Height/Width for Thumbnails'),
-            _('The whole screen height/width will be reserved for workspaces thumbnails at the expense of space available for Dash (if the Dash is oriented in a different axis).'),
+            _('The whole screen height/width will be reserved for workspace thumbnails at the expense of space available for Dash (if the Dash is oriented in a different axis).'),
             itemFactory.newSwitch(),
             'wsThumbnailsFull'
         )
@@ -272,44 +228,10 @@ function _getLayoutOptionList() {
     wsThumbnailScale.add_mark(13, Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
-            _('Workspaces Thumbnails Max Scale'),
-            _('Adjusts maximum size of the workspaces thumbnails (% relative to display width).'),
+            _('Workspace Thumbnails Max Scale'),
+            _('Adjusts maximum size of the workspace thumbnails (% relative to display width).'),
             wsThumbnailScale,
             'wsThumbnailScale'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Workspaces Thumbnails Position on Secondary Monitor'),
-            _('Allows you to place workspaces thumbnails of secondary monitors on the opposite side than on the primary monitor.'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
-            'secondaryWsThumbnailsPosition',
-            [
-                [_('Same as Primary'), 2],
-                [_('Left / Top'), 0],
-                [_('Right / Bottom'), 1],
-                [_('Hide'), 3],
-            ]
-        )
-    );
-
-    const SecWstPositionAdjustment = new Gtk.Adjustment({
-        upper: 100,
-        lower: -100,
-        step_increment: 1,
-        page_increment: 10,
-    });
-
-    const SecWstPositionScale = itemFactory.newScale(SecWstPositionAdjustment);
-    SecWstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Fine Tune Secondary Workspaces Thumbnails Position'),
-            _('Adjusts secondary monitors workspaces thumbnails vertical position.'),
-            SecWstPositionScale,
-            'SecWsTmbPositionAdjust'
         )
     );
 
@@ -332,7 +254,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspaces Scale'),
-            _('Scales down workspaces preview so you can fit more of the adjacent workspaces on the screen. Default size is calculated to use all available space.'),
+            _('Scales down workspace previews so you can fit more of the adjacent workspaces on the screen. Default size is calculated to use all available space.'),
             wsScaleScale,
             'wsPreviewScale'
         )
@@ -350,7 +272,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspaces Spacing'),
-            _('Adjusts spacing between workspaces previews so you can control how much of the adjacent workspaces overlap to the current workspace overview. Default value should set the adjacent workspaces out of the screen.'),
+            _('Adjusts spacing between workspace previews so you can control how much of the adjacent workspaces overlap to the current workspace overview. Default value should set the adjacent workspaces out of the screen.'),
             wsSpacingScale,
             'wsMaxSpacing'
         )
@@ -366,7 +288,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Center App Grid'),
-            _('App grid in app view page will be centered to the display instead of the available space. This option may have impact on the size of the grid, more for narrower and small resolution displays, especially if workspaces thumbnails are bigger.'),
+            _('App grid in app view page will be centered to the display instead of the available space. This option may have impact on the size of the grid, more for narrower and small resolution displays, especially if workspace thumbnails are bigger.'),
             itemFactory.newSwitch(),
             'centerAppGrid'
         )
@@ -382,7 +304,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Center Search View'),
-            _('Search view will be centered to the display instead of the available space. If needed, workspaces thumbnails will be temporarily scaled down to fit the search box. This option has bigger impact for narrower and small resolution displays.'),
+            _('Search view will be centered to the display instead of the available space. If needed, workspace thumbnails will be temporarily scaled down to fit the search box. This option has bigger impact for narrower and small resolution displays.'),
             itemFactory.newSwitch(),
             'centerSearch'
         )
@@ -451,6 +373,91 @@ function _getLayoutOptionList() {
         )
     );
 
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Secondary Monitors')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Thumbnails Position'),
+            _('Allows you to place workspace thumbnails of secondary monitors on the opposite side than on the primary monitor.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'secWsThumbnailsPosition',
+            [
+                [_('Same as Primary'), 2],
+                [_('Left / Top'), 0],
+                [_('Right / Bottom'), 1],
+                [_('Hide'), 3],
+            ]
+        )
+    );
+
+    const secWstPositionAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: -100,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const secWstPositionScale = itemFactory.newScale(secWstPositionAdjustment);
+    secWstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Fine Tune Workspace Thumbnails Position'),
+            _('Adjusts secondary monitors workspace thumbnails vertical position.'),
+            secWstPositionScale,
+            'secWsTmbPositionAdjust'
+        )
+    );
+
+    const secWsThumbnailScaleAdjustment = new Gtk.Adjustment({
+        upper: 30,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const secWsThumbnailScale = itemFactory.newScale(secWsThumbnailScaleAdjustment);
+    secWsThumbnailScale.add_mark(13, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Thumbnails Max Scale'),
+            _('Adjusts maximum size of the workspace thumbnails (% relative to display width) for secondary monitors.'),
+            secWsThumbnailScale,
+            'secWsThumbnailScale'
+        )
+    );
+
+    const wsSecScaleAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: 30,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const wsSecScaleScale = itemFactory.newScale(wsSecScaleAdjustment);
+    wsScaleScale.add_mark(100, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Preview Scale'),
+            _('Scales down workspace previews on secondary monitors.'),
+            wsSecScaleScale,
+            'secWsPreviewScale'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Shift Workspace Preview by Panel Height'),
+            _('This option can help align overview of the secondary monitor with the primary monitor.'),
+            itemFactory.newSwitch(),
+            'secWsPreviewShift'
+        )
+    );
+
     return optionList;
 }
 
@@ -493,6 +500,51 @@ function _getAppearanceOptionList() {
         step_increment: 1,
         page_increment: 10,
     });
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Show Apps Icon Position'),
+            _('Sets the position of the "Show Applications" icon in the Dash.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'showAppsIconPosition',
+            [
+                [_('Hide'), 2],
+                [_('Start'), 0],
+                [_('End'), 1],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Open Windows Icon Position'),
+            _('This option adds "Search Open Windows" icon into dash (if window search provider enabled on the Behavior tab) so you can directly toggle window search provider results. Even if you disable this icon, you can use the secondary mouse button click on the Show Apps Icon, or the Space hotkey to access this feature.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'dashShowWindowsIcon',
+            [
+                [_('Hide'), 0],
+                [_('Start'), 1],
+                [_('End'), 2],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Recent Files Icon Position'),
+            _('This option adds "Search Recent Files" icon into dash (if recent files search provider enabled on the Behavior tab) so you can directly toggle recent files search provider results. Even if you disable this icon, you can use Ctrl + Space hotkey to access this feature.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'dashShowRecentFilesIcon',
+            [
+                [_('Hide'), 0],
+                [_('Start'), 1],
+                [_('End'), 2],
+            ]
+        )
+    );
 
     const dashBgOpacityScale = itemFactory.newScale(dashBgAdjustment);
     optionList.push(
@@ -860,7 +912,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Overview Mode'),
-            _('The Expose Windows on Hover mode do not expose the workspace preview windows until the mouse pointer enters any window.\nThe Static Workspace mode does not scale the workspace preview, it only shows Dash and workspaces thumbnails over the desktop. Clicking on a workspace thumbnail scales the ws preview and exposes its windows like in the default overview mode.'),
+            _('The Expose Windows on Hover mode do not expose the workspace preview windows until the mouse pointer enters any window.\nThe Static Workspace mode does not scale the workspace preview, it only shows Dash and workspace thumbnails over the desktop. Clicking on a workspace thumbnail scales the ws preview and exposes its windows like in the default overview mode.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'overviewMode',

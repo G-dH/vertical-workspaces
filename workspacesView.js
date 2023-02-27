@@ -277,7 +277,7 @@ const SecondaryMonitorDisplayVertical = {
         const [, thumbnailsWidth] = this._thumbnails.get_preferred_custom_width(height - 2 * spacing);
         return Math.min(
             thumbnailsWidth * expandFraction,
-            width * opt.MAX_THUMBNAIL_SCALE);
+            width * opt.SEC_MAX_THUMBNAIL_SCALE);
     },
 
     _getWorkspacesBoxForState(state, box, padding, thumbnailsWidth, spacing) {
@@ -285,7 +285,7 @@ const SecondaryMonitorDisplayVertical = {
         const workspaceBox = box.copy();
         const [width, height] = workspaceBox.get_size();
 
-        let wWidth, wHeight, wsbX, wsbY, offset;
+        let wWidth, wHeight, wsbX, wsbY, offset, yShift;
         switch (state) {
         case ControlsState.HIDDEN:
             break;
@@ -294,11 +294,18 @@ const SecondaryMonitorDisplayVertical = {
             if (opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE)
                 break;
 
+            yShift = 0;
+            if (opt.SEC_WS_PREVIEW_SHIFT && !opt.PANEL_DISABLED) {
+                if (opt.PANEL_POSITION_TOP)
+                    yShift = Main.panel.height;
+                else
+                    yShift = -Main.panel.height;
+            }
 
             wWidth = Math.round(width - thumbnailsWidth - 5 * spacing);
             wHeight = Math.round(Math.min(wWidth / (width / height), height - padding));
-            wWidth *= opt.WS_PREVIEW_SCALE;
-            wHeight *= opt.WS_PREVIEW_SCALE;
+            wWidth *= opt.SEC_WS_PREVIEW_SCALE;
+            wHeight *= opt.SEC_WS_PREVIEW_SCALE;
 
             offset = Math.round(width - thumbnailsWidth - wWidth) / 2;
             if (opt.SEC_WS_TMB_LEFT)
@@ -306,8 +313,7 @@ const SecondaryMonitorDisplayVertical = {
             else
                 wsbX = offset;
 
-
-            wsbY = Math.round((height - wHeight) / 2);
+            wsbY = Math.round((height - wHeight) / 2 + yShift);
 
             workspaceBox.set_origin(wsbX, wsbY);
             workspaceBox.set_size(wWidth, wHeight);
@@ -496,7 +502,7 @@ const SecondaryMonitorDisplayHorizontal = {
         const workspaceBox = box.copy();
         const [width, height] = workspaceBox.get_size();
 
-        let wWidth, wHeight, wsbX, wsbY, offset;
+        let wWidth, wHeight, wsbX, wsbY, offset, yShift;
         switch (state) {
         case ControlsState.HIDDEN:
             break;
@@ -505,10 +511,18 @@ const SecondaryMonitorDisplayHorizontal = {
             if (opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE)
                 break;
 
+            yShift = 0;
+            if (opt.SEC_WS_PREVIEW_SHIFT && !opt.PANEL_DISABLED) {
+                if (opt.PANEL_POSITION_TOP)
+                    yShift = Main.panel.height;
+                else
+                    yShift = -Main.panel.height;
+            }
+
             wHeight = Math.round(height - (thumbnailsHeight ? thumbnailsHeight + 5 * spacing : padding));
             wWidth = Math.round(Math.min(wHeight * (width / height), width - padding));
-            wWidth *= opt.WS_PREVIEW_SCALE;
-            wHeight *= opt.WS_PREVIEW_SCALE;
+            wWidth *= opt.SEC_WS_PREVIEW_SCALE;
+            wHeight *= opt.SEC_WS_PREVIEW_SCALE;
 
             offset = Math.round((height - thumbnailsHeight - wHeight) / 2);
             if (opt.WS_TMB_TOP)
@@ -516,7 +530,7 @@ const SecondaryMonitorDisplayHorizontal = {
             else
                 wsbY = offset;
 
-
+            wsbY += yShift;
             wsbX = Math.round((width - wWidth) / 2);
 
             workspaceBox.set_origin(wsbX, wsbY);
@@ -536,7 +550,7 @@ const SecondaryMonitorDisplayHorizontal = {
         const [thumbnailsHeight] = this._thumbnails.get_preferred_height(width);
         return Math.min(
             thumbnailsHeight * expandFraction,
-            height * opt.MAX_THUMBNAIL_SCALE);
+            height * opt.SEC_MAX_THUMBNAIL_SCALE);
     },
 
     vfunc_allocate(box) {

@@ -50,21 +50,24 @@ var Options = class Options {
             workspaceThumbnailsPosition: ['int', 'ws-thumbnails-position'],
             wsMaxSpacing: ['int', 'ws-max-spacing'],
             wsPreviewScale: ['int', 'ws-preview-scale'],
+            secWsPreviewScale: ['int', 'secondary-ws-preview-scale'],
+            secWsPreviewShift: ['bool', 'secondary-ws-preview-shift'],
             wsThumbnailsFull: ['bool', 'ws-thumbnails-full'],
-            secondaryWsThumbnailsPosition: ['int', 'secondary-ws-thumbnails-position'],
+            secWsThumbnailsPosition: ['int', 'secondary-ws-thumbnails-position'],
             dashPosition: ['int', 'dash-position'],
             dashPositionAdjust: ['int', 'dash-position-adjust'],
             wsTmbPositionAdjust: ['int', 'wst-position-adjust'],
             showWsTmbLabels: ['int', 'show-wst-labels'],
             showWsTmbLabelsOnHover: ['boolean', 'show-wst-labels-on-hover'],
             closeWsButtonMode: ['int', 'close-ws-button-mode'],
-            SecWsTmbPositionAdjust: ['int', 'sec-wst-position-adjust'],
+            secWsTmbPositionAdjust: ['int', 'sec-wst-position-adjust'],
             dashMaxIconSize: ['int', 'dash-max-icon-size'],
             dashShowWindowsIcon: ['int', 'dash-show-windows-icon'],
             dashShowRecentFilesIcon: ['int', 'dash-show-recent-files-icon'],
             centerDashToWs: ['boolean', 'center-dash-to-ws'],
             showAppsIconPosition: ['int', 'show-app-icon-position'],
             wsThumbnailScale: ['int', 'ws-thumbnail-scale'],
+            secWsThumbnailScale: ['int', 'secondary-ws-thumbnail-scale'],
             showSearchEntry: ['boolean', 'show-search-entry'],
             centerSearch: ['boolean', 'center-search'],
             centerAppGrid: ['boolean', 'center-app-grid'],
@@ -224,21 +227,24 @@ var Options = class Options {
         this.WS_TMB_BOTTOM = this.WS_TMB_POSITION === 2;
         this.WS_TMB_LEFT = this.WS_TMB_POSITION === 3;
         this.WS_TMB_POSITION_ADJUSTMENT = this.get('wsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
-        this.SEC_WS_TMB_POSITION = this.get('secondaryWsThumbnailsPosition', true);
+        this.SEC_WS_TMB_POSITION = this.get('secWsThumbnailsPosition', true);
         this.SHOW_SEC_WS_TMB = this.SEC_WS_TMB_POSITION !== 3 && this.SHOW_WS_TMB;
         this.SEC_WS_TMB_TOP = (this.SEC_WS_TMB_POSITION === 0 && !this.ORIENTATION) || (this.SEC_WS_TMB_POSITION === 2 && this.WS_TMB_TOP);
         this.SEC_WS_TMB_RIGHT = (this.SEC_WS_TMB_POSITION === 1 && this.ORIENTATION) || (this.SEC_WS_TMB_POSITION === 2 && this.WS_TMB_RIGHT);
         this.SEC_WS_TMB_BOTTOM = (this.SEC_WS_TMB_POSITION === 1 && !this.ORIENTATION) || (this.SEC_WS_TMB_POSITION === 2 && this.WS_TMB_BOTTOM);
         this.SEC_WS_TMB_LEFT = (this.SEC_WS_TMB_POSITION === 0 && this.ORIENTATION) || (this.SEC_WS_TMB_POSITION === 2 && this.WS_TMB_LEFT);
 
-        this.SEC_WS_TMB_POSITION_ADJUSTMENT = this.get('SecWsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
+        this.SEC_WS_TMB_POSITION_ADJUSTMENT = this.get('secWsTmbPositionAdjust', true) * -1 / 100; // range 1 to -1
+        this.SEC_WS_PREVIEW_SHIFT = this.get('secWsPreviewShift', true);
         this.SHOW_WST_LABELS = this.get('showWsTmbLabels', true);
         this.SHOW_WST_LABELS_ON_HOVER = this.get('showWsTmbLabelsOnHover', true);
         this.CLOSE_WS_BUTTON_MODE = this.get('closeWsButtonMode', true);
 
         this.MAX_THUMBNAIL_SCALE = this.get('wsThumbnailScale', true) / 100;
+        this.SEC_MAX_THUMBNAIL_SCALE = this.get('secWsThumbnailScale', true) / 100;
 
         this.WS_PREVIEW_SCALE = this.get('wsPreviewScale', true) / 100;
+        this.SEC_WS_PREVIEW_SCALE = this.get('secWsPreviewScale', true) / 100;
         // calculate number of possibly visible neighbor previews according to ws scale
         this.NUMBER_OF_VISIBLE_NEIGHBORS = Math.round(1 + (100 - this.WS_PREVIEW_SCALE) / 40);
 
@@ -318,6 +324,8 @@ var Options = class Options {
 
         this.PANEL_POSITION_TOP = this.get('panelPosition', true) === 0;
         this.PANEL_MODE = this.get('panelVisibility', true);
+        this.PANEL_DISABLED = this.PANEL_MODE === 2;
+        this.PANEL_MODE_OVERVIEW_ONLY = this.PANEL_MODE === 1;
         this.START_Y_OFFSET = 0; // set from main module
         this.FIX_UBUNTU_DOCK = this.get('fixUbuntuDock', true);
 

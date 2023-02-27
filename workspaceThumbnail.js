@@ -610,7 +610,7 @@ const ThumbnailsBoxVertical = {
         const avail = forHeight - totalSpacing;
 
         let scale = (avail / nWorkspaces) / this._porthole.height;
-        scale = Math.min(scale, opt.MAX_THUMBNAIL_SCALE);
+        // scale = Math.min(scale, opt.MAX_THUMBNAIL_SCALE);
 
         const width = Math.round(this._porthole.width * scale);
         return themeNode.adjust_preferred_height(width, width);
@@ -845,7 +845,7 @@ const ThumbnailsBoxHorizontal = {
         const avail = forWidth - totalSpacing;
 
         let scale = (avail / nWorkspaces) / this._porthole.width;
-        scale = Math.min(scale, opt.MAX_THUMBNAIL_SCALE);
+        // scale = Math.min(scale, opt.MAX_THUMBNAIL_SCALE);
 
         const height = Math.round(this._porthole.height * scale);
         return themeNode.adjust_preferred_height(height, height);
