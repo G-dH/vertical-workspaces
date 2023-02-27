@@ -1,8 +1,8 @@
-# V-Shell (former Vertical Workspaces)
+# V-Shell (Vertical Workspaces)
 
 A GNOME Shell extension that lets you customize your desktop interface to suit your workflow and style. You can change the horizontal stacking of workspaces to vertical, but also change layout, content, appearance and behavior of the Shell.
 
-Supported GNOME versions: 42, 43, 44 (dropped support for 40, 41  - not tested).
+Supported GNOME versions: 42, 43, 44 (dropped support for 40, 41  - not tested anymore).
 
 ## Features
 - Vertically or horizontally stacked workspaces.
@@ -23,6 +23,7 @@ Supported GNOME versions: 42, 43, 44 (dropped support for 40, 41  - not tested).
 - Recent files search provider with *Ctrl + Space* hotkey.
 - Reorder workspaces in overview using *Shift + Scroll* or *Shift + Page Up/Down*.
 - Adds *Force Quit*, *Close Windows on Current Workspace* and *Move Windows to Current Workspace* items to app icon menu. The latter action can be activated using *Shift + click* on app icon.
+- Adds window attention handler options that can focus the attention demanding window immediately or silent its notifications.
 
 
 [<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
@@ -51,6 +52,8 @@ Navigate to the directory you want to download the source code and execute follo
     git clone https://github.com/G-dH/vertical-workspaces.git
     cd vertical-workspaces
     make install
+
+If you get `Can't recursively copy directory` error, take a look at issue #51.
 
 ### Enabling the extension
 After installation you need to enable the extension and access its settings.

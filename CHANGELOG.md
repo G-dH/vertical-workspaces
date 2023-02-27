@@ -2,17 +2,11 @@
 
 ### v24 (not released yet)
 **Added:**
-- Support of GNOME Shell 44.
-- Support for horizontally stacked workspaces, the stacking follows `Workspaces Thumbnails Position` option.
+- Support for GNOME Shell 44.
+- Support for horizontally stacked workspaces, the orientation follows `Workspaces Thumbnails Position` option.
 - `Dash Max Icon Size` menu now offers 80, 96, 112 and 128 px options.
 - Dash can use available space better if resizes its icons when there is not enough space on the screen for the chosen icon size.
 - Options `Dash Icon Click`: `Activate Last Used Window Immediately` (default behavior) and `Switch to Workspace with Recently Used Window` which allows you to see an overview of the workspace with the app window before activating it and closing the overview.
-- App Grid options - `Icon Size`, `Columns/Rows per Page`, `Apps Order` - `Custom`, `Alphabet`, `Usage`, option to `Include Dash Items`, `Reset App Grid Layout`, `Remove App Grid Folders`.
-- App Grid's *Include Dash Items* option changed to `App Grid Content` and allows exclude favorites and/or running apps from the grid also in the default custom mode.
-- Option `App Labels Behavior` offers setting App Grid app labels to show always expanded or hide them if the app icon is not selected.
-- Option `Active Icons in Preview Folders` allows you using icons in the folder preview as normal app icons without opening the folder.
-- App folder preview icons can be displayed in 3x3 grid instead of 2x2 and icon/folder size can be set up to 256px to make Active folder icons really usable.
-- Improved app search, now you can find *Firefox* even if you enter *fox* and with the (pseudo) fuzzy search enabled, you'll find it even if you enter *ffx*.
 - Options `Workspaces Scale` and `Workspaces Spacing` adjustments for workspace preview.
 - Option `Workspace Switcher Animation` / `Static Background` for static background while switching workspaces outside of the overview.
 - Options `Main Panel Position` and `Main Panel Visibility` allows moving the main panel at the bottom of the screen, hide it, or only show it in the Activities overview.
@@ -26,6 +20,14 @@
 - Open preferences by middle click on *Show Applications button* in the dash (default dash only).
 - Option to show current window title in the workspace thumbnail label.
 - `Close Workspace Button` option can add close button to workspace thumbnails that allows you to close all windows on the workspace/monitor. You can choose whether it close on single click, double-click or single click while holding down the Ctrl key.
+- App Grid options - `Icon Size`, `Columns/Rows per Page`, `Apps Order` - `Custom`, `Alphabet`, `Usage`, option to `Include Dash Items`, `Reset App Grid Layout`, `Remove App Grid Folders`.
+- App Grid's *Include Dash Items* option changed to `App Grid Content` and allows exclude favorites and/or running apps from the grid also in the default custom layout mode.
+- Option `App Labels Behavior` offers setting App Grid app labels to show always expanded or hide them if the app icon is not selected.
+- Option `Active Icons in Preview Folders` allows you using icons in the folder preview as normal app icons without opening the folder.
+- App folder preview icons can be displayed in 3x3 grid instead of 2x2 and icon/folder size can be set up to 256px to allow bigger Active folder icons.
+- Improved app search, now you can find *Firefox* even if you enter *fox* and with the (pseudo) fuzzy search enabled, you'll find it even if you enter *ffx*.
+- `Window Attention Handler` options - `Disable Notifications`, `Immediately Focus Window`.
+- New options for secondary monitor overview allow independent workspace thumbnails and workspace preview scales and also can move the ws preview as if there was the main panel, like on the primary monitor.
 
 **Fixed:**
 - Some options related to the workspace preview don't work for secondary monitors if workspaces set to "primary monitor only".
@@ -33,9 +35,10 @@
 - Smaller single windows not properly scaling with workspace preview in `Expose Windows on Hover` mode.
 - (upstream bug) Closing windows in the overview fills log with "access to destroyed" object errors.
 - (upstream bug) Glitching transition when minimizing full-screen window.
+- Workspace thumbnails size breathing during adding/removing workspaces
 
 **Changed:**
-- Extension renamed to V-Shell, since it's not vertical only any more.
+- Extension renamed to V-Shell, because the vertical workspace orientation is not the only option any more and the 'V' might stand for *Vertical*, but also for *Variable*.
 
 ### v23 (v19, v20, v21, v22) (2022-12-22)
 **Added:**
