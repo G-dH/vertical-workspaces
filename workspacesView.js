@@ -275,9 +275,15 @@ const SecondaryMonitorDisplayVertical = {
         const [width, height] = box.get_size();
         const { expandFraction } = this._thumbnails;
         const [, thumbnailsWidth] = this._thumbnails.get_preferred_custom_width(height - 2 * spacing);
+        let scaledWidth;
+        if (opt.SEC_WS_PREVIEW_SHIFT && !opt.PANEL_DISABLED)
+            scaledWidth = ((height - Main.panel.height) * opt.SEC_MAX_THUMBNAIL_SCALE) * (width / height);
+        else
+            scaledWidth = width * opt.SEC_MAX_THUMBNAIL_SCALE;
+
         return Math.min(
             thumbnailsWidth * expandFraction,
-            width * opt.SEC_MAX_THUMBNAIL_SCALE);
+            Math.round(scaledWidth));
     },
 
     _getWorkspacesBoxForState(state, box, padding, thumbnailsWidth, spacing) {
@@ -302,10 +308,10 @@ const SecondaryMonitorDisplayVertical = {
                     yShift = -Main.panel.height;
             }
 
-            wWidth = Math.round(width - thumbnailsWidth - 5 * spacing);
-            wHeight = Math.round(Math.min(wWidth / (width / height), height - padding));
-            wWidth *= opt.SEC_WS_PREVIEW_SCALE;
-            wHeight *= opt.SEC_WS_PREVIEW_SCALE;
+            wWidth = width - thumbnailsWidth - 5 * spacing;
+            wHeight = Math.min(wWidth / (width / height) - Math.abs(yShift), height - 4 * spacing);
+            wWidth = Math.round(wWidth * opt.SEC_WS_PREVIEW_SCALE);
+            wHeight = Math.round(wHeight * opt.SEC_WS_PREVIEW_SCALE);
 
             offset = Math.round(width - thumbnailsWidth - wWidth) / 2;
             if (opt.SEC_WS_TMB_LEFT)
@@ -313,7 +319,7 @@ const SecondaryMonitorDisplayVertical = {
             else
                 wsbX = offset;
 
-            wsbY = Math.round((height - wHeight) / 2 + yShift);
+            wsbY = Math.round((height - wHeight - Math.abs(yShift)) / 2 + yShift);
 
             workspaceBox.set_origin(wsbX, wsbY);
             workspaceBox.set_size(wWidth, wHeight);
@@ -519,13 +525,13 @@ const SecondaryMonitorDisplayHorizontal = {
                     yShift = -Main.panel.height;
             }
 
-            wHeight = Math.round(height - (thumbnailsHeight ? thumbnailsHeight + 5 * spacing : padding));
-            wWidth = Math.round(Math.min(wHeight * (width / height), width - padding));
-            wWidth *= opt.SEC_WS_PREVIEW_SCALE;
-            wHeight *= opt.SEC_WS_PREVIEW_SCALE;
+            wHeight = height - Math.abs(yShift) - (thumbnailsHeight ? thumbnailsHeight + 4 * spacing : padding);
+            wWidth = Math.min(wHeight * (width / height), width - 5 * spacing);
+            wWidth *= Math.round(opt.SEC_WS_PREVIEW_SCALE);
+            wHeight *= Math.round(opt.SEC_WS_PREVIEW_SCALE);
 
-            offset = Math.round((height - thumbnailsHeight - wHeight) / 2);
-            if (opt.WS_TMB_TOP)
+            offset = Math.round((height - thumbnailsHeight - wHeight - Math.abs(yShift)) / 2);
+            if (opt.SEC_WS_TMB_TOP)
                 wsbY = thumbnailsHeight + offset;
             else
                 wsbY = offset;
