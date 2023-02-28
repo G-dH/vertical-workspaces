@@ -458,6 +458,51 @@ function _getLayoutOptionList() {
         )
     );
 
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Switcher Popup')
+        )
+    );
+
+    const hAdjustment = new Gtk.Adjustment({
+        lower: 0,
+        upper: 100,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const hScale = itemFactory.newScale(hAdjustment);
+    hScale.add_mark(50, Gtk.PositionType.TOP, null);
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Horizontal Position (% from left)'),
+            _('This popup shows up when you switch workspace using a keyboard shortcut or gesture outside of the overview. You can disable it on the Behavior tab. If you want more control over the popup, try Workspace Switcher Manager extension.'),
+            hScale,
+            'wsSwPopupHPosition'
+        )
+    );
+
+    const vAdjustment = new Gtk.Adjustment({
+        lower: 0,
+        upper: 100,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const vScale = itemFactory.newScale(vAdjustment);
+    vScale.add_mark(50, Gtk.PositionType.TOP, null);
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Vertical Position (% from top)'),
+            null,
+            vScale,
+            'wsSwPopupVPosition'
+        )
+    );
+
     return optionList;
 }
 
@@ -1133,10 +1178,33 @@ function _getBehaviorOptionList() {
         )
     );*/
 
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Animations - General')
+        )
+    );
+
+    const animationSpeedAdjustment = new Gtk.Adjustment({
+        upper: 500,
+        lower: 1,
+        step_increment: 10,
+        page_increment: 100,
+    });
+
+    const animationSpeedScale = itemFactory.newScale(animationSpeedAdjustment);
+    animationSpeedScale.add_mark(100, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Animation Speed'),
+            _('Adjusts the global animation speed in % of the default duration - higher value means slower animation.'),
+            animationSpeedScale,
+            'animationSpeedFactor'
+        )
+    );
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Animations')
+            _('Animations - Overview')
         )
     );
 
@@ -1191,10 +1259,17 @@ function _getBehaviorOptionList() {
         )
     );
 
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Switcher')
+        )
+    );
+
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Switcher Animation'),
-            _('Allows you to disable movement of the desktop background during workspace switcher animation outside of the overview.'),
+            _('Allows you to disable movement of the desktop background during workspace switcher animation outside of the overview. The Static Background mode also keeps Conky and desktop icons on their place during switching.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'workspaceSwitcherAnimation',
@@ -1205,21 +1280,18 @@ function _getBehaviorOptionList() {
         )
     );
 
-    const animationSpeedAdjustment = new Gtk.Adjustment({
-        upper: 500,
-        lower: 1,
-        step_increment: 10,
-        page_increment: 100,
-    });
-
-    const animationSpeedScale = itemFactory.newScale(animationSpeedAdjustment);
-    animationSpeedScale.add_mark(100, Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
-            _('Animation Speed'),
-            _('Adjusts the global animation speed in % of the default duration - higher value means slower animation.'),
-            animationSpeedScale,
-            'animationSpeedFactor'
+            _('Workspace Switcher Popup Mode'),
+            _('This popup shows up when you switch workspace using a keyboard shortcut or gesture outside of the overview. You can to disable the popup at all, or show it on the current monitor (the one with mouse pointer) instead of the primary.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'wsSwPopupMode',
+            [
+                [_('Disable'), 0],
+                [_('Show on Primary Monitor (Default)'), 1],
+                [_('Show on Current Monitor'), 2],
+            ]
         )
     );
 

@@ -199,5 +199,14 @@
     <key type="i" name="window-attention-mode">
       <default>0</default>
     </key>
+    <key type="i" name="ws-sw-popup-h-position">
+      <default>50</default>
+    </key>
+    <key type="i" name="ws-sw-popup-v-position">
+      <default>95</default>
+    </key>
+    <key type="i" name="ws-sw-popup-mode">
+      <default>1</default>
+    </key>
   </schema>
 </schemalist>

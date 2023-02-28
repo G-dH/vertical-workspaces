@@ -113,6 +113,9 @@ var Options = class Options {
             panelVisibility: ['int', 'panel-visibility'],
             panelPosition: ['int', 'panel-position'],
             windowAttentionMode: ['int', 'window-attention-mode'],
+            wsSwPopupHPosition: ['int', 'ws-sw-popup-h-position'],
+            wsSwPopupVPosition: ['int', 'ws-sw-popup-v-position'],
+            wsSwPopupMode: ['int', 'ws-sw-popup-mode'],
         };
         this.cachedOptions = {};
 
@@ -332,6 +335,10 @@ var Options = class Options {
         this.WINDOW_ATTENTION_MODE = this.get('windowAttentionMode', true);
         this.WINDOW_ATTENTION_DISABLE_NOTIFICATIONS = this.WINDOW_ATTENTION_MODE === 1;
         this.WINDOW_ATTENTION_FOCUS_IMMEDIATELY = this.WINDOW_ATTENTION_MODE === 2;
+
+        this.WS_SW_POPUP_H_POSITION = this.get('wsSwPopupHPosition', true) / 100;
+        this.WS_SW_POPUP_V_POSITION = this.get('wsSwPopupVPosition', true) / 100;
+        this.WS_SW_POPUP_MODE = this.get('wsSwPopupMode', true);
     }
 
     _getAnimationDirection() {
