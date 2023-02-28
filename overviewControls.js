@@ -410,10 +410,13 @@ const ControlsManager = {
                     this._workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
                 },
             });
-        } else if (opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE) {
+        } else if (opt.OVERVIEW_MODE2 && !(opt.WORKSPACE_MODE || this.dash.showAppsButton.checked)) {
             // add background to search results and make searchEntry border thicker for better visibility
             Main.overview._overview._controls.layoutManager._searchController._searchResults._content.add_style_class_name('search-section-content-om2');
             Main.overview.searchEntry.add_style_class_name('search-entry-om2');
+        } else {
+            Main.overview._overview._controls.layoutManager._searchController._searchResults._content.remove_style_class_name('search-section-content-om2');
+            Main.overview.searchEntry.remove_style_class_name('search-entry-om2');
         }
     },
 

@@ -154,7 +154,11 @@
 
 /* "no results" text for static ws mode*/
 .search-statustext {
-	text-shadow: 0px 0px 5px rgba(53, 56, 53, 1);
+	background-color: rgb(23,23,23);
+	color: white;
+	padding: 30px;
+	border-radius: 20px;
+	text-shadow: 0px 0px 5px rgb(23, 23, 23);
 }
 
 .transparent-panel {
