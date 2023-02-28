@@ -1256,6 +1256,8 @@ const AppIcon = {
 
         const currentWS = global.workspace_manager.get_active_workspace();
         const appRecentWorkspace = _getAppRecentWorkspace(this.app);
+        // this feature shouldn't affect search results, dash icons don't have labels, so we use them as a condition
+        const showWidowsBeforeActivation = opt.DASH_SHOW_WINS_BEFORE && !this.icon.label;
 
         let targetWindowOnCurrentWs = false;
         if (opt.DASH_FOLLOW_RECENT_WIN) {
@@ -1275,7 +1277,7 @@ const AppIcon = {
             this.app.open_new_window(-1);
         // if DASH_SHOW_WINS_BEFORE, the app has more than one window and has no window on the current workspace,
         // don't activate the app immediately, only move the overview to the workspace with the app's recent window
-        } else if (opt.DASH_SHOW_WINS_BEFORE && !isShiftPressed && this.app.get_n_windows() > 1 && !targetWindowOnCurrentWs/* && !(opt.OVERVIEW_MODE && !opt.WORKSPACE_MODE)*/) {
+        } else if (showWidowsBeforeActivation && !isShiftPressed && this.app.get_n_windows() > 1 && !targetWindowOnCurrentWs/* && !(opt.OVERVIEW_MODE && !opt.WORKSPACE_MODE)*/) {
             // this._scroll = true;
             // this._scrollTime = Date.now();
             Main.wm.actionMoveWorkspace(appRecentWorkspace);
