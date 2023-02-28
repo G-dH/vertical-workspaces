@@ -396,7 +396,9 @@ const ControlsManager = {
         }
 
         // reuse already tuned overview transition, just replace APP_GRID with the search view
-        if (!Main.overview._animationInProgress && finalState !== ControlsState.HIDDEN && !this.dash.showAppsButton.checked) {
+        if (!(opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE) && !Main.overview._animationInProgress && finalState !== ControlsState.HIDDEN && !this.dash.showAppsButton.checked) {
+            Main.overview._overview._controls.layoutManager._searchController._searchResults._content.remove_style_class_name('search-section-content-om2');
+            Main.overview.searchEntry.remove_style_class_name('search-entry-om2');
             this._stateAdjustment.ease(searchActive ? ControlsState.APP_GRID : ControlsState.WINDOW_PICKER, {
                 // shorter animation time when entering search view can avoid stuttering in transition
                 // collecting search results take some time and the problematic part is the realization of the object on the screen
@@ -408,6 +410,10 @@ const ControlsManager = {
                     this._workspacesDisplay.setPrimaryWorkspaceVisible(!searchActive);
                 },
             });
+        } else if (opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE) {
+            // add background to search results and make searchEntry border thicker for better visibility
+            Main.overview._overview._controls.layoutManager._searchController._searchResults._content.add_style_class_name('search-section-content-om2');
+            Main.overview.searchEntry.add_style_class_name('search-entry-om2');
         }
     },
 
