@@ -180,7 +180,7 @@ function _updateAppGridProperties(reset = false) {
     appDisplay.visible = true;
 
     // replace isFavorite function to always return false to allow dnd with favorite apps
-    if (!reset && !opt.APP_GRID_EXCLUDE_FAVORITES) {
+    /* if (!reset && !opt.APP_GRID_EXCLUDE_FAVORITES) {
         if (!appDisplay._appFavorites._backupIsFavorite)
             appDisplay._appFavorites._backupIsFavorite = appDisplay._appFavorites.isFavorite;
 
@@ -188,7 +188,7 @@ function _updateAppGridProperties(reset = false) {
     } else if (appDisplay._appFavorites._backupIsFavorite) {
         appDisplay._appFavorites.isFavorite = appDisplay._appFavorites._backupIsFavorite;
         appDisplay._appFavorites._backupIsFavorite = undefined;
-    }
+    }*/
 
     if (reset) {
         appDisplay._grid.layout_manager.fixedIconSize = -1;
