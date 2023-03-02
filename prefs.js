@@ -1298,7 +1298,7 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Window Manager')
+            _('Notifications')
         )
     );
 
@@ -1313,6 +1313,20 @@ function _getBehaviorOptionList() {
                 [_('Show Notifications (Default)'), 0],
                 [_('Disable Notification Popups'), 1],
                 [_('Immediately Focus Window'), 2],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Favorites'),
+            _('Disable pin/unpin app notifications.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'favoritesNotify',
+            [
+                [_('Show Notifications (Default)'), 1],
+                [_('Disable Notifications'), 0],
             ]
         )
     );

@@ -41,6 +41,7 @@ const SearchOverride = Me.imports.search;
 const PanelOverride = Me.imports.panel;
 const DashOverride = Me.imports.dash;
 const WindowAttentionHandlerOverride = Me.imports.windowAttentionHandler;
+const AppFavoritesOverride = Me.imports.appFavorites;
 
 let opt;
 
@@ -214,6 +215,7 @@ function _updateOverrides(reset = false) {
     }
 
     WindowAttentionHandlerOverride.update(reset);
+    AppFavoritesOverride.update(reset);
 }
 
 function _onShowingOverview() {
@@ -355,9 +357,12 @@ function _applySettings(key) {
 
     if (key === 'workspace-switcher-animation')
         WorkspaceAnimationOverride.update();
-
     if (key === 'search-width-scale')
         SearchOverride.update();
+    if (key === 'favorites-notify')
+        AppFavoritesOverride.update();
+    if (key === 'window-attention-mode')
+        WindowAttentionHandlerOverride.update();
 }
 
 function _switchPageShortcuts() {

@@ -116,6 +116,7 @@ var Options = class Options {
             wsSwPopupHPosition: ['int', 'ws-sw-popup-h-position'],
             wsSwPopupVPosition: ['int', 'ws-sw-popup-v-position'],
             wsSwPopupMode: ['int', 'ws-sw-popup-mode'],
+            favoritesNotify: ['int', 'favorites-notify'],
         };
         this.cachedOptions = {};
 
@@ -339,6 +340,8 @@ var Options = class Options {
         this.WS_SW_POPUP_H_POSITION = this.get('wsSwPopupHPosition', true) / 100;
         this.WS_SW_POPUP_V_POSITION = this.get('wsSwPopupVPosition', true) / 100;
         this.WS_SW_POPUP_MODE = this.get('wsSwPopupMode', true);
+
+        this.SHOW_FAV_NOTIFICATION = this.get('favoritesNotify', true);
     }
 
     _getAnimationDirection() {

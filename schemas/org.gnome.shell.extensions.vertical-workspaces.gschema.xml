@@ -208,5 +208,8 @@
     <key type="i" name="ws-sw-popup-mode">
       <default>1</default>
     </key>
+    <key type="i" name="favorites-notify">
+      <default>1</default>
+    </key>
   </schema>
 </schemalist>
