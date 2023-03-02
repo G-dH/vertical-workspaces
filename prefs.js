@@ -1304,6 +1304,24 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Notification Banner Position'),
+            _('Choose where the notification pop-ups appear on the screen.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'notificationPosition',
+            [
+                [_('Top Left'), 0],
+                [_('Top Middle'), 1],
+                [_('Top Right (Default)'), 2],
+                [_('Bottom Left'), 3],
+                [_('Bottom Middle'), 4],
+                [_('Bottom Right'), 5],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Window Attention Handler'),
             _('When a window requires attention (often a new window), GNOME Shell shows you a notification about it. You can disable popups of these messages (notification will be pushed into the message tray silently) or focus the source window immediately instead.'),
             itemFactory.newComboBox(),

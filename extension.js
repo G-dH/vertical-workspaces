@@ -42,6 +42,7 @@ const PanelOverride = Me.imports.panel;
 const DashOverride = Me.imports.dash;
 const WindowAttentionHandlerOverride = Me.imports.windowAttentionHandler;
 const AppFavoritesOverride = Me.imports.appFavorites;
+const MessageTrayOverride = Me.imports.messageTray;
 
 let opt;
 
@@ -216,6 +217,7 @@ function _updateOverrides(reset = false) {
 
     WindowAttentionHandlerOverride.update(reset);
     AppFavoritesOverride.update(reset);
+    MessageTrayOverride.update(reset);
 }
 
 function _onShowingOverview() {
@@ -339,6 +341,7 @@ function _applySettings(key) {
     _updateOverviewTranslations();
     _switchPageShortcuts();
 
+    MessageTrayOverride.update();
     if (key === 'fix-ubuntu-dock')
         _fixUbuntuDock(opt.get('fixUbuntuDock', true));
     if (key === 'ws-thumbnails-position')

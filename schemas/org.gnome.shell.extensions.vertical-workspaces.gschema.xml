@@ -211,5 +211,8 @@
     <key type="i" name="favorites-notify">
       <default>1</default>
     </key>
+    <key type="i" name="notification-position">
+      <default>2</default>
+    </key>
   </schema>
 </schemalist>

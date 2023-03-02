@@ -117,6 +117,7 @@ var Options = class Options {
             wsSwPopupVPosition: ['int', 'ws-sw-popup-v-position'],
             wsSwPopupMode: ['int', 'ws-sw-popup-mode'],
             favoritesNotify: ['int', 'favorites-notify'],
+            notificationPosition: ['int', 'notification-position'],
         };
         this.cachedOptions = {};
 
@@ -342,6 +343,7 @@ var Options = class Options {
         this.WS_SW_POPUP_MODE = this.get('wsSwPopupMode', true);
 
         this.SHOW_FAV_NOTIFICATION = this.get('favoritesNotify', true);
+        this.NOTIFICATION_POSITION = this.get('notificationPosition', true);
     }
 
     _getAnimationDirection() {
