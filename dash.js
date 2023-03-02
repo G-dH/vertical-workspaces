@@ -16,7 +16,6 @@ const IconGrid = imports.ui.iconGrid;
 const Main = imports.ui.main;
 const Overview = imports.ui.overview;
 const Dash = imports.ui.dash;
-const { DashIcon, DashItemContainer, getAppFromSource, DragPlaceholderItem } = imports.ui.dash;
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Util = Me.imports.util;
@@ -66,8 +65,8 @@ function update(reset = false) {
 
     _overrides = new Util.Overrides();
 
-    _overrides.addOverride('DashItemContainer', Dash.DashItemContainer.prototype, DashItemContainerOverride);
-    _overrides.addOverride('DashCommon', Dash.Dash.prototype, DashCommonOverride);
+    _overrides.addOverride('DashItemContainer', Dash.DashItemContainer.prototype, DashItemContainerCommon);
+    _overrides.addOverride('DashCommon', Dash.Dash.prototype, DashCommon);
 
     if (opt.DASH_VERTICAL) {
         _overrides.addOverride('Dash', Dash.Dash.prototype, DashOverride);
@@ -207,7 +206,7 @@ function _connectShowAppsIcon(reset = false) {
 
 const DashOverride = {
     handleDragOver(source, actor, _x, y, _time) {
-        let app = getAppFromSource(source);
+        let app = Dash.getAppFromSource(source);
 
         // Don't allow favoriting of transient apps
         if (app === null || app.is_window_backed())
@@ -270,7 +269,7 @@ const DashOverride = {
                 fadeIn = true;
             }
 
-            this._dragPlaceholder = new DragPlaceholderItem();
+            this._dragPlaceholder = new Dash.DragPlaceholderItem();
             this._dragPlaceholder.child.set_width(this.iconSize / 2);
             this._dragPlaceholder.child.set_height(this.iconSize);
             this._box.insert_child_at_index(this._dragPlaceholder,
@@ -454,7 +453,7 @@ const DashOverride = {
     },
 
     _createAppItem(app) {
-        let appIcon = new DashIcon(app);
+        let appIcon = new Dash.DashIcon(app);
 
         let indicator = appIcon._dot;
         indicator.x_align = opt.DASH_LEFT ? Clutter.ActorAlign.START : Clutter.ActorAlign.END;
@@ -465,7 +464,7 @@ const DashOverride = {
                 this._itemMenuStateChanged(item, opened);
             });
 
-        let item = new DashItemContainer();
+        let item = new Dash.DashItemContainer();
         item.setChild(appIcon);
 
         // Override default AppIcon label_actor, now the
@@ -480,7 +479,7 @@ const DashOverride = {
     },
 };
 
-const DashItemContainerOverride = {
+const DashItemContainerCommon = {
     // move labels according dash position
     showLabel() {
         if (!this._labelText)
@@ -539,7 +538,7 @@ const DashItemContainerOverride = {
     },
 };
 
-const DashCommonOverride = {
+const DashCommon = {
     // use custom BaseIconSizes and add support for custom icons
     _adjustIconSize() {
         // if a user launches multiple apps at once, this function may be called again before the previous call has finished
