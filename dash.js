@@ -26,7 +26,7 @@ let _origWorkId;
 let _newWorkId;
 let _showAppsIconBtnPressId;
 
-// added values to achieve better ability to scale down according to the available space
+// added values to achieve a better ability to scale down according to available space
 var BaseIconSizes = [16, 24, 32, 40, 44, 48, 56, 64, 72, 80, 96, 112, 128];
 
 const RecentFilesSearchProviderPrefix = Me.imports.recentFilesSearchProvider.prefix;
@@ -540,7 +540,13 @@ const DashItemContainerOverride = {
 };
 
 const DashCommonOverride = {
+    // use custom BaseIconSizes and add support for custom icons
     _adjustIconSize() {
+        // if a user launches multiple apps at once, this function may be called again before the previous call has finished
+        // as a result, new icons will not reach their full size, or will be missing, if adding a new icon and changing the dash size due to lack of space at the same time
+        if (this._adjustingInProgress)
+            return;
+
         // For the icon size, we only consider children which are "proper"
         // icons (i.e. ignoring drag placeholders) and which are not
         // animating out (which means they will be destroyed at the end of
@@ -552,7 +558,7 @@ const DashCommonOverride = {
                 !actor.animatingOut;
         });
 
-        // add new custom icons into the calculation
+        // add new custom icons to the list
         if (this._showAppsIcon.visible)
             iconChildren.push(this._showAppsIcon);
 
@@ -632,8 +638,11 @@ const DashCommonOverride = {
                 newIconSize = BaseIconSizes[i];
         }
 
-        /* if (newIconSize == this.iconSize)
-            return;*/
+        if (newIconSize === this.iconSize)
+            return;
+
+        // set the in-progress state here after all the possible cancels
+        this._adjustingInProgress = true;
 
         let oldIconSize = this.iconSize;
         this.iconSize = newIconSize;
@@ -677,6 +686,8 @@ const DashCommonOverride = {
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             });
         }
+
+        this._adjustingInProgress = false;
     },
 };
 
@@ -704,7 +715,7 @@ function _updateSearchWindowsIcon(show = opt.SHOW_WINDOWS_ICON) {
         dash._hookUpLabel(dash._showWindowsIcon);
     }
 
-    dash._showWindowsIcon.icon.setIconSize(opt.MAX_ICON_SIZE);
+    dash._showWindowsIcon.icon.setIconSize(dash.iconSize);
     if (opt.SHOW_WINDOWS_ICON === 1) {
         dashContainer.set_child_at_index(dash._showWindowsIcon, 0);
     } else if (opt.SHOW_WINDOWS_ICON === 2) {
@@ -777,7 +788,7 @@ function _updateRecentFilesIcon(show = opt.SHOW_RECENT_FILES_ICON) {
         dash._hookUpLabel(dash._recentFilesIcon);
     }
 
-    dash._recentFilesIcon.icon.setIconSize(opt.MAX_ICON_SIZE);
+    dash._recentFilesIcon.icon.setIconSize(dash.iconSize);
     if (opt.SHOW_RECENT_FILES_ICON === 1) {
         dashContainer.set_child_at_index(dash._recentFilesIcon, 0);
     } else if (opt.SHOW_RECENT_FILES_ICON === 2) {
