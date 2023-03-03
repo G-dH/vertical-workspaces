@@ -216,11 +216,7 @@ const RecentFilesSearchProvider = class RecentFilesSearchProvider {
     activateResult(resultId /* , terms, timeStamp */) {
         const file = this.files[resultId];
 
-        const [,, state] = global.get_pointer();
-        // const isCtrlPressed = (state & ModifierType.CONTROL_MASK) != 0;
-        const isShiftPressed = (state & ModifierType.SHIFT_MASK) !== 0;
-
-        if (isShiftPressed) {
+        if (_Util.isShiftPressed()) {
             Main.overview.toggle();
             this._openNautilus(file.get_uri());
         } else {
@@ -231,6 +227,7 @@ const RecentFilesSearchProvider = class RecentFilesSearchProvider {
     }
 
     getInitialResultSet(terms, callback /* , cancellable = null*/) {
+        // In GS 43 callback arg has been removed
         /* if (shellVersion >= 43)
             cancellable = callback; */
 

@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * extension.js
  *
  * @author     GdH <G-dH@github.com>
@@ -342,10 +342,6 @@ function _applySettings(key) {
     _switchPageShortcuts();
 
     MessageTrayOverride.update();
-    if (key === 'fix-ubuntu-dock')
-        _fixUbuntuDock(opt.get('fixUbuntuDock', true));
-    if (key === 'ws-thumbnails-position')
-        _updateOverrides();
 
     if (key?.includes('app-grid')) {
         AppDisplayOverride.update();
@@ -358,14 +354,26 @@ function _applySettings(key) {
     if (key?.includes('dash') || key?.includes('search') || key?.includes('icon'))
         DashOverride.update();
 
-    if (key === 'workspace-switcher-animation')
+    switch (key) {
+    case 'fix-ubuntu-dock':
+        _fixUbuntuDock(opt.get('fixUbuntuDock', true));
+        break;
+    case 'ws-thumbnails-position':
+        _updateOverrides();
+        break;
+    case 'workspace-switcher-animation':
         WorkspaceAnimationOverride.update();
-    if (key === 'search-width-scale')
+        break;
+    case 'search-width-scale':
         SearchOverride.update();
-    if (key === 'favorites-notify')
+        break;
+    case 'favorites-notify':
         AppFavoritesOverride.update();
-    if (key === 'window-attention-mode')
+        break;
+    case 'window-attention-mode':
         WindowAttentionHandlerOverride.update();
+        break;
+    }
 }
 
 function _switchPageShortcuts() {

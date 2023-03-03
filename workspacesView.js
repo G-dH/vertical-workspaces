@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * workspacesView.js
  *
  * @author     GdH <G-dH@github.com>
@@ -30,7 +30,6 @@ const _Util = Me.imports.util;
 let _overrides;
 
 let opt;
-
 
 
 function update(reset = false) {
@@ -752,21 +751,9 @@ const WorkspacesDisplay = {
             this._getMonitorIndexForEvent(event) !== this._primaryIndex)
             return Clutter.EVENT_PROPAGATE;
 
-        const isShiftPressed = (event.get_state() & Clutter.ModifierType.SHIFT_MASK) !== 0;
-        /* const isCtrlPressed = (event.get_state() & Clutter.ModifierType.CONTROL_MASK) != 0;
-        const isAltPressed = (event.get_state() & Clutter.ModifierType.MOD1_MASK) != 0;
-        const noModifiersPressed = !(isCtrlPressed && isShiftPressed && isAltPressed);*/
-
         let direction = event.get_scroll_direction();
 
-        /* if (direction !== Clutter.ScrollDirection.SMOOTH && opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE && noModifiersPressed) {
-            Main.overview._overview.controls._thumbnailsBox._activateThumbnailAtPoint(0, 0, 0, true);
-            //Main.overview.hide();
-            return Clutter.EVENT_STOP;
-        }*/
-
-
-        if (/* SHIFT_REORDERS_WS && */isShiftPressed) {
+        if (_Util.isShiftPressed()) {
             if (direction === Clutter.ScrollDirection.UP)
                 direction = -1;
 
@@ -797,9 +784,6 @@ const WorkspacesDisplay = {
 
         /* if (!this.reactive)
             return Clutter.EVENT_PROPAGATE;**/
-        const isCtrlPressed = (event.get_state() & Clutter.ModifierType.CONTROL_MASK) !== 0;
-        const isShiftPressed = (event.get_state() & Clutter.ModifierType.SHIFT_MASK) !== 0;
-        const isAltPressed = (event.get_state() & Clutter.ModifierType.MOD1_MASK) !== 0;
         const { workspaceManager } = global;
         const vertical = workspaceManager.layout_rows === -1;
         const rtl = this.get_text_direction() === Clutter.TextDirection.RTL;
@@ -808,7 +792,7 @@ const WorkspacesDisplay = {
         switch (symbol) {
         case Clutter.KEY_Return:
         case Clutter.KEY_KP_Enter:
-            if (isCtrlPressed) {
+            if (_Util.isCtrlPressed()) {
                 Main.ctrlAltTabManager._items.forEach(i => {
                     if (i.sortGroup === 1 && i.name === 'Dash')
                         Main.ctrlAltTabManager.focusGroup(i);
@@ -838,16 +822,16 @@ const WorkspacesDisplay = {
             which = workspaceManager.n_workspaces - 1;
             break;
         case Clutter.KEY_space:
-            if (isCtrlPressed && isShiftPressed) {
+            if (_Util.isCtrlPressed() && _Util.isShiftPressed()) {
                 _Util.openPreferences();
-            } else if (isAltPressed) {
+            } else if (_Util.isAltPressed()) {
                 Main.ctrlAltTabManager._items.forEach(i => {
                     if (i.sortGroup === 1 && i.name === 'Dash')
                         Main.ctrlAltTabManager.focusGroup(i);
                 });
-            } else if (opt.RECENT_FILES_SEARCH_PROVIDER_ENABLED && isCtrlPressed) {
+            } else if (opt.RECENT_FILES_SEARCH_PROVIDER_ENABLED && _Util.isCtrlPressed()) {
                 _Util.activateSearchProvider(SEARCH_RECENT_FILES_PREFIX);
-            } else if (opt.WINDOW_SEARCH_PROVIDER_ENABLED/* && SEARCH_WINDOWS_SPACE*/) {
+            } else if (opt.WINDOW_SEARCH_PROVIDER_ENABLED) {
                 _Util.activateSearchProvider(SEARCH_WINDOWS_PREFIX);
             }
 
@@ -891,7 +875,7 @@ const WorkspacesDisplay = {
             // Otherwise it is a workspace index
             ws = workspaceManager.get_workspace_by_index(which);
 
-        if (/* SHIFT_REORDERS_WS && */isShiftPressed) {
+        if (_Util.isShiftPressed()) {
             let direction;
             if (which === Meta.MotionDirection.UP || which === Meta.MotionDirection.LEFT)
                 direction = -1;

@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * iconGrid.js
  *
  * @author     GdH <G-dH@github.com>
@@ -25,6 +25,7 @@ function update(reset = false) {
 
     if (reset) {
         _overrides = null;
+        opt = null;
         return;
     }
 

@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * overviewControls.js
  *
  * @author     GdH <G-dH@github.com>
@@ -52,7 +52,6 @@ function update(reset = false) {
     }
 
     opt = Me.imports.settings.opt;
-
     _overrides = new _Util.Overrides();
 
     _overrides.addOverride('ControlsManager', OverviewControls.ControlsManager.prototype, ControlsManager);
@@ -680,7 +679,7 @@ const ControlsManagerLayoutVertical = {
                 }
                 workspaceBox.set_size(...workAreaBox.get_size());
             } else {
-                // in PANEL_MODE 2 panel don't affects workArea height (affectStruts === false), it needs to be compensated
+                // in PANEL_MODE 2 panel doesn't affect workArea height (affectStruts === false), it needs to be compensated
                 height = opt.PANEL_POSITION_TOP ? height : height - Main.panel.height;
                 searchHeight = opt.SHOW_SEARCH_ENTRY ? searchHeight : 0;
                 wWidth = width -

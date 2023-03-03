@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * dash.js
  *
  * @author     GdH <G-dH@github.com>
@@ -32,10 +32,10 @@ const RecentFilesSearchProviderPrefix = Me.imports.recentFilesSearchProvider.pre
 const WindowSearchProviderPrefix = Me.imports.windowSearchProvider.prefix;
 
 let _overrides;
+let opt;
 
 const DASH_ITEM_LABEL_SHOW_TIME = 150;
 
-let opt;
 
 function update(reset = false) {
     if (_overrides)

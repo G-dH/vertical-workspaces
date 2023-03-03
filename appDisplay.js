@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * appDisplay.js
  *
  * @author     GdH <G-dH@github.com>
@@ -256,7 +256,7 @@ function _updateAppGridDND(reset) {
     }
 }
 
-function _realizeAppDisplay() {
+/* function _realizeAppDisplay() {
     // force app grid to build all icons before the first visible animation to remove possible stuttering
     // let the main loop realize previous changes before continuing
 
@@ -288,7 +288,7 @@ function _realizeAppDisplay() {
                 });
         }
     );
-}
+} */
 
 function _restoreOverviewGroup() {
     Main.overview.dash.showAppsButton.checked = false;
@@ -1246,10 +1246,10 @@ function _getAppRecentWorkspace(app) {
 const AppIcon = {
     activate(button) {
         const event = Clutter.get_current_event();
-        const modifiers = event ? event.get_state() : 0;
+        const state = event ? event.get_state() : 0;
         const isMiddleButton = button && button === Clutter.BUTTON_MIDDLE;
-        const isCtrlPressed = (modifiers & Clutter.ModifierType.CONTROL_MASK) !== 0;
-        const isShiftPressed = (modifiers & Clutter.ModifierType.SHIFT_MASK) !== 0;
+        const isCtrlPressed = _Util.isCtrlPressed(state);
+        const isShiftPressed = _Util.isShiftPressed(state);
         const openNewWindow = this.app.can_open_new_window() &&
                             this.app.state === Shell.AppState.RUNNING &&
                             (isCtrlPressed || isMiddleButton);

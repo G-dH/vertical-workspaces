@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * prefs.js
  *
  * @author     GdH <G-dH@github.com>
@@ -331,7 +331,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Search Results Width'),
-            _('Adjusts maximum width of search results view (% relative to default). This allows you to fit more (or less) app icons into app search result.'),
+            _('Adjusts maximum width of search results view (% relative to default). This allows you to fit more (or less) app icons into the app search result.'),
             searchViewScale,
             'searchViewScale'
         )
@@ -1381,7 +1381,7 @@ function _getMiscOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Fix for Dash to Dock'),
-            _('With the default Ubuntu Dock and other Dash To Dock forks, you may experience issues with Activities overview after you change Dock position or change monitors configuration. If you are experiencing such issues, try to enable this option, or disable/replace the dock extension.'),
+            _('With the default Ubuntu Dock and other Dash To Dock forks, you may experience issues with Activities overview after you change Dock position or change monitors configuration. If you are experiencing such issues, try to enable this option, or (better) disable/replace the dock extension.'),
             itemFactory.newSwitch(),
             'fixUbuntuDock'
         )

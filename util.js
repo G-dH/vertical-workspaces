@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * util.js
  *
  * @author     GdH <G-dH@github.com>
@@ -251,6 +251,12 @@ function isCtrlPressed(state = null) {
     if (state === null)
         [,, state] = global.get_pointer();
     return (state & Clutter.ModifierType.CONTROL_MASK) !== 0;
+}
+
+function isAltPressed(state = null) {
+    if (state === null)
+        [,, state] = global.get_pointer();
+    return (state & Clutter.ModifierType.MOD1_MASK) !== 0;
 }
 
 function fuzzyMatch(term, text) {

@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * layout.js
  *
  * panel barrier should follow panel position
@@ -36,11 +36,9 @@ function update(reset = false) {
     }
 
     opt = Me.imports.settings.opt;
-
     _overrides = new _Util.Overrides();
 
     _overrides.addOverride('LayoutManager', Layout.LayoutManager.prototype, LayoutManager);
-
     Main.layoutManager._updatePanelBarrier();
 }
 
@@ -52,8 +50,6 @@ const LayoutManager = {
         }
 
         // disable the barrier
-
-
         /* if (!this.primaryMonitor)
             return;
 

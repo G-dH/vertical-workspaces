@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * search.js
  *
  * @author     GdH <G-dH@github.com>
@@ -9,13 +9,15 @@
  */
 
 'use strict';
-const { Shell } = imports.gi;
+const { Shell, Gio } = imports.gi;
 const Main = imports.ui.main;
 
 const AppDisplay = imports.ui.appDisplay;
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const _Util = Me.imports.util;
+
+const _ = Me.imports.settings._;
 const shellVersion = _Util.shellVersion;
 
 let opt;
@@ -99,7 +101,6 @@ const AppSearchProvider = {
                 if (shouldShow) {
                     let dispName = appInfo.get_display_name() || '';
                     let gName = appInfo.get_generic_name() || '';
-                    // let exec = appInfo.get_executable() || '';
                     let description = appInfo.get_description() || '';
                     let categories = appInfo.get_string('Categories') || '';
                     let keywords = appInfo.get_string('Keywords') || '';
@@ -116,10 +117,8 @@ const AppSearchProvider = {
                 m = _Util.strictMatch(pattern, string);
             }
 
-
             if (m !== -1)
                 weightList[appInfo.get_id()] = m;
-
 
             return shouldShow && (m !== -1);
         });

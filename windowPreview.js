@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * windowPreview.js
  *
  * @author     GdH <G-dH@github.com>

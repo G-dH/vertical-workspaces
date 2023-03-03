@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * workspaceThumbnail.js
  *
  * @author     GdH <G-dH@github.com>
@@ -50,11 +50,10 @@ function update(reset = false) {
     }
 
     opt = Me.imports.settings.opt;
+    _overrides = new _Util.Overrides();
 
     // don't limit max thumbnail scale for other clients than overview, for example AATWS.
     WorkspaceThumbnail.MAX_THUMBNAIL_SCALE = 1;
-
-    _overrides = new _Util.Overrides();
 
     _overrides.addOverride('WorkspaceThumbnail', WorkspaceThumbnail.WorkspaceThumbnail.prototype, WorkspaceThumbnailCommon);
     _overrides.addOverride('ThumbnailsBoxCommon', WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxCommon);

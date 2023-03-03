@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * overview.js
  *
  * panel barrier should follow panel position
@@ -33,12 +33,10 @@ function update(reset = false) {
     }
 
     opt = Me.imports.settings.opt;
-
     _overrides = new _Util.Overrides();
 
     _overrides.addOverride('Overview', Overview.Overview.prototype, OverviewCommon);
 }
-
 
 const OverviewCommon = {
     _showDone() {

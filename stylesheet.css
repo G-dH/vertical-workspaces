@@ -1,3 +1,8 @@
+/*
+* V-Shell (Vertical Workspaces)
+* stylesheet.css
+*/
+
 /* General dash */
 #dash.vertical-overview {
 	margin-right: 0px;
@@ -148,13 +153,13 @@
 	background-color: rgba(20, 20, 20, 0.95);
 	color: white;
 	border-radius: 20px;
-	border: 1px, rgb(80, 80, 80);
+	border: 1px, rgb(40, 40, 40);
 	padding-top: 12px;
 }
 
 /* "no results" text for static ws mode*/
 .search-statustext {
-	background-color: rgb(23,23,23);
+	background-color: rgba(23,23,23, 0.95);
 	color: white;
 	padding: 30px;
 	border-radius: 20px;
@@ -170,9 +175,9 @@
 	spacing: 2px;
 }
 
-/*.panel {
+.panel {
 	text-shadow: 1px 1px 3px rgba(33, 33, 33, 1);
-}*/
+}
 
 /* hide vertical scroll bar, it's distracting in the search results */
 StButton#vhandle {

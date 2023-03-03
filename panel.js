@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * panel.js
  *
  * @author     GdH <G-dH@github.com>
@@ -23,6 +23,7 @@ let _styleChangedConId;
 
 function update(reset = false) {
     opt = Me.imports.settings.opt;
+
     const panelBox = Main.layoutManager.panelBox;
     const panelHeight = Main.panel.height; // panelBox height can be 0 after shell start
 
@@ -32,10 +33,8 @@ function update(reset = false) {
     else
         panelBox.set_position(geometry.x, geometry.y + geometry.height - panelHeight);
 
-
     if (!_styleChangedConId)
         Main.panel.connect('style-changed', () => Main.panel.remove_style_pseudo_class('overview'));
-
 
     if (reset || opt.PANEL_MODE === 0) {
         // _disconnectPanel();
@@ -78,13 +77,12 @@ function update(reset = false) {
                 });
             }
         }
-
-        _connectPanel();
+        // _connectPanel();
     } else if (opt.PANEL_MODE === 2) {
         _disconnectOverview();
         _reparentPanel(false);
         _showPanel(false);
-        _connectPanel();
+        // _connectPanel();
     }
     _setPanelStructs(reset || opt.PANEL_MODE === 0);
 }
@@ -121,10 +119,10 @@ function _setPanelStructs(state) {
     // workaround to force maximized windows to resize after removing affectsStruts
     // simulation of minimal swipe gesture to the opposite direction
     // todo - needs better solution!!!!!!!!!!!
-    /* const direction = _getAppGridAnimationDirection() === 2 ? 1 : -1;
-    Main.overview._swipeTracker._beginTouchSwipe(null, global.get_current_time(), 1, 1);
-    Main.overview._swipeTracker._updateGesture(null, global.get_current_time(), direction, 1);
-    GLib.timeout_add(0, 50, () => Main.overview._swipeTracker._endGesture(global.get_current_time(), 1, true));*/
+    // const direction = _getAppGridAnimationDirection() === 2 ? 1 : -1;
+    // Main.overview._swipeTracker._beginTouchSwipe(null, global.get_current_time(), 1, 1);
+    // Main.overview._swipeTracker._updateGesture(null, global.get_current_time(), direction, 1);
+    // GLib.timeout_add(0, 50, () => Main.overview._swipeTracker._endGesture(global.get_current_time(), 1, true));*/
 }
 
 function _showPanel(show = true) {
@@ -148,31 +146,4 @@ function _showPanel(show = true) {
             },
         });
     }
-}
-
-function _connectPanel() {
-    // not reliable, disabled for now
-    /* if (!_panelEnterSigId) {
-        _panelEnterSigId = Main.panel.connect('enter-event', () => {
-            if (!Main.overview._shown)
-                _showPanel(true);
-        });
-    }
-    if (!_panelLeaveSigId) {
-        _panelLeaveSigId = Main.panel.connect('leave-event', () => {
-            if (!Main.overview._shown)
-                _showPanel(false);
-        });
-    }*/
-}
-
-function _disconnectPanel() {
-    /* if (_panelEnterSigId) {
-        Main.panel.disconnect(_panelEnterSigId);
-        _panelEnterSigId = 0;
-    }
-    if (_panelLeaveSigId) {
-        Main.panel.disconnect(_panelLeaveSigId);
-        _panelLeaveSigId = 0;
-    }*/
 }

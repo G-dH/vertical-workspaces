@@ -1,5 +1,5 @@
 /**
- * Vertical Workspaces
+ * V-Shell (Vertical Workspaces)
  * windowSearchProvider.js
  *
  * @author     GdH <G-dH@github.com>
@@ -217,10 +217,8 @@ const WindowSearchProvider = class WindowSearchProvider {
     }
 
     activateResult(resultId/* , terms, timeStamp*/) {
-        const [,, state] = global.get_pointer();
-
-        const isCtrlPressed = (state & ModifierType.CONTROL_MASK) !== 0;
-        const isShiftPressed = (state & ModifierType.SHIFT_MASK) !== 0;
+        const isCtrlPressed = _Util.isCtrlPressed();
+        const isShiftPressed = _Util.isShiftPressed();
 
         this.action = 0;
         this.targetWs = 0;
@@ -273,6 +271,7 @@ const WindowSearchProvider = class WindowSearchProvider {
     }
 
     getInitialResultSet(terms, callback/* , cancellable = null*/) {
+        // In GS 43 callback arg has been removed
         /* if (shellVersion >= 43)
             cancellable = callback;*/
 
