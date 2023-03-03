@@ -26,8 +26,10 @@
 - Option `Active Icons in Preview Folders` allows you using icons in the folder preview as normal app icons without opening the folder.
 - App folder preview icons can be displayed in 3x3 grid instead of 2x2 and icon/folder size can be set up to 256px to allow bigger Active folder icons.
 - Improved app search, now you can find *Firefox* even if you enter *fox* and with the (pseudo) fuzzy search enabled, you'll find it even if you enter *ffx*.
+- Notification banners position option.
 - `Window Attention Handler` options - `Disable Notifications`, `Immediately Focus Window`.
 - New options for secondary monitor overview allow independent workspace thumbnails and workspace preview scales and also can move the ws preview as if there was the main panel, like on the primary monitor.
+- Custom workspace switcher popup position and visibility.
 
 **Fixed:**
 - Some options related to the workspace preview don't work for secondary monitors if workspaces set to "primary monitor only".

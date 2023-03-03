@@ -23,7 +23,8 @@ Supported GNOME versions: 42, 43, 44 (dropped support for 40, 41  - not tested a
 - Recent files search provider with *Ctrl + Space* hotkey.
 - Reorder workspaces in overview using *Shift + Scroll* or *Shift + Page Up/Down*.
 - Adds *Force Quit*, *Close Windows on Current Workspace* and *Move Windows to Current Workspace* items to app icon menu. The latter action can be activated using *Shift + click* on app icon.
-- Adds window attention handler options that can focus the attention demanding window immediately or silent its notifications.
+- Change notification banners position.
+- Window attention handler options that can focus the attention demanding window immediately or silent its notifications.
 
 
 [<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
