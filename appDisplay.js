@@ -508,7 +508,7 @@ const AppDisplayCommon = {
         if (this._currentDialog)
             this._currentDialog.popdown();
 
-        if (this._appFavorites.isFavorite(source.id))
+        if (opt.APP_GRID_EXCLUDE_FAVORITES && this._appFavorites.isFavorite(source.id))
             this._appFavorites.removeFavorite(source.id);
 
         return true;
