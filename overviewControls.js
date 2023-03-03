@@ -32,9 +32,7 @@ const DASH_MAX_SIZE_RATIO = 0.15;
 
 let _originalSearchControllerSigId;
 let _searchControllerSigId;
-let _startupAnimTimeoutId1;
-let _startupAnimTimeoutId2;
-let _updateAppGridTimeoutId;
+let _timeouts;
 let _startupInitComplete = false;
 
 
@@ -42,14 +40,23 @@ function update(reset = false) {
     if (_overrides)
         _overrides.removeAll();
 
+    if (_timeouts) {
+        Object.values(_timeouts).forEach(id => {
+            if (id)
+                GLib.source_remove(id);
+        });
+    }
 
     _replaceOnSearchChanged(reset);
 
     if (reset) {
         _overrides = null;
         opt = null;
+        _timeouts = null;
         return;
     }
+
+    _timeouts = {};
 
     opt = Me.imports.settings.opt;
     _overrides = new _Util.Overrides();
@@ -60,14 +67,6 @@ function update(reset = false) {
         _overrides.addOverride('ControlsManagerLayout', OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutVertical);
     else
         _overrides.addOverride('ControlsManagerLayout', OverviewControls.ControlsManagerLayout.prototype, ControlsManagerLayoutHorizontal);
-}
-
-function _dashNotDefault() {
-    return Main.overview.dash !== Main.overview._overview._controls.layoutManager._dash;
-}
-
-function _dashIsDashToDock() {
-    return Main.overview.dash._isHorizontal !== undefined;
 }
 
 function _replaceOnSearchChanged(reset = false) {
@@ -167,7 +166,7 @@ const ControlsManager = {
         const dash = this.dash;
         const searchEntryBin = this._searchEntryBin;
         // this dash transition collides with startup animation and freezes GS for good, needs to be delayed (first Main.overview 'hiding' event enables it)
-        const skipDash = _dashNotDefault();
+        const skipDash = _Util.dashNotDefault();
 
         // OVERVIEW_MODE 2 should animate dash and wsTmbBox only if WORKSPACE_MODE === 0 (windows not spread)
         const animateOverviewMode2 = opt.OVERVIEW_MODE2 && !(finalState === 1 && opt.WORKSPACE_MODE);
@@ -482,7 +481,7 @@ const ControlsManager = {
             this._appDisplay.translation_y = translationY;
 
             // let the main loop realize previous changes before continuing
-            _startupAnimTimeoutId1 = GLib.timeout_add(
+            _timeouts.startupAnim1 = GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
                 10,
                 () => {
@@ -495,13 +494,13 @@ const ControlsManager = {
                         this._appDisplay.opacity = 255;
                         this.dash.showAppsButton.checked = true;
                     }
-                    _startupAnimTimeoutId1 = 0;
+                    _timeouts.startupAnim1 = 0;
                     return GLib.SOURCE_REMOVE;
                 }
             );
         }.bind(this);
 
-        if (dash.visible && !_dashNotDefault()) {
+        if (dash.visible && !_Util.dashNotDefault()) {
             dash.translation_x = dashTranslationX;
             dash.translation_y = dashTranslationY;
             dash.opacity = 255;
@@ -519,13 +518,13 @@ const ControlsManager = {
             // set dash opacity to make it visible if user enable it later
             dash.opacity = 255;
             // if dash is hidden, substitute the ease timeout with GLib.timeout
-            _startupAnimTimeoutId2 = GLib.timeout_add(
+            _timeouts.startupAnim2 = GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
                 // delay + animation time
                 STARTUP_ANIMATION_TIME * 2 * opt.ANIMATION_TIME_FACTOR,
                 () => {
                     onComplete();
-                    _startupAnimTimeoutId2 = 0;
+                    _timeouts.startupAnim2 = 0;
                     return GLib.SOURCE_REMOVE;
                 }
             );
@@ -585,9 +584,6 @@ const ControlsManager = {
     },
 
     animateToOverview(state, callback) {
-        // don't enter overview during updating appDisplay properties
-        if (_updateAppGridTimeoutId)
-            Main.overview.hide();
         this._ignoreShowAppsButtonToggle = true;
         this._searchTransition = false;
 
@@ -630,7 +626,7 @@ const ControlsManagerLayoutVertical = {
         const dash = Main.overview.dash;
         // including Dash to Dock and clones properties for compatibility
 
-        if (_dashIsDashToDock()) {
+        if (_Util.dashIsDashToDock()) {
             // Dash to Dock also always affects workAreaBox
             Main.layoutManager._trackedActors.forEach(actor => {
                 if (actor.affectsStruts && actor.actor.width === dash.width) {
@@ -822,7 +818,7 @@ const ControlsManagerLayoutVertical = {
 
         // dash cloud be overridden by the Dash to Dock clone
         const dash = Main.overview.dash;
-        if (_dashIsDashToDock()) {
+        if (_Util.dashIsDashToDock()) {
             // if Dash to Dock replaced the default dash and its inteli-hide id disabled we need to compensate for affected startY
             if (!Main.overview.dash.get_parent()?.get_parent()?.get_parent()?._intellihideIsEnabled) {
                 if (Main.panel.y === monitor.y)
@@ -1030,7 +1026,7 @@ const ControlsManagerLayoutHorizontal = {
 
         const dash = Main.overview.dash;
         // including Dash to Dock and clones properties for compatibility
-        if (_dashIsDashToDock()) {
+        if (_Util.dashIsDashToDock()) {
             // Dash to Dock always affects workAreaBox
             Main.layoutManager._trackedActors.forEach(actor => {
                 if (actor.affectsStruts && actor.actor.width === dash.width) {
@@ -1220,7 +1216,7 @@ const ControlsManagerLayoutHorizontal = {
 
         // dash cloud be overridden by the Dash to Dock clone
         const dash = Main.overview.dash;
-        if (_dashIsDashToDock()) {
+        if (_Util.dashIsDashToDock()) {
             // if Dash to Dock replaced the default dash and its inteli-hide is disabled we need to compensate for affected startY
             if (!Main.overview.dash.get_parent()?.get_parent()?.get_parent()?._intellihideIsEnabled) {
                 // if (Main.panel.y === monitor.y)

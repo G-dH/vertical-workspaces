@@ -37,7 +37,6 @@ let _appGridLayoutSettings;
 let _appDisplayScrollConId;
 let _appSystemStateConId;
 let _appGridLayoutConId;
-let _updateAppGridTimeoutId;
 let _origAppViewItemAcceptDrop;
 let _updateFolderIcons;
 
@@ -255,40 +254,6 @@ function _updateAppGridDND(reset) {
         AppDisplay.AppViewItem.prototype.acceptDrop = _origAppViewItemAcceptDrop;
     }
 }
-
-/* function _realizeAppDisplay() {
-    // force app grid to build all icons before the first visible animation to remove possible stuttering
-    // let the main loop realize previous changes before continuing
-
-    // don't do this during shell startup
-    if (Main.layoutManager._startingUp)
-        return;
-
-    if (_updateAppGridTimeoutId)
-        GLib.source_remove(_updateAppGridTimeoutId);
-
-
-    _updateAppGridTimeoutId = GLib.timeout_add(
-        GLib.PRIORITY_DEFAULT,
-        200,
-        () => {
-            Main.layoutManager.overviewGroup.opacity = 1;
-            Main.layoutManager.overviewGroup.scale_x = 0.1;
-            Main.layoutManager.overviewGroup.show();
-            Main.overview.dash.showAppsButton.checked = true;
-
-            GLib.source_remove(_updateAppGridTimeoutId);
-
-            _updateAppGridTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
-                500,
-                () => {
-                    _restoreOverviewGroup();
-                    _updateAppGridTimeoutId = 0;
-                    return GLib.SOURCE_REMOVE;
-                });
-        }
-    );
-} */
 
 function _restoreOverviewGroup() {
     Main.overview.dash.showAppsButton.checked = false;
