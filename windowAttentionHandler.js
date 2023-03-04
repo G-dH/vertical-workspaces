@@ -51,7 +51,8 @@ const WindowAttentionHandlerCommon = {
         if (Main.overview._shown && Main.overview.dash.showAppsButton.checked) {
             return;
         } else if (opt.WINDOW_ATTENTION_FOCUS_IMMEDIATELY) {
-            Main.activateWindow(window);
+            if (!Main.overview._shown)
+                Main.activateWindow(window);
             return;
         }
 
