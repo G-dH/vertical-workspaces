@@ -1,6 +1,6 @@
 ## Changelog:
 
-### v24 (not released yet)
+### v24/25 (2023-03-03)
 **Added:**
 - Support for GNOME Shell 44.
 - Support for horizontally stacked workspaces, the orientation follows `Workspaces Thumbnails Position` option.
