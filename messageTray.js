@@ -19,7 +19,7 @@ let _firstRun = true;
 
 function update(reset = false) {
     opt = Me.imports.settings.opt;
-    const moduleEnabled = opt.get('swipeTrackerModule', true);
+    const moduleEnabled = opt.get('messageTrayModule', true);
 
     // don't even touch this module if disabled
     if (_firstRun && !moduleEnabled)
@@ -27,7 +27,7 @@ function update(reset = false) {
 
     _firstRun = false;
 
-    if (reset) {
+    if (reset || !moduleEnabled) {
         opt = null;
         setNotificationPosition(1);
         return;
