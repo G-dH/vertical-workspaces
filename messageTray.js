@@ -15,15 +15,24 @@ const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Main = imports.ui.main;
 
 let opt;
+let _firstRun = true;
 
 function update(reset = false) {
+    opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('swipeTrackerModule', true);
+
+    // don't even touch this module if disabled
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
+
     if (reset) {
         opt = null;
         setNotificationPosition(1);
         return;
     }
 
-    opt = Me.imports.settings.opt;
     setNotificationPosition(opt.NOTIFICATION_POSITION);
 }
 

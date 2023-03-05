@@ -1387,6 +1387,140 @@ function _getMiscOptionList() {
         )
     );
 
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('V-Shell Modules - disable expendable / misbehaving modules')
+        )
+    );
+
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('AppFavorites'),
+            _('Pin/unpin app notification options.'),
+            itemFactory.newSwitch(),
+            'appFavoritesModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('AppDisplay / IconGrid'),
+            _('App grid customization and options.'),
+            itemFactory.newSwitch(),
+            'appDisplayModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Dash'),
+            _('Dash configuration options and support for vertical orientation.'),
+            itemFactory.newSwitch(),
+            'dashModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Layout'),
+            _('Removes right panel barrier that collides with CHC-E extension.'),
+            itemFactory.newSwitch(),
+            'layoutModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('MessageTray'),
+            _('Notification position options.'),
+            itemFactory.newSwitch(),
+            'messageTrayModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Panel'),
+            _('Panel options.'),
+            itemFactory.newSwitch(),
+            'panelModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Search'),
+            _('Search view and app search provider customization and options.'),
+            itemFactory.newSwitch(),
+            'searchModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('SwipeTracker'),
+            _('Gestures for vertical workspace orientation.'),
+            itemFactory.newSwitch(),
+            'swipeTrackerModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('WindowAttentionHandler'),
+            _('Window attention handler options.'),
+            itemFactory.newSwitch(),
+            'winAttentionHandlerModule'
+        )
+    );
+
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('WindowManager'),
+            _('Fix for fullscreen window minimize animation.'),
+            itemFactory.newSwitch(),
+            'windowManagerModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('WindowPreview'),
+            _('Window preview options.'),
+            itemFactory.newSwitch(),
+            'windowPreviewModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace'),
+            _('Fixes workspace preview for vertical orientation and also window scaling in static overview modes.'),
+            itemFactory.newSwitch(),
+            'workspaceModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('WorkspaceAnimation'),
+            _('Static workspace animation option.'),
+            itemFactory.newSwitch(),
+            'workspaceAnimationModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('WorkspaceSwitcherPopup'),
+            _('Workspace switcher popup position options.'),
+            itemFactory.newSwitch(),
+            'workspaceSwitcherPopupModule'
+        )
+    );
+
     return optionList;
 }
 

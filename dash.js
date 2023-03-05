@@ -33,16 +33,25 @@ const WindowSearchProviderPrefix = Me.imports.windowSearchProvider.prefix;
 
 let _overrides;
 let opt;
+let _firstRun = true;
 
 const DASH_ITEM_LABEL_SHOW_TIME = 150;
 
 
 function update(reset = false) {
+    opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('dashModule', true);
+
+    // don't even touch this module if disabled
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
+
     if (_overrides)
         _overrides.removeAll();
 
 
-    opt = Me.imports.settings.opt;
     const dash = Main.overview._overview._controls.layoutManager._dash;
 
     setToHorizontal();
@@ -51,7 +60,8 @@ function update(reset = false) {
     dash.remove_style_class_name('vertical-overview-left');
     dash.remove_style_class_name('vertical-overview-right');
 
-    if (reset) {
+    if (reset || !moduleEnabled) {
+        reset = true;
         _moveDashAppGridIcon(reset);
         _connectShowAppsIcon(reset);
         _updateSearchWindowsIcon(false);

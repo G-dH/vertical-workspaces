@@ -42,14 +42,25 @@ let _updateFolderIcons;
 
 let opt;
 let shellVersion = _Util.shellVersion;
+let _firstRun = true;
 
 
 function update(reset = false) {
+    opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('appDisplayModule', true);
+
+    // don't even touch this module if disabled
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
+
     if (_overrides)
         _overrides.removeAll();
 
-
-    if (reset) {
+    if (reset || !moduleEnabled) {
+        reset = true;
+        // opt._appGridNeedsRedisplay = false;
         _setAppDisplayOrientation(false);
         _updateAppGridProperties(reset);
         _updateAppGridDND(reset);
@@ -58,8 +69,6 @@ function update(reset = false) {
         opt = null;
         return;
     }
-
-    opt = Me.imports.settings.opt;
 
     _overrides = new _Util.Overrides();
 
@@ -86,6 +95,7 @@ function update(reset = false) {
     _setAppDisplayOrientation(opt.ORIENTATION === Clutter.Orientation.VERTICAL);
     _updateAppGridProperties();
     _updateAppGridDND();
+    opt._appGridNeedsRedisplay = true;
 }
 
 function _setAppDisplayOrientation(vertical = false) {
@@ -174,23 +184,14 @@ function _setAppDisplayOrientation(vertical = false) {
 
 // Set App Grid columns, rows, icon size, incomplete pages
 function _updateAppGridProperties(reset = false) {
+    opt._appGridNeedsRedisplay = false;
     // columns, rows, icon size
     const appDisplay = Main.overview._overview._controls._appDisplay;
     appDisplay.visible = true;
 
-    // replace isFavorite function to always return false to allow dnd with favorite apps
-    /* if (!reset && !opt.APP_GRID_EXCLUDE_FAVORITES) {
-        if (!appDisplay._appFavorites._backupIsFavorite)
-            appDisplay._appFavorites._backupIsFavorite = appDisplay._appFavorites.isFavorite;
-
-        appDisplay._appFavorites.isFavorite = () => false;
-    } else if (appDisplay._appFavorites._backupIsFavorite) {
-        appDisplay._appFavorites.isFavorite = appDisplay._appFavorites._backupIsFavorite;
-        appDisplay._appFavorites._backupIsFavorite = undefined;
-    }*/
-
     if (reset) {
-        appDisplay._grid.layout_manager.fixedIconSize = -1;
+        _resetAppGrid();
+        appDisplay._grid.layoutManager.fixedIconSize = -1;
         appDisplay._grid.layoutManager.allow_incomplete_pages = true;
         appDisplay._grid.setGridModes();
         if (_appGridLayoutSettings) {
@@ -216,7 +217,6 @@ function _updateAppGridProperties(reset = false) {
         appDisplay._grid.setGridModes();
         appDisplay._grid.layoutManager.fixedIconSize = opt.APP_GRID_ICON_SIZE;
 
-
         // force rebuild icons. size shouldn't be the same as the current one, otherwise can be arbitrary
         appDisplay._grid.layoutManager.adaptToSize(200, 200);
         appDisplay._redisplay();
@@ -226,8 +226,6 @@ function _updateAppGridProperties(reset = false) {
             if (icon._updateMultiline)
                 icon._updateMultiline();
         });
-
-        // _realizeAppDisplay();
     }
 }
 
@@ -1385,9 +1383,11 @@ const AppViewItemCommon = {
         if (isHighlighted)
             this.get_parent().set_child_above_sibling(this, null);
 
-        const layout = clutterText.get_layout();
-        if (!layout.is_wrapped() && !layout.is_ellipsized())
-            return;
+        if (!opt.APP_GRID_NAMES_MODE) {
+            const layout = clutterText.get_layout();
+            if (!layout.is_wrapped() && !layout.is_ellipsized())
+                return;
+        }
 
         label.remove_transition('allocation');
 

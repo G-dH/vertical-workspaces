@@ -17,19 +17,28 @@ const shellVersion = _Util.shellVersion;
 
 let opt;
 let _overrides;
+let _firstRun = true;
 
 function update(reset = false) {
+    opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('appDisplayModule', true);
+
+    // don't even touch this module if disabled
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
+
     if (_overrides)
         _overrides.removeAll();
 
 
-    if (reset) {
+    if (reset || !moduleEnabled) {
         _overrides = null;
         opt = null;
         return;
     }
 
-    opt = Me.imports.settings.opt;
     _overrides = new _Util.Overrides();
 
     if (shellVersion < 43 && IconGridCommon._findBestModeForSize) {

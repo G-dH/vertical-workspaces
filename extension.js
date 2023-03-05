@@ -138,7 +138,6 @@ function activateVShell() {
 
     // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
     Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
-    opt._appGridNeedsRedisplay = true;
 }
 
 function resetVShell() {
@@ -337,6 +336,11 @@ function _updateSettings(settings, key) {
 }
 
 function _applySettings(key) {
+    if (key?.endsWith('-module')) {
+        _updateOverrides();
+        return;
+    }
+
     _setStaticBackground();
     _updateOverviewTranslations();
     _switchPageShortcuts();
@@ -345,7 +349,7 @@ function _applySettings(key) {
 
     if (key?.includes('app-grid')) {
         AppDisplayOverride.update();
-        opt._appGridNeedsRedisplay = true;
+        return;
     }
 
     if (key?.includes('panel'))

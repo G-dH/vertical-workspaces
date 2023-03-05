@@ -17,12 +17,20 @@ const SwipeTracker = imports.ui.swipeTracker;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 
 let opt;
+let _firstRun = true;
 
 let _vwGestureUpdateId;
 let _originalGestureUpdateId;
 
 function update(reset = false) {
     opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('swipeTrackerModule', true);
+
+    // don't even touch this module if disabled
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
 
     if (reset || !opt.ORIENTATION) { // 1-VERTICAL, 0-HORIZONTAL
         // original swipeTrackers' orientation and updateGesture function

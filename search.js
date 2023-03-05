@@ -22,14 +22,23 @@ const shellVersion = _Util.shellVersion;
 
 let opt;
 let _overrides;
+let _firstRun = true;
 
 let SEARCH_MAX_WIDTH;
 
 function update(reset = false) {
+    opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('searchModule', true);
+
+    // don't even touch this module if disabled
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
+
     if (_overrides)
         _overrides.removeAll();
 
-    opt = Me.imports.settings.opt;
     _updateSearchViewWidth(reset);
 
     if (reset) {

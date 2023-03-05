@@ -25,14 +25,23 @@ let _wsAnimationSwipeEndId;
 
 let _overrides;
 let opt;
+let _firstRun = true;
 
 function update(reset = false) {
+    opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('workspaceAnimationModule', true);
+
+    // don't even touch this module if disabled
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
+
     if (_overrides)
         _overrides.removeAll();
 
 
-    opt = Me.imports.settings.opt;
-    if (reset || !opt.STATIC_WS_SWITCHER_BG) {
+    if (reset || !opt.STATIC_WS_SWITCHER_BG || !moduleEnabled) {
         _connectWsAnimationSwipeTracker(true);
         _overrideMonitorGroupProperty(true);
         _overrides = null;

@@ -23,23 +23,31 @@ const _Util = Me.imports.util;
 
 let _overrides;
 let opt;
+let _firstRun = true;
 
 const BACKGROUND_CORNER_RADIUS_PIXELS = 40;
 
 
 function update(reset = false) {
+    opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('workspaceModule', true);
+
+    // don't even touch this module if disabled
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
+
     if (_overrides)
         _overrides.removeAll();
 
 
-    if (reset) {
+    if (reset || !moduleEnabled) {
         Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = 0.95;
         _overrides = null;
         opt = null;
         return;
     }
-
-    opt = Me.imports.settings.opt;
 
     _overrides = new _Util.Overrides();
 

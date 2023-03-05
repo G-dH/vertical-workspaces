@@ -22,21 +22,30 @@ const MINIMIZE_WINDOW_ANIMATION_TIME = WindowManager.MINIMIZE_WINDOW_ANIMATION_T
 const MINIMIZE_WINDOW_ANIMATION_MODE = WindowManager.MINIMIZE_WINDOW_ANIMATION_MODE;
 
 let opt;
+let _firstRun = true;
 
 function update(reset = false) {
+    opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('windowManagerModule', true);
+
+    // don't even touch this module if disabled
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
+
     if (_overrides)
         _overrides.removeAll();
 
 
     _replaceMinimizeFunction(reset);
 
-    if (reset) {
+
+    if (reset || !moduleEnabled) {
         _overrides = null;
         opt = null;
         return;
     }
-
-    opt = Me.imports.settings.opt;
 
     _overrides = new _Util.Overrides();
 

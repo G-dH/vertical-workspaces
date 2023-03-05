@@ -19,16 +19,23 @@ const Me = ExtensionUtils.getCurrentExtension();
 const _Util = Me.imports.util;
 
 let opt;
+let _firstRun = false;
 
 
 function update(reset = false) {
-    if (reset) {
+    opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('winAttentionHandlerModule', true);
+
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
+    if (reset || !moduleEnabled) {
         _updateConnections(reset);
         opt = null;
         return;
     }
 
-    opt = Me.imports.settings.opt;
     _updateConnections();
 }
 

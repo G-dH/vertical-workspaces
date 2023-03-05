@@ -23,19 +23,28 @@ const _Util = Me.imports.util;
 
 let _overrides;
 let opt;
+let _firstRun = true;
 
 function update(reset = false) {
+    opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('layoutModule', true);
+
+    // don't even touch this module if disabled
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
+
     if (_overrides)
         _overrides.removeAll();
 
 
-    if (reset) {
+    if (reset || !moduleEnabled) {
         _overrides = null;
         opt = null;
         return;
     }
 
-    opt = Me.imports.settings.opt;
     _overrides = new _Util.Overrides();
 
     _overrides.addOverride('LayoutManager', Layout.LayoutManager.prototype, LayoutManager);

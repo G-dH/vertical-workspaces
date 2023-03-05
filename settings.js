@@ -103,8 +103,8 @@ var Options = class Options {
             appGridIncompletePages: ['boolean', 'app-grid-incomplete-pages'],
             appGridOrder: ['int', 'app-grid-order'],
             appGridNamesMode: ['int', 'app-grid-names'],
-            appGridActivePreview: ['bool', 'app-grid-active-preview'],
-            appGridFolderCenter: ['bool', 'app-grid-folder-center'],
+            appGridActivePreview: ['boolean', 'app-grid-active-preview'],
+            appGridFolderCenter: ['boolean', 'app-grid-folder-center'],
             searchWindowsEnable: ['boolean', 'search-windows-enable'],
             searchRecentFilesEnable: ['boolean', 'search-recent-files-enable'],
             searchFuzzy: ['boolean', 'search-fuzzy'],
@@ -118,6 +118,22 @@ var Options = class Options {
             wsSwPopupMode: ['int', 'ws-sw-popup-mode'],
             favoritesNotify: ['int', 'favorites-notify'],
             notificationPosition: ['int', 'notification-position'],
+
+            workspaceThumbnailsModule: ['boolean', 'workspace-thumbnails-module'],
+            workspaceSwitcherPopupModule: ['boolean', 'workspace-switcher-popup-module'],
+            workspaceAnimationModule: ['boolean', 'workspace-animation-module'],
+            workspaceModule: ['boolean', 'workspace-module'],
+            windowManagerModule: ['boolean', 'window-manager-module'],
+            windowPreviewModule: ['boolean', 'window-preview-module'],
+            winAttentionHandlerModule: ['boolean', 'win-attention-handler-module'],
+            swipeTrackerModule: ['boolean', 'swipe-tracker-module'],
+            searchModule: ['boolean', 'search-module'],
+            panelModule: ['boolean', 'panel-module'],
+            messageTrayModule: ['boolean', 'message-tray-module'],
+            layoutModule: ['boolean', 'layout-module'],
+            dashModule: ['boolean', 'dash-module'],
+            appFavoritesModule: ['boolean', 'app-favorites-module'],
+            appDisplayModule: ['boolean', 'app-display-module'],
         };
         this.cachedOptions = {};
 

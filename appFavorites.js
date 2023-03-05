@@ -19,15 +19,24 @@ const _Util = Me.imports.util;
 
 let opt;
 let _overrides;
+let _firstRun = true;
 
 function update(reset = false) {
+    opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('appFavoritesModule', true);
+
+    // don't even touch this module if disabled
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
+
     if (_overrides)
         _overrides.removeAll();
 
-    opt = Me.imports.settings.opt;
 
     // if notifications are enabled no override is needed
-    if (reset || opt.SHOW_FAV_NOTIFICATION) {
+    if (reset || opt.SHOW_FAV_NOTIFICATION || !moduleEnabled) {
         _overrides = null;
         opt = null;
         return;

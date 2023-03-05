@@ -33,8 +33,7 @@ let _overrides;
 const WORKSPACE_CUT_SIZE = 10;
 const _originalMaxThumbnailScale = WorkspaceThumbnail.MAX_THUMBNAIL_SCALE;
 
-var opt = null;
-
+let opt = null;
 
 function update(reset = false) {
     if (_overrides)

@@ -31,19 +31,28 @@ const SEARCH_WINDOWS_PREFIX = Me.imports.windowSearchProvider.prefix;
 const ControlsState = imports.ui.overviewControls.ControlsState;
 
 let opt;
+let _firstRun = true;
 
 function update(reset = false) {
+    opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('windowPreviewModule', true);
+
+    // don't even touch this module if disabled
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
+
     if (_overrides)
         _overrides.removeAll();
 
 
-    if (reset) {
+    if (reset || !moduleEnabled) {
         _overrides = null;
         opt = null;
         return;
     }
 
-    opt = Me.imports.settings.opt;
     _overrides = new _Util.Overrides();
 
     _overrides.addOverride('WindowPreview', WindowPreview.WindowPreview.prototype, WindowPreviewCommon);
@@ -312,7 +321,8 @@ const WindowPreviewCommon = {
         // but it still throws:
         //  clutter_actor_get_preferred_width: assertion 'CLUTTER_IS_ACTOR (self)' failed
         //  clutter_actor_get_preferred_height: assertion 'CLUTTER_IS_ACTOR (self)' failed
-        this.hideOverlay(false);
+        // that is probably from workspace.js calling window.chromeWidths()/window.chromeHeights()
+        this._closeButton.destroy();
 
         this.metaWindow._delegate = null;
         this._delegate = null;

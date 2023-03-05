@@ -16,6 +16,7 @@ const Me = imports.misc.extensionUtils.getCurrentExtension();
 const ANIMATION_TIME = imports.ui.overview.ANIMATION_TIME;
 
 let opt;
+let _firstRun = true;
 
 let _showingOverviewConId;
 let _hidingOverviewConId;
@@ -23,12 +24,19 @@ let _styleChangedConId;
 
 function update(reset = false) {
     opt = Me.imports.settings.opt;
+    const moduleEnabled = opt.get('panelModule', true);
+
+    // don't even touch this module if disabled
+    if (_firstRun && !moduleEnabled)
+        return;
+
+    _firstRun = false;
 
     const panelBox = Main.layoutManager.panelBox;
     const panelHeight = Main.panel.height; // panelBox height can be 0 after shell start
 
     const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
-    if (reset || opt.PANEL_POSITION_TOP)
+    if (reset || opt.PANEL_POSITION_TOP || !moduleEnabled)
         panelBox.set_position(geometry.x, geometry.y);
     else
         panelBox.set_position(geometry.x, geometry.y + geometry.height - panelHeight);
@@ -36,7 +44,7 @@ function update(reset = false) {
     if (!_styleChangedConId)
         Main.panel.connect('style-changed', () => Main.panel.remove_style_pseudo_class('overview'));
 
-    if (reset || opt.PANEL_MODE === 0) {
+    if (reset || opt.PANEL_MODE === 0 || !moduleEnabled) {
         // _disconnectPanel();
         _disconnectOverview();
         _reparentPanel(false);

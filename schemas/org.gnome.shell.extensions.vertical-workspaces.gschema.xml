@@ -214,5 +214,52 @@
     <key type="i" name="notification-position">
       <default>2</default>
     </key>
+
+    <key type="b" name="workspace-thumbnails-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="workspace-switcher-popup-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="workspace-animation-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="workspace-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="window-manager-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="window-preview-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="win-attention-handler-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="swipe-tracker-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="search-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="panel-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="message-tray-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="layout-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="dash-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="app-display-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="app-favorites-module">
+      <default>true</default>
+    </key>
+    
   </schema>
 </schemalist>
