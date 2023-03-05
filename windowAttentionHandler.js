@@ -31,6 +31,7 @@ function update(reset = false) {
 
     _firstRun = false;
     if (reset || !moduleEnabled) {
+        reset = true;
         _updateConnections(reset);
         opt = null;
         return;
