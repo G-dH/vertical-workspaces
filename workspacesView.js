@@ -783,10 +783,11 @@ const WorkspacesDisplay = {
             return Clutter.EVENT_PROPAGATE;*/
 
         /* if (!this.reactive)
-            return Clutter.EVENT_PROPAGATE;**/
+            return Clutter.EVENT_PROPAGATE; */
         const { workspaceManager } = global;
         const vertical = workspaceManager.layout_rows === -1;
         const rtl = this.get_text_direction() === Clutter.TextDirection.RTL;
+        const state = this._overviewAdjustment.value;
 
         let which;
         switch (symbol) {
@@ -840,9 +841,10 @@ const WorkspacesDisplay = {
         case Clutter.KEY_Left:
         case Clutter.KEY_Right:
         case Clutter.KEY_Up:
+        case Clutter.KEY_Tab:
             if (Main.overview._overview._controls._searchController.searchActive) {
                 Main.overview.searchEntry.grab_key_focus();
-            } else if (opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE) {
+            } else if (opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE && state === 1) {
                 // expose windows by "clicking" on ws thumbnail
                 // in this case overview stateAdjustment will be used for transition
                 Main.overview._overview.controls._thumbnailsBox._activateThumbnailAtPoint(0, 0, global.get_current_time(), true);
@@ -850,12 +852,14 @@ const WorkspacesDisplay = {
                     if (i.sortGroup === 1 && i.name === 'Windows')
                         Main.ctrlAltTabManager.focusGroup(i);
                 });
-            } else if (opt.OVERVIEW_MODE && !opt.WORKSPACE_MODE) {
+            } else if (opt.OVERVIEW_MODE && !opt.WORKSPACE_MODE && state === 1) {
                 // expose windows for OVERVIEW_MODE 1
                 const adjustment = this._workspacesViews[0]._workspaces[global.workspace_manager.get_active_workspace().index()]._background._stateAdjustment;
                 opt.WORKSPACE_MODE = 1;
                 _Util.exposeWindows(adjustment, true);
             } else {
+                if (state === 2)
+                    return Clutter.EVENT_PROPAGATE;
                 Main.ctrlAltTabManager._items.forEach(i => {
                     if (i.sortGroup === 1 && i.name === 'Windows')
                         Main.ctrlAltTabManager.focusGroup(i);
@@ -866,6 +870,9 @@ const WorkspacesDisplay = {
         default:
             return Clutter.EVENT_PROPAGATE;
         }
+
+        if (state === 2)
+            return Clutter.EVENT_PROPAGATE;
 
         let ws;
         if (which < 0)
