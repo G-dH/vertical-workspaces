@@ -118,6 +118,9 @@ var Options = class Options {
             wsSwPopupMode: ['int', 'ws-sw-popup-mode'],
             favoritesNotify: ['int', 'favorites-notify'],
             notificationPosition: ['int', 'notification-position'],
+            hotCornerAction: ['int', 'hot-corner-action'],
+            hotCornerFullscreen: ['boolean', 'hot-corner-fullscreen'],
+            hotCornerRipples: ['boolean', 'hot-corner-ripples'],
 
             workspaceThumbnailsModule: ['boolean', 'workspace-thumbnails-module'],
             workspaceSwitcherPopupModule: ['boolean', 'workspace-switcher-popup-module'],
@@ -360,6 +363,10 @@ var Options = class Options {
 
         this.SHOW_FAV_NOTIFICATION = this.get('favoritesNotify', true);
         this.NOTIFICATION_POSITION = this.get('notificationPosition', true);
+
+        this.HOT_CORNER_ACTION = this.get('hotCornerAction', true);
+        this.HOT_CORNER_FULLSCREEN = this.get('hotCornerFullscreen', true);
+        this.HOT_CORNER_RIPPLES = this.get('hotCornerRipples', true);
     }
 
     _getAnimationDirection() {

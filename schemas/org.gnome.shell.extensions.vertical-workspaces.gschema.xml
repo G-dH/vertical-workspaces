@@ -214,6 +214,15 @@
     <key type="i" name="notification-position">
       <default>2</default>
     </key>
+    <key type="i" name="hot-corner-action">
+      <default>1</default>
+    </key>
+    <key type="b" name="hot-corner-fullscreen">
+      <default>false</default>
+    </key>
+    <key type="b" name="hot-corner-ripples">
+      <default>true</default>
+    </key>
 
     <key type="b" name="workspace-thumbnails-module">
       <default>true</default>

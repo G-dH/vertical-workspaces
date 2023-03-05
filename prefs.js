@@ -979,11 +979,51 @@ function _getBehaviorOptionList() {
             [
                 [_('Overview'), 0],
                 [_('Desktop'), 1],
-                [_('App Grid'), 2],
+                [_('Applications'), 2],
             ]
         )
     );
 
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Hot Corner (Install Custom Hot Corners - Extended extension for more options)')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Hot corner Action'),
+            _('Disable or change behavior of hot corner. Holding down the Ctrl key while hitting the hot corner switches between Overview/Applications actions.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'hotCornerAction',
+            [
+                [_('Disable'), 0],
+                [_('Overview'), 1],
+                [_('Applications'), 2],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Enable Hot Corner in Full-Screen mode'),
+            _('If you often work with full-screen applications and want the hot corner to be usable.'),
+            itemFactory.newSwitch(),
+            // itemFactory.newDropDown(),
+            'hotCornerFullscreen'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Show Ripples Animation'),
+            _('Ripples animation shows up when you trigger hot corner.'),
+            itemFactory.newSwitch(),
+            // itemFactory.newDropDown(),
+            'hotCornerRipples'
+        )
+    );
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -1389,7 +1429,7 @@ function _getMiscOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('V-Shell Modules - disable expendable / misbehaving modules')
+            _('V-Shell Modules - allows to disable conflicting, expendable or misbehaving modules')
         )
     );
 
@@ -1424,7 +1464,7 @@ function _getMiscOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Layout'),
-            _('Removes right panel barrier that collides with CHC-E extension.'),
+            _('Hot corner options, removes right panel barrier that collides with CHC-E extension.'),
             itemFactory.newSwitch(),
             'layoutModule'
         )
