@@ -33,76 +33,108 @@ function update(reset = false) {
     _firstRun = false;
 
     const panelBox = Main.layoutManager.panelBox;
-    const panelHeight = Main.panel.height; // panelBox height can be 0 after shell start
 
-    const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
-    if (reset || opt.PANEL_POSITION_TOP || !moduleEnabled)
-        panelBox.set_position(geometry.x, geometry.y);
-    else
-        panelBox.set_position(geometry.x, geometry.y + geometry.height - panelHeight);
-
-    if (!_styleChangedConId)
-        Main.panel.connect('style-changed', () => Main.panel.remove_style_pseudo_class('overview'));
-
-    if (reset || opt.PANEL_MODE === 0 || !moduleEnabled) {
+    if (reset || !moduleEnabled) {
         // _disconnectPanel();
-        _disconnectOverview();
+        reset = true;
+        _setPanelPosition(reset);
+        _updateOverviewConnection(reset);
         _reparentPanel(false);
-        _showPanel();
 
-        if (_styleChangedConId) {
-            Main.panel.disconnect(_styleChangedConId);
-            _styleChangedConId = 0;
-        }
+        _updateStyleChangedConnection(reset);
 
         panelBox.translation_y = 0;
-        panelBox.opacity = 255;
+        Main.panel.opacity = 255;
+        _setPanelStructs(true);
+        return;
+    }
+
+    _setPanelPosition();
+    _updateStyleChangedConnection();
+
+    if (opt.PANEL_MODE === 0) {
+        _updateOverviewConnection(true);
+        _reparentPanel(false);
+        panelBox.translation_y = 0;
+        Main.panel.opacity = 255;
+        _setPanelStructs(true);
     } else if (opt.PANEL_MODE === 1) {
         if (opt.SHOW_WS_PREVIEW_BG) {
             _reparentPanel(true);
             if (opt.OVERVIEW_MODE2) {
                 // in OM2 if the panel has been moved to the overviewGroup move panel above all
                 Main.layoutManager.overviewGroup.set_child_above_sibling(panelBox, null);
+                _updateOverviewConnection();
             } else {
                 // otherwise move the panel below overviewGroup so it can get below workspacesDisplay
                 Main.layoutManager.overviewGroup.set_child_below_sibling(panelBox, Main.overview._overview);
+                _updateOverviewConnection(true);
             }
             _showPanel(true);
         } else {
             // if ws preview bg is disabled, panel can stay in uiGroup
             _reparentPanel(false);
             _showPanel(false);
-            if (!_hidingOverviewConId) {
-                _hidingOverviewConId = Main.overview.connect('hiding', () => {
-                    if (!opt.SHOW_WS_PREVIEW_BG || opt.OVERVIEW_MODE2)
-                        _showPanel(false);
-                });
-            }
-            if (!_showingOverviewConId) {
-                _showingOverviewConId = Main.overview.connect('showing', () => {
-                    if (!opt.SHOW_WS_PREVIEW_BG || opt.OVERVIEW_MODE2)
-                        _showPanel(true);
-                });
-            }
+            _updateOverviewConnection();
         }
         // _connectPanel();
     } else if (opt.PANEL_MODE === 2) {
-        _disconnectOverview();
+        _updateOverviewConnection(true);
         _reparentPanel(false);
         _showPanel(false);
         // _connectPanel();
     }
-    _setPanelStructs(reset || opt.PANEL_MODE === 0);
+    _setPanelStructs(opt.PANEL_MODE === 0);
 }
 
-function _disconnectOverview() {
-    if (_hidingOverviewConId) {
-        Main.overview.disconnect(_hidingOverviewConId);
-        _hidingOverviewConId = 0;
+function _setPanelPosition(reset = false) {
+    const geometry = global.display.get_monitor_geometry(global.display.get_primary_monitor());
+    const panelBox = Main.layoutManager.panelBox;
+    const panelHeight = Main.panel.height; // panelBox height can be 0 after shell start
+
+    if (opt.PANEL_POSITION_TOP || reset)
+        panelBox.set_position(geometry.x, geometry.y);
+    else
+        panelBox.set_position(geometry.x, geometry.y + geometry.height - panelHeight);
+}
+
+function _updateStyleChangedConnection(reset = false) {
+    if (reset) {
+        if (_styleChangedConId) {
+            Main.panel.disconnect(_styleChangedConId);
+            _styleChangedConId = 0;
+        }
+    } else if (!_styleChangedConId) {
+        Main.panel.connect('style-changed', () => {
+            if (opt.OVERVIEW_MODE2)
+                Main.panel.remove_style_pseudo_class('overview');
+        });
     }
-    if (_showingOverviewConId) {
-        Main.overview.disconnect(_showingOverviewConId);
-        _showingOverviewConId = 0;
+}
+
+function _updateOverviewConnection(reset = false) {
+    if (reset) {
+        if (_hidingOverviewConId) {
+            Main.overview.disconnect(_hidingOverviewConId);
+            _hidingOverviewConId = 0;
+        }
+        if (_showingOverviewConId) {
+            Main.overview.disconnect(_showingOverviewConId);
+            _showingOverviewConId = 0;
+        }
+    } else {
+        if (!_hidingOverviewConId) {
+            _hidingOverviewConId = Main.overview.connect('hiding', () => {
+                if (!opt.SHOW_WS_PREVIEW_BG || opt.OVERVIEW_MODE2)
+                    _showPanel(false);
+            });
+        }
+        if (!_showingOverviewConId) {
+            _showingOverviewConId = Main.overview.connect('showing', () => {
+                if (!opt.SHOW_WS_PREVIEW_BG || opt.OVERVIEW_MODE2 || Main.layoutManager.panelBox.translation_y)
+                    _showPanel(true);
+            });
+        }
     }
 }
 
