@@ -751,6 +751,13 @@ const WorkspacesDisplay = {
             this._getMonitorIndexForEvent(event) !== this._primaryIndex)
             return Clutter.EVENT_PROPAGATE;
 
+        if (opt.PANEL_MODE === 1) {
+            const panelBox = Main.layoutManager.panelBox;
+            const [, y] = global.get_pointer();
+            if (y > panelBox.allocation.y1 && y < panelBox.allocation.y2)
+                return Clutter.EVENT_STOP;
+        }
+
         let direction = event.get_scroll_direction();
 
         if (_Util.isShiftPressed()) {
