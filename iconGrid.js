@@ -9,7 +9,7 @@
  */
 
 'use strict';
-
+const { St } = imports.gi;
 const IconGrid = imports.ui.iconGrid;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const _Util = Me.imports.util;
@@ -61,20 +61,22 @@ const IconGridCommon = {
 
     _findBestModeForSize(width, height) {
         const { pagePadding } = this.layout_manager;
+        const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
+        const padding = 64 * scaleFactor;
         width -= pagePadding.left + pagePadding.right;
         height -= pagePadding.top + pagePadding.bottom;
 
         // calculate grid exactly for the available space
-        const iconSize = opt.APP_GRID_ICON_SIZE;
+        const iconSize = opt.APP_GRID_ICON_SIZE * scaleFactor;
         // if this._gridModes.length === 1, custom grid should be used
         if (iconSize > 0 && this._gridModes.length > 1) {
             let columns = opt.APP_GRID_COLUMNS;
             let rows = opt.APP_GRID_ROWS;
             // 0 means adaptive size
             if (!columns)
-                columns = Math.floor(width / (iconSize + 64));
+                columns = Math.floor(width / (iconSize + padding));
             if (!rows)
-                rows = Math.floor(height / (iconSize + 64));
+                rows = Math.floor(height / (iconSize + padding));
             this._gridModes = [{ columns, rows }];
         }
 
