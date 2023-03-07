@@ -28,13 +28,12 @@ let _overrides;
 let opt;
 
 const ANIMATION_TIME = imports.ui.overview.ANIMATION_TIME;
-const DASH_MAX_SIZE_RATIO = 0.15;
+const DASH_MAX_SIZE_RATIO = 0.25;
 
 let _originalSearchControllerSigId;
 let _searchControllerSigId;
 let _timeouts;
 let _startupInitComplete = false;
-
 
 function update(reset = false) {
     if (_overrides)
@@ -255,8 +254,12 @@ const ControlsManager = {
         // update App Grid after settings changed
         // only if the App Grid is currently visible on the screen, the paging updates correctly
         if (currentState === ControlsState.APP_GRID && this._appDisplay.visible && opt._appGridNeedsRedisplay) {
-            opt._appGridNeedsRedisplay = false;
             Me.imports.appDisplay._updateAppGridProperties();
+            _timeouts.appRedisplay = GLib.idle_add(0, () => {
+                Main.overview._overview._controls._appDisplay._redisplay();
+                _timeouts.appRedisplay = 0;
+            });
+            opt._appGridNeedsRedisplay = false;
         }
         // if !APP_GRID_ANIMATION, appGrid needs to be hidden in WINDOW_PICKER mode (1)
         // but needs to be visible for transition from HIDDEN (0) to APP_GRID (2)
@@ -597,7 +600,10 @@ const ControlsManager = {
         // in which case the the animation is greatly delayed, stuttering, or even skipped
         // for user it is more acceptable to watch delayed smooth animation,
         // even if it takes little more time, than jumping frames
-        const delay = global.display.get_tab_list(0, global.workspace_manager.get_active_workspace()).length * 3;
+        let delay = 0;
+        if (opt.DELAY_OVERVIEW_ANIMATION)
+            delay = global.display.get_tab_list(0, global.workspace_manager.get_active_workspace()).length * 3;
+
         this._stateAdjustment.ease(state, {
             delay,
             duration: 250, // Overview.ANIMATION_TIME,
