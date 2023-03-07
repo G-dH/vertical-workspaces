@@ -317,12 +317,9 @@ const WindowPreviewCommon = {
     },
 
     _onDestroy() {
-        // fix for upstream bug - hideOverlay is called after windowPreview is destroyed, from the leave event callback
-        // but it still throws:
-        //  clutter_actor_get_preferred_width: assertion 'CLUTTER_IS_ACTOR (self)' failed
-        //  clutter_actor_get_preferred_height: assertion 'CLUTTER_IS_ACTOR (self)' failed
-        // that is probably from workspace.js calling window.chromeWidths()/window.chromeHeights()
-        this._closeButton.destroy();
+        // workaround for upstream bug - hideOverlay is called after windowPreview is destroyed, from the leave event callback
+        // hiding the preview now avoids firing the post-mortem leave event
+        this.hide();
 
         this.metaWindow._delegate = null;
         this._delegate = null;
