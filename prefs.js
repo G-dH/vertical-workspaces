@@ -57,13 +57,13 @@ function init() {
         {
             name: 'behavior',
             title: _('Behavior'),
-            iconName: 'preferences-other-symbolic',
+            iconName: 'system-run-symbolic',
             optionList: _getBehaviorOptionList(),
         },
         {
             name: 'misc',
             title: _('Misc'),
-            iconName: 'input-keyboard-symbolic',
+            iconName: 'preferences-other-symbolic',
             optionList: _getMiscOptionList(),
         },
         {
@@ -167,7 +167,7 @@ function _getLayoutOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Workspaces Thumbnails / Orientation')
+            _('Workspace Thumbnails / Orientation')
         )
     );
 
@@ -201,7 +201,7 @@ function _getLayoutOptionList() {
     wstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
-            _('Fine Tune Workspaces Thumbnails Position'),
+            _('Fine Tune Workspace Thumbnails Position'),
             _('Adjusts workspace thumbnails vertical position.'),
             wstPositionScale,
             'wsTmbPositionAdjust'
@@ -304,7 +304,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Center Search View'),
-            _('Search view will be centered to the display instead of the available space. If needed, workspace thumbnails will be temporarily scaled down to fit the search box. This option has bigger impact for narrower and small resolution displays.'),
+            _('Search view will be centered to the display instead of the available space.'),
             itemFactory.newSwitch(),
             'centerSearch'
         )
@@ -620,14 +620,14 @@ function _getAppearanceOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Workspaces Thumbnails')
+            _('Workspace Thumbnails')
         )
     );
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Show Workspaces Thumbnails Labels'),
-            _('Each workspace thumbnails can show its index and name (if defined in the system settings) or name/title of its most recently used app/window.'),
+            _('Show Workspace Thumbnail Labels'),
+            _('Each workspace thumbnail can show its index and name (if defined in the system settings) or name/title of its most recently used app/window.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'showWsTmbLabels',
@@ -652,7 +652,7 @@ function _getAppearanceOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Show Wallpaper in Workspaces Thumbnails'),
+            _('Show Wallpaper in Workspace Thumbnails'),
             _('All workspace thumbnails will include the current desktop background.'),
             itemFactory.newSwitch(),
             'showWsSwitcherBg'
@@ -1429,10 +1429,9 @@ function _getMiscOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('V-Shell Modules - allows to disable conflicting, expendable or misbehaving modules')
+            _('V-Shell Modules that can be disabled in case of conflict or misbehavior.')
         )
     );
-
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -1515,11 +1514,10 @@ function _getMiscOptionList() {
         )
     );
 
-
     optionList.push(
         itemFactory.getRowWidget(
             _('WindowManager'),
-            _('Fix for fullscreen window minimize animation.'),
+            _('Fixes an upstream bug in the minimization animation of a full-screen window.'),
             itemFactory.newSwitch(),
             'windowManagerModule'
         )
@@ -1528,7 +1526,7 @@ function _getMiscOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('WindowPreview'),
-            _('Window preview options.'),
+            _('Window preview options, fixes an upstream bug that fills the system log with errors when you close a window from an overview or exit the overview with a gesture when any window is selected.'),
             itemFactory.newSwitch(),
             'windowPreviewModule'
         )
@@ -1537,7 +1535,7 @@ function _getMiscOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace'),
-            _('Fixes workspace preview for vertical orientation and also window scaling in static overview modes.'),
+            _('Fixes workspace preview allocations for vertical workspaces orientation and window scaling in static overview modes.'),
             itemFactory.newSwitch(),
             'workspaceModule'
         )
