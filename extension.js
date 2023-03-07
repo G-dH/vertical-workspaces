@@ -345,8 +345,6 @@ function _applySettings(key) {
     _updateOverviewTranslations();
     _switchPageShortcuts();
 
-    MessageTrayOverride.update();
-
     if (key?.includes('app-grid')) {
         AppDisplayOverride.update();
         return;
@@ -377,6 +375,11 @@ function _applySettings(key) {
     case 'window-attention-mode':
         WindowAttentionHandlerOverride.update();
         break;
+    case 'show-ws-preview-bg':
+        PanelOverride.update();
+        break;
+    case 'notification-position':
+        MessageTrayOverride.update();
     }
 }
 
