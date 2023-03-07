@@ -10,6 +10,7 @@
 
 'use strict';
 
+const { GLib } = imports.gi;
 const Main = imports.ui.main;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 
@@ -33,7 +34,6 @@ function update(reset = false) {
     _firstRun = false;
 
     const panelBox = Main.layoutManager.panelBox;
-
     if (reset || !moduleEnabled) {
         // _disconnectPanel();
         reset = true;
@@ -85,6 +85,7 @@ function update(reset = false) {
         // _connectPanel();
     }
     _setPanelStructs(opt.PANEL_MODE === 0);
+    Main.layoutManager._updateHotCorners();
 }
 
 function _setPanelPosition(reset = false) {
@@ -106,7 +107,9 @@ function _updateStyleChangedConnection(reset = false) {
         }
     } else if (!_styleChangedConId) {
         Main.panel.connect('style-changed', () => {
-            if (opt.OVERVIEW_MODE2)
+            if (opt.PANEL_MODE === 1)
+                Main.panel.add_style_pseudo_class('overview');
+            else if (opt.OVERVIEW_MODE2)
                 Main.panel.remove_style_pseudo_class('overview');
         });
     }
@@ -145,7 +148,7 @@ function _reparentPanel(reparent = false) {
         Main.layoutManager.overviewGroup.add_child(panel);
     } else if (!reparent && panel.get_parent() === Main.layoutManager.overviewGroup) {
         Main.layoutManager.overviewGroup.remove_child(panel);
-        // return the panel at default position, pane shouldn't cover objects that should be above
+        // return the panel at default position, panel shouldn't cover objects that should be above
         Main.layoutManager.uiGroup.insert_child_at_index(panel, 4);
     }
 }
