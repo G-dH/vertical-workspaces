@@ -1,4 +1,17 @@
 ## Changelog:
+### v26 (2023-03-08)
+**Added:**
+- V-Shell modules control - allows disable expendable modules if they are in conflict with preferred other extensions, or misbehave.
+- Hot corner options
+
+**Fixed:**
+- App grid's adaptive grid size algorithm doesn't support screen scaling.
+- App grid label option *Always Expanded* doesn't expand labels until the icon is hovered by the pointer.
+- Scroll over panel that is in the *Overview Only* mode switches workspace.
+- Leaving the overview using gesture if any window is selected fills the system log with errors - upstream bug.
+- Panel style transitions in other than default modes.
+- Overview keyboard navigation.
+
 
 ### v24/25 (2023-03-03)
 **Added:**
