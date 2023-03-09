@@ -37,7 +37,6 @@ let _firstRun = true;
 
 const DASH_ITEM_LABEL_SHOW_TIME = 150;
 
-
 function update(reset = false) {
     opt = Me.imports.settings.opt;
     const moduleEnabled = opt.get('dashModule', true);
@@ -68,6 +67,7 @@ function update(reset = false) {
         _updateRecentFilesIcon(false);
         dash.visible = true;
         dash._background.opacity = 255;
+        dash._background.remove_style_class_name('v-shell-dash-background');
         _overrides = null;
         opt = null;
         return;
@@ -107,8 +107,9 @@ function update(reset = false) {
     if (dash._recentFilesIcon && !dash._recentFilesIconClickedId)
         dash._recentFilesIconClickedId = dash._recentFilesIcon.toggleButton.connect('clicked', (a, c) => c && Util.activateSearchProvider(RecentFilesSearchProviderPrefix));
 
-    Main.overview.dash._redisplay();
-    Main.overview._overview._controls.layoutManager._dash.visible = opt.DASH_VISIBLE;
+    dash.visible = opt.DASH_VISIBLE;
+    dash._background.add_style_class_name('v-shell-dash-background');
+    dash._redisplay();
 }
 
 function setToVertical() {
