@@ -4,6 +4,12 @@ A GNOME Shell extension that lets you customize your desktop interface to suit y
 
 Supported GNOME versions: 42, 43, 44 (dropped support for 40, 41  - not tested anymore).
 
+![Custom Overview Layout](screenshots/screenshot.jpg)
+![Custom Overview Layout](screenshots/screenshot0.jpg)
+
+
+[<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
+
 ## Features
 - Vertically or horizontally stacked workspaces.
 - Adjust position, orientation, scale and visibility of overview content.
@@ -25,11 +31,6 @@ Supported GNOME versions: 42, 43, 44 (dropped support for 40, 41  - not tested a
 - Adds *Force Quit*, *Close Windows on Current Workspace* and *Move Windows to Current Workspace* items to app icon menu. The latter action can be activated using *Shift + click* on app icon.
 - Change notification banners position.
 - Window attention handler options that can focus the attention demanding window immediately or silent its notifications.
-
-
-[<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
-
-![Various Overview Layouts](screenshots/screenshot.jpg)
 
 ## Installation
 
@@ -66,11 +67,5 @@ After installation you need to enable the extension and access its settings.
 This extension uses customized utils and dash modules of the [Vertical Overview extension](https://github.com/RensAlthuis/vertical-overview).
 
 ## Buy me a coffee
-If you like my extensions and want to keep me motivated, you can also buy me a coffee:
+If you like my extensions and want to keep me motivated give me some feedback, but you can also help me wit my coffee expenses:
 [buymeacoffee.com/georgdh](https://buymeacoffee.com/georgdh)
-
-![Settings window](screenshots/screenshot1.png)
-![Settings window](screenshots/screenshot2.png)
-![Settings window](screenshots/screenshot3.png)
-![Settings window](screenshots/screenshot4.png)
-![Settings window](screenshots/screenshot5.png)
