@@ -50,12 +50,16 @@ function update(reset = false) {
     if (reset || !moduleEnabled) {
         _overrides = null;
         opt = null;
+        WindowPreview.WINDOW_OVERLAY_IDLE_HIDE_TIMEOUT = 750;
         return;
     }
 
     _overrides = new _Util.Overrides();
 
     _overrides.addOverride('WindowPreview', WindowPreview.WindowPreview.prototype, WindowPreviewCommon);
+    // A shorter timeout allows user to quickly cancel the selection by leaving the preview with the mouse pointer
+    if (opt.ALWAYS_ACTIVATE_SELECTED_WINDOW)
+        WindowPreview.WINDOW_OVERLAY_IDLE_HIDE_TIMEOUT = 150;
 }
 
 const WindowPreviewCommon = {
@@ -233,7 +237,7 @@ const WindowPreviewCommon = {
             return;
 
         this._overlayShown = true;
-        // this._restack();
+        this._restack();
 
         // If we're supposed to animate and an animation in our direction
         // is already happening, let that one continue
@@ -285,7 +289,7 @@ const WindowPreviewCommon = {
             this.get_parent()?.set_child_above_sibling(this, null);
             this._activateSelected = true;
         }
-        // this._restack();
+        this._restack();
 
         // If we're supposed to animate and an animation in our direction
         // is already happening, let that one continue
