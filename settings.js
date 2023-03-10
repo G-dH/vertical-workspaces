@@ -121,6 +121,7 @@ var Options = class Options {
             hotCornerAction: ['int', 'hot-corner-action'],
             hotCornerFullscreen: ['boolean', 'hot-corner-fullscreen'],
             hotCornerRipples: ['boolean', 'hot-corner-ripples'],
+            alwaysActivateSelectedWindow: ['boolean', 'always-activate-selected-window'],
 
             workspaceThumbnailsModule: ['boolean', 'workspace-thumbnails-module'],
             workspaceSwitcherPopupModule: ['boolean', 'workspace-switcher-popup-module'],
@@ -367,6 +368,8 @@ var Options = class Options {
         this.HOT_CORNER_ACTION = this.get('hotCornerAction', true);
         this.HOT_CORNER_FULLSCREEN = this.get('hotCornerFullscreen', true);
         this.HOT_CORNER_RIPPLES = this.get('hotCornerRipples', true);
+
+        this.ALWAYS_ACTIVATE_SELECTED_WINDOW = this.get('alwaysActivateSelectedWindow', true);
     }
 
     _getAnimationDirection() {

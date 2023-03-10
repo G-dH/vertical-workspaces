@@ -202,7 +202,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Fine Tune Workspace Thumbnails Position'),
-            _('Adjusts workspace thumbnails vertical position.'),
+            _('Allows precise adjustment of workspace thumbnails position.'),
             wstPositionScale,
             'wsTmbPositionAdjust'
         )
@@ -407,7 +407,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Fine Tune Workspace Thumbnails Position'),
-            _('Adjusts secondary monitors workspace thumbnails vertical position.'),
+            _('Adjusts workspace thumbnails position on secondary monitors.'),
             secWstPositionScale,
             'secWsTmbPositionAdjust'
         )
@@ -612,7 +612,7 @@ function _getAppearanceOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Dash Background Radius'),
-            _('Adjusts the border radius of the dash background in pixels. 0 means default value.'),
+            _('Adjusts the border radius of the dash background in pixels. 0 means default value given by current theme style.'),
             dashBgRadiusScale,
             'dashBgRadius'
         )
@@ -786,7 +786,7 @@ function _getAppearanceOptionList() {
     const columnsSpinBtn = itemFactory.newSpinButton(columnsAdjustment);
     optionList.push(itemFactory.getRowWidget(
         _('Columns per Page (0 for adaptive grid)'),
-        _('Number of columns in application grid. If set to 0 (default setting) the number will be set automatically to fit available height.'),
+        _('Number of columns in application grid. If set to 0 (default setting) the number will be set automatically to fit available width.'),
         columnsSpinBtn,
         'appGridColumns'
     ));
@@ -1064,6 +1064,22 @@ function _getBehaviorOptionList() {
                 [_('Double Click'), 2],
                 [_('Ctrl Key + Click'), 3],
             ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Window Preview')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Always Activate Selected'),
+            _('If enabled, the currently selected window will be activated when leaving the Overview even without clicking. Usage example - press Super to open the Overview, place mouse pointer over a window, press Super again to activate the window.'),
+            itemFactory.newSwitch(),
+            // itemFactory.newDropDown(),
+            'alwaysActivateSelectedWindow'
         )
     );
 
@@ -1429,7 +1445,7 @@ function _getMiscOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('V-Shell Modules that can be disabled in case of conflict or misbehavior.')
+            _('V-Shell Modules that can be disabled in case of conflict or misbehavior:')
         )
     );
 

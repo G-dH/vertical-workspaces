@@ -281,6 +281,10 @@ const WindowPreviewCommon = {
         if (!this._overlayShown)
             return;
         this._overlayShown = false;
+        if (opt.ALWAYS_ACTIVATE_SELECTED_WINDOW && Main.overview._overview.controls._stateAdjustment.value < 1) {
+            this.get_parent()?.set_child_above_sibling(this, null);
+            this._activateSelected = true;
+        }
         // this._restack();
 
         // If we're supposed to animate and an animation in our direction
@@ -320,6 +324,8 @@ const WindowPreviewCommon = {
         // workaround for upstream bug - hideOverlay is called after windowPreview is destroyed, from the leave event callback
         // hiding the preview now avoids firing the post-mortem leave event
         this.hide();
+        if (this._activateSelected)
+            this._activate();
 
         this.metaWindow._delegate = null;
         this._delegate = null;
