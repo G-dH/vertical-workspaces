@@ -67,5 +67,5 @@ After installation you need to enable the extension and access its settings.
 This extension uses customized utils and dash modules of the [Vertical Overview extension](https://github.com/RensAlthuis/vertical-overview).
 
 ## Buy me a coffee
-If you like my extensions and want to keep me motivated give me some feedback, but you can also help me wit my coffee expenses:
+If you like my extensions and want to keep me motivated give me some useful feedback, but you can also help me with my coffee expenses:
 [buymeacoffee.com/georgdh](https://buymeacoffee.com/georgdh)
