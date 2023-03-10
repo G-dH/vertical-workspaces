@@ -55,9 +55,9 @@ function update(reset = false) {
 
     setToHorizontal();
 
-    dash.remove_style_class_name('vertical-overview');
-    dash.remove_style_class_name('vertical-overview-left');
-    dash.remove_style_class_name('vertical-overview-right');
+    dash.remove_style_class_name('vertical');
+    dash.remove_style_class_name('vertical-left');
+    dash.remove_style_class_name('vertical-right');
 
     if (reset || !moduleEnabled) {
         reset = true;
@@ -81,7 +81,7 @@ function update(reset = false) {
     if (opt.DASH_VERTICAL) {
         _overrides.addOverride('Dash', Dash.Dash.prototype, DashOverride);
         setToVertical();
-        dash.add_style_class_name('vertical-overview');
+        dash.add_style_class_name('vertical');
 
         if (!_newWorkId) {
             _origWorkId = dash._workId;
@@ -137,7 +137,7 @@ function setToVertical() {
     dash._queueRedisplay();
     dash._adjustIconSize();
 
-    dash.add_style_class_name(opt.DASH_LEFT ? 'vertical-overview-left' : 'vertical-overview-right');
+    dash.add_style_class_name(opt.DASH_LEFT ? 'vertical-left' : 'vertical-right');
 }
 
 function setToHorizontal() {

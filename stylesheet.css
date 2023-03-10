@@ -4,14 +4,14 @@
 */
 
 /* General dash */
-#dash.vertical-overview {
+#dash.vertical {
 	margin-right: 0px;
 	margin-left: 0px;
 	padding: 0px 0;
 }
 
-#dash.vertical-overview .app-well-app,
-#dash.vertical-overview .show-apps {
+#dash.vertical .app-well-app,
+#dash.vertical .show-apps {
 	padding-right: 8px;
 	padding-left: 8px;
 	/*spacing between icons*/
@@ -20,7 +20,7 @@
 	margin: 0px;
 }
 
-#dash.vertical-overview .dash-separator {
+#dash.vertical .dash-separator {
 	height: 1px;
 	margin-right: 2px;
 	margin-left: 2px;
@@ -29,27 +29,27 @@
 	background-color: transparentize(#eeeeec, 0.7);
 }
 
-#dash.vertical-overview .overview-icon {
+#dash.vertical .overview-icon {
 	padding: 5px 0;
 }
 
-#dash.vertical-overview .app-well-app-running-dot {
+#dash.vertical .app-well-app-running-dot {
 	margin: 4px 0px;
 	width: 2px;
 	height: 16px;
 }
 
-#dash.vertical-overview .dash-background {
+#dash.vertical .dash-background {
 	margin: 0;
 }
 
-#dash.vertical-overview-left .dash-background {
+#dash.vertical-left .dash-background {
 	border-radius: 0 18px 18px 0;
 	border-left: 0px;
 	padding: 8px 12px 8px 4px;
 }
 
-#dash.vertical-overview-right .dash-background {
+#dash.vertical-right .dash-background {
 	border-radius: 18px 0 0 18px;
 	border-right: 0px;
 	padding: 8px 4px 8px 12px;
