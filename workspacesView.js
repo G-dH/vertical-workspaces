@@ -33,7 +33,12 @@ let opt;
 
 
 function update(reset = false) {
-    if (_overrides) {
+    opt = Me.imports.settings.opt;
+    opt.DESKTOP_CUBE_ENABLED = Main.extensionManager._enabledExtensions.includes('desktop-cube@schneegans.github.com');
+    const cubeSupported = opt.DESKTOP_CUBE_ENABLED && !opt.ORIENTATION && !opt.OVERVIEW_MODE;
+
+    // if desktop cube extension is enabled while V-Shell is loaded, removeAll() would override its code
+    if (_overrides && !cubeSupported) {
         _overrides.removeAll();
         global.workspace_manager.override_workspace_layout(Meta.DisplayCorner.TOPLEFT, false, 1, -1);
     }
@@ -44,11 +49,12 @@ function update(reset = false) {
         return;
     }
 
-    opt = Me.imports.settings.opt;
 
     _overrides = new _Util.Overrides();
 
-    _overrides.addOverride('WorkspacesView', WorkspacesView.WorkspacesView.prototype, WorkspacesViewCommon);
+    if (!cubeSupported)
+        _overrides.addOverride('WorkspacesView', WorkspacesView.WorkspacesView.prototype, WorkspacesViewCommon);
+
     _overrides.addOverride('WorkspacesDisplay', WorkspacesView.WorkspacesDisplay.prototype, WorkspacesDisplay);
     _overrides.addOverride('ExtraWorkspaceView', WorkspacesView.ExtraWorkspaceView.prototype, ExtraWorkspaceView);
 
