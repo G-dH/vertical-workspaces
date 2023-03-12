@@ -47,7 +47,6 @@ const MessageTrayOverride = Me.imports.messageTray;
 let opt;
 
 let _bgManagers;
-let _shellSettings;
 
 let _enabled;
 let _resetExtensionIfEnabled;
@@ -260,11 +259,10 @@ function _resetExtension(timeout = 200) {
 
 function _fixUbuntuDock(activate = true) {
     // Workaround for Ubuntu Dock breaking overview allocations after changing monitor configuration and deactivating dock
-    if (_shellSettings && _watchDockSigId) {
-        _shellSettings.disconnect(_watchDockSigId);
+    if (_watchDockSigId) {
+        global.settings.disconnect(_watchDockSigId);
         _watchDockSigId = 0;
     }
-    _shellSettings = null;
 
     if (_resetTimeoutId) {
         GLib.source_remove(_resetTimeoutId);
@@ -276,9 +274,7 @@ function _fixUbuntuDock(activate = true) {
     if (!activate)
         return;
 
-
-    _shellSettings = ExtensionUtils.getSettings('org.gnome.shell');
-    _watchDockSigId = _shellSettings.connect('changed::enabled-extensions', () => _resetExtension());
+    _watchDockSigId = global.settings.connect('changed::enabled-extensions', () => _resetExtension());
     _resetExtensionIfEnabled = _resetExtension;
 }
 
