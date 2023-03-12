@@ -205,11 +205,11 @@ class HotCorner extends Layout.HotCorner {
             this._horizontalBarrier = null;
         }
 
-        const extendV = opt.HOT_CORNER_EDGE && opt.DASH_VERTICAL;
-        const extendH = opt.HOT_CORNER_EDGE && !opt.DASH_VERTICAL;
-        const monitor = this._monitor;
-
         if (size > 0) {
+            const extendV = opt && opt.HOT_CORNER_EDGE && opt.DASH_VERTICAL;
+            const extendH = opt && opt.HOT_CORNER_EDGE && !opt.DASH_VERTICAL;
+            const monitor = this._monitor;
+
             if (opt.HOT_CORNER_POSITION <= 1) {
                 this._verticalBarrier = new Meta.Barrier({
                     display: global.display,
