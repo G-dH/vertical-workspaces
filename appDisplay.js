@@ -44,7 +44,6 @@ let opt;
 let shellVersion = _Util.shellVersion;
 let _firstRun = true;
 
-
 function update(reset = false) {
     opt = Me.imports.settings.opt;
     const moduleEnabled = opt.get('appDisplayModule', true);

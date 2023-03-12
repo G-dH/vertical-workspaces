@@ -21,7 +21,6 @@ const _Util = Me.imports.util;
 let opt;
 let _firstRun = false;
 
-
 function update(reset = false) {
     opt = Me.imports.settings.opt;
     const moduleEnabled = opt.get('winAttentionHandlerModule', true);

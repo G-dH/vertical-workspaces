@@ -42,9 +42,6 @@ const Action = {
     MOVE_ALL_TO_WS: 4,
 };
 
-function init() {
-}
-
 function getOverviewSearchResult() {
     return Main.overview._overview.controls._searchController._searchResults;
 }

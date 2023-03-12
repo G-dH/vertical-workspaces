@@ -2,9 +2,6 @@
  * V-Shell (Vertical Workspaces)
  * overview.js
  *
- * panel barrier should follow panel position
- * or disable it to not collide with Custom Hot Corners barriers
- *
  * @author     GdH <G-dH@github.com>
  * @copyright  2022 - 2023
  * @license    GPL-3.0

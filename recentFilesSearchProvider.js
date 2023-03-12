@@ -34,10 +34,6 @@ var prefix = 'fq//';
 
 var opt;
 
-
-function init() {
-}
-
 function getOverviewSearchResult() {
     return Main.overview._overview.controls._searchController._searchResults;
 }
