@@ -352,6 +352,9 @@ function _applySettings(key) {
     if (key?.includes('dash') || key?.includes('search') || key?.includes('icon'))
         DashOverride.update();
 
+    if (key?.includes('hot-corner') || key?.includes('dash'))
+        LayoutOverride.update();
+
     switch (key) {
     case 'fix-ubuntu-dock':
         _fixUbuntuDock(opt.get('fixUbuntuDock', true));
@@ -376,6 +379,7 @@ function _applySettings(key) {
         break;
     case 'notification-position':
         MessageTrayOverride.update();
+        break;
     }
 }
 

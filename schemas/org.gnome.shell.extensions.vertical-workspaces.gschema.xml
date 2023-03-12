@@ -220,6 +220,9 @@
     <key type="i" name="hot-corner-action">
       <default>1</default>
     </key>
+    <key type="i" name="hot-corner-position">
+      <default>0</default>
+    </key>
     <key type="b" name="hot-corner-fullscreen">
       <default>false</default>
     </key>

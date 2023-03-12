@@ -217,4 +217,8 @@ StButton#vhandle {
     height: 18px;
 }
 
-
+/* reduce size of hot corner ripples to half */
+.ripple-box {
+	width: 26px;
+	height: 26px;
+}

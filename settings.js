@@ -120,6 +120,7 @@ var Options = class Options {
             favoritesNotify: ['int', 'favorites-notify'],
             notificationPosition: ['int', 'notification-position'],
             hotCornerAction: ['int', 'hot-corner-action'],
+            hotCornerPosition: ['int', 'hot-corner-position'],
             hotCornerFullscreen: ['boolean', 'hot-corner-fullscreen'],
             hotCornerRipples: ['boolean', 'hot-corner-ripples'],
             alwaysActivateSelectedWindow: ['boolean', 'always-activate-selected-window'],
@@ -402,6 +403,21 @@ var Options = class Options {
         this.NOTIFICATION_POSITION = this.get('notificationPosition', true);
 
         this.HOT_CORNER_ACTION = this.get('hotCornerAction', true);
+        this.HOT_CORNER_POSITION = this.get('hotCornerPosition', true);
+        if (this.HOT_CORNER_POSITION === 6 && this.DASH_VISIBLE)
+            this.HOT_CORNER_EDGE = true;
+        else
+            this.HOT_CORNER_EDGE = false;
+        if ([5, 6].includes(this.HOT_CORNER_POSITION)) {
+            if (this.DASH_TOP || this.DASH_LEFT)
+                this.HOT_CORNER_POSITION = 1;
+            else if (this.DASH_RIGHT)
+                this.HOT_CORNER_POSITION = 2;
+            else if (this.DASH_BOTTOM)
+                this.HOT_CORNER_POSITION = 3;
+            else
+                this.HOT_CORNER_POSITION = 0;
+        }
         this.HOT_CORNER_FULLSCREEN = this.get('hotCornerFullscreen', true);
         this.HOT_CORNER_RIPPLES = this.get('hotCornerRipples', true);
 
