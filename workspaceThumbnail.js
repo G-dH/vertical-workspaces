@@ -57,12 +57,14 @@ function update(reset = false) {
     _overrides.addOverride('WorkspaceThumbnail', WorkspaceThumbnail.WorkspaceThumbnail.prototype, WorkspaceThumbnailCommon);
     _overrides.addOverride('ThumbnailsBoxCommon', WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxCommon);
 
-    if (opt.ORIENTATION === Clutter.Orientation.VERTICAL)
+    // replacing opt.ORIENTATION local constant with boxOrientation internal variable allows external customers such as the AATWS extension to control the box orientation.
+    Main.overview._overview.controls._thumbnailsBox._boxOrientation = opt.ORIENTATION;
+
+    /* if (opt.ORIENTATION === Clutter.Orientation.VERTICAL)
         _overrides.addOverride('ThumbnailsBox', WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxVertical);
     else
-        _overrides.addOverride('ThumbnailsBox', WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxHorizontal);
+        _overrides.addOverride('ThumbnailsBox', WorkspaceThumbnail.ThumbnailsBox.prototype, ThumbnailsBoxHorizontal);*/
 }
-
 
 const WorkspaceThumbnailCommon = {
     // injection to _init()
@@ -391,6 +393,10 @@ const WorkspaceThumbnailCommon = {
 };
 
 const ThumbnailsBoxCommon = {
+    after__init(scrollAdjustment, monitorIndex, orientation = opt.ORIENTATION) {
+        this._boxOrientation = orientation;
+    },
+
     _activateThumbnailAtPoint(stageX, stageY, time, activateCurrent = false) {
         if (activateCurrent) {
             const thumbnail = this._thumbnails.find(t => t.metaWorkspace.active);
@@ -534,6 +540,48 @@ const ThumbnailsBoxCommon = {
             return source.metaWindow ? DND.DragMotionResult.MOVE_DROP : DND.DragMotionResult.COPY_DROP;
         else
             return DND.DragMotionResult.CONTINUE;
+    },
+
+    _getPlaceholderTarget(...args) {
+        if (this._boxOrientation)
+            return ThumbnailsBoxVertical._getPlaceholderTarget.bind(this)(...args);
+        else
+            return ThumbnailsBoxHorizontal._getPlaceholderTarget.bind(this)(...args);
+    },
+
+    _withinWorkspace(...args) {
+        if (this._boxOrientation)
+            return ThumbnailsBoxVertical._withinWorkspace.bind(this)(...args);
+        else
+            return ThumbnailsBoxHorizontal._withinWorkspace.bind(this)(...args);
+    },
+
+    get_preferred_custom_width(...args) {
+        if (this._boxOrientation)
+            return ThumbnailsBoxVertical.get_preferred_custom_width.bind(this)(...args);
+        else
+            return ThumbnailsBoxHorizontal.get_preferred_custom_width.bind(this)(...args);
+    },
+
+    get_preferred_custom_height(...args) {
+        if (this._boxOrientation)
+            return ThumbnailsBoxVertical.get_preferred_custom_height.bind(this)(...args);
+        else
+            return ThumbnailsBoxHorizontal.get_preferred_custom_height.bind(this)(...args);
+    },
+
+    vfunc_allocate(...args) {
+        if (this._boxOrientation)
+            return ThumbnailsBoxVertical.vfunc_allocate.bind(this)(...args);
+        else
+            return ThumbnailsBoxHorizontal.vfunc_allocate.bind(this)(...args);
+    },
+
+    _updateShouldShow(...args) {
+        if (this._boxOrientation)
+            return ThumbnailsBoxVertical._updateShouldShow.bind(this)(...args);
+        else
+            return ThumbnailsBoxHorizontal._updateShouldShow.bind(this)(...args);
     },
 };
 
@@ -832,6 +880,56 @@ const ThumbnailsBoxVertical = {
 // ThumbnailsBox Horizontal
 
 const ThumbnailsBoxHorizontal = {
+    _getPlaceholderTarget(index, spacing, rtl) {
+        const workspace = this._thumbnails[index];
+
+        let targetX1;
+        let targetX2;
+
+        if (rtl) {
+            const baseX = workspace.x + workspace.width;
+            targetX1 = baseX - WORKSPACE_CUT_SIZE;
+            targetX2 = baseX + spacing + WORKSPACE_CUT_SIZE;
+        } else {
+            targetX1 = workspace.x - spacing - WORKSPACE_CUT_SIZE;
+            targetX2 = workspace.x + WORKSPACE_CUT_SIZE;
+        }
+
+        if (index === 0) {
+            if (rtl)
+                targetX2 -= spacing + WORKSPACE_CUT_SIZE;
+            else
+                targetX1 += spacing + WORKSPACE_CUT_SIZE;
+        }
+
+        if (index === this._dropPlaceholderPos) {
+            const placeholderWidth = this._dropPlaceholder.get_width() + spacing;
+            if (rtl)
+                targetX2 += placeholderWidth;
+            else
+                targetX1 -= placeholderWidth;
+        }
+
+        return [targetX1, targetX2];
+    },
+
+    _withinWorkspace(x, index, rtl) {
+        const length = this._thumbnails.length;
+        const workspace = this._thumbnails[index];
+
+        let workspaceX1 = workspace.x + WORKSPACE_CUT_SIZE;
+        let workspaceX2 = workspace.x + workspace.width - WORKSPACE_CUT_SIZE;
+
+        if (index === length - 1) {
+            if (rtl)
+                workspaceX1 -= WORKSPACE_CUT_SIZE;
+            else
+                workspaceX2 += WORKSPACE_CUT_SIZE;
+        }
+
+        return x > workspaceX1 && x <= workspaceX2;
+    },
+
     get_preferred_custom_height(forWidth) {
         let themeNode = this.get_theme_node();
 
