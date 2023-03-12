@@ -1015,7 +1015,7 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Hot corner Action'),
+            _('Hot Corner Action'),
             _('Disable or change behavior of hot corner. Holding down the Ctrl key while hitting the hot corner switches between Overview/Applications actions.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
@@ -1024,6 +1024,25 @@ function _getBehaviorOptionList() {
                 [_('Disable'), 0],
                 [_('Overview'), 1],
                 [_('Applications'), 2],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Hot Corner Position'),
+            _('Choose what corner of your monitors will be active. If you choose "Follow Dash" option, the corner will be placed near the left or top edge of the dash. The last option extends the hot corner barrier to cover the whole ege of the monitor under/beside the Dock.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'hotCornerPosition',
+            [
+                [_('Default'), 0],
+                [_('Top Left'), 1],
+                [_('Top Right'), 2],
+                [_('Bottom Left'), 3],
+                [_('Bottom Right'), 4],
+                [_('Follow Dash'), 5],
+                [_('Follow Dash - Hot Edge'), 6],
             ]
         )
     );
