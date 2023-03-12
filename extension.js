@@ -540,7 +540,7 @@ function _updateStaticBackground(bgManager, stateValue, stateAdjustment = null) 
             bgValue = stateValue;
         } else {
             VIGNETTE = 0.2;
-            BRIGHTNESS = 0.95;
+            BRIGHTNESS = opt.OVERVIEW_BG_BRIGHTNESS;
             if (opt.OVERVIEW_MODE2 && stateValue > 1 && !opt.WORKSPACE_MODE)
                 bgValue = stateValue - 1;
             else

@@ -257,11 +257,31 @@ var ItemFactory = class ItemFactory {
         return linkBtn;
     }
 
-    newResetButton(callback) {
+    newButton() {
         const btn = new Gtk.Button({
             halign: Gtk.Align.END,
             valign: Gtk.Align.CENTER,
             hexpand: true,
+        });
+
+        btn._activatable = true;
+        return btn;
+    }
+
+    newPresetButton(callback, profileIndex) {
+        const btn = this.newButton();
+        btn.set({
+            icon_name: 'view-refresh-symbolic',
+        });
+
+        btn.connect('clicked', () => callback(profileIndex));
+        btn._activatable = false;
+        return btn;
+    }
+
+    newResetButton(callback) {
+        const btn = this.newButton();
+        btn.set({
             css_classes: ['destructive-action'],
             icon_name: 'view-refresh-symbolic',
         });

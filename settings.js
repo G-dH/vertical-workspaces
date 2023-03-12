@@ -77,6 +77,7 @@ var Options = class Options {
             showWsSwitcherBg: ['boolean', 'show-ws-switcher-bg'],
             showWsPreviewBg: ['boolean', 'show-ws-preview-bg'],
             showBgInOverview: ['boolean', 'show-bg-in-overview'],
+            overviewBgBrightness: ['int', 'overview-bg-brightness'],
             overviewBgBlurSigma: ['int', 'overview-bg-blur-sigma'],
             appGridBgBlurSigma: ['int', 'app-grid-bg-blur-sigma'],
             smoothBlurTransitions: ['boolean', 'smooth-blur-transitions'],
@@ -86,7 +87,7 @@ var Options = class Options {
             animationSpeedFactor: ['int', 'animation-speed-factor'],
             fixUbuntuDock: ['boolean', 'fix-ubuntu-dock'],
             winPreviewIconSize: ['int', 'win-preview-icon-size'],
-            alwaysShowWinTitles: ['int', 'always-show-win-titles'],
+            alwaysShowWinTitles: ['boolean', 'always-show-win-titles'],
             startupState: ['int', 'startup-state'],
             overviewMode: ['int', 'overview-mode'],
             workspaceSwitcherAnimation: ['int', 'workspace-switcher-animation'],
@@ -142,6 +143,7 @@ var Options = class Options {
         this.cachedOptions = {};
 
         this.shellVersion = shellVersion;
+        // this.storeProfile(3);
     }
 
     connect(name, callback) {
@@ -220,6 +222,39 @@ var Options = class Options {
         return gSettings.get_default_value(key).deep_unpack();
     }
 
+    storeProfile(index = 0, name = '') {
+        const profile = {};
+        profile['profileName'] = name;
+
+        Object.keys(this.options).forEach(v => {
+            profile[v] = this.get(v).toString();
+        });
+
+        this._gsettings.set_value(`profile-${index}`, new GLib.Variant('a{ss}', profile));
+    }
+
+    loadProfile(index = 0) {
+        const options = this._gsettings.get_value(`profile-${index}`).deep_unpack();
+        for (let o of Object.keys(options)) {
+            if (o === 'profileName')
+                continue;
+            const [type] = this.options[o];
+            let value = options[o];
+            switch (type) {
+            case 'string':
+                break;
+            case 'boolean':
+                value = value === 'true';
+                break;
+            case 'int':
+                value = parseInt(value);
+                break;
+            }
+
+            this.set(o, value);
+        }
+    }
+
     _updateSettings() {
         this.DASH_POSITION = this.get('dashPosition', true);
         this.DASH_TOP = this.DASH_POSITION === 0;
@@ -295,6 +330,7 @@ var Options = class Options {
 
         this.STARTUP_STATE = this.get('startupState', true);
         this.SHOW_BG_IN_OVERVIEW = this.get('showBgInOverview', true);
+        this.OVERVIEW_BG_BRIGHTNESS = this.get('overviewBgBrightness', true) / 100;
         this.OVERVIEW_BG_BLUR_SIGMA = this.get('overviewBgBlurSigma', true);
         this.APP_GRID_BG_BLUR_SIGMA = this.get('appGridBgBlurSigma', true);
         this.SMOOTH_BLUR_TRANSITIONS = this.get('smoothBlurTransitions', true);

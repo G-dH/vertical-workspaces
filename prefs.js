@@ -61,6 +61,12 @@ function init() {
             optionList: _getBehaviorOptionList(),
         },
         {
+            name: 'profiles',
+            title: _('Profiles'),
+            iconName: 'open-menu-symbolic',
+            optionList: _getProfilesOptionList(),
+        },
+        {
             name: 'misc',
             title: _('Misc'),
             iconName: 'preferences-other-symbolic',
@@ -898,6 +904,23 @@ function _getAppearanceOptionList() {
         )
     );
 
+    const brightnessBgAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: 0,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const bgBrightnessScale = itemFactory.newScale(brightnessBgAdjustment);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Brightness'),
+            _('Brightness of background wallpaper in the overview.'),
+            bgBrightnessScale,
+            'overviewBgBrightness'
+        )
+    );
+
     const blurBgAdjustment = new Gtk.Adjustment({
         upper: 100,
         lower: 0,
@@ -1404,6 +1427,45 @@ function _getBehaviorOptionList() {
             ]
         )
     );
+
+    return optionList;
+}
+
+function _getProfilesOptionList() {
+    const optionList = [];
+    // options item format:
+    // [text, caption, widget, settings-variable, options for combo]
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Predefined Profiles'),
+            _('Sets of settings that can help you with initial customization')
+        )
+    );
+
+    optionList.push(itemFactory.getRowWidget(
+        _('GNOME Shell 3'),
+        _('Vertical layout of GNOME Shell 3.xx'),
+        itemFactory.newPresetButton(gOptions.loadProfile.bind(gOptions), 0)
+    ));
+
+    optionList.push(itemFactory.getRowWidget(
+        _('GS 40'),
+        _('Horizontal layout of GNOME Shell 40+'),
+        itemFactory.newPresetButton(gOptions.loadProfile.bind(gOptions), 1)
+    ));
+
+    optionList.push(itemFactory.getRowWidget(
+        _('Hot Corner Centric'),
+        _('Configuration focused on efficiency when using hot corner moves workspaces and dash to the top left corner'),
+        itemFactory.newPresetButton(gOptions.loadProfile.bind(gOptions), 2)
+    ));
+
+    optionList.push(itemFactory.getRowWidget(
+        _('Dock Overview'),
+        _('Static overview mode, dash and workspace thumbnails at the bottom, horizontal workspaces'),
+        itemFactory.newPresetButton(gOptions.loadProfile.bind(gOptions), 3)
+    ));
 
     return optionList;
 }
