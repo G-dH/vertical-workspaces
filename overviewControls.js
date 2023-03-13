@@ -155,7 +155,7 @@ const ControlsManager = {
             this._workspacesDisplay.opacity = opacity;
         } else if (!opt.SHOW_WS_TMB_BG) {
             // fade out ws wallpaper during transition to ws switcher if ws switcher background disabled
-            const ws = this._workspacesDisplay._workspacesViews[global.display.get_primary_monitor()]._workspaces[this._workspaceAdjustment.value];
+            const ws = this._workspacesDisplay._workspacesViews[global.display.get_primary_monitor()]?._workspaces[this._workspaceAdjustment.value];
             if (ws)
                 ws._background.opacity = opacity;
         }
