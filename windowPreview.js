@@ -206,7 +206,7 @@ const WindowPreviewCommon = {
 
         if (scale === 1) {
             this._icon.ease({
-                duration: 100,
+                duration: 50,
                 scale_x: scale,
                 scale_y: scale,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
@@ -237,7 +237,7 @@ const WindowPreviewCommon = {
             return;
 
         this._overlayShown = true;
-        this._restack();
+        // this._restack();
 
         // If we're supposed to animate and an animation in our direction
         // is already happening, let that one continue
@@ -289,7 +289,7 @@ const WindowPreviewCommon = {
             this.get_parent()?.set_child_above_sibling(this, null);
             this._activateSelected = true;
         }
-        this._restack();
+        // this._restack();
 
         // If we're supposed to animate and an animation in our direction
         // is already happening, let that one continue
