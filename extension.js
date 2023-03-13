@@ -293,6 +293,8 @@ function _updateSettings(settings, key) {
         opt.DASH_VERTICAL = opt.DASH_LEFT || opt.DASH_RIGHT;
     }
 
+    opt.DASH_VISIBLE = opt.DASH_VISIBLE && !_Util.getEnabledExtensions('dash-to-panel@jderose9.github.com').length;
+
     opt.MAX_ICON_SIZE = opt.get('dashMaxIconSize', true);
     if (opt.MAX_ICON_SIZE < 16) {
         opt.MAX_ICON_SIZE = 64;
@@ -606,3 +608,4 @@ function _updateStaticBackground(bgManager, stateValue, stateAdjustment = null) 
         }
     }
 }
+

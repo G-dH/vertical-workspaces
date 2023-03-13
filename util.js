@@ -329,3 +329,12 @@ function isMoreRelevant(stringA, stringB, pattern) {
     else
         return !aAny && bAny;
 }
+
+function getEnabledExtensions(uuid = '') {
+    let extensions = [];
+    Main.extensionManager._extensions.forEach(e => {
+        if (e.state === 1 && e.uuid.includes(uuid))
+            extensions.push(e);
+    });
+    return extensions;
+}
