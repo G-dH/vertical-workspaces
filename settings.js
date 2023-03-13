@@ -37,7 +37,7 @@ var Options = class Options {
 
             this._writeTimeoutId = GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
-                500,
+                200,
                 () => {
                     this._gsettings.apply();
                     this._updateCachedSettings();
@@ -67,6 +67,7 @@ var Options = class Options {
             centerDashToWs: ['boolean', 'center-dash-to-ws'],
             showAppsIconPosition: ['int', 'show-app-icon-position'],
             wsThumbnailScale: ['int', 'ws-thumbnail-scale'],
+            wsThumbnailScaleAppGrid: ['int', 'ws-thumbnail-scale-appgrid'],
             secWsThumbnailScale: ['int', 'secondary-ws-thumbnail-scale'],
             showSearchEntry: ['boolean', 'show-search-entry'],
             centerSearch: ['boolean', 'center-search'],
@@ -144,7 +145,8 @@ var Options = class Options {
         this.cachedOptions = {};
 
         this.shellVersion = shellVersion;
-        // this.storeProfile(3);
+        // this allows to store current settings to profile
+        // this.storeProfile(2);
     }
 
     connect(name, callback) {
@@ -236,6 +238,7 @@ var Options = class Options {
 
     loadProfile(index = 0) {
         const options = this._gsettings.get_value(`profile-${index}`).deep_unpack();
+        this._gsettings.set_boolean('aaa-loading-profile', !this._gsettings.get_boolean('aaa-loading-profile'));
         for (let o of Object.keys(options)) {
             if (o === 'profileName')
                 continue;
@@ -302,6 +305,8 @@ var Options = class Options {
         this.CLOSE_WS_BUTTON_MODE = this.get('closeWsButtonMode', true);
 
         this.MAX_THUMBNAIL_SCALE = this.get('wsThumbnailScale', true) / 100;
+        this.MAX_THUMBNAIL_SCALE_APPGRID = this.get('wsThumbnailScaleAppGrid', true) / 100;
+        this.MAX_THUMBNAIL_SCALE_STABLE = this.MAX_THUMBNAIL_SCALE === this.MAX_THUMBNAIL_SCALE_APPGRID;
         this.SEC_MAX_THUMBNAIL_SCALE = this.get('secWsThumbnailScale', true) / 100;
 
         this.WS_PREVIEW_SCALE = this.get('wsPreviewScale', true) / 100;

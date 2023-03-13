@@ -54,6 +54,7 @@ let _prevDash;
 
 let _showingOverviewConId;
 let _monitorsChangedSigId;
+let _loadingProfileTimeoutId;
 let _watchDockSigId;
 
 let _resetTimeoutId;
@@ -279,6 +280,20 @@ function _fixUbuntuDock(activate = true) {
 }
 
 function _updateSettings(settings, key) {
+    // avoid overload while loading profile - update only once
+    // delayed gsettings writes are processed alphabetically
+    if (key === 'aaa-loading-profile') {
+        if (_loadingProfileTimeoutId)
+            GLib.source_remove(_loadingProfileTimeoutId);
+        _loadingProfileTimeoutId = GLib.timeout_add(100, 0, () => {
+            _resetExtension();
+            _loadingProfileTimeoutId = 0;
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+    if (_loadingProfileTimeoutId)
+        return;
+
     opt._updateSettings();
 
     opt.WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');

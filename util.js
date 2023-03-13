@@ -338,3 +338,4 @@ function getEnabledExtensions(uuid = '') {
     });
     return extensions;
 }
+

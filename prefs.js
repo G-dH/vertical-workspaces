@@ -241,6 +241,23 @@ function _getLayoutOptionList() {
         )
     );
 
+    const wsThumbnailAppScaleAdjustment = new Gtk.Adjustment({
+        upper: 30,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const wsThumbnailAppScale = itemFactory.newScale(wsThumbnailAppScaleAdjustment);
+    wsThumbnailAppScale.add_mark(13, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Thumbnails Max Scale - App View'),
+            _('Adjusts maximum size of the workspace thumbnails (% relative to display width) in Applications view.'),
+            wsThumbnailAppScale,
+            'wsThumbnailScaleAppGrid'
+        )
+    );
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -1476,13 +1493,13 @@ function _getProfilesOptionList() {
 
     optionList.push(itemFactory.getRowWidget(
         _('Hot Corner Centric'),
-        _('Configuration focused on efficiency when using hot corner moves workspaces and dash to the top left corner'),
+        _('Configuration focused on efficiency when using top left hot corner moves workspaces and dash to the top left corner'),
         itemFactory.newPresetButton(gOptions.loadProfile.bind(gOptions), 2)
     ));
 
     optionList.push(itemFactory.getRowWidget(
         _('Dock Overview'),
-        _('Static overview mode, dash and workspace thumbnails at the bottom, horizontal workspaces'),
+        _('Static overview mode, dash and workspace thumbnails at the bottom, horizontal workspaces, bottom hot edge instead the hot corner'),
         itemFactory.newPresetButton(gOptions.loadProfile.bind(gOptions), 3)
     ));
 

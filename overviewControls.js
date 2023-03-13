@@ -145,11 +145,14 @@ const ControlsManager = {
         if (finalState === 0 && this._searchController._searchResults.visible)
             this._searchController.hide();
 
-
         // reset Static Workspace window picker mode
         if (currentState === 0/* finalState === 0 && progress === 1*/ && opt.OVERVIEW_MODE && opt.WORKSPACE_MODE)
             opt.WORKSPACE_MODE = 0;
 
+        if (currentState < 2 && currentState > 1)
+            WorkspaceThumbnail.RESCALE_ANIMATION_TIME = 0;
+        else
+            WorkspaceThumbnail.RESCALE_ANIMATION_TIME = 200;
 
         if (!opt.WS_ANIMATION || !opt.SHOW_WS_TMB) {
             this._workspacesDisplay.opacity = opacity;
@@ -849,6 +852,8 @@ const ControlsManagerLayoutVertical = {
             }
         }
 
+        const transitionParams = this._stateAdjustment.getStateTransitionParams();
+
         // Workspace Thumbnails
         let wsTmbWidth = 0;
         let wsTmbHeight = 0;
@@ -857,7 +862,14 @@ const ControlsManagerLayoutVertical = {
             // const { expandFraction } = this._workspacesThumbnails;
             const dashHeightReservation = !opt.WS_TMB_FULL && !opt.DASH_VERTICAL ? dashHeight : 0;
 
-            wsTmbWidth = width * opt.MAX_THUMBNAIL_SCALE;
+            let maxScale = opt.MAX_THUMBNAIL_SCALE;
+            if (!opt.MAX_THUMBNAIL_SCALE_STABLE) {
+                const initState = transitionParams.initialState === ControlsState.APP_GRID ? opt.MAX_THUMBNAIL_SCALE_APPGRID : opt.MAX_THUMBNAIL_SCALE;
+                const finalState = transitionParams.finalState === ControlsState.APP_GRID ? opt.MAX_THUMBNAIL_SCALE_APPGRID : opt.MAX_THUMBNAIL_SCALE;
+                maxScale = Util.lerp(initState, finalState, transitionParams.progress);
+            }
+
+            wsTmbWidth = width * maxScale;
             let totalTmbSpacing;
             [totalTmbSpacing, wsTmbHeight] = this._workspacesThumbnails.get_preferred_custom_height(wsTmbWidth);
             wsTmbHeight += totalTmbSpacing;
@@ -941,7 +953,6 @@ const ControlsManagerLayoutVertical = {
 
         // Workspaces
         let params = [box, workAreaBox, dashWidth, dashHeight, wsTmbWidth, searchHeight, startY];
-        const transitionParams = this._stateAdjustment.getStateTransitionParams();
 
         // Update cached boxes
         for (const state of Object.values(ControlsState)) {
@@ -1248,6 +1259,9 @@ const ControlsManagerLayoutHorizontal = {
 
         let [searchHeight] = this._searchEntry.get_preferred_height(width);
 
+        const transitionParams = this._stateAdjustment.getStateTransitionParams();
+
+        // Workspace Thumbnails
         let wsTmbWidth = 0;
         let wsTmbHeight = 0;
 
@@ -1255,7 +1269,14 @@ const ControlsManagerLayoutHorizontal = {
             // const { expandFraction } = this._workspacesThumbnails;
             const dashWidthReservation = !opt.WS_TMB_FULL && opt.DASH_VERTICAL ? dashWidth : 0;
 
-            wsTmbHeight = height * opt.MAX_THUMBNAIL_SCALE;
+            let maxScale = opt.MAX_THUMBNAIL_SCALE;
+            if (!opt.MAX_THUMBNAIL_SCALE_STABLE) {
+                const initState = transitionParams.initialState === ControlsState.APP_GRID ? opt.MAX_THUMBNAIL_SCALE_APPGRID : opt.MAX_THUMBNAIL_SCALE;
+                const finalState = transitionParams.finalState === ControlsState.APP_GRID ? opt.MAX_THUMBNAIL_SCALE_APPGRID : opt.MAX_THUMBNAIL_SCALE;
+                maxScale = Util.lerp(initState, finalState, transitionParams.progress);
+            }
+
+            wsTmbHeight = height * maxScale;
             let totalTmbSpacing;
             [totalTmbSpacing, wsTmbWidth] = this._workspacesThumbnails.get_preferred_custom_width(wsTmbHeight);
             wsTmbWidth += totalTmbSpacing;
@@ -1342,7 +1363,6 @@ const ControlsManagerLayoutHorizontal = {
 
         // Workspaces
         let params = [box, workAreaBox, dashWidth, dashHeight, wsTmbHeight, searchHeight, startY];
-        const transitionParams = this._stateAdjustment.getStateTransitionParams();
 
         // Update cached boxes
         for (const state of Object.values(ControlsState)) {
