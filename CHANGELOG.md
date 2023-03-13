@@ -1,7 +1,19 @@
 ## Changelog:
+### v27 (not yet released)
+**Added:**
+- Predefined profiles allow quick configuration of V-Shell to behave like GNOME Shell 3.xx or 40+, make work with th default hot corner more efficient, or make overview behave more like a dock
+- Brightness setting for background wallpaper in overview
+- Hot corner position and hot edge options
+- Window preview option `Always Activate Selected` to switch windows using overview without clicking
+
+**Fixed:**
+- Dash style affects Dash to Dock / Ubuntu Dock background
+- compatibility with Dash to Panel and Hide Top Bar extensions
+- compatibility with Desktop Cube extension (in horizontal mode)
+
 ### v26 (2023-03-08)
 **Added:**
-- V-Shell modules control - allows disable expendable modules if they are in conflict with preferred other extensions, or misbehave.
+- V-Shell modules control - allows disabling expendable modules if they are in conflict with preferred other extensions, or misbehave.
 - Hot corner options
 
 **Fixed:**
