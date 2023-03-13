@@ -72,20 +72,34 @@ const LayoutManagerCommon = {
             this._rightPanelBarrier = null;
         }
 
-        // disable the barrier
-        /* if (!this.primaryMonitor)
+        if (this._leftPanelBarrier) {
+            this._leftPanelBarrier.destroy();
+            this._leftPanelBarrier = null;
+        }
+
+        if (!this.primaryMonitor)
             return;
 
         if (this.panelBox.height) {
             let primary = this.primaryMonitor;
+            if ([0, 1, 3].includes(opt.HOT_CORNER_POSITION)) {
+                this._rightPanelBarrier = new Meta.Barrier({
+                    display: global.display,
+                    x1: primary.x + primary.width, y1: this.panelBox.allocation.y1,
+                    x2: primary.x + primary.width, y2: this.panelBox.allocation.y2,
+                    directions: Meta.BarrierDirection.NEGATIVE_X,
+                });
+            }
 
-            this._rightPanelBarrier = new Meta.Barrier({
-                display: global.display,
-                x1: primary.x + primary.width, y1: opt.PANEL_POSITION_TOP ? primary.y : primary.y + primary.height - this.panelBox.height,
-                x2: primary.x + primary.width, y2: opt.PANEL_POSITION_TOP ? primary.y + this.panelBox.height : primary.y + primary.height,
-                directions: Meta.BarrierDirection.NEGATIVE_X,
-            });
-        } */
+            if ([2, 4].includes(opt.HOT_CORNER_POSITION)) {
+                this._leftPanelBarrier = new Meta.Barrier({
+                    display: global.display,
+                    x1: primary.x, y1: this.panelBox.allocation.y1,
+                    x2: primary.x, y2: this.panelBox.allocation.y2,
+                    directions: Meta.BarrierDirection.POSITIVE_X,
+                });
+            }
+        }
     },
 
     _updateHotCorners() {
@@ -127,7 +141,7 @@ const LayoutManagerCommon = {
 
             let haveCorner = true;
 
-            if (!position && i !== this.primaryIndex) {
+            if (i !== this.primaryIndex) {
                 // Check if we have a top left (right for RTL) corner.
                 // I.e. if there is no monitor directly above or to the left(right)
                 let besideX = this._rtl ? monitor.x + 1 : cornerX - 1;
