@@ -327,7 +327,12 @@ function _updateSettings(settings, key) {
     Main.overview.searchEntry.visible = opt.SHOW_SEARCH_ENTRY;
     St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
     imports.ui.search.MAX_LIST_SEARCH_RESULTS_ROWS = opt.SEARCH_MAX_ROWS;
-    opt.START_Y_OFFSET = opt.PANEL_MODE === 1 && opt.PANEL_POSITION_TOP ? Main.panel.height : 0;
+
+    opt.START_Y_OFFSET = (opt.get('panelModule', true) && opt.PANEL_OVERVIEW_ONLY && opt.PANEL_POSITION_TOP) ||
+        // better to add unnecessary space than to have a panel overlapping other objects
+        _Util.getEnabledExtensions('hidetopbar@mathieu.bidon.ca').length
+        ? Main.panel.height
+        : 0;
 
     if (settings)
         _applySettings(key);

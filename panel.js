@@ -26,7 +26,7 @@ let _styleChangedConId;
 function update(reset = false) {
     opt = Me.imports.settings.opt;
     const moduleEnabled = opt.get('panelModule', true);
-    const defaultSetting = opt.PANEL_MODE && opt.PANEL_POSITION_TOP;
+    const defaultSetting = !opt.PANEL_MODE && opt.PANEL_POSITION_TOP;
 
     // don't even touch this module if disabled
     if (_firstRun && (!moduleEnabled || defaultSetting))

@@ -11,10 +11,11 @@
 
 const { GLib } = imports.gi;
 
+const Config = imports.misc.config;
+
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-const Config = imports.misc.config;
 var   shellVersion = parseFloat(Config.PACKAGE_VERSION);
 
 const Gettext = imports.gettext.domain(Me.metadata['gettext-domain']);
@@ -23,7 +24,6 @@ const _schema = Me.metadata['settings-schema'];
 
 // common instance of Options accessible from all modules
 var opt;
-
 
 var Options = class Options {
     constructor() {
@@ -387,7 +387,7 @@ var Options = class Options {
         this.PANEL_POSITION_TOP = this.get('panelPosition', true) === 0;
         this.PANEL_MODE = this.get('panelVisibility', true);
         this.PANEL_DISABLED = this.PANEL_MODE === 2;
-        this.PANEL_MODE_OVERVIEW_ONLY = this.PANEL_MODE === 1;
+        this.PANEL_OVERVIEW_ONLY = this.PANEL_MODE === 1;
         this.START_Y_OFFSET = 0; // set from main module
         this.FIX_UBUNTU_DOCK = this.get('fixUbuntuDock', true);
 

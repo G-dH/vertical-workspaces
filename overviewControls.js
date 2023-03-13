@@ -654,9 +654,9 @@ const ControlsManagerLayoutVertical = {
 
         switch (state) {
         case ControlsState.HIDDEN:
-            // if PANEL_MODE == 2 (overview only) the affectStruts property stays on false to avoid stuttering
+            // if PANEL_OVERVIEW_ONLY, the affectStruts property is set to false to avoid stuttering
             // therefore we added panel height to startY for the overview allocation,
-            // but here we need to remove the correction since the panel will be in the hidden state
+            // but here we need to remove the correction because the panel will be in the hidden state
             if (opt.START_Y_OFFSET) {
                 let [x, y] = workAreaBox.get_origin();
                 y -= opt.START_Y_OFFSET;
@@ -681,7 +681,7 @@ const ControlsManagerLayoutVertical = {
                 }
                 workspaceBox.set_size(...workAreaBox.get_size());
             } else {
-                // in PANEL_MODE 2 panel doesn't affect workArea height (affectStruts === false), it needs to be compensated
+                // if PANEL_OVERVIEW_ONLY, panel doesn't affect workArea height (affectStruts === false), it is necessary to compensate
                 height = opt.PANEL_POSITION_TOP ? height : height - Main.panel.height;
                 searchHeight = opt.SHOW_SEARCH_ENTRY ? searchHeight : 0;
                 wWidth = width -
@@ -745,8 +745,6 @@ const ControlsManagerLayoutVertical = {
         const { x1: startX } = workAreaBox;
         // const { y1: startY } = workAreaBox;
         let height = workAreaBox.get_height();
-        // in PANEL_MODE 2 panel don't affects workArea height (affectStruts === false), it needs to be compensated
-        height = opt.PANEL_MODE === 2 ? height - Main.panel.height : height;
         const appDisplayBox = new Clutter.ActorBox();
         const { spacing } = this;
 
@@ -801,7 +799,7 @@ const ControlsManagerLayoutVertical = {
         const monitor = Main.layoutManager.findMonitorForActor(this._container);
         const workArea = Main.layoutManager.getWorkAreaForMonitor(monitor.index);
         const startX = workArea.x - monitor.x;
-        // if PANEL_MODE == 2 (overview only) the affectStruts property stays on false to avoid stuttering
+        // if PANEL_OVERVIEW_ONLY, the affectStruts property is set to false to avoid stuttering
         // therefore we need to add panel height to startY
         let startY = workArea.y - monitor.y + opt.START_Y_OFFSET;
 
@@ -991,7 +989,7 @@ const ControlsManagerLayoutVertical = {
         availableHeight -= searchHeight + spacing;
 
         // if (this._appDisplay.visible)... ? Can cause problems
-        params = [box, workAreaBox, searchHeight, dashWidth, dashHeight, wsTmbWidth, startY]; // send startY, can be compensated
+        params = [box, workAreaBox, searchHeight, dashWidth, dashHeight, wsTmbWidth, startY]; // send startY, can be corrected
         let appDisplayBox;
         if (!transitionParams.transitioning) {
             appDisplayBox =
@@ -1054,7 +1052,7 @@ const ControlsManagerLayoutHorizontal = {
 
         switch (state) {
         case ControlsState.HIDDEN:
-            // if PANEL_MODE == 2 (overview only) the affectStruts property stays on false to avoid stuttering
+            // if PANEL_OVERVIEW_ONLY, the affectStruts property is set to false to avoid stuttering
             // therefore we added panel height to startY for the overview allocation,
             // but here we need to remove the correction since the panel will be in the hidden state
             if (opt.START_Y_OFFSET) {
@@ -1081,7 +1079,7 @@ const ControlsManagerLayoutHorizontal = {
                 }
                 workspaceBox.set_size(...workAreaBox.get_size());
             } else {
-                // in PANEL_MODE 2 panel don't affects workArea height (affectStruts === false), it needs to be compensated
+                // if PANEL_OVERVIEW_ONLY, panel doesn't affect workArea height (affectStruts === false), it is necessary to compensate
                 height = opt.PANEL_POSITION_TOP ? height : height - Main.panel.height;
                 searchHeight = opt.SHOW_SEARCH_ENTRY ? searchHeight : 0;
                 wWidth = width -
@@ -1146,8 +1144,6 @@ const ControlsManagerLayoutHorizontal = {
         const { x1: startX } = workAreaBox;
         // const { y1: startY } = workAreaBox;
         let height = workAreaBox.get_height();
-        // in PANEL_MODE 2 panel don't affects workArea height (affectStruts === false), it needs to be compensated
-        height = opt.PANEL_MODE === 2 ? height - Main.panel.height : height;
         const appDisplayBox = new Clutter.ActorBox();
         const { spacing } = this;
 
@@ -1200,7 +1196,7 @@ const ControlsManagerLayoutHorizontal = {
         const monitor = Main.layoutManager.findMonitorForActor(this._container);
         const workArea = Main.layoutManager.getWorkAreaForMonitor(monitor.index);
         const startX = workArea.x - monitor.x;
-        // if PANEL_MODE == 2 (overview only) the affectStruts property stays on false to avoid stuttering
+        // if PANEL_OVERVIEW_ONLY, the affectStruts property is set to false to avoid stuttering
         // therefore we need to add panel height to startY
         let startY = workArea.y - monitor.y + opt.START_Y_OFFSET;
         const workAreaBox = new Clutter.ActorBox();
