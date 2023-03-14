@@ -1038,7 +1038,6 @@ const AppFolderDialog = {
         let [dialogX, dialogY] =
             this.child.get_transformed_position();
 
-        // const monitor = global.display.get_monitor_geometry(global.display.get_primary_monitor());
         const sourceCenterX = sourceX + this._source.width / 2;
         const sourceCenterY = sourceY + this._source.height / 2;
 
@@ -1048,6 +1047,8 @@ const AppFolderDialog = {
         if (!opt.APP_GRID_FOLDER_CENTER) {
             const appDisplay = this._source._parentView;
             dialogTargetX = Math.round(sourceCenterX - this.child.width / 2);
+
+            // keep the dialog in appDisplay area if possible
             dialogTargetX = Math.clamp(
                 dialogTargetX,
                 this.x + appDisplay.x,
@@ -1059,6 +1060,20 @@ const AppFolderDialog = {
                 dialogTargetY,
                 this.y + appDisplay.y,
                 this.y + appDisplay.y + appDisplay.height - this.child.height
+            );
+
+            // or at least in the monitor area
+            const monitor = global.display.get_monitor_geometry(global.display.get_primary_monitor());
+            dialogTargetX = Math.clamp(
+                dialogTargetX,
+                this.x + monitor.x,
+                this.x + monitor.x + monitor.width - this.child.width
+            );
+
+            dialogTargetY = Math.clamp(
+                dialogTargetY,
+                this.y + monitor.y,
+                this.y + monitor.y + monitor.height - this.child.height
             );
         }
         const dialogOffsetX = -dialogX + dialogTargetX;
