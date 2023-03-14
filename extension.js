@@ -280,9 +280,14 @@ function _fixUbuntuDock(activate = true) {
 }
 
 function _updateSettings(settings, key) {
+    if (key?.includes('profile-data')) {
+        const index = key.replace('profile-data-', '');
+        Main.notify(`${Me.metadata.name}`, `Profile ${index} has been saved`);
+    }
     // avoid overload while loading profile - update only once
     // delayed gsettings writes are processed alphabetically
     if (key === 'aaa-loading-profile') {
+        Main.notify(`${Me.metadata.name}`, 'Profile has been loaded');
         if (_loadingProfileTimeoutId)
             GLib.source_remove(_loadingProfileTimeoutId);
         _loadingProfileTimeoutId = GLib.timeout_add(100, 0, () => {

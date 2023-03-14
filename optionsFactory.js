@@ -268,15 +268,67 @@ var ItemFactory = class ItemFactory {
         return btn;
     }
 
-    newPresetButton(callback, profileIndex) {
-        const btn = this.newButton();
-        btn.set({
-            icon_name: 'view-refresh-symbolic',
-        });
+    newPresetButton(opt, profileIndex) {
+        const load = opt.loadProfile.bind(opt);
+        const save = opt.storeProfile.bind(opt);
+        const reset = opt.resetProfile.bind(opt);
 
-        btn.connect('clicked', () => callback(profileIndex));
-        btn._activatable = false;
-        return btn;
+        const box = new Gtk.Box({
+            halign: Gtk.Align.END,
+            valign: Gtk.Align.CENTER,
+            hexpand: true,
+            spacing: 8,
+        });
+        box.is_profile_box = true;
+
+        const entry = new Gtk.Entry({
+            width_chars: 40,
+            halign: Gtk.Align.END,
+            valign: Gtk.Align.CENTER,
+            hexpand: true,
+            xalign: 0,
+        });
+        entry.set_text(opt.get(`profileName${profileIndex}`));
+        entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, 'edit-clear-symbolic');
+        entry.set_icon_activatable(Gtk.EntryIconPosition.SECONDARY, true);
+        entry.connect('icon-press', e => e.set_text(''));
+        entry.connect('changed', e => opt.set(`profileName${profileIndex}`, e.get_text()));
+
+        const resetProfile = this.newButton();
+        resetProfile.set({
+            tooltip_text: _('Reset profile to defaults'),
+            icon_name: 'edit-clear-symbolic',
+            hexpand: false,
+        });
+        resetProfile.connect('clicked', () => {
+            reset(profileIndex);
+            entry.set_text(opt.get(`profileName${profileIndex}`, true));
+        });
+        resetProfile._activatable = false;
+
+        const loadProfile = this.newButton();
+        loadProfile.set({
+            tooltip_text: _('Load profile'),
+            icon_name: 'view-refresh-symbolic',
+            hexpand: false,
+        });
+        loadProfile.connect('clicked', () => load(profileIndex));
+        loadProfile._activatable = false;
+
+        const saveProfile = this.newButton();
+        saveProfile.set({
+            tooltip_text: _('Save current settings into this profile'),
+            icon_name: 'document-save-symbolic',
+            hexpand: false,
+        });
+        saveProfile.connect('clicked', () => save(profileIndex));
+        saveProfile._activatable = false;
+
+        box.append(saveProfile);
+        box.append(resetProfile);
+        box.append(entry);
+        box.append(loadProfile);
+        return box;
     }
 
     newResetButton(callback) {

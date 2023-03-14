@@ -141,6 +141,11 @@ var Options = class Options {
             dashModule: ['boolean', 'dash-module'],
             appFavoritesModule: ['boolean', 'app-favorites-module'],
             appDisplayModule: ['boolean', 'app-display-module'],
+
+            profileName1: ['string', 'profile-name-1'],
+            profileName2: ['string', 'profile-name-2'],
+            profileName3: ['string', 'profile-name-3'],
+            profileName4: ['string', 'profile-name-4'],
         };
         this.cachedOptions = {};
 
@@ -224,23 +229,19 @@ var Options = class Options {
         return gSettings.get_default_value(key).deep_unpack();
     }
 
-    storeProfile(index = 0, name = '') {
+    storeProfile(index) {
         const profile = {};
-        profile['profileName'] = name;
-
         Object.keys(this.options).forEach(v => {
             profile[v] = this.get(v).toString();
         });
 
-        this._gsettings.set_value(`profile-${index}`, new GLib.Variant('a{ss}', profile));
+        this._gsettings.set_value(`profile-data-${index}`, new GLib.Variant('a{ss}', profile));
     }
 
-    loadProfile(index = 0) {
-        const options = this._gsettings.get_value(`profile-${index}`).deep_unpack();
+    loadProfile(index) {
+        const options = this._gsettings.get_value(`profile-data-${index}`).deep_unpack();
         this._gsettings.set_boolean('aaa-loading-profile', !this._gsettings.get_boolean('aaa-loading-profile'));
         for (let o of Object.keys(options)) {
-            if (o === 'profileName')
-                continue;
             const [type] = this.options[o];
             let value = options[o];
             switch (type) {
@@ -256,6 +257,11 @@ var Options = class Options {
 
             this.set(o, value);
         }
+    }
+
+    resetProfile(index) {
+        this._gsettings.reset(`profile-data-${index}`);
+        this._gsettings.reset(`profile-name-${index}`);
     }
 
     _updateSettings() {
