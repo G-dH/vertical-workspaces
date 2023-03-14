@@ -1245,6 +1245,10 @@ const AppIcon = {
             Main.wm.actionMoveWorkspace(appRecentWorkspace);
             Main.overview.dash.showAppsButton.checked = false;
             return;
+        } else if (showWidowsBeforeActivation && opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE && !isShiftPressed && this.app.get_n_windows() > 1) {
+            // expose windows
+            Main.overview._overview._controls._thumbnailsBox._activateThumbnailAtPoint(0, 0, global.get_current_time(), true);
+            return;
         } else if (opt.DASH_SHIFT_CLICK_MV && isShiftPressed && this.app.get_windows().length) {
             this._moveAppToCurrentWorkspace();
             return;
