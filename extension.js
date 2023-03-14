@@ -339,6 +339,12 @@ function _updateSettings(settings, key) {
         }
     }
 
+    // adjust search entry style for OM2
+    if (opt.OVERVIEW_MODE2)
+        Main.overview.searchEntry.add_style_class_name('search-entry-om2');
+    else
+        Main.overview.searchEntry.remove_style_class_name('search-entry-om2');
+
     Main.overview.searchEntry.visible = opt.SHOW_SEARCH_ENTRY;
     St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
     imports.ui.search.MAX_LIST_SEARCH_RESULTS_ROWS = opt.SEARCH_MAX_ROWS;
