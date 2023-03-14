@@ -145,8 +145,7 @@ var Options = class Options {
         this.cachedOptions = {};
 
         this.shellVersion = shellVersion;
-        // this allows to store current settings to profile
-        // this.storeProfile(2);
+        // this.storeProfile(0);
     }
 
     connect(name, callback) {
@@ -269,6 +268,9 @@ var Options = class Options {
         this.DASH_VISIBLE = this.DASH_POSITION !== 4; // 4 - disable
         this.DASH_FOLLOW_RECENT_WIN = false;
 
+        this.DASH_SHOW_WINS_BEFORE = this.get('dashShowWindowsBeforeActivation', true);
+        this.DASH_SHIFT_CLICK_MV = true;
+
         this.DASH_POSITION_ADJUSTMENT = this.get('dashPositionAdjust', true);
         this.DASH_POSITION_ADJUSTMENT = this.DASH_POSITION_ADJUSTMENT * -1 / 100; // range 1 to -1
         this.CENTER_DASH_WS = this.get('centerDashToWs', true);
@@ -306,6 +308,8 @@ var Options = class Options {
 
         this.MAX_THUMBNAIL_SCALE = this.get('wsThumbnailScale', true) / 100;
         this.MAX_THUMBNAIL_SCALE_APPGRID = this.get('wsThumbnailScaleAppGrid', true) / 100;
+        if (this.MAX_THUMBNAIL_SCALE_APPGRID === 0)
+            this.MAX_THUMBNAIL_SCALE_APPGRID = this.MAX_THUMBNAIL_SCALE;
         this.MAX_THUMBNAIL_SCALE_STABLE = this.MAX_THUMBNAIL_SCALE === this.MAX_THUMBNAIL_SCALE_APPGRID;
         this.SEC_MAX_THUMBNAIL_SCALE = this.get('secWsThumbnailScale', true) / 100;
 
@@ -382,9 +386,6 @@ var Options = class Options {
         this.APP_GRID_FOLDER_DEFAULT = this.APP_GRID_FOLDER_ROWS === 3 && this.APP_GRID_FOLDER_COLUMNS === 3;
         this.APP_GRID_ACTIVE_PREVIEW = this.get('appGridActivePreview', true);
         this.APP_GRID_FOLDER_CENTER = this.get('appGridFolderCenter', true);
-
-        this.DASH_SHOW_WINS_BEFORE = this.get('dashShowWindowsBeforeActivation', true);
-        this.DASH_SHIFT_CLICK_MV = true;
 
         this.WINDOW_SEARCH_PROVIDER_ENABLED = this.get('searchWindowsEnable', true);
         this.RECENT_FILES_SEARCH_PROVIDER_ENABLED = this.get('searchRecentFilesEnable', true);

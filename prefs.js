@@ -235,7 +235,7 @@ function _getLayoutOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Thumbnails Max Scale'),
-            _('Adjusts maximum size of the workspace thumbnails (% relative to display width).'),
+            _('Adjusts maximum size of the workspace thumbnails in the overview (% relative to display width).'),
             wsThumbnailScale,
             'wsThumbnailScale'
         )
@@ -243,17 +243,17 @@ function _getLayoutOptionList() {
 
     const wsThumbnailAppScaleAdjustment = new Gtk.Adjustment({
         upper: 30,
-        lower: 5,
+        lower: 0,
         step_increment: 1,
         page_increment: 1,
     });
 
     const wsThumbnailAppScale = itemFactory.newScale(wsThumbnailAppScaleAdjustment);
-    wsThumbnailAppScale.add_mark(13, Gtk.PositionType.TOP, null);
+    wsThumbnailAppScale.add_mark(0, Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Thumbnails Max Scale - App View'),
-            _('Adjusts maximum size of the workspace thumbnails (% relative to display width) in Applications view.'),
+            _('Set to 0 to follow "Workspace Thumbnails Max Scale" scale. Allows you to set different thumbnails scale for the Applications view.'),
             wsThumbnailAppScale,
             'wsThumbnailScaleAppGrid'
         )
@@ -997,7 +997,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Overview Mode'),
-            _('The Expose Windows on Hover mode do not expose the workspace preview windows until the mouse pointer enters any window.\nThe Static Workspace mode does not scale the workspace preview, it only shows Dash and workspace thumbnails over the desktop. Clicking on a workspace thumbnail scales the ws preview and exposes its windows like in the default overview mode.'),
+            _('The Expose Windows on Hover mode does not expose the workspace preview windows until the mouse pointer enters any window.\nThe Static Workspace mode does not scale the workspace preview in the overview, it only shows Dash and workspace thumbnails over the desktop. Clicking on a workspace thumbnail scales the ws preview and exposes its windows like in the default overview mode.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'overviewMode',
@@ -1026,7 +1026,7 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Hot Corner (Install Custom Hot Corners - Extended extension for more options)')
+            _('Hot Corner (Install Custom Hot Corners - Extended for more options)')
         )
     );
 
@@ -1066,7 +1066,7 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Enable Hot Corner in Full-Screen mode'),
+            _('Enable Hot Corner in Full-Screen Mode'),
             _('If you often work with full-screen applications and want the hot corner to be usable.'),
             itemFactory.newSwitch(),
             // itemFactory.newDropDown(),
@@ -1480,14 +1480,14 @@ function _getProfilesOptionList() {
     );
 
     optionList.push(itemFactory.getRowWidget(
-        _('GNOME Shell 3'),
+        _('GNOME Shell 3.xx'),
         _('Vertical layout of GNOME Shell 3.xx'),
         itemFactory.newPresetButton(gOptions.loadProfile.bind(gOptions), 0)
     ));
 
     optionList.push(itemFactory.getRowWidget(
-        _('GS 40'),
-        _('Horizontal layout of GNOME Shell 40+'),
+        _('GNOME Shell 40+'),
+        _('Horizontal layout of GNOME Shell 40+ with bottom hot edge instead of the hot corner'),
         itemFactory.newPresetButton(gOptions.loadProfile.bind(gOptions), 1)
     ));
 
