@@ -61,16 +61,16 @@ function init() {
             optionList: _getBehaviorOptionList(),
         },
         {
-            name: 'profiles',
-            title: _('Profiles'),
-            iconName: 'open-menu-symbolic',
-            optionList: _getProfilesOptionList(),
-        },
-        {
             name: 'misc',
             title: _('Misc'),
             iconName: 'preferences-other-symbolic',
             optionList: _getMiscOptionList(),
+        },
+        {
+            name: 'profiles',
+            title: _('Profiles'),
+            iconName: 'open-menu-symbolic',
+            optionList: _getProfilesOptionList(),
         },
         {
             name: 'about',
@@ -225,7 +225,7 @@ function _getLayoutOptionList() {
 
     const wsThumbnailScaleAdjustment = new Gtk.Adjustment({
         upper: 30,
-        lower: 5,
+        lower: 0,
         step_increment: 1,
         page_increment: 1,
     });
@@ -396,6 +396,95 @@ function _getLayoutOptionList() {
         )
     );
 
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Switcher Popup')
+        )
+    );
+
+    const hAdjustment = new Gtk.Adjustment({
+        lower: 0,
+        upper: 100,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const hScale = itemFactory.newScale(hAdjustment);
+    hScale.add_mark(50, Gtk.PositionType.TOP, null);
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Horizontal Position (% from left)'),
+            _('This popup shows up when you switch workspace using a keyboard shortcut or gesture outside of the overview. You can disable it on the Behavior tab. If you want more control over the popup, try Workspace Switcher Manager extension.'),
+            hScale,
+            'wsSwPopupHPosition'
+        )
+    );
+
+    const vAdjustment = new Gtk.Adjustment({
+        lower: 0,
+        upper: 100,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const vScale = itemFactory.newScale(vAdjustment);
+    vScale.add_mark(50, Gtk.PositionType.TOP, null);
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Vertical Position (% from top)'),
+            null,
+            vScale,
+            'wsSwPopupVPosition'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Notifications and OSD')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Notification Banner Position'),
+            _('Choose where the notification pop-ups appear on the screen.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'notificationPosition',
+            [
+                [_('Top Left'), 0],
+                [_('Top Center'), 1],
+                [_('Top Right (Default)'), 2],
+                [_('Bottom Left'), 3],
+                [_('Bottom Center'), 4],
+                [_('Bottom Right'), 5],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('OSD Popup Position'),
+            _('Choose where the OSD pop-ups (like sound volume level) appear on the screen.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'osdPosition',
+            [
+                [_('Disable'), 0],
+                [_('Top Left'), 1],
+                [_('Top Center'), 2],
+                [_('Top Right'), 3],
+                [_('Center'), 4],
+                [_('Bottom Left'), 5],
+                [_('Bottom Center (Default)'), 6],
+                [_('Bottom Right'), 7],
+            ]
+        )
+    );
+
     optionList.push(
         itemFactory.getRowWidget(
             _('Secondary Monitors')
@@ -482,49 +571,6 @@ function _getLayoutOptionList() {
     );
 
 
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Workspace Switcher Popup')
-        )
-    );
-
-    const hAdjustment = new Gtk.Adjustment({
-        lower: 0,
-        upper: 100,
-        step_increment: 1,
-        page_increment: 1,
-    });
-
-    const hScale = itemFactory.newScale(hAdjustment);
-    hScale.add_mark(50, Gtk.PositionType.TOP, null);
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Horizontal Position (% from left)'),
-            _('This popup shows up when you switch workspace using a keyboard shortcut or gesture outside of the overview. You can disable it on the Behavior tab. If you want more control over the popup, try Workspace Switcher Manager extension.'),
-            hScale,
-            'wsSwPopupHPosition'
-        )
-    );
-
-    const vAdjustment = new Gtk.Adjustment({
-        lower: 0,
-        upper: 100,
-        step_increment: 1,
-        page_increment: 1,
-    });
-
-    const vScale = itemFactory.newScale(vAdjustment);
-    vScale.add_mark(50, Gtk.PositionType.TOP, null);
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Vertical Position (% from top)'),
-            null,
-            vScale,
-            'wsSwPopupVPosition'
-        )
-    );
 
     return optionList;
 }
@@ -727,6 +773,24 @@ function _getAppearanceOptionList() {
             _('Allows you to hide the scaling background of the workspace preview.'),
             itemFactory.newSwitch(),
             'showWsPreviewBg'
+        )
+    );
+
+    const wsPreviewBgRadiusAdjustment = new Gtk.Adjustment({
+        upper: 60,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 5,
+    });
+
+    const wsPreviewBgRadiusSpinButton = itemFactory.newScale(wsPreviewBgRadiusAdjustment);
+    wsPreviewBgRadiusSpinButton.add_mark(30, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workspace Background Corner Radius'),
+            null,
+            wsPreviewBgRadiusSpinButton,
+            'wsPreviewBgRadius'
         )
     );
 
@@ -1077,7 +1141,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Show Ripples Animation'),
-            _('Ripples animation shows up when you trigger hot corner.'),
+            _('The ripple animation is played when the hot corner is activated. Size of the ripples was reduced to be less distracting.'),
             itemFactory.newSwitch(),
             // itemFactory.newDropDown(),
             'hotCornerRipples'
@@ -1419,24 +1483,6 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Notification Banner Position'),
-            _('Choose where the notification pop-ups appear on the screen.'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
-            'notificationPosition',
-            [
-                [_('Top Left'), 0],
-                [_('Top Middle'), 1],
-                [_('Top Right (Default)'), 2],
-                [_('Bottom Left'), 3],
-                [_('Bottom Middle'), 4],
-                [_('Bottom Right'), 5],
-            ]
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
             _('Window Attention Handler'),
             _('When a window requires attention (often a new window), GNOME Shell shows you a notification about it. You can disable popups of these messages (notification will be pushed into the message tray silently) or focus the source window immediately instead.'),
             itemFactory.newComboBox(),
@@ -1474,33 +1520,33 @@ function _getProfilesOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Predefined Profiles'),
+            _('Custom Profiles'),
             _('Sets of settings that can help you with initial customization')
         )
     );
 
     optionList.push(itemFactory.getRowWidget(
-        _('GNOME Shell 3.xx'),
-        _('Vertical layout of GNOME Shell 3.xx'),
-        itemFactory.newPresetButton(gOptions.loadProfile.bind(gOptions), 0)
+        _('Profile 1'),
+        null,
+        itemFactory.newPresetButton(gOptions, 1)
     ));
 
     optionList.push(itemFactory.getRowWidget(
-        _('GNOME Shell 40+'),
-        _('Horizontal layout of GNOME Shell 40+ with bottom hot edge instead of the hot corner'),
-        itemFactory.newPresetButton(gOptions.loadProfile.bind(gOptions), 1)
+        _('Profile 2'),
+        null,
+        itemFactory.newPresetButton(gOptions, 2)
     ));
 
     optionList.push(itemFactory.getRowWidget(
-        _('Hot Corner Centric'),
-        _('Configuration focused on efficiency when using top left hot corner moves workspaces and dash to the top left corner'),
-        itemFactory.newPresetButton(gOptions.loadProfile.bind(gOptions), 2)
+        _('Profile 3'),
+        null,
+        itemFactory.newPresetButton(gOptions, 3)
     ));
 
     optionList.push(itemFactory.getRowWidget(
-        _('Dock Overview'),
-        _('Static overview mode, dash and workspace thumbnails at the bottom, horizontal workspaces, bottom hot edge instead the hot corner'),
-        itemFactory.newPresetButton(gOptions.loadProfile.bind(gOptions), 3)
+        _('Profile 4'),
+        null,
+        itemFactory.newPresetButton(gOptions, 4)
     ));
 
     return optionList;
@@ -1589,6 +1635,15 @@ function _getMiscOptionList() {
             _('Notification position options.'),
             itemFactory.newSwitch(),
             'messageTrayModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('OsdWindow'),
+            _('OSD position options.'),
+            itemFactory.newSwitch(),
+            'osdWindowModule'
         )
     );
 

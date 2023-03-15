@@ -222,3 +222,7 @@ StButton#vhandle {
 	width: 26px;
 	height: 26px;
 }
+
+.osd-window {
+	margin: 4em;
+}

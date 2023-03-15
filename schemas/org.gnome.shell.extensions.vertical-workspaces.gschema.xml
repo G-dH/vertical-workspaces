@@ -91,6 +91,9 @@
     <key type="b" name="show-ws-preview-bg">
       <default>false</default>
     </key>
+    <key type="i" name="ws-preview-bg-radius">
+      <default>30</default>
+    </key>
     <key type="b" name="show-bg-in-overview">
       <default>true</default>
     </key>
@@ -220,6 +223,9 @@
     <key type="i" name="notification-position">
       <default>2</default>
     </key>
+    <key type="i" name="osd-position">
+      <default>6</default>
+    </key>
     <key type="i" name="hot-corner-action">
       <default>1</default>
     </key>
@@ -264,6 +270,9 @@
       <default>true</default>
     </key>
     <key type="b" name="panel-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="osd-window-module">
       <default>true</default>
     </key>
     <key type="b" name="message-tray-module">

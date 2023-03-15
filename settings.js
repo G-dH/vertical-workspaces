@@ -77,6 +77,7 @@ var Options = class Options {
             enablePageShortcuts: ['boolean', 'enable-page-shortcuts'],
             showWsSwitcherBg: ['boolean', 'show-ws-switcher-bg'],
             showWsPreviewBg: ['boolean', 'show-ws-preview-bg'],
+            wsPreviewBgRadius: ['int', 'ws-preview-bg-radius'],
             showBgInOverview: ['boolean', 'show-bg-in-overview'],
             overviewBgBrightness: ['int', 'overview-bg-brightness'],
             overviewBgBlurSigma: ['int', 'overview-bg-blur-sigma'],
@@ -120,6 +121,7 @@ var Options = class Options {
             wsSwPopupMode: ['int', 'ws-sw-popup-mode'],
             favoritesNotify: ['int', 'favorites-notify'],
             notificationPosition: ['int', 'notification-position'],
+            osdPosition: ['int', 'osd-position'],
             hotCornerAction: ['int', 'hot-corner-action'],
             hotCornerPosition: ['int', 'hot-corner-position'],
             hotCornerFullscreen: ['boolean', 'hot-corner-fullscreen'],
@@ -136,6 +138,7 @@ var Options = class Options {
             swipeTrackerModule: ['boolean', 'swipe-tracker-module'],
             searchModule: ['boolean', 'search-module'],
             panelModule: ['boolean', 'panel-module'],
+            osdWindowModule: ['boolean', 'osd-window-module'],
             messageTrayModule: ['boolean', 'message-tray-module'],
             layoutModule: ['boolean', 'layout-module'],
             dashModule: ['boolean', 'dash-module'],
@@ -325,6 +328,7 @@ var Options = class Options {
         this.NUMBER_OF_VISIBLE_NEIGHBORS = Math.round(1 + (100 - this.WS_PREVIEW_SCALE) / 40);
 
         this.SHOW_WS_TMB_BG = this.get('showWsSwitcherBg', true) && this.SHOW_WS_TMB;
+        this.WS_PREVIEW_BG_RADIUS = this.get('wsPreviewBgRadius', true);
         this.SHOW_WS_PREVIEW_BG = this.get('showWsPreviewBg', true);
 
         this.CENTER_APP_GRID = this.get('centerAppGrid', true);
@@ -413,6 +417,8 @@ var Options = class Options {
 
         this.SHOW_FAV_NOTIFICATION = this.get('favoritesNotify', true);
         this.NOTIFICATION_POSITION = this.get('notificationPosition', true);
+
+        this.OSD_POSITION = this.get('osdPosition', true);
 
         this.HOT_CORNER_ACTION = this.get('hotCornerAction', true);
         this.HOT_CORNER_POSITION = this.get('hotCornerPosition', true);

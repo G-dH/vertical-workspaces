@@ -43,6 +43,7 @@ const DashOverride = Me.imports.dash;
 const WindowAttentionHandlerOverride = Me.imports.windowAttentionHandler;
 const AppFavoritesOverride = Me.imports.appFavorites;
 const MessageTrayOverride = Me.imports.messageTray;
+const OsdWindowOverride = Me.imports.osdWindow;
 
 let opt;
 
@@ -217,6 +218,7 @@ function _updateOverrides(reset = false) {
     WindowAttentionHandlerOverride.update(reset);
     AppFavoritesOverride.update(reset);
     MessageTrayOverride.update(reset);
+    OsdWindowOverride.update(reset);
 }
 
 function _onShowingOverview() {
@@ -412,6 +414,9 @@ function _applySettings(key) {
         break;
     case 'notification-position':
         MessageTrayOverride.update();
+        break;
+    case 'osd-position':
+        OsdWindowOverride.update();
         break;
     }
 }

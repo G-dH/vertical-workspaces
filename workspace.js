@@ -25,9 +25,6 @@ let _overrides;
 let opt;
 let _firstRun = true;
 
-const BACKGROUND_CORNER_RADIUS_PIXELS = 40;
-
-
 function update(reset = false) {
     opt = Me.imports.settings.opt;
     const moduleEnabled = opt.get('workspaceModule', true);
@@ -141,7 +138,7 @@ const WorkspaceBackground = {
             return;
 
         const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
-        const cornerRadius = scaleFactor * BACKGROUND_CORNER_RADIUS_PIXELS;
+        const cornerRadius = scaleFactor * opt.WS_PREVIEW_BG_RADIUS;
 
         const backgroundContent = this._bgManager.backgroundActor.content;
         value = value !== false
