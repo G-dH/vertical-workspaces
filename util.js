@@ -339,3 +339,26 @@ function getEnabledExtensions(uuid = '') {
     return extensions;
 }
 
+function getScrollDirection(event) {
+    // scroll wheel provides two types of direction information:
+    // 1. Clutter.ScrollDirection.DOWN / Clutter.ScrollDirection.UP
+    // 2. Clutter.ScrollDirection.SMOOTH + event.get_scroll_delta()
+    // first SMOOTH event returns 0 delta,
+    //  so we need to always read event.direction
+    //  since mouse without smooth scrolling provides exactly one SMOOTH event on one wheel rotation click
+    // on the other hand, under X11, one wheel rotation click sometimes doesn't send direction event, only several SMOOTH events
+    // so we also need to convert the delta to direction
+    let direction = event.get_scroll_direction();
+
+    if (direction !== Clutter.ScrollDirection.SMOOTH)
+        return direction;
+
+    let [, delta] = event.get_scroll_delta();
+
+    if (!delta)
+        return null;
+
+    direction = delta > 0 ? Clutter.ScrollDirection.DOWN : Clutter.ScrollDirection.UP;
+
+    return direction;
+}

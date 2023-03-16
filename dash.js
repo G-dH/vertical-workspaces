@@ -19,6 +19,7 @@ const Dash = imports.ui.dash;
 const PopupMenu = imports.ui.popupMenu;
 const { AppMenu } = imports.ui.appMenu;
 const BoxPointer = imports.ui.boxpointer;
+const AltTab = imports.ui.altTab;
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Util = Me.imports.util;
@@ -82,6 +83,7 @@ function update(reset = false) {
     _overrides.addOverride('DashItemContainer', Dash.DashItemContainer.prototype, DashItemContainerCommon);
     _overrides.addOverride('DashCommon', Dash.Dash.prototype, DashCommon);
     _overrides.addOverride('AppIcon', AppDisplay.AppIcon.prototype, AppIconCommon);
+    _overrides.addOverride('DashIcon', Dash.DashIcon.prototype, DashIconCommon);
 
     if (opt.DASH_VERTICAL) {
         _overrides.addOverride('Dash', Dash.Dash.prototype, DashOverride);
@@ -703,6 +705,108 @@ const DashCommon = {
         }
 
         this._adjustingInProgress = false;
+    },
+};
+
+const DashIconCommon = {
+    after__init() {
+        if (opt.OVERVIEW_MODE2) {
+            this._scrollConId = this.connect('scroll-event', this._onScrollEvent.bind(this));
+            this._leaveConId = this.connect('leave-event', this._onLeaveEvent.bind(this));
+        }
+    },
+
+    _onScrollEvent(source, event) {
+        if (!opt.OVERVIEW_MODE2) {
+            if (this._scrollConId)
+                this.disconnect(this._scrollConId);
+            if (this._leaveConId)
+                this.disconnect(this._leaveConId);
+        }
+        if (opt.WORKSPACE_MODE)
+            return Clutter.EVENT_PROPAGATE;
+
+        // avoid uncontrollable switching if smooth scroll wheel or trackpad is used
+        if (Date.now() - this._lastScroll < 120)
+            return Clutter.EVENT_STOP;
+
+        this._lastScroll = Date.now();
+
+        let direction = Util.getScrollDirection(event);
+        if (direction === Clutter.ScrollDirection.UP)
+            direction = 1;
+        else if (direction === Clutter.ScrollDirection.DOWN)
+            direction = -1;
+        else
+            return Clutter.EVENT_STOP;
+
+        this._switchWindow(direction);
+        return Clutter.EVENT_STOP;
+    },
+
+    _onLeaveEvent() {
+        if (!this._selectedMetaWin || this._ignoreLeave) {
+            this._ignoreLeave = false;
+            return;
+        }
+
+        this._selectedMetaWin = null;
+        this._scrolledWindows = null;
+    },
+
+    _switchWindow(direction, wsOnly = false) {
+        if (!this._scrolledWindows)
+            this._scrolledWindows = this.app.get_windows();
+
+        let windows = this._scrolledWindows;
+
+        if (!windows.length)
+            return;
+
+        // if window selection is in the process, the previewed window must be the current one
+        let currentWin  = this._selectedMetaWin ? this._selectedMetaWin : windows[0];
+
+        const currentIdx = windows.indexOf(currentWin);
+        let targetIdx = currentIdx +  -direction; // reverse the direction to follow MRU ordered list
+
+        if (targetIdx > windows.length - 1)
+            targetIdx = 0;
+        else if (targetIdx < 0)
+            targetIdx = windows.length - 1;
+
+        const metaWin = windows[targetIdx];
+        this._showWindowPreview(metaWin);
+        this._selectedMetaWin = metaWin;
+    },
+
+    _showWindowPreview(metaWin) {
+        if (!metaWin)
+            return;
+        const views = Main.overview._overview.controls._workspacesDisplay._workspacesViews;
+        const viewsIter = [views[0]];
+        // secondary monitors use different structure
+        views.forEach(v => {
+            if (v._workspacesView)
+                viewsIter.push(v._workspacesView);
+        });
+
+        viewsIter.forEach(view => {
+            // if workspaces are on primary monitor only
+            if (!view || !view._workspaces)
+                return;
+
+            view._workspaces.forEach(ws => {
+                ws._windows.forEach(windowPreview => {
+                    if (windowPreview.metaWindow === metaWin) {
+                        if (metaWin.get_workspace() !== global.workspace_manager.get_active_workspace()) {
+                            this._ignoreLeave = true;
+                            Main.wm.actionMoveWorkspace(metaWin.get_workspace());
+                        }
+                        windowPreview.get_parent().set_child_above_sibling(windowPreview, null);
+                    }
+                });
+            });
+        });
     },
 };
 
