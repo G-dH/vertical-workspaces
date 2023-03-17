@@ -13,11 +13,11 @@ const { Gtk, GLib } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me             = ExtensionUtils.getCurrentExtension();
-const Settings       = Me.imports.settings;
+const Settings       = Me.imports.lib.settings;
 
-const ItemFactory = Me.imports.optionsFactory.ItemFactory;
-const AdwPrefs = Me.imports.optionsFactory.AdwPrefs;
-const LegacyPrefs = Me.imports.optionsFactory.LegacyPrefs;
+const ItemFactory = Me.imports.lib.optionsFactory.ItemFactory;
+const AdwPrefs = Me.imports.lib.optionsFactory.AdwPrefs;
+const LegacyPrefs = Me.imports.lib.optionsFactory.LegacyPrefs;
 
 const shellVersion   = Settings.shellVersion;
 
