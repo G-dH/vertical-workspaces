@@ -1156,7 +1156,7 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Dash Icon Click'),
+            _('App Icon - Click Behavior'),
             _('if the app you clicked on has more than one window and the recently used window is not on the current workspace, the overview can switch to the workspace with the recent window.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
@@ -1164,6 +1164,36 @@ function _getBehaviorOptionList() {
             [
                 [_('Activate Last Used Window Immediately'), 0],
                 [_('Switch to Workspace with Recently Used Window'), 1],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('App Icon - Scroll Action'),
+            _('Choose the behavior when scrolling over an app icon. The window cycler works with a list of windows sorted by "Most Recently Used" and grouped by workspaces. Scrolling up cycles through previously used windows on the same workspace and then switches to another workspace, if any.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'dashIconScroll',
+            [
+                [_('Default'), 0],
+                [_('Cycle Through App Windows - Highlight Selected'), 1],
+                [_('Cycle Through App Windows - Highlight App'), 2],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Search Windows Icon - Scroll Action'),
+            _('Choose the behavior when scrolling over the Search Windows icon. The window cycler works with a list of windows sorted by "Most Recently Used" of the current workspace or all workspaces. Scrolling up cycles through previously used windows on the same workspace, or all windows regardless workspace. This option is mainly useful for the static workspace overview mode.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'searchWindowsIconScroll',
+            [
+                [_('Default'), 0],
+                [_('Cycle Through All Windows'), 1],
+                [_('Cycle Through Windows On Current WS'), 2],
             ]
         )
     );

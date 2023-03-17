@@ -187,6 +187,12 @@
     <key type="i" name="dash-show-windows-before-activation">
       <default>1</default>
     </key>
+    <key type="i" name="dash-icon-scroll">
+      <default>1</default>
+    </key>
+    <key type="i" name="search-windows-icon-scroll">
+      <default>1</default>
+    </key>
     <key type="b" name="search-windows-enable">
       <default>true</default>
     </key>

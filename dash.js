@@ -710,105 +710,149 @@ const DashCommon = {
 
 const DashIconCommon = {
     after__init() {
-        if (opt.OVERVIEW_MODE2) {
-            this._scrollConId = this.connect('scroll-event', this._onScrollEvent.bind(this));
-            this._leaveConId = this.connect('leave-event', this._onLeaveEvent.bind(this));
+        if (opt.DASH_ICON_SCROLL) {
+            this._scrollConId = this.connect('scroll-event', _onScrollEvent.bind(this));
+            this._leaveConId = this.connect('leave-event', _onLeaveEvent.bind(this));
         }
-    },
-
-    _onScrollEvent(source, event) {
-        if (!opt.OVERVIEW_MODE2) {
-            if (this._scrollConId)
-                this.disconnect(this._scrollConId);
-            if (this._leaveConId)
-                this.disconnect(this._leaveConId);
-        }
-        if (opt.WORKSPACE_MODE)
-            return Clutter.EVENT_PROPAGATE;
-
-        // avoid uncontrollable switching if smooth scroll wheel or trackpad is used
-        if (Date.now() - this._lastScroll < 120)
-            return Clutter.EVENT_STOP;
-
-        this._lastScroll = Date.now();
-
-        let direction = Util.getScrollDirection(event);
-        if (direction === Clutter.ScrollDirection.UP)
-            direction = 1;
-        else if (direction === Clutter.ScrollDirection.DOWN)
-            direction = -1;
-        else
-            return Clutter.EVENT_STOP;
-
-        this._switchWindow(direction);
-        return Clutter.EVENT_STOP;
-    },
-
-    _onLeaveEvent() {
-        if (!this._selectedMetaWin || this._ignoreLeave) {
-            this._ignoreLeave = false;
-            return;
-        }
-
-        this._selectedMetaWin = null;
-        this._scrolledWindows = null;
-    },
-
-    _switchWindow(direction, wsOnly = false) {
-        if (!this._scrolledWindows)
-            this._scrolledWindows = this.app.get_windows();
-
-        let windows = this._scrolledWindows;
-
-        if (!windows.length)
-            return;
-
-        // if window selection is in the process, the previewed window must be the current one
-        let currentWin  = this._selectedMetaWin ? this._selectedMetaWin : windows[0];
-
-        const currentIdx = windows.indexOf(currentWin);
-        let targetIdx = currentIdx +  -direction; // reverse the direction to follow MRU ordered list
-
-        if (targetIdx > windows.length - 1)
-            targetIdx = 0;
-        else if (targetIdx < 0)
-            targetIdx = windows.length - 1;
-
-        const metaWin = windows[targetIdx];
-        this._showWindowPreview(metaWin);
-        this._selectedMetaWin = metaWin;
-    },
-
-    _showWindowPreview(metaWin) {
-        if (!metaWin)
-            return;
-        const views = Main.overview._overview.controls._workspacesDisplay._workspacesViews;
-        const viewsIter = [views[0]];
-        // secondary monitors use different structure
-        views.forEach(v => {
-            if (v._workspacesView)
-                viewsIter.push(v._workspacesView);
-        });
-
-        viewsIter.forEach(view => {
-            // if workspaces are on primary monitor only
-            if (!view || !view._workspaces)
-                return;
-
-            view._workspaces.forEach(ws => {
-                ws._windows.forEach(windowPreview => {
-                    if (windowPreview.metaWindow === metaWin) {
-                        if (metaWin.get_workspace() !== global.workspace_manager.get_active_workspace()) {
-                            this._ignoreLeave = true;
-                            Main.wm.actionMoveWorkspace(metaWin.get_workspace());
-                        }
-                        windowPreview.get_parent().set_child_above_sibling(windowPreview, null);
-                    }
-                });
-            });
-        });
     },
 };
+
+function _onScrollEvent(source, event) {
+    if ((this.app && !opt.DASH_ICON_SCROLL) || (this._isSearchWindowsIcon && !opt.SEARCH_WINDOWS_ICON_SCROLL)) {
+        if (this._scrollConId)
+            this.disconnect(this._scrollConId);
+        if (this._leaveConId)
+            this.disconnect(this._leaveConId);
+        return Clutter.EVENT_PROPAGATE;
+    }
+
+    let direction = Util.getScrollDirection(event);
+    if (direction === Clutter.ScrollDirection.UP)
+        direction = 1;
+    else if (direction === Clutter.ScrollDirection.DOWN)
+        direction = -1;
+    else
+        return Clutter.EVENT_STOP;
+
+    // avoid uncontrollable switching if smooth scroll wheel or trackpad is used
+    if (this._lastScroll && Date.now() - this._lastScroll < 160)
+        return Clutter.EVENT_STOP;
+
+    this._lastScroll = Date.now();
+
+    _switchWindow.bind(this)(direction);
+    return Clutter.EVENT_STOP;
+}
+
+function _onLeaveEvent() {
+    if (!this._selectedMetaWin || this.has_pointer || this.toggleButton?.has_pointer)
+        return;
+
+    this._selectedPreview._activateSelected = false;
+    this._selectedMetaWin = null;
+    this._scrolledWindows = null;
+    _showWindowPreview.bind(this)(null);
+}
+
+function _switchWindow(direction) {
+    if (!this._scrolledWindows) {
+        // source is app icon
+        if (this.app) {
+            this._scrolledWindows = this.app.get_windows();
+            const wsList = [];
+            this._scrolledWindows.forEach(w => {
+                const ws = w.get_workspace();
+                if (!wsList.includes(ws))
+                    wsList.push(ws);
+            });
+            // sort windows by workspaces in MRU order
+            this._scrolledWindows.sort((a, b) => wsList.indexOf(a.get_workspace()) > wsList.indexOf(b.get_workspace()));
+        // source is Search Windows icon
+        } else if (this._isSearchWindowsIcon) {
+            if (opt.SEARCH_WINDOWS_ICON_SCROLL === 1) // all windows
+                this._scrolledWindows = AltTab.getWindows(null);
+            else
+                this._scrolledWindows = AltTab.getWindows(global.workspace_manager.get_active_workspace());
+        }
+    }
+
+    let windows = this._scrolledWindows;
+
+    if (!windows.length)
+        return;
+
+    // if window selection is in the process, the previewed window must be the current one
+    let currentWin  = this._selectedMetaWin ? this._selectedMetaWin : windows[0];
+
+    const currentIdx = windows.indexOf(currentWin);
+    let targetIdx = currentIdx + direction;
+
+    if (targetIdx > windows.length - 1)
+        targetIdx = 0;
+    else if (targetIdx < 0)
+        targetIdx = windows.length - 1;
+
+    const metaWin = windows[targetIdx];
+    _showWindowPreview.bind(this)(metaWin);
+    this._selectedMetaWin = metaWin;
+}
+
+function _showWindowPreview(metaWin) {
+    const views = Main.overview._overview.controls._workspacesDisplay._workspacesViews;
+    const viewsIter = [views[0]];
+    // secondary monitors use different structure
+    views.forEach(v => {
+        if (v._workspacesView)
+            viewsIter.push(v._workspacesView);
+    });
+
+    viewsIter.forEach(view => {
+        // if workspaces are on primary monitor only
+        if (!view || !view._workspaces)
+            return;
+
+        view._workspaces.forEach(ws => {
+            ws._windows.forEach(windowPreview => {
+                // metaWin === null resets opacity
+                let opacity = metaWin ? 50 : 255;
+                windowPreview._activateSelected = false;
+
+                // minimized windows are invisible if windows are not exposed (WORKSPACE_MODE === 0)
+                if (!windowPreview.opacity)
+                    windowPreview.opacity = 255;
+
+                // app windows set to lower opacity, so they can be recognized
+                if (this._scrolledWindows && this._scrolledWindows.includes(windowPreview.metaWindow)) {
+                    if (opt.DASH_ICON_SCROLL === 2)
+                        opacity = 254;
+                }
+                if (windowPreview.metaWindow === metaWin) {
+                    if (metaWin && metaWin.get_workspace() !== global.workspace_manager.get_active_workspace())
+                        Main.wm.actionMoveWorkspace(metaWin.get_workspace());
+
+                    windowPreview.get_parent().set_child_above_sibling(windowPreview, null);
+
+                    opacity = 255;
+                    this._selectedPreview = windowPreview;
+                    windowPreview._activateSelected = true;
+                }
+
+                // if windows are exposed, highlight selected using opacity
+                if ((opt.OVERVIEW_MODE && opt.WORKSPACE_MODE) || !opt.OVERVIEW_MODE) {
+                    if (metaWin && opacity === 255)
+                        windowPreview.showOverlay(true);
+                    else
+                        windowPreview.hideOverlay(true);
+                    windowPreview.ease({
+                        duration: 200,
+                        opacity,
+                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    });
+                }
+            });
+        });
+    });
+}
 
 const AppIconCommon = {
     activate(button) {
@@ -850,7 +894,9 @@ const AppIconCommon = {
             Main.wm.actionMoveWorkspace(appRecentWorkspace);
             Main.overview.dash.showAppsButton.checked = false;
             return;
-        } else if (showWidowsBeforeActivation && opt.OVERVIEW_MODE2 && !opt.WORKSPACE_MODE && !isShiftPressed && this.app.get_n_windows() > 1) {
+        } else if (this._selectedMetaWin) {
+            this._selectedMetaWin.activate(global.get_current_time());
+        } else if (showWidowsBeforeActivation && opt.OVERVIEW_MODE && !opt.WORKSPACE_MODE && !isShiftPressed && this.app.get_n_windows() > 1) {
             // expose windows
             Main.overview._overview._controls._thumbnailsBox._activateThumbnailAtPoint(0, 0, global.get_current_time(), true);
             return;
@@ -1025,6 +1071,7 @@ class ShowWindowsIcon extends Dash.DashItemContainer {
     _init() {
         super._init();
 
+        this._isSearchWindowsIcon = true;
         this._labelText = _('Search Open Windows (Hotkey: Space)');
         this.toggleButton = new St.Button({
             style_class: 'show-apps',
@@ -1045,6 +1092,12 @@ class ShowWindowsIcon extends Dash.DashItemContainer {
         this.toggleButton._delegate = this;
 
         this.setChild(this.toggleButton);
+
+        if (opt.SEARCH_WINDOWS_ICON_SCROLL) {
+            this.reactive = true;
+            this._scrollConId = this.connect('scroll-event', _onScrollEvent.bind(this));
+            this._leaveConId = this.connect('leave-event', _onLeaveEvent.bind(this));
+        }
     }
 
     _createIcon(size) {

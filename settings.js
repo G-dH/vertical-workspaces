@@ -113,6 +113,8 @@ var Options = class Options {
             searchFuzzy: ['boolean', 'search-fuzzy'],
             searchMaxResultsRows: ['int', 'search-max-results-rows'],
             dashShowWindowsBeforeActivation: ['int', 'dash-show-windows-before-activation'],
+            dashIconScroll: ['int', 'dash-icon-scroll'],
+            searchWindowsIconScroll: ['int', 'search-windows-icon-scroll'],
             panelVisibility: ['int', 'panel-visibility'],
             panelPosition: ['int', 'panel-position'],
             windowAttentionMode: ['int', 'window-attention-mode'],
@@ -278,7 +280,10 @@ var Options = class Options {
         this.DASH_FOLLOW_RECENT_WIN = false;
 
         this.DASH_SHOW_WINS_BEFORE = this.get('dashShowWindowsBeforeActivation', true);
+        this.DASH_ICON_SCROLL = this.get('dashIconScroll', true);
         this.DASH_SHIFT_CLICK_MV = true;
+
+        this.SEARCH_WINDOWS_ICON_SCROLL = this.get('searchWindowsIconScroll', true);
 
         this.DASH_POSITION_ADJUSTMENT = this.get('dashPositionAdjust', true);
         this.DASH_POSITION_ADJUSTMENT = this.DASH_POSITION_ADJUSTMENT * -1 / 100; // range 1 to -1
