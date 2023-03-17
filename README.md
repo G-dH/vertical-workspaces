@@ -1,6 +1,6 @@
 # V-Shell (Vertical Workspaces)
 
-A GNOME Shell extension that lets you customize your desktop interface to suit your workflow and style. You can change the horizontal stacking of workspaces to vertical, but also change layout, content, appearance and behavior of the Shell.
+A GNOME Shell extension that lets you customize your GNOME Shell UX to suit your workflow, whether you like horizontally or vertically stacked workspaces.
 
 Supported GNOME versions: 42, 43, 44 (dropped support for 40, 41  - not tested anymore).
 
@@ -13,10 +13,11 @@ Supported GNOME versions: 42, 43, 44 (dropped support for 40, 41  - not tested a
 ## Features
 - Vertically or horizontally stacked workspaces.
 - Adjust position, orientation, scale and visibility of overview content.
+- Predefined and customizable user profiles.
 - Support for secondary monitors, workspace thumbnails can be placed on the opposite side than on the primary monitor.
 - Static background with adjustable blur effect.
 - 2 overview modes with static windows/workspace. The *Static Workspace* option allows you to use dash like a dock with auto-hide, but with all advantages of the activities overview.
-- Custom Dash icon size and on-click behavior.
+- Custom Dash icon size and on-click/scroll behavior.
 - Dash background transparency and corner radius adjustments.
 - Adjustable app grid icon size, number of columns and rows, content, optional active and draggable icons in folder preview in optional 3x3 grid.
 - Custom search view width, app results icons size and number of result lists rows.
@@ -29,8 +30,10 @@ Supported GNOME versions: 42, 43, 44 (dropped support for 40, 41  - not tested a
 - Recent files search provider with *Ctrl + Space* hotkey.
 - Reorder workspaces in overview using *Shift + Scroll* or *Shift + Page Up/Down*.
 - Adds *Force Quit*, *Close Windows on Current Workspace* and *Move Windows to Current Workspace* items to app icon menu. The latter action can be activated using *Shift + click* on app icon.
-- Change notification banners position.
+- Change notification banners and OSD popups position.
 - Window attention handler options that can focus the attention demanding window immediately or silent its notifications.
+- Optional position of the hot corner that can follow the dash and expand to hot edge.
+
 
 ## Installation
 
