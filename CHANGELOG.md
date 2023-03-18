@@ -1,7 +1,7 @@
 ## Changelog:
 ### v27 (not yet released)
 **Added:**
-- Predefined and customizable profiles for quick configuration changes of V-Shell. o behave like GNOME Shell 3.xx or 40+, make work with th default hot corner more efficient, or make overview behave more like a dock
+- Predefined and customizable profiles for quick configuration changes. Predefined profiles can set the V-Shell to behave like GNOME Shell 3.xx or 40+, make work with the default hot corner more efficient, or make overview behave more like a dock
 - Brightness setting for background wallpaper in overview
 - Hot corner position and hot edge options
 - Window preview option `Always Activate Selected` to switch windows using overview without clicking
