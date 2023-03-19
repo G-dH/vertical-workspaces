@@ -1112,7 +1112,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Hot Corner Position'),
-            _('Choose what corner of your monitors will be active. If you choose "Follow Dash" option, the corner will be placed near the left or top edge of the dash. The last option extends the hot corner barrier to cover the whole ege of the monitor under/beside the Dock.'),
+            _('Choose what corner of your monitors will be active. If you choose "Follow Dash" option, the corner will be placed near the left or top edge of the dash. The last option extends the hot corner barrier to cover the whole ege of the monitor under/beside the Dash.'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'hotCornerPosition',
@@ -1162,8 +1162,8 @@ function _getBehaviorOptionList() {
             // itemFactory.newDropDown(),
             'dashShowWindowsBeforeActivation',
             [
-                [_('Activate Last Used Window Immediately'), 0],
-                [_('Switch to Workspace with Recently Used Window'), 1],
+                [_('Activate App Immediately'), 0],
+                [_('First Switch to Workspace'), 1],
             ]
         )
     );
@@ -1177,8 +1177,8 @@ function _getBehaviorOptionList() {
             'dashIconScroll',
             [
                 [_('Default'), 0],
-                [_('Cycle Through App Windows - Highlight Selected'), 1],
-                [_('Cycle Through App Windows - Highlight App'), 2],
+                [_('Cycle App Windows - Highlight Selected'), 1],
+                [_('Cycle App Windows - Highlight App'), 2],
             ]
         )
     );
@@ -1192,8 +1192,8 @@ function _getBehaviorOptionList() {
             'searchWindowsIconScroll',
             [
                 [_('Default'), 0],
-                [_('Cycle Through All Windows'), 1],
-                [_('Cycle Through Windows On Current WS'), 2],
+                [_('Cycle All Windows'), 1],
+                [_('Cycle Windows On Current WS'), 2],
             ]
         )
     );
@@ -1236,6 +1236,16 @@ function _getBehaviorOptionList() {
         )
     );
 
+    /* optionList.push(
+        itemFactory.getRowWidget(
+            _('App Icon Activates Window Search'),
+            _('If enabled, clicking a window preview icon will activate a search view with the application name as the search term, so you can list all app windows from all workspaces and filter them by typing.'),
+            itemFactory.newSwitch(),
+            // itemFactory.newDropDown(),
+            'windowIconClickSearch'
+        )
+    );*/
+
     optionList.push(
         itemFactory.getRowWidget(
             _('App Grid')
@@ -1277,7 +1287,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Active Icons in Folder Preview'),
-            _('If enabled, clicking an app icon in a folder preview directly opens the app without having to open the folder first. Middle button opens new window of the app without closing the overview, so you can open multiple apps in a row on the current workspace and secondary button opens the folder.'),
+            _('If enabled, icons in the folder review behaves like normal icons, you can activate or even drag them directly, without having to open the folder first. Do not forget to adjust "App Grid Icon Size" and "Max App Folder Icon Grid Size" on the Appearance tab.'),
             itemFactory.newSwitch(),
             // itemFactory.newDropDown(),
             'appGridActivePreview'
