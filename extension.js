@@ -624,16 +624,17 @@ function _updateStaticBackground(bgManager, stateValue, stateAdjustment = null) 
         if (opt.OVERVIEW_BG_BLUR_SIGMA || opt.APP_GRID_BG_BLUR_SIGMA) {
             // reduce number of steps of blur transition to improve performance
             const step = opt.SMOOTH_BLUR_TRANSITIONS ? 0.05 : 0.2;
+            const searchActive = Main.overview._overview.controls._searchController.searchActive;
             const progress = stateValue - (stateValue % step);
-            if (opt.SHOW_WS_PREVIEW_BG && stateValue < 1) { // no need to animate transition, unless appGrid state is involved, static bg is covered by the ws preview bg
+            if (opt.SHOW_WS_PREVIEW_BG && stateValue < 1 && !searchActive) { // no need to animate transition, unless appGrid state is involved, static bg is covered by the ws preview bg
                 if (blurEffect.sigma !== opt.OVERVIEW_BG_BLUR_SIGMA)
                     blurEffect.sigma = opt.OVERVIEW_BG_BLUR_SIGMA;
-            } else if (stateValue < 1) {
+            } else if (stateValue < 1 && !searchActive) {
                 const sigma = Math.round(Util.lerp(0, opt.OVERVIEW_BG_BLUR_SIGMA, progress));
                 if (sigma !== blurEffect.sigma)
                     blurEffect.sigma = sigma;
-            } else if (stateValue > 1  && bgManager._primary) {
-                const sigma = Math.round(Util.lerp(opt.OVERVIEW_BG_BLUR_SIGMA, opt.APP_GRID_BG_BLUR_SIGMA, progress - 1));
+            } else if ((stateValue > 1  && bgManager._primary) || searchActive) {
+                const sigma = Math.round(Util.lerp(opt.OVERVIEW_BG_BLUR_SIGMA, opt.APP_GRID_BG_BLUR_SIGMA, progress % 1));
                 if (sigma !== blurEffect.sigma)
                     blurEffect.sigma = sigma;
             } else if (stateValue === 1) {
