@@ -1105,6 +1105,7 @@ function _getBehaviorOptionList() {
                 [_('Disable'), 0],
                 [_('Overview'), 1],
                 [_('Applications'), 2],
+                [_('Search Windows'), 3],
             ]
         )
     );
