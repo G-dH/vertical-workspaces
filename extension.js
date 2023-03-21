@@ -44,6 +44,7 @@ const WindowAttentionHandlerOverride = Me.imports.lib.windowAttentionHandler;
 const AppFavoritesOverride = Me.imports.lib.appFavorites;
 const MessageTrayOverride = Me.imports.lib.messageTray;
 const OsdWindowOverride = Me.imports.lib.osdWindow;
+const OverlayKey = Me.imports.lib.overlayKey;
 
 let opt;
 
@@ -219,6 +220,7 @@ function _updateOverrides(reset = false) {
     AppFavoritesOverride.update(reset);
     MessageTrayOverride.update(reset);
     OsdWindowOverride.update(reset);
+    OverlayKey.update(reset);
 }
 
 function _onShowingOverview() {
@@ -418,6 +420,8 @@ function _applySettings(key) {
     case 'osd-position':
         OsdWindowOverride.update();
         break;
+    case 'overlay-key':
+        OverlayKey.update();
     }
 }
 

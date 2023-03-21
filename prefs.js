@@ -1081,9 +1081,31 @@ function _getBehaviorOptionList() {
             // itemFactory.newDropDown(),
             'startupState',
             [
-                [_('Overview'), 0],
+                [_('Overview (Default)'), 0],
                 [_('Desktop'), 1],
                 [_('Applications'), 2],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Overlay Key (Super/Windows)')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Double-Press Action'),
+            _('Disable or change behavior when you double-press the Super key. The "Search" options require the respective search provider to be activated.'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'overlayKeySecondary',
+            [
+                [_('Disable'), 0],
+                [_('Applications (Default)'), 1],
+                [_('Search Windows'), 2],
+                [_('Search Recent Files'), 3],
             ]
         )
     );
@@ -1685,6 +1707,15 @@ function _getMiscOptionList() {
             _('OSD position options.'),
             itemFactory.newSwitch(),
             'osdWindowModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('OverlayKey'),
+            _('Overlay (Super/Window) key options.'),
+            itemFactory.newSwitch(),
+            'overlayKeyModule'
         )
     );
 
