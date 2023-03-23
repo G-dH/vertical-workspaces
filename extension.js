@@ -178,6 +178,11 @@ function resetVShell() {
         _showingOverviewConId = 0;
     }
 
+    if (_loadingProfileTimeoutId) {
+        GLib.source_remove(_loadingProfileTimeoutId);
+        _loadingProfileTimeoutId = 0;
+    }
+
     St.Settings.get().slow_down_factor = 1;
 
     Main.overview.dash._background.set_style('');
