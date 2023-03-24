@@ -1,16 +1,27 @@
 ## Changelog:
 ### v27 (not yet released)
 **Added:**
-- Predefined and customizable profiles for quick configuration changes. Predefined profiles can set the V-Shell to behave like GNOME Shell 3.xx or 40+, make work with the default hot corner more efficient, or make overview behave more like a dock
-- Brightness setting for background wallpaper in overview
+- Predefined customizable profiles for quick configuration changes. The predefined profiles can set the V-Shell to behave like GNOME Shell 3.xx or 40+, make work with the default hot corner more efficient, or make overview behave more like a dock.
+- Super key double-press behavior options
+- Brightness setting for background wallpaper in the overview
 - Hot corner position and hot edge options
-- Window preview option `Always Activate Selected` to switch windows using overview without clicking
+- Window preview option *Always Activate Selected* allows to switch windows using the overview without clicking
+- Scrolling over the app icon in the dash can switch between application window previews
+- OSD position options
+- Customizable workspace preview corner radius
+
+**Changed:**
+- Default max result rows changed from 10 to 5
+- Max result rows for recent file search provider set to fixed 20 (these results are not included in the standard search)
 
 **Fixed:**
 - Dash style affects Dash to Dock / Ubuntu Dock background
 - GS44 app grid folders - DND with pinned/favorite/running apps can crash the Shell
 - Compatibility with Dash to Panel and Hide Top Bar extensions
 - Compatibility with Desktop Cube extension (in horizontal mode)
+- Dash icon click behavior options moved from appDisplay to dash module
+- Bg blur transition to the search view
+
 
 ### v26 (2023-03-08)
 **Added:**
