@@ -126,6 +126,13 @@ function activateVShell() {
     // enable it on first hiding from the overview and disconnect the signal
     _showingOverviewConId = Main.overview.connect('showing', _onShowingOverview);
 
+    // switch PageUp/PageDown workspace switcher shortcuts
+    _switchPageShortcuts();
+    _setStaticBackground();
+
+    // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
+    Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
+
     // if Dash to Dock detected force enable "Fix for DtD" option
     if (_Util.dashIsDashToDock()) {
         opt.set('fixUbuntuDock', true);
@@ -133,13 +140,6 @@ function activateVShell() {
     } else {
         _fixUbuntuDock(opt.get('fixUbuntuDock'));
     }
-
-    // switch PageUp/PageDown workspace switcher shortcuts
-    _switchPageShortcuts();
-    _setStaticBackground();
-
-    // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
-    Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
 }
 
 function resetVShell() {
