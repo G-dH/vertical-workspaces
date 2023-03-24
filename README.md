@@ -4,11 +4,10 @@ A GNOME Shell extension that lets you customize your GNOME Shell UX to suit your
 
 Currently supported GNOME versions: 42, 43, 44
 
+[<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
+
 ![Custom Overview Layout](screenshots/screenshot.jpg)
 ![Custom Overview Layout](screenshots/screenshot0.jpg)
-
-
-[<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
 
 ## Features
 - Vertically or horizontally stacked workspaces
