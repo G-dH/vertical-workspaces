@@ -316,6 +316,23 @@ function _getLayoutOptionList() {
         )
     );
 
+    const agPageAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: 50,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const agPageWidthScale = itemFactory.newScale(agPageAdjustment);
+    agPageWidthScale.add_mark(90, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('App Grid Page Width Scale'),
+            _('Adjusts max app grid page width relative to the available space.'),
+            agPageWidthScale,
+            'appGridPageWidthScale'
+        )
+    );
 
     optionList.push(
         itemFactory.getRowWidget(
