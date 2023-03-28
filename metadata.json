@@ -10,5 +10,5 @@
   "url": "https://github.com/G-dH/vertical-workspaces",
   "gettext-domain": "vertical-workspaces",
   "settings-schema": "org.gnome.shell.extensions.vertical-workspaces",
-  "version": 27
+  "version": 28
 }
