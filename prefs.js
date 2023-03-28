@@ -939,6 +939,24 @@ function _getAppearanceOptionList() {
         'appGridFolderRows'
     ));
 
+    const appGridSpacingAdjustment = new Gtk.Adjustment({
+        upper: 60,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 5,
+    });
+
+    const appGridSpacingScale = itemFactory.newScale(appGridSpacingAdjustment);
+    appGridSpacingScale.add_mark(12, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Grid Spacing'),
+            _('Adjusts space between icons.'),
+            appGridSpacingScale,
+            'appGridSpacing'
+        )
+    );
+
     optionList.push(
         itemFactory.getRowWidget(
             _('Search')
