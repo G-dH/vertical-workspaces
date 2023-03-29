@@ -1,5 +1,17 @@
 ## Changelog:
-### v27 (not yet released)
+### v28 (not yet released)
+**Added:**
+- Vertical app folder orientation
+- App Grid - *App Grid Page Width Scale* and *Grid Spacing* options
+- Improved support for scaled display and icon sizing
+
+**Fixed:**
+- Missing default profile names
+- App Grid - *Allow Incomplete Pages* option has no effect
+- App Grid - unnecessary side spacing when dash and workspace thumbnails are horizontal
+
+
+### v27 (2023-03-24)
 **Added:**
 - Predefined customizable profiles for quick configuration changes. The predefined profiles can set the V-Shell to behave like GNOME Shell 3.xx or 40+, make work with the default hot corner more efficient, or make overview behave more like a dock.
 - Super key double-press behavior options
