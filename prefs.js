@@ -1221,6 +1221,7 @@ function _getBehaviorOptionList() {
             [
                 [_('Activate App Immediately'), 0],
                 [_('First Switch to Workspace'), 1],
+                [_('Open New Window (if supported)'), 2],
             ]
         )
     );
