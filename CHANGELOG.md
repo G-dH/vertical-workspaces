@@ -3,12 +3,18 @@
 **Added:**
 - Vertical app folder orientation
 - App Grid - *App Grid Page Width Scale* and *Grid Spacing* options
+- Dash - *Click Behavior* option *Open New Window (if supported)* - switches primary and middle mouse buttons action
 - Improved support for scaled display and icon sizing
 
 **Fixed:**
 - Missing default profile names
 - App Grid - *Allow Incomplete Pages* option has no effect
+- App Grid - adaptive folder grid size can exceed display/dialog size
 - App Grid - unnecessary side spacing when dash and workspace thumbnails are horizontal
+- Workspace switcher popup when switching workspaces using gestures
+
+**Other changes:**
+- Default profiles values
 
 
 ### v27 (2023-03-24)
