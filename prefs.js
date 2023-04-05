@@ -940,7 +940,7 @@ function _getAppearanceOptionList() {
     ));
 
     const appGridSpacingAdjustment = new Gtk.Adjustment({
-        upper: 60,
+        upper: 30,
         lower: 5,
         step_increment: 1,
         page_increment: 5,
@@ -951,7 +951,7 @@ function _getAppearanceOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Grid Spacing'),
-            _('Adjusts space between icons.'),
+            _('Adjusts spacing between icons.'),
             appGridSpacingScale,
             'appGridSpacing'
         )

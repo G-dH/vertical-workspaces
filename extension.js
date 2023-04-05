@@ -78,6 +78,7 @@ function enable() {
         400,
         () => {
             activateVShell();
+            // unlock after modules update to avoid unnecessary appGrid rebuild
             _sessionLockActive = Main.sessionMode.isLocked;
             log(`${Me.metadata.name}: enabled`);
             _enableTimeoutId = 0;
@@ -120,7 +121,7 @@ function activateVShell() {
     _prevDash.dash = dash;
     _prevDash.position = dash.position;
 
-    _monitorsChangedSigId = Main.layoutManager.connect('monitors-changed', () => _resetExtension(3000));
+    _monitorsChangedSigId = Main.layoutManager.connect('monitors-changed', () => _resetExtension(2000));
 
     // static bg animations conflict with startup animation
     // enable it on first hiding from the overview and disconnect the signal
@@ -328,6 +329,12 @@ function _updateSettings(settings, key) {
     if (opt.MAX_ICON_SIZE < 16) {
         opt.MAX_ICON_SIZE = 64;
         opt.set('dashMaxIconSize', 64);
+    }
+
+    const monitorWidth = global.display.get_monitor_geometry(global.display.get_primary_monitor()).width;
+    if (monitorWidth < 1600) {
+        opt.APP_GRID_ICON_SIZE_DEFAULT = opt.APP_GRID_ACTIVE_PREVIEW ? 128 : 64;
+        opt.APP_GRID_FOLDER_ICON_SIZE_DEFAULT = 64;
     }
 
     imports.ui.workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = opt.OVERVIEW_MODE === 1 ? 0.1 : 0.95;
