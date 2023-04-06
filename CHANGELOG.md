@@ -1,7 +1,7 @@
 ## Changelog:
-### v28 (not yet released)
+### v28 (2023-04-06)
 **Added:**
-- Vertical app folder orientation
+- App Grid - vertical app folder orientation
 - App Grid - *App Grid Page Width Scale* and *Grid Spacing* options
 - Dash - *Click Behavior* option *Open New Window (if supported)* - switches primary and middle mouse buttons action
 - Improved support for scaled display and icon sizing
@@ -15,6 +15,7 @@
 
 **Other changes:**
 - Default profiles values
+- Settings window - Profile buttons order
 
 
 ### v27 (2023-03-24)
