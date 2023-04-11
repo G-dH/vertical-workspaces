@@ -1,4 +1,10 @@
 ## Changelog:
+### v29 (2023-04-11)
+**Fixed:**
+- Window switcher/highlighter logic when scrolling over an dash icon
+- Unhandled promise rejection warnings on GS 43+
+
+
 ### v28 (2023-04-06)
 **Added:**
 - App Grid - vertical app folder orientation
