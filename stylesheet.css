@@ -76,7 +76,7 @@
     text-shadow: 1px 1px 3px rgba(33, 33, 33, 1);
 }
 
-/*adjustment for the vertical ws switcher indicator popup*/
+/* adjustment for the vertical ws switcher indicator popup*/
 .ws-switcher-indicator {
 	padding: 3px;
 	margin: 5px;
@@ -87,7 +87,7 @@
 	  margin: 3px;
 }
 
-/*ws thumbnails captions*/
+/* ws thumbnails captions */
 .ws-tmb-label {
 	padding: 2px;
 	color: rgb(255, 255, 255);
@@ -103,7 +103,7 @@
 	border: 0px;
 }
 
-/*app grid page indicatos*/
+/* app grid page indicatos */
 .page-indicator-icon {
 	margin: 10px 10px 10px 10px;
 }
@@ -131,6 +131,8 @@
 
 .search-entry, .search-entry-om2 {
 	padding: 5px;
+	color:white;
+	background-color: rgba(20, 20, 20, 0.7);
 }
 
 .search-entry-om2 {
@@ -168,10 +170,6 @@
 /*reduce spacing between app icons in search results*/
 .grid-search-results {
 	spacing: 2px;
-}
-
-.panel {
-	text-shadow: 1px 1px 3px rgba(33, 33, 33, 1);
 }
 
 /* hide vertical scroll bar, it's distracting in the search results */
@@ -221,4 +219,12 @@ StButton#vhandle {
 
 .osd-window {
 	margin: 4em;
+}
+
+.app-folder-dialog, .edit-folder-button, .folder-name-entry {
+	background-color: rgba(20, 20, 20, 0.2);
+}
+
+.search-section-content {
+	background-color: rgba(20, 20, 20, 0.7);
 }
