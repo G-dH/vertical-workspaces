@@ -1214,7 +1214,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('App Icon - Click Behavior'),
-            _('if the app you clicked on has more than one window and the recently used window is not on the current workspace, the overview can switch to the workspace with the recent window'),
+            _('Choose your preferred behavior when clicking on an app icon. The "Prefer Current Workspace" option opens a new app window if not present in the current workspace. The "Open New Window" option also switches behavior of the middle click to "Activate" since its default behavior is to open a new window'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'dashShowWindowsBeforeActivation',
@@ -1222,6 +1222,7 @@ function _getBehaviorOptionList() {
                 [_('Activate App Immediately'), 0],
                 [_('First Switch to Workspace'), 1],
                 [_('Open New Window (if supported)'), 2],
+                [_('Prefer Current Workspace'), 3],
             ]
         )
     );
