@@ -434,6 +434,9 @@ function _applySettings(key) {
         break;
     case 'overlay-key':
         OverlayKey.update();
+        break;
+    case 'always-activate-selected-window':
+        WindowPreviewOverride.update();
     }
 }
 
