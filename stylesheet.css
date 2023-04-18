@@ -129,10 +129,9 @@
 
 }
 
-.search-entry, .search-entry-om2 {
+.search-entry,
+.search-entry-om2 {
 	padding: 5px;
-	color:white;
-	background-color: rgba(20, 20, 20, 0.7);
 }
 
 .search-entry-om2 {
@@ -155,7 +154,7 @@
 
 /* "no results" / "searching..." text*/
 .search-statustext {
-	background-color: rgba(23,23,23, 0.95);
+	background-color: rgba(20,20,20, 0.7);
 	color: white;
 	margin-top: 50px;
 	padding: 30px;
@@ -163,7 +162,7 @@
 	text-shadow: 0px 0px 5px rgb(23, 23, 23);
 }
 
-.transparent-panel {
+#panel:overview, .transparent-panel {
 	background-color: transparent;
 }
 
@@ -221,10 +220,24 @@ StButton#vhandle {
 	margin: 4em;
 }
 
-.app-folder-dialog, .edit-folder-button, .folder-name-entry {
-	background-color: rgba(20, 20, 20, 0.2);
+.app-folder .overview-icon,
+.app-folder-dialog,
+.edit-folder-button,
+.folder-name-entry {
+	background-color: rgba(200, 200, 200, 0.08);
+}
+
+.app-folder:hover .overview-icon,
+.app-folder:focus .overview-icon {
+	background-color: rgba(200, 200, 200, 0.15);
 }
 
 .search-section-content {
 	background-color: rgba(20, 20, 20, 0.7);
+}
+
+/* reduce quick menu buttons height in GS44 */
+.quick-toggle,
+.quick-menu-toggle {
+	min-height: 40px;
 }
