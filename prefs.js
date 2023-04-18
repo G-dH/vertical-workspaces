@@ -1169,7 +1169,7 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Hot Corner Position'),
-            _('Choose which corner of your monitors will be active. If you choose "Follow Dash" option, the corner will be placed near the left or top edge of the Dash. The last option extends the hot corner barrier to cover the entire ege of the monitor where Dash is located'),
+            _('Choose which corner of your monitors will be active. If you choose "Follow Dash" option, the corner will be placed near the left or top edge of the Dash. The last option extends the hot corner trigger to cover the entire ege of the monitor where Dash is located'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'hotCornerPosition',
@@ -1425,6 +1425,22 @@ function _getBehaviorOptionList() {
             _('Activates the window search provider that adds open windows to the search results. You can search app names and window titles. You can also use "wq//" prefix (also by pressing the Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
             itemFactory.newSwitch(),
             'searchWindowsEnable'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Window Search Provider - Sorting'),
+            _('Choose the window sorting method'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'searchWindowsOrder',
+            [
+                [_('Most Recently Used (MRU)'), 0],
+                [_('MRU - Current Workspace First'), 1],
+                [_('MRU - By Workspaces'), 2],
+                [_('Stable Sequence - By Workspaces'), 3],
+            ]
         )
     );
 
