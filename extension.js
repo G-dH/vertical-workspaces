@@ -15,7 +15,6 @@ const { GLib, Shell, St } = imports.gi;
 const Main = imports.ui.main;
 
 const Util = imports.misc.util;
-const Background = imports.ui.background;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -129,7 +128,7 @@ function activateVShell() {
 
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
-    _setStaticBackground();
+    Main.overview._overview.controls._setBackground();
 
     // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
     Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
@@ -149,6 +148,8 @@ function resetVShell() {
     _fixUbuntuDock(false);
 
     const reset = true;
+
+    Main.overview._overview.controls._setBackground(reset);
     _updateOverrides(reset);
 
     if (_monitorsChangedSigId) {
@@ -160,8 +161,6 @@ function resetVShell() {
 
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
-
-    _setStaticBackground(reset);
 
     // remove any position offsets from dash and ws thumbnails
     if (!_Util.dashNotDefault()) {
@@ -367,6 +366,7 @@ function _updateSettings(settings, key) {
         Main.overview.searchEntry.remove_style_class_name('search-entry-om2');
 
     Main.overview.searchEntry.visible = opt.SHOW_SEARCH_ENTRY;
+    Main.overview.searchEntry.opacity = 255;
     St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
     imports.ui.search.MAX_LIST_SEARCH_RESULTS_ROWS = opt.SEARCH_MAX_ROWS;
 
@@ -386,7 +386,7 @@ function _applySettings(key) {
         return;
     }
 
-    _setStaticBackground();
+    Main.overview._overview.controls._setBackground();
     _updateOverviewTranslations();
     _switchPageShortcuts();
 
@@ -551,117 +551,3 @@ function _updateOverviewTranslations(dash = null, tmbBox = null, searchEntryBin 
     }
     searchEntryBin.translation_y = searchTranslationY;
 }
-
-function _setStaticBackground(reset = false) {
-    _bgManagers.forEach(bg => {
-        Main.overview._overview._controls._stateAdjustment.disconnect(bg._fadeSignal);
-        bg.destroy();
-    });
-
-    _bgManagers = [];
-    // if (!SHOW_BG_IN_OVERVIEW && !SHOW_WS_PREVIEW_BG) the background is used for static transition from wallpaper to empty bg in the overview
-    if (reset || (!opt.SHOW_BG_IN_OVERVIEW && opt.SHOW_WS_PREVIEW_BG))
-        return;
-
-    for (const monitor of Main.layoutManager.monitors) {
-        const bgManager = new Background.BackgroundManager({
-            monitorIndex: monitor.index,
-            container: Main.layoutManager.overviewGroup,
-            vignette: true,
-        });
-
-        bgManager.backgroundActor.content.vignette_sharpness = 0;
-        bgManager.backgroundActor.content.brightness = 1;
-
-
-        bgManager._fadeSignal = Main.overview._overview._controls._stateAdjustment.connect('notify::value', v => {
-            _updateStaticBackground(bgManager, v.value, v);
-        });
-
-        if (monitor.index === global.display.get_primary_monitor()) {
-            bgManager._primary = true;
-            _bgManagers.unshift(bgManager); // primary monitor first
-        } else {
-            bgManager._primary = false;
-            _bgManagers.push(bgManager);
-        }
-    }
-}
-
-function _updateStaticBackground(bgManager, stateValue, stateAdjustment = null) {
-    if (!opt.SHOW_BG_IN_OVERVIEW && !opt.SHOW_WS_PREVIEW_BG) {
-        // if no bg shown in the overview, fade out the wallpaper
-        if (!(opt.OVERVIEW_MODE2 && opt.WORKSPACE_MODE && stateAdjustment?.getStateTransitionParams().finalState === 1))
-            bgManager.backgroundActor.opacity = Util.lerp(255, 0, Math.min(stateValue, 1));
-    } else {
-        let VIGNETTE, BRIGHTNESS, bgValue;
-        if (opt.OVERVIEW_MODE2 && stateValue <= 1 && !opt.WORKSPACE_MODE) {
-            VIGNETTE = 0;
-            BRIGHTNESS = 1;
-            bgValue = stateValue;
-        } else {
-            VIGNETTE = 0.2;
-            BRIGHTNESS = opt.OVERVIEW_BG_BRIGHTNESS;
-            if (opt.OVERVIEW_MODE2 && stateValue > 1 && !opt.WORKSPACE_MODE)
-                bgValue = stateValue - 1;
-            else
-                bgValue = stateValue;
-        }
-
-        let blurEffect = bgManager.backgroundActor.get_effect('blur');
-        if (!blurEffect) {
-            blurEffect = new Shell.BlurEffect({
-                brightness: 1,
-                sigma: 0,
-                mode: Shell.BlurMode.ACTOR,
-            });
-            bgManager.backgroundActor.add_effect_with_name('blur', blurEffect);
-        }
-
-        bgManager.backgroundActor.content.vignette_sharpness = VIGNETTE;
-        bgManager.backgroundActor.content.brightness = BRIGHTNESS;
-
-        let vignetteInit, brightnessInit;// , sigmaInit;
-        if (opt.SHOW_BG_IN_OVERVIEW && opt.SHOW_WS_PREVIEW_BG) {
-            vignetteInit = VIGNETTE;
-            brightnessInit = BRIGHTNESS;
-            // sigmaInit = opt.OVERVIEW_BG_BLUR_SIGMA;
-        } else {
-            vignetteInit = 0;
-            brightnessInit = 1;
-            // sigmaInit = 0;
-        }
-
-        if (opt.OVERVIEW_MODE2) {
-            bgManager.backgroundActor.content.vignette_sharpness = Util.lerp(vignetteInit, VIGNETTE, bgValue);
-            bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, bgValue);
-        } else {
-            bgManager.backgroundActor.content.vignette_sharpness = Util.lerp(vignetteInit, VIGNETTE, Math.min(stateValue, 1));
-            bgManager.backgroundActor.content.brightness = Util.lerp(brightnessInit, BRIGHTNESS, Math.min(stateValue, 1));
-        }
-
-        if (opt.OVERVIEW_BG_BLUR_SIGMA || opt.APP_GRID_BG_BLUR_SIGMA) {
-            // reduce number of steps of blur transition to improve performance
-            const step = opt.SMOOTH_BLUR_TRANSITIONS ? 0.05 : 0.2;
-            const searchActive = Main.overview._overview.controls._searchController.searchActive;
-            const progress = stateValue - (stateValue % step);
-            if (opt.SHOW_WS_PREVIEW_BG && stateValue < 1 && !searchActive) { // no need to animate transition, unless appGrid state is involved, static bg is covered by the ws preview bg
-                if (blurEffect.sigma !== opt.OVERVIEW_BG_BLUR_SIGMA)
-                    blurEffect.sigma = opt.OVERVIEW_BG_BLUR_SIGMA;
-            } else if (stateValue < 1 && !searchActive) {
-                const sigma = Math.round(Util.lerp(0, opt.OVERVIEW_BG_BLUR_SIGMA, progress));
-                if (sigma !== blurEffect.sigma)
-                    blurEffect.sigma = sigma;
-            } else if ((stateValue > 1  && bgManager._primary) || searchActive) {
-                const sigma = Math.round(Util.lerp(opt.OVERVIEW_BG_BLUR_SIGMA, opt.APP_GRID_BG_BLUR_SIGMA, progress % 1));
-                if (sigma !== blurEffect.sigma)
-                    blurEffect.sigma = sigma;
-            } else if (stateValue === 1) {
-                blurEffect.sigma = opt.OVERVIEW_BG_BLUR_SIGMA;
-            } else if (stateValue === 0) {
-                blurEffect.sigma = 0;
-            }
-        }
-    }
-}
-
