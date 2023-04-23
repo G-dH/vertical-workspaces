@@ -43,6 +43,7 @@ const WindowAttentionHandlerOverride = Me.imports.lib.windowAttentionHandler;
 const AppFavoritesOverride = Me.imports.lib.appFavorites;
 const MessageTrayOverride = Me.imports.lib.messageTray;
 const OsdWindowOverride = Me.imports.lib.osdWindow;
+const SearchControllerOverride = Me.imports.lib.searchController;
 const OverlayKey = Me.imports.lib.overlayKey;
 
 let opt;
@@ -71,7 +72,6 @@ function init() {
 function enable() {
     // globally readable flag for other extensions
     global.verticalWorkspacesEnabled = true;
-
     _enableTimeoutId = GLib.timeout_add(
         GLib.PRIORITY_DEFAULT,
         400,
@@ -226,6 +226,7 @@ function _updateOverrides(reset = false) {
     MessageTrayOverride.update(reset);
     OsdWindowOverride.update(reset);
     OverlayKey.update(reset);
+    SearchControllerOverride.update(reset);
 }
 
 function _onShowingOverview() {
@@ -390,11 +391,6 @@ function _applySettings(key) {
     _updateOverviewTranslations();
     _switchPageShortcuts();
 
-    if (key?.includes('app-grid')) {
-        AppDisplayOverride.update();
-        return;
-    }
-
     if (key?.includes('panel'))
         PanelOverride.update();
 
@@ -437,11 +433,19 @@ function _applySettings(key) {
         break;
     case 'always-activate-selected-window':
         WindowPreviewOverride.update();
+        break;
     }
+
+    if (key?.includes('app-grid') ||
+        key === 'show-search-entry' ||
+        key === 'ws-thumbnail-scale' ||
+        key === 'ws-thumbnail-scale-appgrid')
+        AppDisplayOverride.update();
 }
 
 function _switchPageShortcuts() {
-    if (!opt.get('enablePageShortcuts', true))
+    //                                          ignore screen lock
+    if (!opt.get('enablePageShortcuts', true || _sessionLockActive))
         return;
 
     const vertical = global.workspaceManager.layout_rows === -1;

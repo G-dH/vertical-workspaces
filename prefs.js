@@ -1124,6 +1124,20 @@ function _getBehaviorOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Escape Key Behavior'),
+            _('Allows you to close the overview with a single press of the Escape key, even from the application grid or from search, if the search entry field does not have focus'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'overviewEscBehavior',
+            [
+                [_('Default'), 0],
+                [_('Close Overview'), 1],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Overlay Key (Super/Windows)')
         )
     );
@@ -1786,6 +1800,15 @@ function _getMiscOptionList() {
             _('Search view and app search provider customization and options'),
             itemFactory.newSwitch(),
             'searchModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('SearchController'),
+            _('Escape key behavior options in the overview'),
+            itemFactory.newSwitch(),
+            'searchControllerModule'
         )
     );
 
