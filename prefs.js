@@ -776,6 +776,15 @@ function _getAppearanceOptionList() {
         )
     );
 
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Show Close Window Button'),
+            _('Allows you to hide close window button'),
+            itemFactory.newSwitch(),
+            'winPreviewShowCloseButton'
+        )
+    );
+
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -1296,6 +1305,36 @@ function _getBehaviorOptionList() {
     optionList.push(
         itemFactory.getRowWidget(
             _('Window Preview')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Secondary Button Click Action'),
+            _('Allows you to add a secondary mouse click action to the window preview'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'winPreviewSecBtnAction',
+            [
+                [_('Activate DND (Default)'), 0],
+                [_('Close Window'), 1],
+                [_('Search For Same App Windows'), 2],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Middle Button Click Action'),
+            _('Allows you to add a middle mouse click action to the window preview'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'winPreviewMidBtnAction',
+            [
+                [_('Activate DND (Default)'), 0],
+                [_('Close Window'), 1],
+                [_('Search For Same App Windows'), 2],
+            ]
         )
     );
 

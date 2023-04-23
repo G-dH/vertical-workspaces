@@ -256,6 +256,15 @@
     <key type="b" name="always-activate-selected-window">
       <default>false</default>
     </key>
+    <key type="i" name="win-preview-sec-mouse-btn-action">
+      <default>2</default>
+    </key>
+    <key type="i" name="win-preview-mid-mouse-btn-action">
+      <default>0</default>
+    </key>
+    <key type="b" name="win-preview-show-close-button">
+      <default>true</default>
+    </key>
     <key type="b" name="window-icon-click-search">
       <default>true</default>
     </key>
