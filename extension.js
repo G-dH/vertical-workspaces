@@ -10,7 +10,7 @@
 
 'use strict';
 
-const { GLib, Shell, St } = imports.gi;
+const { GLib, Shell, St, Clutter } = imports.gi;
 
 const Main = imports.ui.main;
 
@@ -20,6 +20,9 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Settings = Me.imports.lib.settings;
 const _Util = Me.imports.lib.util;
+
+// gettext
+const _  = Settings._;
 
 const WindowSearchProvider = Me.imports.lib.windowSearchProvider;
 const RecentFilesSearchProvider = Me.imports.lib.recentFilesSearchProvider;
@@ -60,6 +63,7 @@ let _loadingProfileTimeoutId;
 let _watchDockSigId;
 
 let _resetTimeoutId;
+let _statusLabelTimeoutId;
 
 let _enableTimeoutId = 0;
 let _sessionLockActive = false;
@@ -108,6 +112,8 @@ function activateVShell() {
 
     Settings.opt = new Settings.Options();
     opt = Settings.opt;
+
+    Main.showStatusMessage = showStatusMessage;
 
     _updateSettings();
 
@@ -187,11 +193,14 @@ function resetVShell() {
 
     Main.overview.dash._background.set_style('');
 
+    showStatusMessage(false);
+
     opt.destroy();
     opt = null;
 }
 
 function _updateOverrides(reset = false) {
+    showStatusMessage();
     WorkspacesViewOverride.update(reset);
     WorkspaceThumbnailOverride.update(reset);
     OverviewOverride.update(reset);
@@ -219,6 +228,8 @@ function _updateOverrides(reset = false) {
         // IconGrid needs to be patched before AppDisplay
         IconGridOverride.update(reset);
         AppDisplayOverride.update(reset);
+    } else {
+        showStatusMessage(false);
     }
 
     WindowAttentionHandlerOverride.update(reset);
@@ -255,12 +266,16 @@ function _resetExtension(timeout = 200) {
             if (!timeout && _prevDash.dash && dash !== _prevDash.dash) { // !timeout means DtD workaround callback
                 _prevDash.dash = dash;
                 log(`[${Me.metadata.name}]: Dash has been replaced, resetting extension...`);
+                Main._resetInProgress = true;
                 resetVShell();
                 activateVShell();
+                Main._resetInProgress = false;
             } else if (timeout) {
                 log(`[${Me.metadata.name}]: resetting extension...`);
+                Main._resetInProgress = true;
                 resetVShell();
                 activateVShell();
+                Main._resetInProgress = false;
             }
             _resetTimeoutId = 0;
             return GLib.SOURCE_REMOVE;
@@ -290,6 +305,10 @@ function _fixUbuntuDock(activate = true) {
 }
 
 function _updateSettings(settings, key) {
+    if (settings && key?.includes('app-grid') && opt.get('appDisplayModule'))
+        showStatusMessage();
+
+
     if (key?.includes('profile-data')) {
         const index = key.replace('profile-data-', '');
         Main.notify(`${Me.metadata.name}`, `Profile ${index} has been saved`);
@@ -333,7 +352,7 @@ function _updateSettings(settings, key) {
 
     const monitorWidth = global.display.get_monitor_geometry(global.display.get_primary_monitor()).width;
     if (monitorWidth < 1600) {
-        opt.APP_GRID_ICON_SIZE_DEFAULT = opt.APP_GRID_ACTIVE_PREVIEW ? 128 : 64;
+        opt.APP_GRID_ICON_SIZE_DEFAULT = opt.APP_GRID_ACTIVE_PREVIEW && !opt.APP_GRID_ORDER ? 128 : 64;
         opt.APP_GRID_FOLDER_ICON_SIZE_DEFAULT = 64;
     }
 
@@ -554,4 +573,47 @@ function _updateOverviewTranslations(dash = null, tmbBox = null, searchEntryBin 
         dash.translation_y = dashTranslationY;
     }
     searchEntryBin.translation_y = searchTranslationY;
+}
+
+// Status dialog that appears during updating V-Shell configuration and blocks inputs
+function showStatusMessage(show = true) {
+    if (Main._resetInProgress)
+        return;
+
+    if (Main.overview._vShellMessageTimeoutId) {
+        GLib.source_remove(Main._vShellMessageTimeoutId);
+        Main.overview._vShellMessageTimeoutId = 0;
+    }
+
+    if (Main._vShellStatusMessage && !show) {
+        Main._vShellStatusMessage.close();
+        Main._vShellStatusMessage.destroy();
+        Main._vShellStatusMessage = null;
+    }
+
+    if (!show)
+        return;
+
+    if (!Main._vShellStatusMessage) {
+        const sm = new Main.RestartMessage(_('Updating V-Shell configuration...'));
+        sm.set_style('background-color: rgba(0,0,0,0.3);');
+        sm.open();
+        Main._vShellStatusMessage = sm;
+    }
+
+    Main._vShellMessageTimeoutId = GLib.timeout_add_seconds(
+        GLib.PRIORITY_DEFAULT,
+        5,
+        () => {
+            if (Main._vShellStatusMessage) {
+                Main._vShellStatusMessage.close();
+                Main._vShellStatusMessage.destroy();
+                Main._vShellStatusMessage = null;
+                Main._resetInProgress = false;
+            }
+
+            Main._vShellMessageTimeoutId = 0;
+            return GLib.SOURCE_REMOVE;
+        }
+    );
 }
