@@ -1373,8 +1373,8 @@ function _getBehaviorOptionList() {
             'appGridOrder',
             [
                 [_('Custom (Default)'), 0],
-                [_('Alphabet'), 1],
-                [_('Usage'), 2],
+                [_('Alphabet - No Folders'), 1],
+                [_('Usage - No Folders'), 2],
             ]
         )
     );
