@@ -1,4 +1,27 @@
 ## Changelog:
+### v30 (not yet released)
+**Added:**
+- Dash option - Click Behavior: *Prefer Current Workspace* - opens a new window if app not present on the active workspace
+- Window search provider sorting options
+- Esc key behavior options
+- Window preview - middle and secondary mouse button behavior options, close button can be hidden
+
+**Fixed:**
+- Dash icon scroll action conflicts with Dash to Dock
+- Open new window by middle click on dash icon doesn't work
+- Dash icon label can extend to the adjacent display
+- WindowPreview module not updated when "always-activate-selected-window" changed
+- App folder dialog position if secondary monitor connected
+- App folder dialog sizing and positioning
+- Background brightness in search view reduced independently to avoid unreadable text and consistent style
+
+**Other changes:**
+- Transparent app folder dialogs with faded app grid
+- Search view transparency and fixed background brightness in classic overview
+- Search view in static workspace overview with full opacity and close to default style
+- App grid refactor
+
+
 ### v29 (2023-04-11)
 **Fixed:**
 - Window switcher/highlighter logic when scrolling over an dash icon
