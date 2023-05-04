@@ -705,6 +705,15 @@ function _getAppearanceOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Dash Background GNOME 3 Style'),
+            _('Background of the vertically oriented dash will imitate the GNOME 3 style'),
+            itemFactory.newSwitch(),
+            'dashBgGS3Style'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Workspace Thumbnails')
         )
     );
@@ -919,7 +928,7 @@ function _getAppearanceOptionList() {
     ));
 
     const folderColumnsAdjustment = new Gtk.Adjustment({
-        upper: 8,
+        upper: 15,
         lower: 0,
         step_increment: 1,
         page_increment: 1,
@@ -934,7 +943,7 @@ function _getAppearanceOptionList() {
     ));
 
     const folderRowsAdjustment = new Gtk.Adjustment({
-        upper: 8,
+        upper: 15,
         lower: 0,
         step_increment: 1,
         page_increment: 1,
