@@ -5,6 +5,12 @@
 
 /* General dash */
 #dash.vertical {
+	margin-right: 6px;
+	margin-left: 6px;
+	padding: 0px 0;
+}
+
+#dash.vertical-gs3 {
 	margin-right: 0px;
 	margin-left: 0px;
 	padding: 0px 0;
@@ -40,24 +46,26 @@
 }
 
 #dash.vertical .dash-background {
-	margin: 0;
+	margin: 0px;
 }
 
 #dash.vertical-left .dash-background {
 	border-radius: 0 18px 18px 0;
 	border-left: 0px;
 	padding: 8px 12px 8px 4px;
+	margin-left: 0;
 }
 
 #dash.vertical-right .dash-background {
 	border-radius: 18px 0 0 18px;
 	border-right: 0px;
 	padding: 8px 4px 8px 12px;
+	margin-right: 0;
 }
 
 /* default horizontal dash */
 .v-shell-dash-background {
-	padding: 8px;
+	padding: 10px;
 }
 
 .app-well-app {
@@ -179,9 +187,9 @@
 	background-color: rgb(40, 40, 40);
 }
 
-#panel:overview, .transparent-panel {
+/*#panel:overview, .transparent-panel {
 	background-color: transparent;
-}
+}*/
 
 /*reduce spacing between app icons in search results*/
 .grid-search-results {

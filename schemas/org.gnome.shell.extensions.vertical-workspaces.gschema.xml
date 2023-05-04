@@ -82,6 +82,9 @@
     <key type="i" name="dash-bg-radius">
       <default>17</default>
     </key>
+    <key type="b" name="dash-bg-gs3-style">
+      <default>true</default>
+    </key>
     <key type="b" name="enable-page-shortcuts">
       <default>false</default>
     </key>
@@ -104,7 +107,7 @@
       <default>40</default>
     </key>
     <key type="i" name="overview-bg-brightness">
-      <default>95</default>
+      <default>75</default>
     </key>
     <key type="b" name="smooth-blur-transitions">
       <default>false</default>

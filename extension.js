@@ -308,15 +308,9 @@ function _updateSettings(settings, key) {
     if (settings && key?.includes('app-grid') && opt.get('appDisplayModule'))
         showStatusMessage();
 
-
-    if (key?.includes('profile-data')) {
-        const index = key.replace('profile-data-', '');
-        Main.notify(`${Me.metadata.name}`, `Profile ${index} has been saved`);
-    }
     // avoid overload while loading profile - update only once
     // delayed gsettings writes are processed alphabetically
     if (key === 'aaa-loading-profile') {
-        Main.notify(`${Me.metadata.name}`, 'Profile has been loaded');
         if (_loadingProfileTimeoutId)
             GLib.source_remove(_loadingProfileTimeoutId);
         _loadingProfileTimeoutId = GLib.timeout_add(100, 0, () => {
@@ -327,6 +321,11 @@ function _updateSettings(settings, key) {
     }
     if (_loadingProfileTimeoutId)
         return;
+
+    if (key?.includes('profile-data')) {
+        const index = key.replace('profile-data-', '');
+        Main.notify(`${Me.metadata.name}`, `Profile ${index} has been updated`);
+    }
 
     opt._updateSettings();
 
@@ -360,15 +359,15 @@ function _updateSettings(settings, key) {
 
     if (!_Util.dashIsDashToDock()) { // DtD has its own opacity control
         Main.overview.dash._background.opacity = Math.round(opt.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
-        const radius = opt.get('dashBgRadius', true);
+        let radius = opt.get('dashBgRadius', true);
         if (radius) {
             let style;
             switch (opt.DASH_POSITION) {
             case 1:
-                style = `border-radius: ${radius}px 0 0 ${radius}px;`;
+                style = opt.DASH_BG_GS3_STYLE ? `border-radius: ${radius}px 0 0 ${radius}px;` : `border-radius: ${radius}px;`;
                 break;
             case 3:
-                style = `border-radius: 0 ${radius}px ${radius}px 0;`;
+                style = opt.DASH_BG_GS3_STYLE ? `border-radius: 0 ${radius}px ${radius}px 0;` : `border-radius: ${radius}px;`;
                 break;
             default:
                 style = `border-radius: ${radius}px;`;
