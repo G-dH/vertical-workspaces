@@ -778,10 +778,16 @@ function _getAppearanceOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Always Show Window Titles'),
-            _('All windows on the workspace preview will still show their titles, not only the one with the mouse pointer'),
-            itemFactory.newSwitch(),
-            'alwaysShowWinTitles'
+            _('Window Title Position / Visibility'),
+            _('Sets the position of the window title that is displayed when the mouse hovers over the window or can always be visible'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'winTitlePosition',
+            [
+                [_('Inside Window'), 0],
+                [_('Inside Window Always Visible'), 1],
+                [_('Below Window (Default)'), 2],
+            ]
         )
     );
 

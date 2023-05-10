@@ -133,8 +133,8 @@
     <key type="i" name="win-preview-icon-size">
       <default>1</default>
     </key>
-    <key type="b" name="always-show-win-titles">
-      <default>true</default>
+    <key type="i" name="win-title-position">
+      <default>0</default>
     </key>
     <key type="i" name="startup-state">
       <default>2</default>
