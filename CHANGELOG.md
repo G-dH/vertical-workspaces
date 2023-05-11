@@ -5,6 +5,9 @@
 - Window search provider sorting options
 - Esc key behavior options
 - Window preview - middle and secondary mouse button behavior options, close button can be hidden
+- GNOME 3 vertical dash style is now optional
+- Window preview title position option
+- Dutch translation by @Vistaus
 
 **Fixed:**
 - Dash icon scroll action conflicts with Dash to Dock
@@ -14,9 +17,15 @@
 - App folder dialog position if secondary monitor connected
 - App folder dialog sizing and positioning
 - Background brightness in search view reduced independently to avoid unreadable text and consistent style
+- Compatibility with Burn My Windows - freeze after screen unlocked, or extensions re-enabled
+- Window and Recent files search providers modes not isolated well from results of other providers
+- Recent file search provider results sorting
+- App grid icons with multi-line label move on hover when label expands
+- Search view animation skipped id triggered from app grid state
+
 
 **Other changes:**
-- Transparent app folder dialogs with faded app grid
+- Transparent app folder dialogs with faded main app grid
 - Search view transparency and fixed background brightness in classic overview
 - Search view in static workspace overview with full opacity and close to default style
 - App grid refactor
