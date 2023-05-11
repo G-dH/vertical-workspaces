@@ -68,11 +68,6 @@
 	padding: 10px;
 }
 
-.app-well-app {
-	margin-left: 1px;
-	margin-right: 1px;
-}
-
 .app-well-app-running-dot {
 	margin-bottom: 6px;
 	width: 16px;
@@ -81,7 +76,7 @@
 
 /* add shadow to the app grid app label to be readable if it overlaps light icon below */
 .overview-icon-with-label {
-    text-shadow: 1px 1px 3px rgba(33, 33, 33, 1);
+    text-shadow: 1px 1px 3px rgba(33, 33, 33, 0.5);
 }
 
 /* adjustment for the vertical ws switcher indicator popup*/
@@ -187,11 +182,11 @@
 	background-color: rgb(40, 40, 40);
 }
 
-/*#panel:overview, .transparent-panel {
+#panel:overview, .transparent-panel {
 	background-color: transparent;
-}*/
+}
 
-/*reduce spacing between app icons in search results*/
+/* reduce spacing between app icons in search results */
 .grid-search-results {
 	spacing: 4px;
 }
