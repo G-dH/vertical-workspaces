@@ -266,16 +266,16 @@ function _resetExtension(timeout = 200) {
             if (!timeout && _prevDash.dash && dash !== _prevDash.dash) { // !timeout means DtD workaround callback
                 _prevDash.dash = dash;
                 log(`[${Me.metadata.name}]: Dash has been replaced, resetting extension...`);
-                Main._resetInProgress = true;
+                Settings._resetInProgress = true;
                 resetVShell();
                 activateVShell();
-                Main._resetInProgress = false;
+                Settings._resetInProgress = false;
             } else if (timeout) {
                 log(`[${Me.metadata.name}]: resetting extension...`);
-                Main._resetInProgress = true;
+                Settings._resetInProgress = true;
                 resetVShell();
                 activateVShell();
-                Main._resetInProgress = false;
+                Settings._resetInProgress = false;
             }
             _resetTimeoutId = 0;
             return GLib.SOURCE_REMOVE;
@@ -576,42 +576,42 @@ function _updateOverviewTranslations(dash = null, tmbBox = null, searchEntryBin 
 
 // Status dialog that appears during updating V-Shell configuration and blocks inputs
 function showStatusMessage(show = true) {
-    if (Main._resetInProgress)
+    if (Settings._resetInProgress)
         return;
 
     if (Main.overview._vShellMessageTimeoutId) {
-        GLib.source_remove(Main._vShellMessageTimeoutId);
+        GLib.source_remove(Settings._vShellMessageTimeoutId);
         Main.overview._vShellMessageTimeoutId = 0;
     }
 
-    if (Main._vShellStatusMessage && !show) {
-        Main._vShellStatusMessage.close();
-        Main._vShellStatusMessage.destroy();
-        Main._vShellStatusMessage = null;
+    if (Settings._vShellStatusMessage && !show) {
+        Settings._vShellStatusMessage.close();
+        Settings._vShellStatusMessage.destroy();
+        Settings._vShellStatusMessage = null;
     }
 
     if (!show)
         return;
 
-    if (!Main._vShellStatusMessage) {
+    if (!Settings._vShellStatusMessage) {
         const sm = new Main.RestartMessage(_('Updating V-Shell configuration...'));
         sm.set_style('background-color: rgba(0,0,0,0.3);');
         sm.open();
-        Main._vShellStatusMessage = sm;
+        Settings._vShellStatusMessage = sm;
     }
 
-    Main._vShellMessageTimeoutId = GLib.timeout_add_seconds(
+    Settings._vShellMessageTimeoutId = GLib.timeout_add_seconds(
         GLib.PRIORITY_DEFAULT,
         5,
         () => {
-            if (Main._vShellStatusMessage) {
-                Main._vShellStatusMessage.close();
-                Main._vShellStatusMessage.destroy();
-                Main._vShellStatusMessage = null;
-                Main._resetInProgress = false;
+            if (Settings._vShellStatusMessage) {
+                Settings._vShellStatusMessage.close();
+                Settings._vShellStatusMessage.destroy();
+                Settings._vShellStatusMessage = null;
+                Settings._resetInProgress = false;
             }
 
-            Main._vShellMessageTimeoutId = 0;
+            Settings._vShellMessageTimeoutId = 0;
             return GLib.SOURCE_REMOVE;
         }
     );
