@@ -586,7 +586,14 @@ function _getLayoutOptionList() {
         )
     );
 
-
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Move Panel to Second Monitor'),
+            _('Moves the top panel to the second monitor'),
+            itemFactory.newSwitch(),
+            'secPanelShift'
+        )
+    );
 
     return optionList;
 }

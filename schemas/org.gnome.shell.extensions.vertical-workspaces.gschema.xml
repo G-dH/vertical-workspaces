@@ -22,6 +22,9 @@
     <key type="b" name="secondary-ws-preview-shift">
       <default>false</default>
     </key>
+        <key type="b" name="secondary-panel-shift">
+      <default>false</default>
+    </key>
     <key type="i" name="dash-position">
       <default>0</default>
     </key>
