@@ -31,69 +31,68 @@ try {
 } catch (e) {}
 
 let gOptions;
-let pageList;
-let itemFactory;
 
 function init() {
     ExtensionUtils.initTranslations(Me.metadata['gettext-domain']);
     gOptions = new Settings.Options();
+}
 
-    itemFactory = new ItemFactory(gOptions);
-
-    pageList = [
+function _getPageList() {
+    const itemFactory = new ItemFactory(gOptions);
+    const pageList = [
+        {
+            name: 'profiles',
+            title: _('Profiles'),
+            iconName: 'open-menu-symbolic',
+            optionList: _getProfilesOptionList(itemFactory),
+        },
         {
             name: 'layout',
             title: _('Layout'),
             iconName: 'view-grid-symbolic',
-            optionList: _getLayoutOptionList(),
+            optionList: _getLayoutOptionList(itemFactory),
         },
         {
             name: 'appearance',
             title: _('Appearance'),
             iconName: 'view-reveal-symbolic',
-            optionList: _getAppearanceOptionList(),
+            optionList: _getAppearanceOptionList(itemFactory),
         },
         {
             name: 'behavior',
             title: _('Behavior'),
             iconName: 'system-run-symbolic',
-            optionList: _getBehaviorOptionList(),
+            optionList: _getBehaviorOptionList(itemFactory),
         },
         {
             name: 'misc',
             title: _('Misc'),
             iconName: 'preferences-other-symbolic',
-            optionList: _getMiscOptionList(),
-        },
-        {
-            name: 'profiles',
-            title: _('Profiles'),
-            iconName: 'open-menu-symbolic',
-            optionList: _getProfilesOptionList(),
+            optionList: _getMiscOptionList(itemFactory),
         },
         {
             name: 'about',
             title: _('About'),
             iconName: 'preferences-system-details-symbolic',
-            optionList: _getAboutOptionList(),
+            optionList: _getAboutOptionList(itemFactory),
         },
     ];
+
+    return pageList;
 }
 
 function fillPreferencesWindow(window) {
-    window = new AdwPrefs(gOptions).getFilledWindow(window, pageList);
+    window = new AdwPrefs(gOptions).getFilledWindow(window, _getPageList());
     window.connect('close-request', () => {
         gOptions.destroy();
         gOptions = null;
-        itemFactory = null;
-        pageList = null;
     });
 
     window.set_default_size(800, 800);
 }
 
 function buildPrefsWidget() {
-    const prefsWidget = new LegacyPrefs(gOptions).getPrefsWidget(pageList);
+    const prefsWidget = new LegacyPrefs(gOptions).getPrefsWidget(_getPageList());
 
     prefsWidget.connect('realize', widget => {
         const window = widget.get_root ? widget.get_root() : widget.get_toplevel();
@@ -114,7 +113,7 @@ function buildPrefsWidget() {
 }
 
 // ////////////////////////////////////////////////////////////////////
-function _getLayoutOptionList() {
+function _getLayoutOptionList(itemFactory) {
     const optionList = [];
     // options item format:
     // [text, caption, widget, settings-variable, options for combo]
@@ -166,6 +165,51 @@ function _getLayoutOptionList() {
             _('Adjusts the position of the dash on the axis given by the orientation of the workspaces'),
             dashPositionScale,
             'dashPositionAdjust'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Show Apps Icon Position'),
+            _('Sets the position of the "Show Applications" icon in the Dash'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'showAppsIconPosition',
+            [
+                [_('Hide'), 2],
+                [_('Start'), 0],
+                [_('End'), 1],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Open Windows Icon Position'),
+            _('Allows to add "Search Open Windows" icon into Dash (if window search provider enabled on the Behavior tab) so you can directly toggle window search provider results. You can also use the secondary mouse button click on the Show Apps Icon, or the Space hotkey'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'dashShowWindowsIcon',
+            [
+                [_('Hide'), 0],
+                [_('Start'), 1],
+                [_('End'), 2],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Recent Files Icon Position'),
+            _('Allows to add "Search Recent Files" icon into Dash (if recent files search provider enabled on the Behavior tab) so you can directly toggle recent files search provider results. You can also use Ctrl + Space hotkey'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'dashShowRecentFilesIcon',
+            [
+                [_('Hide'), 0],
+                [_('Start'), 1],
+                [_('End'), 2],
+            ]
         )
     );
 
@@ -591,7 +635,7 @@ function _getLayoutOptionList() {
     return optionList;
 }
 
-function _getAppearanceOptionList() {
+function _getAppearanceOptionList(itemFactory) {
     const optionList = [];
     // options item format:
     // [text, caption, widget, settings-variable, options for combo]
@@ -626,45 +670,14 @@ function _getAppearanceOptionList() {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Show Apps Icon Position'),
-            _('Sets the position of the "Show Applications" icon in the Dash'),
+            _('Dash Background Style'),
+            _('Allows you to change the background color of the dash to match the search results an app folders'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
-            'showAppsIconPosition',
+            'dashBgColor',
             [
-                [_('Hide'), 2],
-                [_('Start'), 0],
-                [_('End'), 1],
-            ]
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Open Windows Icon Position'),
-            _('Allows to add "Search Open Windows" icon into Dash (if window search provider enabled on the Behavior tab) so you can directly toggle window search provider results. You can also use the secondary mouse button click on the Show Apps Icon, or the Space hotkey'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
-            'dashShowWindowsIcon',
-            [
-                [_('Hide'), 0],
-                [_('Start'), 1],
-                [_('End'), 2],
-            ]
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Recent Files Icon Position'),
-            _('Allows to add "Search Recent Files" icon into Dash (if recent files search provider enabled on the Behavior tab) so you can directly toggle recent files search provider results. You can also use Ctrl + Space hotkey'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
-            'dashShowRecentFilesIcon',
-            [
-                [_('Hide'), 0],
-                [_('Start'), 1],
-                [_('End'), 2],
+                [_('Default'), 0],
+                [_('Light'), 1],
             ]
         )
     );
@@ -1107,7 +1120,7 @@ function _getAppearanceOptionList() {
 }
 // ----------------------------------------------------------------
 
-function _getBehaviorOptionList() {
+function _getBehaviorOptionList(itemFactory) {
     const optionList = [];
 
     optionList.push(
@@ -1696,7 +1709,7 @@ function _getBehaviorOptionList() {
     return optionList;
 }
 
-function _getProfilesOptionList() {
+function _getProfilesOptionList(itemFactory) {
     const optionList = [];
     // options item format:
     // [text, caption, widget, settings-variable, options for combo]
@@ -1735,7 +1748,7 @@ function _getProfilesOptionList() {
     return optionList;
 }
 
-function _getMiscOptionList() {
+function _getMiscOptionList(itemFactory) {
     const optionList = [];
     // options item format:
     // [text, caption, widget, settings-variable, options for combo]
@@ -1932,7 +1945,7 @@ function _getMiscOptionList() {
     return optionList;
 }
 
-function _getAboutOptionList() {
+function _getAboutOptionList(itemFactory) {
     const optionList = [];
 
     optionList.push(itemFactory.getRowWidget(
