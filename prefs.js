@@ -595,6 +595,15 @@ function _getLayoutOptionList() {
         )
     );
 
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Move notifications to Second Monitor'),
+            _('Position is set under Notifications and OSD > Notification Banner Position'),
+            itemFactory.newSwitch(),
+            'secNotificationsShift'
+        )
+    );
+
     return optionList;
 }
 
