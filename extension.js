@@ -54,19 +54,19 @@ let opt;
 let _bgManagers;
 
 let _enabled;
-let _resetExtensionIfEnabled;
+let _resetVShellIfEnabled;
 let _prevDash;
 
 let _showingOverviewConId;
-let _monitorsChangedSigId;
+let _monitorsChangedConId;
 let _loadingProfileTimeoutId;
 let _watchDockSigId;
 
 let _resetTimeoutId;
 let _statusLabelTimeoutId;
 
-let _enableTimeoutId = 0;
-let _sessionLockActive = false;
+let _sessionModeConId;
+let _sessionLockActive;
 
 
 function init() {
@@ -76,31 +76,14 @@ function init() {
 function enable() {
     // globally readable flag for other extensions
     global.verticalWorkspacesEnabled = true;
-    _enableTimeoutId = GLib.timeout_add(
-        GLib.PRIORITY_DEFAULT,
-        400,
-        () => {
-            activateVShell();
-            // unlock after modules update to avoid unnecessary appGrid rebuild
-            _sessionLockActive = Main.sessionMode.isLocked;
-            log(`${Me.metadata.name}: enabled`);
-            _enableTimeoutId = 0;
-            return GLib.SOURCE_REMOVE;
-        }
-    );
+    activateVShell();
+    // log(`${Me.metadata.name}: enabled`);
 }
 
 function disable() {
-    _sessionLockActive = Main.sessionMode.isLocked;
-    if (_enableTimeoutId) {
-        GLib.source_remove(_enableTimeoutId);
-        _enableTimeoutId = 0;
-    } else {
-        resetVShell();
-    }
-
+    removeVShell();
     global.verticalWorkspacesEnabled = undefined;
-    log(`${Me.metadata.name}: ${_sessionLockActive ? 'suspended' : 'disabled'}`);
+    // log(`${Me.metadata.name}: disabled`);
 }
 
 // ------------------------------------------------------------------------------------------
@@ -113,8 +96,6 @@ function activateVShell() {
     Settings.opt = new Settings.Options();
     opt = Settings.opt;
 
-    Main.showStatusMessage = showStatusMessage;
-
     _updateSettings();
 
     opt.connect('changed', _updateSettings);
@@ -126,7 +107,7 @@ function activateVShell() {
     _prevDash.dash = dash;
     _prevDash.position = dash.position;
 
-    _monitorsChangedSigId = Main.layoutManager.connect('monitors-changed', () => _resetExtension(2000));
+    _monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => _resetVShell(2000));
 
     // static bg animations conflict with startup animation
     // enable it on first hiding from the overview and disconnect the signal
@@ -136,9 +117,6 @@ function activateVShell() {
     _switchPageShortcuts();
     Main.overview._overview.controls._setBackground();
 
-    // fix for upstream bug - overview always shows workspace 1 instead of the active one after restart
-    Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
-
     // if Dash to Dock detected force enable "Fix for DtD" option
     if (_Util.dashIsDashToDock()) {
         opt.set('fixUbuntuDock', true);
@@ -146,10 +124,20 @@ function activateVShell() {
     } else {
         _fixUbuntuDock(opt.get('fixUbuntuDock'));
     }
+
+    // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
+    GLib.idle_add(GLib.PRIORITY_LOW, () => {
+        Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
+    });
 }
 
-function resetVShell() {
+function removeVShell() {
     _enabled = 0;
+
+    if (_monitorsChangedConId) {
+        Main.layoutManager.disconnect(_monitorsChangedConId);
+        _monitorsChangedConId = 0;
+    }
 
     _fixUbuntuDock(false);
 
@@ -157,11 +145,6 @@ function resetVShell() {
 
     Main.overview._overview.controls._setBackground(reset);
     _updateOverrides(reset);
-
-    if (_monitorsChangedSigId) {
-        Main.layoutManager.disconnect(_monitorsChangedSigId);
-        _monitorsChangedSigId = 0;
-    }
 
     _prevDash = null;
 
@@ -200,7 +183,6 @@ function resetVShell() {
 }
 
 function _updateOverrides(reset = false) {
-    showStatusMessage();
     WorkspacesViewOverride.update(reset);
     WorkspaceThumbnailOverride.update(reset);
     OverviewOverride.update(reset);
@@ -223,12 +205,22 @@ function _updateOverrides(reset = false) {
     WindowSearchProvider.update(reset);
     RecentFilesSearchProvider.update(reset);
 
-    // don't rebuild app grid on every screen lock
-    if (!_sessionLockActive) {
+    // don't rebuild app grid on any screen lock
+    // even if the extension includes unlock-screen session mode
+    // disable/enable is called at least once even on GS44
+    // when screen lock is activated for the first time
+    // because every first disable of each extension rebases
+    // the entire extensions stack that was enabled later
+    if (Main.sessionMode.isLocked)
+        _sessionLockActive = true;
+
+    if (!_sessionLockActive || !Main.extensionManager._getEnabledExtensions().includes(Me.metadata.uuid)) {
         // IconGrid needs to be patched before AppDisplay
+        showStatusMessage();
         IconGridOverride.update(reset);
         AppDisplayOverride.update(reset);
     } else {
+        _sessionLockActive = false;
         showStatusMessage(false);
     }
 
@@ -248,11 +240,14 @@ function _onShowingOverview() {
         // workaround for Ubuntu Dock breaking overview allocations after changing position
         const dash = Main.overview.dash;
         if (_prevDash.dash !== dash || _prevDash.position !== dash._position)
-            _resetExtensionIfEnabled(0);
+            _resetVShellIfEnabled(0);
     }
 }
 
-function _resetExtension(timeout = 200) {
+function _resetVShell(timeout = 200) {
+    if (Main.layoutManager._startingUp)
+        return;
+
     if (_resetTimeoutId)
         GLib.source_remove(_resetTimeoutId);
     _resetTimeoutId = GLib.timeout_add(
@@ -267,13 +262,11 @@ function _resetExtension(timeout = 200) {
                 _prevDash.dash = dash;
                 log(`[${Me.metadata.name}]: Dash has been replaced, resetting extension...`);
                 Settings._resetInProgress = true;
-                resetVShell();
                 activateVShell();
                 Settings._resetInProgress = false;
             } else if (timeout) {
                 log(`[${Me.metadata.name}]: resetting extension...`);
                 Settings._resetInProgress = true;
-                resetVShell();
                 activateVShell();
                 Settings._resetInProgress = false;
             }
@@ -295,26 +288,24 @@ function _fixUbuntuDock(activate = true) {
         _resetTimeoutId = 0;
     }
 
-    _resetExtensionIfEnabled = () => {};
+    _resetVShellIfEnabled = () => {};
 
     if (!activate)
         return;
 
-    _watchDockSigId = global.settings.connect('changed::enabled-extensions', () => _resetExtension());
-    _resetExtensionIfEnabled = _resetExtension;
+    _watchDockSigId = global.settings.connect('changed::enabled-extensions', () => _resetVShell());
+    _resetVShellIfEnabled = _resetVShell;
 }
 
 function _updateSettings(settings, key) {
-    if (settings && key?.includes('app-grid') && opt.get('appDisplayModule'))
-        showStatusMessage();
-
     // avoid overload while loading profile - update only once
     // delayed gsettings writes are processed alphabetically
     if (key === 'aaa-loading-profile') {
+        showStatusMessage();
         if (_loadingProfileTimeoutId)
             GLib.source_remove(_loadingProfileTimeoutId);
         _loadingProfileTimeoutId = GLib.timeout_add(100, 0, () => {
-            _resetExtension();
+            _resetVShell();
             _loadingProfileTimeoutId = 0;
             return GLib.SOURCE_REMOVE;
         });
@@ -358,7 +349,7 @@ function _updateSettings(settings, key) {
     imports.ui.workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = opt.OVERVIEW_MODE === 1 ? 0.1 : 0.95;
 
     if (!_Util.dashIsDashToDock()) { // DtD has its own opacity control
-        Main.overview.dash._background.opacity = Math.round(opt.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
+        dash._background.opacity = Math.round(opt.get('dashBgOpacity', true) * 2.5); // conversion % to 0-255
         let radius = opt.get('dashBgRadius', true);
         if (radius) {
             let style;
@@ -372,10 +363,14 @@ function _updateSettings(settings, key) {
             default:
                 style = `border-radius: ${radius}px;`;
             }
-            Main.overview.dash._background.set_style(style);
+            dash._background.set_style(style);
         } else {
-            Main.overview.dash._background.set_style('');
+            dash._background.set_style('');
         }
+        if (opt.DASH_BG_LIGHT && !opt.OVERVIEW_MODE2)
+            dash._background.add_style_class_name('dash-background-light');
+        else
+            dash._background.remove_style_class_name('dash-background-light');
     }
 
     // adjust search entry style for OM2
@@ -457,8 +452,10 @@ function _applySettings(key) {
     if (key?.includes('app-grid') ||
         key === 'show-search-entry' ||
         key === 'ws-thumbnail-scale' ||
-        key === 'ws-thumbnail-scale-appgrid')
+        key === 'ws-thumbnail-scale-appgrid') {
+        showStatusMessage();
         AppDisplayOverride.update();
+    }
 }
 
 function _switchPageShortcuts() {
@@ -576,12 +573,12 @@ function _updateOverviewTranslations(dash = null, tmbBox = null, searchEntryBin 
 
 // Status dialog that appears during updating V-Shell configuration and blocks inputs
 function showStatusMessage(show = true) {
-    if (Settings._resetInProgress)
+    if ((show && Settings._resetInProgress) || Main.layoutManager._startingUp)
         return;
 
-    if (Main.overview._vShellMessageTimeoutId) {
+    if (Settings._vShellMessageTimeoutId) {
         GLib.source_remove(Settings._vShellMessageTimeoutId);
-        Main.overview._vShellMessageTimeoutId = 0;
+        Settings._vShellMessageTimeoutId = 0;
     }
 
     if (Settings._vShellStatusMessage && !show) {
@@ -594,12 +591,13 @@ function showStatusMessage(show = true) {
         return;
 
     if (!Settings._vShellStatusMessage) {
-        const sm = new Main.RestartMessage(_('Updating V-Shell configuration...'));
+        const sm = new Main.RestartMessage(_('Updating V-Shell...'));
         sm.set_style('background-color: rgba(0,0,0,0.3);');
         sm.open();
         Settings._vShellStatusMessage = sm;
     }
 
+    // just for case the message wasn't removed from appDisplay after App Grid realization
     Settings._vShellMessageTimeoutId = GLib.timeout_add_seconds(
         GLib.PRIORITY_DEFAULT,
         5,
