@@ -247,9 +247,12 @@ StButton#vhandle {
 }
 
 .app-folder .overview-icon,
-.app-folder-dialog,
 .edit-folder-button,
 .folder-name-entry {
+	background-color: rgba(200, 200, 200, 0.08);
+}
+
+.app-folder-dialog-vshell {
 	background-color: rgba(200, 200, 200, 0.08);
 }
 
