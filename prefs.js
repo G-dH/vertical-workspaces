@@ -988,7 +988,7 @@ function _getAppearanceOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Grid Spacing'),
-            _('Adjusts spacing between icons.'),
+            _('Adjusts the spacing between icons in a grid, the real impact is on folders'),
             appGridSpacingScale,
             'appGridSpacing'
         )
@@ -1368,6 +1368,20 @@ function _getBehaviorOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('App Icon Click Action'),
+            _('Select the action to take when the application icon on the window preview is clicked'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'windowIconClickAction',
+            [
+                [_('Activate Window (Default)'), 0],
+                [_('Search For Same App Windows'), 1],
+            ]
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Always Activate Selected'),
             _('If enabled, the currently selected window will be activated when leaving the Overview even without clicking. Usage example - press Super to open the Overview, place mouse pointer over a window, press Super again to activate the window'),
             itemFactory.newSwitch(),
@@ -1375,16 +1389,6 @@ function _getBehaviorOptionList(itemFactory) {
             'alwaysActivateSelectedWindow'
         )
     );
-
-    /* optionList.push(
-        itemFactory.getRowWidget(
-            _('App Icon Activates Window Search'),
-            _('If enabled, clicking a window preview icon will activate a search view with the application name as the search term, so you can list all app windows from all workspaces and filter them by typing.'),
-            itemFactory.newSwitch(),
-            // itemFactory.newDropDown(),
-            'windowIconClickSearch'
-        )
-    );*/
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -1791,19 +1795,19 @@ function _getMiscOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('AppFavorites'),
-            _('Pin/unpin app notification options'),
+            _('AppDisplay / IconGrid'),
+            _('App grid customization and options'),
             itemFactory.newSwitch(),
-            'appFavoritesModule'
+            'appDisplayModule'
         )
     );
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('AppDisplay / IconGrid'),
-            _('App grid customization and options'),
+            _('AppFavorites'),
+            _('Pin/unpin app notification options'),
             itemFactory.newSwitch(),
-            'appDisplayModule'
+            'appFavoritesModule'
         )
     );
 
