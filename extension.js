@@ -210,8 +210,12 @@ function _updateOverrides(reset = false) {
     DashOverride.update(reset);
     PanelOverride.update(reset);
     // the panel must be visible when screen is locked
-    if (!reset && Main.sessionMode.isLocked)
+    // at startup time, panel will be updated from the startupAnimation after allocation
+    if (!reset && Main.sessionMode.isLocked && !Main.layoutManager._startingUp)
         PanelOverride._showPanel(true);
+        // hide panel so it appears directly on the final place
+    else if (Main.layoutManager._startingUp)
+        Main.panel.opacity = 0;
 
     WorkspaceAnimationOverride.update(reset);
     WorkspaceSwitcherPopupOverride.update(reset);
