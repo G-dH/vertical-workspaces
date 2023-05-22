@@ -77,13 +77,13 @@ function enable() {
     // globally readable flag for other extensions
     global.verticalWorkspacesEnabled = true;
     activateVShell();
-    // log(`${Me.metadata.name}: enabled`);
+    log(`${Me.metadata.name}: enabled`);
 }
 
 function disable() {
     removeVShell();
     global.verticalWorkspacesEnabled = undefined;
-    // log(`${Me.metadata.name}: disabled`);
+    log(`${Me.metadata.name}: disabled`);
 }
 
 // ------------------------------------------------------------------------------------------
@@ -117,6 +117,15 @@ function activateVShell() {
     _switchPageShortcuts();
     Main.overview._overview.controls._setBackground();
 
+    // the panel must be visible when screen is locked
+    _sessionModeConId = Main.sessionMode.connect('updated', () => {
+        if (Main.sessionMode.isLocked) {
+            PanelOverride.update(true);
+        } else {
+            PanelOverride.update();
+        }
+    });
+
     // if Dash to Dock detected force enable "Fix for DtD" option
     if (_Util.dashIsDashToDock()) {
         opt.set('fixUbuntuDock', true);
@@ -147,6 +156,11 @@ function removeVShell() {
     _updateOverrides(reset);
 
     _prevDash = null;
+
+    if (_sessionModeConId) {
+        Main.sessionMode.disconnect(_sessionModeConId);
+        _sessionModeConId = 0;
+    }
 
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
@@ -195,6 +209,9 @@ function _updateOverrides(reset = false) {
     LayoutOverride.update(reset);
     DashOverride.update(reset);
     PanelOverride.update(reset);
+    // the panel must be visible when screen is locked
+    if (!reset && Main.sessionMode.isLocked)
+        PanelOverride._showPanel(true);
 
     WorkspaceAnimationOverride.update(reset);
     WorkspaceSwitcherPopupOverride.update(reset);
@@ -215,8 +232,10 @@ function _updateOverrides(reset = false) {
         _sessionLockActive = true;
 
     if (!_sessionLockActive || !Main.extensionManager._getEnabledExtensions().includes(Me.metadata.uuid)) {
+        // Avoid showing status at startup, can cause freeze
+        if (!Main.layoutManager._startingUp)
+            showStatusMessage();
         // IconGrid needs to be patched before AppDisplay
-        showStatusMessage();
         IconGridOverride.update(reset);
         AppDisplayOverride.update(reset);
     } else {
