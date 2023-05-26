@@ -10,7 +10,7 @@
 
 'use strict';
 
-const { GLib, Shell, St, Clutter } = imports.gi;
+const { GLib, Shell, St, Clutter, Meta } = imports.gi;
 
 const Main = imports.ui.main;
 
@@ -74,8 +74,6 @@ function init() {
 }
 
 function enable() {
-    // globally readable flag for other extensions
-    global.verticalWorkspacesEnabled = true;
     activateVShell();
     log(`${Me.metadata.name}: enabled`);
 }
@@ -88,7 +86,11 @@ function disable() {
 
 // ------------------------------------------------------------------------------------------
 
-function activateVShell() {
+async function activateVShell() {
+    // workaround to survive conflict with Dash to Dock with certain V-Shell config that can freeze GNOME
+    if (Main.layoutManager._startingUp && _Util.getEnabledExtensions('dash-to-dock').length)
+        await Main.overview._overview.controls.layout_manager.ensureAllocation();
+
     _enabled = true;
 
     _bgManagers = [];
@@ -101,6 +103,11 @@ function activateVShell() {
     opt.connect('changed', _updateSettings);
 
     _updateOverrides();
+
+    // If we missed our startup animation because of the DtD, we need to update some parts now
+    if (Main.layoutManager._startingUp && _Util.getEnabledExtensions('dash-to-dock').length)
+        Main.overview._overview.controls.compensateForMissedStartupAnimation();
+
 
     _prevDash = {};
     const dash = Main.overview.dash;
@@ -135,9 +142,11 @@ function activateVShell() {
     }
 
     // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
-    GLib.idle_add(GLib.PRIORITY_LOW, () => {
-        Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
-    });
+    if (Main.layoutManager._startingUp && Meta.is_restart()) {
+        GLib.idle_add(GLib.PRIORITY_LOW, () => {
+            Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
+        });
+    }
 }
 
 function removeVShell() {
@@ -214,8 +223,8 @@ function _updateOverrides(reset = false) {
     if (!reset && Main.sessionMode.isLocked && !Main.layoutManager._startingUp)
         PanelOverride._showPanel(true);
         // hide panel so it appears directly on the final place
-    else if (Main.layoutManager._startingUp)
-        Main.panel.opacity = 0;
+    /* else if (Main.layoutManager._startingUp && !Meta.is_restart())
+        Main.panel.opacity = 0;*/
 
     WorkspaceAnimationOverride.update(reset);
     WorkspaceSwitcherPopupOverride.update(reset);
@@ -235,17 +244,29 @@ function _updateOverrides(reset = false) {
     if (Main.sessionMode.isLocked)
         _sessionLockActive = true;
 
-    if (!_sessionLockActive || !Main.extensionManager._getEnabledExtensions().includes(Me.metadata.uuid)) {
+    // This covers unnecessary enable/disable cycles during first screen lock, but is not allowed by the EGO rules
+    // if (!_sessionLockActive || !Main.extensionManager._getEnabledExtensions().includes(Me.metadata.uuid)) {
+    // Avoid showing status at startup, can cause freeze
+    //    if (!Main.layoutManager._startingUp)
+    //        showStatusMessage();
+    // IconGrid needs to be patched before AppDisplay
+    //    IconGridOverride.update(reset);
+    //    AppDisplayOverride.update(reset);
+    // } else {
+    //    _sessionLockActive = false;
+    //    showStatusMessage(false);
+    // }
+
+    if (!_sessionLockActive && !Main.layoutManager._startingUp) {
         // Avoid showing status at startup, can cause freeze
-        if (!Main.layoutManager._startingUp)
-            showStatusMessage();
-        // IconGrid needs to be patched before AppDisplay
-        IconGridOverride.update(reset);
-        AppDisplayOverride.update(reset);
-    } else {
+        showStatusMessage();
+    } else if (_sessionLockActive) {
         _sessionLockActive = false;
         showStatusMessage(false);
     }
+    // IconGrid needs to be patched before AppDisplay
+    IconGridOverride.update(reset);
+    AppDisplayOverride.update(reset);
 
     WindowAttentionHandlerOverride.update(reset);
     AppFavoritesOverride.update(reset);
