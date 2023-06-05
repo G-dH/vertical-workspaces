@@ -142,7 +142,7 @@ async function activateVShell() {
     }
 
     // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
-    if (Main.layoutManager._startingUp && Meta.is_restart()) {
+    if (Main.layoutManager._startingUp) {
         GLib.idle_add(GLib.PRIORITY_LOW, () => {
             Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
         });
@@ -157,6 +157,7 @@ function removeVShell() {
         _monitorsChangedConId = 0;
     }
 
+    // remove _resetTimeoutId and reset function
     _fixUbuntuDock(false);
 
     const reset = true;
