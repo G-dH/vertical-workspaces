@@ -7,11 +7,14 @@
 - Window preview - middle and secondary mouse button behavior options, close button can be hidden
 - GNOME 3 vertical dash style is now optional
 - Window preview title position option
+- Light dash background option
+- Remove app folder button in folder dialog
+- *Updating V-Shell* banner appears during updating V-Shell settings when settings window is irresponsive
 - Dutch translation by @Vistaus
 
 **Fixed:**
 - Dash icon scroll action conflicts with Dash to Dock
-- Open new window by middle click on dash icon doesn't work
+- Open new window by middle click on app icon or Ctrl+Enter doesn't work
 - Dash icon label can extend to the adjacent display
 - WindowPreview module not updated when "always-activate-selected-window" changed
 - App folder dialog position if secondary monitor connected
@@ -22,13 +25,16 @@
 - Recent file search provider results sorting
 - App grid icons with multi-line label move on hover when label expands
 - Search view animation skipped id triggered from app grid state
+- DING desktop icons not visible during static background workspace animation
 
 
 **Other changes:**
-- Transparent app folder dialogs with faded main app grid
+- Added `unlock-dialog` session mode to avoid unnecessary system load when using screen lock
+- App Grid refactored, added transparent app folder dialogs on clean background
 - Search view transparency and fixed background brightness in classic overview
 - Search view in static workspace overview with full opacity and close to default style
-- App grid refactor
+- Settings window - Profiles tab moved at first position, Dash icons position options moved back to layout
+- Updated default profiles
 
 
 ### v29 (2023-04-11)
