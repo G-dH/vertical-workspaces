@@ -446,7 +446,6 @@ function _applySettings(key) {
     }
 
     Main.overview._overview.controls._setBackground();
-    _updateOverviewTranslations();
     _switchPageShortcuts();
 
     if (key?.includes('panel'))
@@ -584,36 +583,6 @@ function _switchPageShortcuts() {
     settings.set_strv(keyMoveRight, moveRight);
     settings.set_strv(keyMoveUp, moveUp);
     settings.set_strv(keyMoveDown, moveDown);
-}
-
-
-function _shouldAnimateOverview() {
-    return !opt.SHOW_WS_PREVIEW_BG || opt.OVERVIEW_MODE2;
-}
-
-function _updateOverviewTranslations(dash = null, tmbBox = null, searchEntryBin = null) {
-    dash = dash ?? Main.overview.dash;
-    tmbBox = tmbBox ?? Main.overview._overview._controls._thumbnailsBox;
-    searchEntryBin = searchEntryBin ?? Main.overview._overview._controls._searchEntryBin;
-
-    if (!_shouldAnimateOverview()) {
-        tmbBox.translation_x = 0;
-        tmbBox.translation_y = 0;
-        dash.translation_x = 0;
-        dash.translation_y = 0;
-        searchEntryBin.translation_x = 0;
-        searchEntryBin.translation_y = 0;
-        return;
-    }
-
-    const [tmbTranslationX, tmbTranslationY, dashTranslationX, dashTranslationY, searchTranslationY] = _Util.getOverviewTranslations(opt, dash, tmbBox, searchEntryBin);
-    tmbBox.translation_x = tmbTranslationX;
-    tmbBox.translation_y = tmbTranslationY;
-    if (!_Util.dashNotDefault()) { // only if dash is not dash to dock
-        dash.translation_x = dashTranslationX;
-        dash.translation_y = dashTranslationY;
-    }
-    searchEntryBin.translation_y = searchTranslationY;
 }
 
 // Status dialog that appears during updating V-Shell configuration and blocks inputs
