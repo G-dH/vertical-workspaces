@@ -1,5 +1,5 @@
 ## Changelog:
-### v30 (not yet released)
+### v30 (2023-06-09)
 **Added:**
 - Dash option - Click Behavior: *Prefer Current Workspace* - opens a new window if app not present on the active workspace
 - Window search provider sorting options
