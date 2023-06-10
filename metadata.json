@@ -7,8 +7,11 @@
     "43",
     "44"
   ],
+  "session-modes": ["user", "unlock-dialog"],
   "url": "https://github.com/G-dH/vertical-workspaces",
+  "donations": {"buymeacoffee": "georgdh"},
   "gettext-domain": "vertical-workspaces",
   "settings-schema": "org.gnome.shell.extensions.vertical-workspaces",
-  "version": 29.5
+  "version": 30
+
 }
