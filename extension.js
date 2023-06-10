@@ -65,6 +65,7 @@ let _watchDockSigId;
 let _resetTimeoutId;
 let _statusLabelTimeoutId;
 
+let _enableTimeoutId;
 let _sessionModeConId;
 let _sessionLockActive;
 
@@ -74,11 +75,28 @@ function init() {
 }
 
 function enable() {
-    activateVShell();
+    // workaround to survive conflict with Dash to Dock with certain V-Shell config that can freeze GNOME Shell
+    const dashToDockEnabled = _Util.getEnabledExtensions('dash-to-dock').length || _Util.getEnabledExtensions('ubuntu-dock').length;
+    if (Main.layoutManager._startingUp && dashToDockEnabled) {
+        _enableTimeoutId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            activateVShell();
+            _enableTimeoutId = 0;
+            return GLib.SOURCE_REMOVE;
+        });
+    } else {
+        activateVShell();
+    }
     log(`${Me.metadata.name}: enabled`);
 }
 
+// Reason for using "unlock-dialog" session mode:
+// Updating the "appDisplay" content every time the screen is locked/unlocked takes quite a lot of time and affects the user experience.
 function disable() {
+    if (_enableTimeoutId) {
+        GLib.source_remove(_enableTimeoutId);
+        _enableTimeoutId = 0;
+    }
+
     removeVShell();
     global.verticalWorkspacesEnabled = undefined;
     log(`${Me.metadata.name}: disabled`);
@@ -86,28 +104,14 @@ function disable() {
 
 // ------------------------------------------------------------------------------------------
 
-async function activateVShell() {
-    // workaround to survive conflict with Dash to Dock with certain V-Shell config that can freeze GNOME
-    if (Main.layoutManager._startingUp && _Util.getEnabledExtensions('dash-to-dock').length)
-        await Main.overview._overview.controls.layout_manager.ensureAllocation();
-
+function activateVShell() {
     _enabled = true;
-
-    _bgManagers = [];
-
     Settings.opt = new Settings.Options();
     opt = Settings.opt;
+    _bgManagers = [];
 
     _updateSettings();
-
-    opt.connect('changed', _updateSettings);
-
     _updateOverrides();
-
-    // If we missed our startup animation because of the DtD, we need to update some parts now
-    if (Main.layoutManager._startingUp && _Util.getEnabledExtensions('dash-to-dock').length)
-        Main.overview._overview.controls.compensateForMissedStartupAnimation();
-
 
     _prevDash = {};
     const dash = Main.overview.dash;
@@ -147,6 +151,8 @@ async function activateVShell() {
             Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
         });
     }
+
+    opt.connect('changed', _updateSettings);
 }
 
 function removeVShell() {
