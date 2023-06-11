@@ -12,6 +12,6 @@
   "donations": {"buymeacoffee": "georgdh"},
   "gettext-domain": "vertical-workspaces",
   "settings-schema": "org.gnome.shell.extensions.vertical-workspaces",
-  "version": 30
+  "version": 30.5
 
 }
