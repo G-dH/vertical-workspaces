@@ -65,7 +65,6 @@ let _watchDockSigId;
 let _resetTimeoutId;
 let _statusLabelTimeoutId;
 
-let _enableTimeoutId;
 let _sessionModeConId;
 let _sessionLockActive;
 
@@ -75,30 +74,15 @@ function init() {
 }
 
 function enable() {
-    // workaround to survive conflict with Dash to Dock with certain V-Shell config that can freeze GNOME Shell
-    const dashToDockEnabled = _Util.getEnabledExtensions('dash-to-dock').length || _Util.getEnabledExtensions('ubuntu-dock').length;
-    if (Main.layoutManager._startingUp && dashToDockEnabled) {
-        _enableTimeoutId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
-            activateVShell();
-            _enableTimeoutId = 0;
-            return GLib.SOURCE_REMOVE;
-        });
-    } else {
-        activateVShell();
-    }
+    activateVShell();
+
     log(`${Me.metadata.name}: enabled`);
 }
 
 // Reason for using "unlock-dialog" session mode:
 // Updating the "appDisplay" content every time the screen is locked/unlocked takes quite a lot of time and affects the user experience.
 function disable() {
-    if (_enableTimeoutId) {
-        GLib.source_remove(_enableTimeoutId);
-        _enableTimeoutId = 0;
-    }
-
     removeVShell();
-    global.verticalWorkspacesEnabled = undefined;
     log(`${Me.metadata.name}: disabled`);
 }
 
@@ -106,8 +90,10 @@ function disable() {
 
 function activateVShell() {
     _enabled = true;
+
     Settings.opt = new Settings.Options();
     opt = Settings.opt;
+
     _bgManagers = [];
 
     _updateSettings();
@@ -133,7 +119,12 @@ function activateVShell() {
         if (Main.sessionMode.isLocked) {
             PanelOverride.update(true);
         } else {
-            PanelOverride.update();
+            // delayed because we need to be able to fix potential damage caused by other extensions during unlock
+            GLib.idle_add(GLib.PRIORITY_LOW,
+                () => {
+                    PanelOverride.update();
+                    OverviewControlsOverride.update();
+                });
         }
     });
 
@@ -163,6 +154,21 @@ function removeVShell() {
         _monitorsChangedConId = 0;
     }
 
+    if (_showingOverviewConId) {
+        Main.overview.disconnect(_showingOverviewConId);
+        _showingOverviewConId = 0;
+    }
+
+    if (_loadingProfileTimeoutId) {
+        GLib.source_remove(_loadingProfileTimeoutId);
+        _loadingProfileTimeoutId = 0;
+    }
+
+    if (_sessionModeConId) {
+        Main.sessionMode.disconnect(_sessionModeConId);
+        _sessionModeConId = 0;
+    }
+
     // remove _resetTimeoutId and reset function
     _fixUbuntuDock(false);
 
@@ -172,11 +178,6 @@ function removeVShell() {
     _updateOverrides(reset);
 
     _prevDash = null;
-
-    if (_sessionModeConId) {
-        Main.sessionMode.disconnect(_sessionModeConId);
-        _sessionModeConId = 0;
-    }
 
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
@@ -191,16 +192,6 @@ function removeVShell() {
     Main.overview._overview._controls._searchEntryBin.translation_y = 0;
 
     Main.overview._overview._controls.set_child_above_sibling(Main.overview._overview._controls._workspacesDisplay, null);
-
-    if (_showingOverviewConId) {
-        Main.overview.disconnect(_showingOverviewConId);
-        _showingOverviewConId = 0;
-    }
-
-    if (_loadingProfileTimeoutId) {
-        GLib.source_remove(_loadingProfileTimeoutId);
-        _loadingProfileTimeoutId = 0;
-    }
 
     St.Settings.get().slow_down_factor = 1;
 
@@ -437,7 +428,7 @@ function _updateSettings(settings, key) {
 
     opt.START_Y_OFFSET = (opt.get('panelModule', true) && opt.PANEL_OVERVIEW_ONLY && opt.PANEL_POSITION_TOP) ||
         // better to add unnecessary space than to have a panel overlapping other objects
-        _Util.getEnabledExtensions('hidetopbar@mathieu.bidon.ca').length
+        _Util.getEnabledExtensions('hidetopbar').length
         ? Main.panel.height
         : 0;
 
