@@ -1,4 +1,12 @@
 ## Changelog:
+### v31 (not released yet)
+**Fixed**
+- Compatibility with Dash to Dock extension - hidden dock in the overview, broken layout after startup
+- Compatibility with Hide Top Bar extension
+- App search provider ignores non-localized app names
+- App folders grid dimensions wrong if set to *Adaptive* and folder icon is set to a fixed size
+
+
 ### v30 (2023-06-09)
 **Added:**
 - Dash option - Click Behavior: *Prefer Current Workspace* - opens a new window if app not present on the active workspace
