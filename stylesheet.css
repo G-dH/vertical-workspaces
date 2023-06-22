@@ -269,5 +269,5 @@ StButton#vhandle {
 /* reduce quick menu buttons height in GS44 */
 .quick-toggle,
 .quick-menu-toggle {
-	min-height: 40px;
+	min-height: 42px;
 }
