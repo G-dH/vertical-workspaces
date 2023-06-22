@@ -59,11 +59,9 @@ let _prevDash;
 
 let _showingOverviewConId;
 let _monitorsChangedConId;
-let _loadingProfileTimeoutId;
 let _watchDockSigId;
 
-let _resetTimeoutId;
-let _statusLabelTimeoutId;
+let _timeouts;
 
 let _sessionModeConId;
 let _sessionLockActive;
@@ -90,6 +88,15 @@ function disable() {
 
 function activateVShell() {
     _enabled = true;
+
+    if (_timeouts) {
+        Object.values(_timeouts).forEach(id => {
+            if (id)
+                GLib.source_remove(id);
+        });
+    }
+
+    _timeouts = {};
 
     Settings.opt = new Settings.Options();
     opt = Settings.opt;
@@ -120,10 +127,13 @@ function activateVShell() {
             PanelOverride.update(true);
         } else {
             // delayed because we need to be able to fix potential damage caused by other extensions during unlock
-            GLib.idle_add(GLib.PRIORITY_LOW,
+            _timeouts.unlock = GLib.idle_add(GLib.PRIORITY_LOW,
                 () => {
                     PanelOverride.update();
                     OverviewControlsOverride.update();
+
+                    _timeouts.unlock = 0;
+                    return GLib.SOURCE_REMOVE;
                 });
         }
     });
@@ -147,7 +157,16 @@ function activateVShell() {
 }
 
 function removeVShell() {
-    _enabled = 0;
+    _enabled = false;
+
+    if (_timeouts) {
+        Object.values(_timeouts).forEach(id => {
+            if (id)
+                GLib.source_remove(id);
+        });
+    }
+
+    _timeouts = {};
 
     if (_monitorsChangedConId) {
         Main.layoutManager.disconnect(_monitorsChangedConId);
@@ -159,17 +178,12 @@ function removeVShell() {
         _showingOverviewConId = 0;
     }
 
-    if (_loadingProfileTimeoutId) {
-        GLib.source_remove(_loadingProfileTimeoutId);
-        _loadingProfileTimeoutId = 0;
-    }
-
     if (_sessionModeConId) {
         Main.sessionMode.disconnect(_sessionModeConId);
         _sessionModeConId = 0;
     }
 
-    // remove _resetTimeoutId and reset function
+    // remove reset timeout and reset function
     _fixUbuntuDock(false);
 
     const reset = true;
@@ -290,9 +304,9 @@ function _resetVShell(timeout = 200) {
     if (Main.layoutManager._startingUp)
         return;
 
-    if (_resetTimeoutId)
-        GLib.source_remove(_resetTimeoutId);
-    _resetTimeoutId = GLib.timeout_add(
+    if (_timeouts.reset)
+        GLib.source_remove(_timeouts.reset);
+    _timeouts.reset = GLib.timeout_add(
         GLib.PRIORITY_DEFAULT,
         timeout,
         () => {
@@ -312,7 +326,7 @@ function _resetVShell(timeout = 200) {
                 activateVShell();
                 Settings._resetInProgress = false;
             }
-            _resetTimeoutId = 0;
+            _timeouts.reset = 0;
             return GLib.SOURCE_REMOVE;
         }
     );
@@ -325,9 +339,9 @@ function _fixUbuntuDock(activate = true) {
         _watchDockSigId = 0;
     }
 
-    if (_resetTimeoutId) {
-        GLib.source_remove(_resetTimeoutId);
-        _resetTimeoutId = 0;
+    if (_timeouts.reset) {
+        GLib.source_remove(_timeouts.reset);
+        _timeouts.reset = 0;
     }
 
     _resetVShellIfEnabled = () => {};
@@ -344,15 +358,15 @@ function _updateSettings(settings, key) {
     // delayed gsettings writes are processed alphabetically
     if (key === 'aaa-loading-profile') {
         showStatusMessage();
-        if (_loadingProfileTimeoutId)
-            GLib.source_remove(_loadingProfileTimeoutId);
-        _loadingProfileTimeoutId = GLib.timeout_add(100, 0, () => {
+        if (_timeouts.loadingProfile)
+            GLib.source_remove(_timeouts.loadingProfile);
+        _timeouts.loadingProfile = GLib.timeout_add(100, 0, () => {
             _resetVShell();
-            _loadingProfileTimeoutId = 0;
+            _timeouts.loadingProfile = 0;
             return GLib.SOURCE_REMOVE;
         });
     }
-    if (_loadingProfileTimeoutId)
+    if (_timeouts.loadingProfile)
         return;
 
     if (key?.includes('profile-data')) {
