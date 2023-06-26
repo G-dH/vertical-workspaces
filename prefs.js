@@ -1795,8 +1795,8 @@ function _getMiscOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Fix New Windows Not In Focus'),
-            _('When you open a new app window from the Activities overview and the window often does not get focus, try to enable this option'),
+            _('Fix New Window Not In Focus'),
+            _('If you often find that the app window you open from the Activity overview does not get focus, try enabling this option.'),
             itemFactory.newSwitch(),
             'newWindowFocusFix'
         )
