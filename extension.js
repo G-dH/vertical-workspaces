@@ -113,8 +113,6 @@ function activateVShell() {
 
     _monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => _resetVShell(2000));
 
-    // static bg animations conflict with startup animation
-    // enable it on first hiding from the overview and disconnect the signal
     _showingOverviewConId = Main.overview.connect('showing', _onShowingOverview);
 
     // switch PageUp/PageDown workspace switcher shortcuts
@@ -159,6 +157,9 @@ function activateVShell() {
 function removeVShell() {
     _enabled = false;
 
+    // remove reset timeout and reset function
+    _fixUbuntuDock(false);
+
     if (_timeouts) {
         Object.values(_timeouts).forEach(id => {
             if (id)
@@ -182,9 +183,6 @@ function removeVShell() {
         Main.sessionMode.disconnect(_sessionModeConId);
         _sessionModeConId = 0;
     }
-
-    // remove reset timeout and reset function
-    _fixUbuntuDock(false);
 
     const reset = true;
 
@@ -301,7 +299,7 @@ function _onShowingOverview() {
 }
 
 function _resetVShell(timeout = 200) {
-    if (Main.layoutManager._startingUp)
+    if (!_enabled || Main.layoutManager._startingUp)
         return;
 
     if (_timeouts.reset)
