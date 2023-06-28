@@ -73,7 +73,7 @@
 }
 
 .app-well-app-running-dot {
-	margin-bottom: 6px;
+	margin-bottom: 12px;
 	width: 16px;
 	height: 2px;
 }
@@ -267,7 +267,7 @@ StButton#vhandle {
 }
 
 /* reduce quick menu buttons height in GS44 */
-.quick-toggle,
+/*.quick-toggle,
 .quick-menu-toggle {
 	min-height: 42px;
-}
+}*/
