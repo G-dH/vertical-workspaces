@@ -73,7 +73,6 @@ function init() {
 
 function enable() {
     activateVShell();
-
     log(`${Me.metadata.name}: enabled`);
 }
 
@@ -284,6 +283,9 @@ function _updateOverrides(reset = false) {
     OsdWindowOverride.update(reset);
     OverlayKey.update(reset);
     SearchControllerOverride.update(reset);
+
+    if (!reset)
+        Main.overview._overview.controls.setInitialTranslations();
 }
 
 function _onShowingOverview() {
