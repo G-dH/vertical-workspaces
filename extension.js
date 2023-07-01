@@ -80,6 +80,8 @@ function enable() {
 // Updating the "appDisplay" content every time the screen is locked/unlocked takes quite a lot of time and affects the user experience.
 function disable() {
     removeVShell();
+    // If Dash to Dock is enabled, disabling V-Shell can end in broken overview
+    Main.overview.hide();
     log(`${Me.metadata.name}: disabled`);
 }
 
