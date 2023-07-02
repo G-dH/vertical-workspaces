@@ -1,10 +1,10 @@
 ## Changelog:
-### v35 (2023-07-01) (34/33/32/31 skipped due to issues with extensions.gnome.org)
+### v36 (2023-07-01) (35/34/33/32/31 skipped due to issues with extensions.gnome.org)
 **Added:**
 - Option *Fix New Windows Not In Focus* on *Misc* tab
 
 **Fixed:**
-- Compatibility with Dash to Dock extension - hidden dock in the overview, broken layout after startup
+- Improved compatibility with Dash to Dock extension - hidden dock in the overview, broken layout after startup
 - Compatibility with Hide Top Bar extension
 - App search provider ignores non-localized app names
 - App folders grid dimensions wrong if set to *Adaptive* and folder icon is set to a fixed size
