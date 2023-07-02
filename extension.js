@@ -59,13 +59,10 @@ let _prevDash;
 
 let _showingOverviewConId;
 let _monitorsChangedConId;
-let _loadingProfileTimeoutId;
 let _watchDockSigId;
 
-let _resetTimeoutId;
-let _statusLabelTimeoutId;
+let _timeouts;
 
-let _enableTimeoutId;
 let _sessionModeConId;
 let _sessionLockActive;
 
@@ -75,30 +72,16 @@ function init() {
 }
 
 function enable() {
-    // workaround to survive conflict with Dash to Dock with certain V-Shell config that can freeze GNOME Shell
-    const dashToDockEnabled = _Util.getEnabledExtensions('dash-to-dock').length || _Util.getEnabledExtensions('ubuntu-dock').length;
-    if (Main.layoutManager._startingUp && dashToDockEnabled) {
-        _enableTimeoutId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
-            activateVShell();
-            _enableTimeoutId = 0;
-            return GLib.SOURCE_REMOVE;
-        });
-    } else {
-        activateVShell();
-    }
+    activateVShell();
     log(`${Me.metadata.name}: enabled`);
 }
 
 // Reason for using "unlock-dialog" session mode:
 // Updating the "appDisplay" content every time the screen is locked/unlocked takes quite a lot of time and affects the user experience.
 function disable() {
-    if (_enableTimeoutId) {
-        GLib.source_remove(_enableTimeoutId);
-        _enableTimeoutId = 0;
-    }
-
     removeVShell();
-    global.verticalWorkspacesEnabled = undefined;
+    // If Dash to Dock is enabled, disabling V-Shell can end in broken overview
+    Main.overview.hide();
     log(`${Me.metadata.name}: disabled`);
 }
 
@@ -106,8 +89,19 @@ function disable() {
 
 function activateVShell() {
     _enabled = true;
+
+    if (_timeouts) {
+        Object.values(_timeouts).forEach(id => {
+            if (id)
+                GLib.source_remove(id);
+        });
+    }
+
+    _timeouts = {};
+
     Settings.opt = new Settings.Options();
     opt = Settings.opt;
+
     _bgManagers = [];
 
     _updateSettings();
@@ -120,8 +114,6 @@ function activateVShell() {
 
     _monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => _resetVShell(2000));
 
-    // static bg animations conflict with startup animation
-    // enable it on first hiding from the overview and disconnect the signal
     _showingOverviewConId = Main.overview.connect('showing', _onShowingOverview);
 
     // switch PageUp/PageDown workspace switcher shortcuts
@@ -133,7 +125,15 @@ function activateVShell() {
         if (Main.sessionMode.isLocked) {
             PanelOverride.update(true);
         } else {
-            PanelOverride.update();
+            // delayed because we need to be able to fix potential damage caused by other extensions during unlock
+            _timeouts.unlock = GLib.idle_add(GLib.PRIORITY_LOW,
+                () => {
+                    PanelOverride.update();
+                    OverviewControlsOverride.update();
+
+                    _timeouts.unlock = 0;
+                    return GLib.SOURCE_REMOVE;
+                });
         }
     });
 
@@ -156,15 +156,34 @@ function activateVShell() {
 }
 
 function removeVShell() {
-    _enabled = 0;
+    _enabled = false;
+
+    // remove reset timeout and reset function
+    _fixUbuntuDock(false);
+
+    if (_timeouts) {
+        Object.values(_timeouts).forEach(id => {
+            if (id)
+                GLib.source_remove(id);
+        });
+    }
+
+    _timeouts = {};
 
     if (_monitorsChangedConId) {
         Main.layoutManager.disconnect(_monitorsChangedConId);
         _monitorsChangedConId = 0;
     }
 
-    // remove _resetTimeoutId and reset function
-    _fixUbuntuDock(false);
+    if (_showingOverviewConId) {
+        Main.overview.disconnect(_showingOverviewConId);
+        _showingOverviewConId = 0;
+    }
+
+    if (_sessionModeConId) {
+        Main.sessionMode.disconnect(_sessionModeConId);
+        _sessionModeConId = 0;
+    }
 
     const reset = true;
 
@@ -172,11 +191,6 @@ function removeVShell() {
     _updateOverrides(reset);
 
     _prevDash = null;
-
-    if (_sessionModeConId) {
-        Main.sessionMode.disconnect(_sessionModeConId);
-        _sessionModeConId = 0;
-    }
 
     // switch PageUp/PageDown workspace switcher shortcuts
     _switchPageShortcuts();
@@ -191,16 +205,6 @@ function removeVShell() {
     Main.overview._overview._controls._searchEntryBin.translation_y = 0;
 
     Main.overview._overview._controls.set_child_above_sibling(Main.overview._overview._controls._workspacesDisplay, null);
-
-    if (_showingOverviewConId) {
-        Main.overview.disconnect(_showingOverviewConId);
-        _showingOverviewConId = 0;
-    }
-
-    if (_loadingProfileTimeoutId) {
-        GLib.source_remove(_loadingProfileTimeoutId);
-        _loadingProfileTimeoutId = 0;
-    }
 
     St.Settings.get().slow_down_factor = 1;
 
@@ -281,6 +285,9 @@ function _updateOverrides(reset = false) {
     OsdWindowOverride.update(reset);
     OverlayKey.update(reset);
     SearchControllerOverride.update(reset);
+
+    if (!reset)
+        Main.overview._overview.controls.setInitialTranslations();
 }
 
 function _onShowingOverview() {
@@ -296,12 +303,12 @@ function _onShowingOverview() {
 }
 
 function _resetVShell(timeout = 200) {
-    if (Main.layoutManager._startingUp)
+    if (!_enabled || Main.layoutManager._startingUp)
         return;
 
-    if (_resetTimeoutId)
-        GLib.source_remove(_resetTimeoutId);
-    _resetTimeoutId = GLib.timeout_add(
+    if (_timeouts.reset)
+        GLib.source_remove(_timeouts.reset);
+    _timeouts.reset = GLib.timeout_add(
         GLib.PRIORITY_DEFAULT,
         timeout,
         () => {
@@ -321,7 +328,7 @@ function _resetVShell(timeout = 200) {
                 activateVShell();
                 Settings._resetInProgress = false;
             }
-            _resetTimeoutId = 0;
+            _timeouts.reset = 0;
             return GLib.SOURCE_REMOVE;
         }
     );
@@ -334,9 +341,9 @@ function _fixUbuntuDock(activate = true) {
         _watchDockSigId = 0;
     }
 
-    if (_resetTimeoutId) {
-        GLib.source_remove(_resetTimeoutId);
-        _resetTimeoutId = 0;
+    if (_timeouts.reset) {
+        GLib.source_remove(_timeouts.reset);
+        _timeouts.reset = 0;
     }
 
     _resetVShellIfEnabled = () => {};
@@ -353,15 +360,15 @@ function _updateSettings(settings, key) {
     // delayed gsettings writes are processed alphabetically
     if (key === 'aaa-loading-profile') {
         showStatusMessage();
-        if (_loadingProfileTimeoutId)
-            GLib.source_remove(_loadingProfileTimeoutId);
-        _loadingProfileTimeoutId = GLib.timeout_add(100, 0, () => {
+        if (_timeouts.loadingProfile)
+            GLib.source_remove(_timeouts.loadingProfile);
+        _timeouts.loadingProfile = GLib.timeout_add(100, 0, () => {
             _resetVShell();
-            _loadingProfileTimeoutId = 0;
+            _timeouts.loadingProfile = 0;
             return GLib.SOURCE_REMOVE;
         });
     }
-    if (_loadingProfileTimeoutId)
+    if (_timeouts.loadingProfile)
         return;
 
     if (key?.includes('profile-data')) {
@@ -437,7 +444,7 @@ function _updateSettings(settings, key) {
 
     opt.START_Y_OFFSET = (opt.get('panelModule', true) && opt.PANEL_OVERVIEW_ONLY && opt.PANEL_POSITION_TOP) ||
         // better to add unnecessary space than to have a panel overlapping other objects
-        _Util.getEnabledExtensions('hidetopbar@mathieu.bidon.ca').length
+        _Util.getEnabledExtensions('hidetopbar').length
         ? Main.panel.height
         : 0;
 

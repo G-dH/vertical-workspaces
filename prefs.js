@@ -229,12 +229,12 @@ function _getLayoutOptionList(itemFactory) {
             'workspaceThumbnailsPosition',
             // this mess is just because of backward compatibility
             [
-                [_('Left       \t Vertical Orientation'), 0],
-                [_('Right      \t Vertical Orientation'), 1],
-                [_('Hide       \t Set Vertical Orientation'), 4],
-                [_('Top        \t Horizontal Orientation'), 5],
-                [_('Bottom     \t Horizontal Orientation'), 6],
-                [_('Hide       \t Set Horizontal Orientation'), 9],
+                [_('Left        \t Vertical Orientation'), 0],
+                [_('Right       \t Vertical Orientation'), 1],
+                [_('Hide        \t Vertical Orientation'), 4],
+                [_('Top         \t Horizontal Orientation'), 5],
+                [_('Bottom      \t Horizontal Orientation'), 6],
+                [_('Hide        \t Horizontal Orientation'), 9],
             ]
         )
     );
@@ -1800,6 +1800,21 @@ function _getMiscOptionList(itemFactory) {
             _('With the default Ubuntu Dock and other Dash To Dock forks, you may experience issues with Activities overview after you change Dock position or re-enable the extension. This option is enabled automatically if a replacement for the Dash is detected. In any case, using Dash to Dock extension with V-Shell is problematic and not recommended.'),
             itemFactory.newSwitch(),
             'fixUbuntuDock'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workarounds')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Fix New Window Not In Focus'),
+            _('If you often find that the app window you open from the Activity overview does not get focus, try enabling this option.'),
+            itemFactory.newSwitch(),
+            'newWindowFocusFix'
         )
     );
 

@@ -1,4 +1,22 @@
 ## Changelog:
+### v36 (2023-07-01) (35/34/33/32/31 skipped due to issues with extensions.gnome.org)
+**Added:**
+- Option *Fix New Windows Not In Focus* on *Misc* tab
+
+**Fixed:**
+- Improved compatibility with Dash to Dock extension - hidden dock in the overview, broken layout after startup
+- Compatibility with Hide Top Bar extension
+- App search provider ignores non-localized app names
+- App folders grid dimensions wrong if set to *Adaptive* and folder icon is set to a fixed size
+- Dash and active app folder icons running indicator position
+- Blur/Brightness transitions in static overview mode
+- Hot corner edge barrier can be active even if hot corner is disabled
+- Disabling dash module does not reset dash position to default
+
+**Other changes:**
+- Removed css class reducing Quick Settings buttons height in GNOME 44
+
+
 ### v30 (2023-06-09)
 **Added:**
 - Dash option - Click Behavior: *Prefer Current Workspace* - opens a new window if app not present on the active workspace
