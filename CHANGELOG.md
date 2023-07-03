@@ -1,4 +1,9 @@
 ## Changelog:
+### v37 (2023-07-01)
+**Fixed:**
+- False detections of conflicting extensions
+
+
 ### v36 (2023-07-01) (35/34/33/32/31 skipped due to issues with extensions.gnome.org)
 **Added:**
 - Option *Fix New Windows Not In Focus* on *Misc* tab
