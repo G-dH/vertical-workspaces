@@ -630,7 +630,23 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Move Panel to Second Monitor'),
+            _('Moves the top panel to the second monitor'),
+            itemFactory.newSwitch(),
+            'secPanelShift'
+        )
+    );
 
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Move notifications to Second Monitor'),
+            _('Position is set under Notifications and OSD > Notification Banner Position'),
+            itemFactory.newSwitch(),
+            'secNotificationsShift'
+        )
+    );
 
     return optionList;
 }
