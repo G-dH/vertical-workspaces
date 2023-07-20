@@ -9,7 +9,8 @@
 
 'use strict';
 
-const { Gtk, GLib } = imports.gi;
+const Gtk = imports.gi.Gtk;
+const GLib = imports.gi.GLib;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me             = ExtensionUtils.getCurrentExtension();
@@ -65,6 +66,12 @@ function _getPageList() {
             optionList: _getBehaviorOptionList(itemFactory),
         },
         {
+            name: 'modules',
+            title: _('Modules'),
+            iconName: 'application-x-addon-symbolic',
+            optionList: _getModulesOptionList(itemFactory),
+        },
+        {
             name: 'misc',
             title: _('Misc'),
             iconName: 'preferences-other-symbolic',
@@ -113,10 +120,49 @@ function buildPrefsWidget() {
 }
 
 // ////////////////////////////////////////////////////////////////////
+function _getProfilesOptionList(itemFactory) {
+    const optionList = [];
+    // options item format:
+    // (text, caption, widget, settings-variable, [options for combo], sensitivity-depends-on-bool-variable)
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Custom Profiles'),
+            _('Sets of settings that can help you with the initial customization')
+        )
+    );
+
+    optionList.push(itemFactory.getRowWidget(
+        _('Profile 1'),
+        null,
+        itemFactory.newPresetButton(gOptions, 1)
+    ));
+
+    optionList.push(itemFactory.getRowWidget(
+        _('Profile 2'),
+        null,
+        itemFactory.newPresetButton(gOptions, 2)
+    ));
+
+    optionList.push(itemFactory.getRowWidget(
+        _('Profile 3'),
+        null,
+        itemFactory.newPresetButton(gOptions, 3)
+    ));
+
+    optionList.push(itemFactory.getRowWidget(
+        _('Profile 4'),
+        null,
+        itemFactory.newPresetButton(gOptions, 4)
+    ));
+
+    return optionList;
+}
+
 function _getLayoutOptionList(itemFactory) {
     const optionList = [];
     // options item format:
-    // [text, caption, widget, settings-variable, options for combo]
+    // (text, caption, widget, settings-variable, [options for combo], sensitivity-depends-on-bool-variable)
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -137,7 +183,8 @@ function _getLayoutOptionList(itemFactory) {
                 [_('Bottom'), 2],
                 [_('Left'), 3],
                 [_('Hide'), 4],
-            ]
+            ],
+            'dashModule'
         )
     );
 
@@ -146,7 +193,9 @@ function _getLayoutOptionList(itemFactory) {
             _('Center Horizontal Dash to Workspace'),
             _('If the Dash Position is set to Top or Bottom, the position will be recalculated relative to the workspace preview instead of the screen'),
             itemFactory.newSwitch(),
-            'centerDashToWs'
+            'centerDashToWs',
+            null,
+            'dashModule'
         )
     );
 
@@ -164,7 +213,9 @@ function _getLayoutOptionList(itemFactory) {
             _('Fine Tune Dash Position'),
             _('Adjusts the position of the dash on the axis given by the orientation of the workspaces'),
             dashPositionScale,
-            'dashPositionAdjust'
+            'dashPositionAdjust',
+            null,
+            'dashModule'
         )
     );
 
@@ -179,7 +230,8 @@ function _getLayoutOptionList(itemFactory) {
                 [_('Hide'), 2],
                 [_('Start'), 0],
                 [_('End'), 1],
-            ]
+            ],
+            'dashModule'
         )
     );
 
@@ -194,7 +246,8 @@ function _getLayoutOptionList(itemFactory) {
                 [_('Hide'), 0],
                 [_('Start'), 1],
                 [_('End'), 2],
-            ]
+            ],
+            'dashModule'
         )
     );
 
@@ -209,7 +262,8 @@ function _getLayoutOptionList(itemFactory) {
                 [_('Hide'), 0],
                 [_('Start'), 1],
                 [_('End'), 2],
-            ]
+            ],
+            'dashModule'
         )
     );
 
@@ -233,7 +287,7 @@ function _getLayoutOptionList(itemFactory) {
                 [_('Right       \t Vertical Orientation'), 1],
                 [_('Hide        \t Vertical Orientation'), 4],
                 [_('Top         \t Horizontal Orientation'), 5],
-                [_('Bottom      \t Horizontal Orientation'), 6],
+                [_('Bottom     \t Horizontal Orientation'), 6],
                 [_('Hide        \t Horizontal Orientation'), 9],
             ]
         )
@@ -374,7 +428,9 @@ function _getLayoutOptionList(itemFactory) {
             _('App Grid Page Width Scale'),
             _('Adjusts max app grid page width relative to the available space.'),
             agPageWidthScale,
-            'appGridPageWidthScale'
+            'appGridPageWidthScale',
+            null,
+            'appDisplayModule'
         )
     );
 
@@ -416,7 +472,9 @@ function _getLayoutOptionList(itemFactory) {
             _('Search Results Width'),
             _('Adjusts maximum width of search results view (% relative to default). This allows to fit more (or less) app icons into the app search result'),
             searchViewScale,
-            'searchViewScale'
+            'searchViewScale',
+            null,
+            'searchModule'
         )
     );
 
@@ -436,7 +494,8 @@ function _getLayoutOptionList(itemFactory) {
             [
                 [_('Top (Default)'), 0],
                 [_('Bottom'), 1],
-            ]
+            ],
+            'panelModule'
         )
     );
 
@@ -452,7 +511,8 @@ function _getLayoutOptionList(itemFactory) {
                 [_('Overview Only'), 1],
                 [_('Always Hidden'), 2],
                 // [_('Desktop View Only'), 3],
-            ]
+            ],
+            'panelModule'
         )
     );
 
@@ -478,7 +538,9 @@ function _getLayoutOptionList(itemFactory) {
             _('Horizontal Position (% from left)'),
             _('This popup shows up when you switch workspace using a keyboard shortcut or gesture outside of the overview. You can disable it on the "Behavior" tab. If you want more control over the popup, try the "Workspace Switcher Manager" extension'),
             hScale,
-            'wsSwPopupHPosition'
+            'wsSwPopupHPosition',
+            null,
+            'workspaceSwitcherPopupModule'
         )
     );
 
@@ -497,7 +559,9 @@ function _getLayoutOptionList(itemFactory) {
             _('Vertical Position (% from top)'),
             null,
             vScale,
-            'wsSwPopupVPosition'
+            'wsSwPopupVPosition',
+            null,
+            'workspaceSwitcherPopupModule'
         )
     );
 
@@ -521,7 +585,8 @@ function _getLayoutOptionList(itemFactory) {
                 [_('Bottom Left'), 3],
                 [_('Bottom Center'), 4],
                 [_('Bottom Right'), 5],
-            ]
+            ],
+            'messageTrayModule'
         )
     );
 
@@ -541,7 +606,8 @@ function _getLayoutOptionList(itemFactory) {
                 [_('Bottom Left'), 5],
                 [_('Bottom Center (Default)'), 6],
                 [_('Bottom Right'), 7],
-            ]
+            ],
+            'osdWindowModule'
         )
     );
 
@@ -638,7 +704,7 @@ function _getLayoutOptionList(itemFactory) {
 function _getAppearanceOptionList(itemFactory) {
     const optionList = [];
     // options item format:
-    // [text, caption, widget, settings-variable, options for combo]
+    // (text, caption, widget, settings-variable, [options for combo], sensitivity-depends-on-bool-variable)
 
     // ----------------------------------------------------------------
     optionList.push(
@@ -664,7 +730,8 @@ function _getAppearanceOptionList(itemFactory) {
                 [_('32'),   32],
                 [_('24'),   24],
                 [_('16'),   16],
-            ]
+            ],
+            'dashModule'
         )
     );
 
@@ -678,7 +745,8 @@ function _getAppearanceOptionList(itemFactory) {
             [
                 [_('Default'), 0],
                 [_('Light'), 1],
-            ]
+            ],
+            'dashModule'
         )
     );
 
@@ -695,7 +763,9 @@ function _getAppearanceOptionList(itemFactory) {
             _('Dash Background Opacity'),
             _('Adjusts the opacity of the Dash background'),
             dashBgOpacityScale,
-            'dashBgOpacity'
+            'dashBgOpacity',
+            null,
+            'dashModule'
         )
     );
 
@@ -712,7 +782,9 @@ function _getAppearanceOptionList(itemFactory) {
             _('Dash Background Radius'),
             _('Adjusts the border radius of the Dash background in pixels. 0 means the default value given by the current theme style'),
             dashBgRadiusScale,
-            'dashBgRadius'
+            'dashBgRadius',
+            null,
+            'dashModule'
         )
     );
 
@@ -721,7 +793,9 @@ function _getAppearanceOptionList(itemFactory) {
             _('Dash Background GNOME 3 Style'),
             _('Background of the vertically oriented dash will imitate the GNOME 3 style'),
             itemFactory.newSwitch(),
-            'dashBgGS3Style'
+            'dashBgGS3Style',
+            null,
+            'dashModule'
         )
     );
 
@@ -785,7 +859,8 @@ function _getAppearanceOptionList(itemFactory) {
                 [_('32'), 2],
                 [_('22'), 3],
                 [_('Disable'), 4],
-            ]
+            ],
+            'windowPreviewModule'
         )
     );
 
@@ -800,7 +875,8 @@ function _getAppearanceOptionList(itemFactory) {
                 [_('Inside Window'), 0],
                 [_('Inside Window Always Visible'), 1],
                 [_('Below Window (Default)'), 2],
-            ]
+            ],
+            'windowPreviewModule'
         )
     );
 
@@ -809,7 +885,9 @@ function _getAppearanceOptionList(itemFactory) {
             _('Show Close Window Button'),
             _('Allows you to hide close window button'),
             itemFactory.newSwitch(),
-            'winPreviewShowCloseButton'
+            'winPreviewShowCloseButton',
+            null,
+            'windowPreviewModule'
         )
     );
 
@@ -876,7 +954,8 @@ function _getAppearanceOptionList(itemFactory) {
                 [_('64'), 64],
                 [_('48'), 48],
                 // [_('32'), 32],
-            ]
+            ],
+            'appDisplayModule'
         )
     );
 
@@ -896,7 +975,8 @@ function _getAppearanceOptionList(itemFactory) {
                 [_('64'), 64],
                 [_('48'), 48],
                 [_('32'), 32],
-            ]
+            ],
+            'appDisplayModule'
         )
     );
 
@@ -912,7 +992,8 @@ function _getAppearanceOptionList(itemFactory) {
                 [_('2x2 (Default)'), 2],
                 [_('3x3 for 5+ apps'), 3],
                 [_('3x3 for 9+ apps'), 4],
-            ]
+            ],
+            'appDisplayModule'
         )
     );
 
@@ -928,7 +1009,9 @@ function _getAppearanceOptionList(itemFactory) {
         _('Columns per Page (0 for adaptive grid)'),
         _('Number of columns in the application grid. If set to 0 (the default), the number will be set automatically to fit the available width'),
         columnsSpinBtn,
-        'appGridColumns'
+        'appGridColumns',
+        null,
+        'appDisplayModule'
     ));
 
     const rowsAdjustment = new Gtk.Adjustment({
@@ -943,7 +1026,9 @@ function _getAppearanceOptionList(itemFactory) {
         _('Rows per Page (0 for adaptive grid)'),
         _('Number of rows in the application grid. If set to 0 (the default), the number will be set automatically to fit the available height'),
         rowsSpinBtn,
-        'appGridRows'
+        'appGridRows',
+        null,
+        'appDisplayModule'
     ));
 
     const folderColumnsAdjustment = new Gtk.Adjustment({
@@ -958,7 +1043,9 @@ function _getAppearanceOptionList(itemFactory) {
         _('Folder Columns per Page (0 for adaptive grid)'),
         _('Number of columns in folder grid. If you leave the value at 0, the number of columns will be calculated to fit all the folder icons on one page'),
         folderColumnsSpinBtn,
-        'appGridFolderColumns'
+        'appGridFolderColumns',
+        null,
+        'appDisplayModule'
     ));
 
     const folderRowsAdjustment = new Gtk.Adjustment({
@@ -973,7 +1060,9 @@ function _getAppearanceOptionList(itemFactory) {
         _('Folder Rows per Page (0 for adaptive grid)'),
         _('Number of rows in folder grid. If you leave the value at 0, the number of rows will be calculated to fit all the folder icons on one page'),
         folderRowsSpinBtn,
-        'appGridFolderRows'
+        'appGridFolderRows',
+        null,
+        'appDisplayModule'
     ));
 
     const appGridSpacingAdjustment = new Gtk.Adjustment({
@@ -990,7 +1079,9 @@ function _getAppearanceOptionList(itemFactory) {
             _('Grid Spacing'),
             _('Adjusts the spacing between icons in a grid, the real impact is on folders'),
             appGridSpacingScale,
-            'appGridSpacing'
+            'appGridSpacing',
+            null,
+            'appDisplayModule'
         )
     );
 
@@ -1015,7 +1106,8 @@ function _getAppearanceOptionList(itemFactory) {
                 [_('64'), 64],
                 [_('48'), 48],
                 [_('32'), 32],
-            ]
+            ],
+            'searchModule'
         )
     );
 
@@ -1036,7 +1128,9 @@ function _getAppearanceOptionList(itemFactory) {
             _('Max Search Results Rows'),
             _('Sets the maximum number of rows for result lists of all search providers except the window search provider which always lists all results'),
             maxSearchResultsSpinButton,
-            'searchMaxResultsRows'
+            'searchMaxResultsRows',
+            null,
+            'searchModule'
         )
     );
 
@@ -1169,7 +1263,8 @@ function _getBehaviorOptionList(itemFactory) {
             [
                 [_('Default'), 0],
                 [_('Close Overview'), 1],
-            ]
+            ],
+            'searchControllerModule'
         )
     );
 
@@ -1191,7 +1286,8 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Applications (Default)'), 1],
                 [_('Search Windows'), 2],
                 [_('Search Recent Files'), 3],
-            ]
+            ],
+            'overlayKeyModule'
         )
     );
 
@@ -1213,7 +1309,8 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Overview'), 1],
                 [_('Applications'), 2],
                 [_('Search Windows'), 3],
-            ]
+            ],
+            'layoutModule'
         )
     );
 
@@ -1232,7 +1329,8 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Bottom Right'), 4],
                 [_('Follow Dash'), 5],
                 [_('Follow Dash - Hot Edge'), 6],
-            ]
+            ],
+            'layoutModule'
         )
     );
 
@@ -1242,7 +1340,9 @@ function _getBehaviorOptionList(itemFactory) {
             _('If you often work with full-screen applications and want the hot corner to be usable'),
             itemFactory.newSwitch(),
             // itemFactory.newDropDown(),
-            'hotCornerFullscreen'
+            'hotCornerFullscreen',
+            null,
+            'layoutModule'
         )
     );
 
@@ -1252,7 +1352,9 @@ function _getBehaviorOptionList(itemFactory) {
             _('The ripple animation is played when the hot corner is activated. The ripple size has been reduced to be less distracting'),
             itemFactory.newSwitch(),
             // itemFactory.newDropDown(),
-            'hotCornerRipples'
+            'hotCornerRipples',
+            null,
+            'layoutModule'
         )
     );
 
@@ -1274,7 +1376,8 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('First Switch to Workspace'), 1],
                 [_('Open New Window (if supported)'), 2],
                 [_('Prefer Current Workspace'), 3],
-            ]
+            ],
+            'dashModule'
         )
     );
 
@@ -1289,7 +1392,8 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Default'), 0],
                 [_('Cycle App Windows - Highlight Selected'), 1],
                 [_('Cycle App Windows - Highlight App'), 2],
-            ]
+            ],
+            'dashModule'
         )
     );
 
@@ -1304,7 +1408,8 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Default'), 0],
                 [_('Cycle All Windows'), 1],
                 [_('Cycle Windows On Current WS'), 2],
-            ]
+            ],
+            'dashModule'
         )
     );
 
@@ -1347,7 +1452,8 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Activate DND (Default)'), 0],
                 [_('Close Window'), 1],
                 [_('Search For Same App Windows'), 2],
-            ]
+            ],
+            'windowPreviewModule'
         )
     );
 
@@ -1362,7 +1468,8 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Activate DND (Default)'), 0],
                 [_('Close Window'), 1],
                 [_('Search For Same App Windows'), 2],
-            ]
+            ],
+            'windowPreviewModule'
         )
     );
 
@@ -1376,7 +1483,8 @@ function _getBehaviorOptionList(itemFactory) {
             [
                 [_('Activate Window (Default)'), 0],
                 [_('Search For Same App Windows'), 1],
-            ]
+            ],
+            'windowPreviewModule'
         )
     );
 
@@ -1386,7 +1494,9 @@ function _getBehaviorOptionList(itemFactory) {
             _('If enabled, the currently selected window will be activated when leaving the Overview even without clicking. Usage example - press Super to open the Overview, place mouse pointer over a window, press Super again to activate the window'),
             itemFactory.newSwitch(),
             // itemFactory.newDropDown(),
-            'alwaysActivateSelectedWindow'
+            'alwaysActivateSelectedWindow',
+            null,
+            'windowPreviewModule'
         )
     );
 
@@ -1407,7 +1517,8 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Custom (Default)'), 0],
                 [_('Alphabet - No Folders'), 1],
                 [_('Usage - No Folders'), 2],
-            ]
+            ],
+            'appDisplayModule'
         )
     );
 
@@ -1424,7 +1535,8 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Exclude Favorites (Default)'), 2],
                 [_('Exclude Running'), 3],
                 [_('Exclude Favorites and Running'), 4],
-            ]
+            ],
+            'appDisplayModule'
         )
     );
 
@@ -1434,7 +1546,9 @@ function _getBehaviorOptionList(itemFactory) {
             _('If enabled, icons in the folder review behaves like normal icons, you can activate or even drag them directly, without having to open the folder first'),
             itemFactory.newSwitch(),
             // itemFactory.newDropDown(),
-            'appGridActivePreview'
+            'appGridActivePreview',
+            null,
+            'appDisplayModule'
         )
     );
 
@@ -1444,7 +1558,9 @@ function _getBehaviorOptionList(itemFactory) {
             _('App folder may open in the center of the screen or above the source folder icon'),
             itemFactory.newSwitch(),
             // itemFactory.newDropDown(),
-            'appGridFolderCenter'
+            'appGridFolderCenter',
+            null,
+            'appDisplayModule'
         )
     );
 
@@ -1454,7 +1570,9 @@ function _getBehaviorOptionList(itemFactory) {
             _('If disabled, icons from the next page (if any) are automatically moved to fill any empty slot left after an icon was (re)moved (to a folder for example)'),
             itemFactory.newSwitch(),
             // itemFactory.newDropDown(),
-            'appGridIncompletePages'
+            'appGridIncompletePages',
+            null,
+            'appDisplayModule'
         )
     );
 
@@ -1469,7 +1587,8 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Ellipsized - Expand Selected (Default)'), 0],
                 [_('Always Expanded'), 1],
                 [_('Hidden - Show Selected Only'), 2],
-            ]
+            ],
+            'appDisplayModule'
         )
     );
 
@@ -1504,14 +1623,14 @@ function _getBehaviorOptionList(itemFactory) {
         )
     );*/
 
-    optionList.push(
+    /* optionList.push(
         itemFactory.getRowWidget(
             _('Enable Window Search Provider'),
             _('Activates the window search provider that adds open windows to the search results. You can search app names and window titles. You can also use "wq//" prefix (also by pressing the Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
             itemFactory.newSwitch(),
             'searchWindowsEnable'
         )
-    );
+    );*/
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -1525,18 +1644,19 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('MRU - Current Workspace First'), 1],
                 [_('MRU - By Workspaces'), 2],
                 [_('Stable Sequence - By Workspaces'), 3],
-            ]
+            ],
+            'windowSearchProviderModule'
         )
     );
 
-    optionList.push(
+    /* optionList.push(
         itemFactory.getRowWidget(
             _('Enable Recent Files Search Provider'),
             _('Activates the recent files search provider that can be triggered by a dash icon, Ctrl + Space hotkey or by typing "fq//" prefix in the search entry field. This option needs File History option enabled in the GNOME Privacy settings'),
             itemFactory.newSwitch(),
             'searchRecentFilesEnable'
         )
-    );
+    );*/
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -1655,7 +1775,8 @@ function _getBehaviorOptionList(itemFactory) {
             [
                 [_('Default'), 0],
                 [_('Static Background'), 1],
-            ]
+            ],
+            'workspaceAnimationModule'
         )
     );
 
@@ -1670,10 +1791,10 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Disable'), 0],
                 [_('Show on Primary Monitor (Default)'), 1],
                 [_('Show on Current Monitor'), 2],
-            ]
+            ],
+            'workspaceSwitcherPopupModule'
         )
     );
-
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -1692,7 +1813,8 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Show Notifications (Default)'), 0],
                 [_('Disable Notification Popups'), 1],
                 [_('Immediately Focus Window'), 2],
-            ]
+            ],
+            'windowAttentionHandlerModule'
         )
     );
 
@@ -1706,105 +1828,39 @@ function _getBehaviorOptionList(itemFactory) {
             [
                 [_('Show Notifications (Default)'), 1],
                 [_('Disable Notifications'), 0],
-            ]
+            ],
+            'appFavoritesModule'
         )
     );
 
     return optionList;
 }
 
-function _getProfilesOptionList(itemFactory) {
+function _getModulesOptionList(itemFactory) {
     const optionList = [];
     // options item format:
-    // [text, caption, widget, settings-variable, options for combo]
-
+    // (text, caption, widget, settings-variable, [options for combo], sensitivity-depends-on-bool-variable)
     optionList.push(
         itemFactory.getRowWidget(
-            _('Custom Profiles'),
-            _('Sets of settings that can help you with the initial customization')
-        )
-    );
-
-    optionList.push(itemFactory.getRowWidget(
-        _('Profile 1'),
-        null,
-        itemFactory.newPresetButton(gOptions, 1)
-    ));
-
-    optionList.push(itemFactory.getRowWidget(
-        _('Profile 2'),
-        null,
-        itemFactory.newPresetButton(gOptions, 2)
-    ));
-
-    optionList.push(itemFactory.getRowWidget(
-        _('Profile 3'),
-        null,
-        itemFactory.newPresetButton(gOptions, 3)
-    ));
-
-    optionList.push(itemFactory.getRowWidget(
-        _('Profile 4'),
-        null,
-        itemFactory.newPresetButton(gOptions, 4)
-    ));
-
-    return optionList;
-}
-
-function _getMiscOptionList(itemFactory) {
-    const optionList = [];
-    // options item format:
-    // [text, caption, widget, settings-variable, options for combo]
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Keyboard')
+            _('V-Shell Modules (allows you to disable modules that conflict with another extension)')
         )
     );
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Override Page Up/Down Shortcuts'),
-            _('This option automatically overrides the (Shift +) Super + Page Up/Down keyboard shortcuts for the current workspace orientation. If you encounter any issues, check the configuration in the dconf editor'),
+            _('WindowSearchProvider'),
+            _('Activates the window search provider that adds open windows to the search results. You can search app names and window titles. You can also use "wq//" prefix (also by pressing the Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
             itemFactory.newSwitch(),
-            'enablePageShortcuts'
+            'windowSearchProviderModule'
         )
     );
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Compatibility')
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Improve compatibility with Dash to Dock'),
-            _('With the default Ubuntu Dock and other Dash To Dock forks, you may experience issues with Activities overview after you change Dock position or re-enable the extension. This option is enabled automatically if a replacement for the Dash is detected. In any case, using Dash to Dock extension with V-Shell is problematic and not recommended.'),
+            _('RecentFilesSearchProvider'),
+            _('Activates the recent files search provider that can be triggered by a dash icon, Ctrl + Space hotkey or by typing "fq//" prefix in the search entry field. This option needs File History option enabled in the GNOME Privacy settings'),
             itemFactory.newSwitch(),
-            'fixUbuntuDock'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Workarounds')
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Fix New Window Not In Focus'),
-            _('If you often find that the app window you open from the Activity overview does not get focus, try enabling this option.'),
-            itemFactory.newSwitch(),
-            'newWindowFocusFix'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('V-Shell Modules that can be disabled in case of conflict or misbehavior:')
+            'recentFilesSearchProviderModule'
         )
     );
 
@@ -1912,7 +1968,7 @@ function _getMiscOptionList(itemFactory) {
             _('WindowAttentionHandler'),
             _('Window attention handler options'),
             itemFactory.newSwitch(),
-            'winAttentionHandlerModule'
+            'windowAttentionHandlerModule'
         )
     );
 
@@ -1958,6 +2014,59 @@ function _getMiscOptionList(itemFactory) {
             _('Workspace switcher popup position options'),
             itemFactory.newSwitch(),
             'workspaceSwitcherPopupModule'
+        )
+    );
+
+    return optionList;
+}
+
+function _getMiscOptionList(itemFactory) {
+    const optionList = [];
+    // options item format:
+    // (text, caption, widget, settings-variable, [options for combo], sensitivity-depends-on-bool-variable)
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Keyboard')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Override Page Up/Down Shortcuts'),
+            _('This option automatically overrides the (Shift +) Super + Page Up/Down keyboard shortcuts for the current workspace orientation. If you encounter any issues, check the configuration in the dconf editor'),
+            itemFactory.newSwitch(),
+            'enablePageShortcuts'
+        )
+    );
+
+    /* optionList.push(
+        itemFactory.getRowWidget(
+            _('Compatibility')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Improve compatibility with Dash to Dock'),
+            _('With the default Ubuntu Dock and other Dash To Dock forks, you may experience issues with Activities overview after you change Dock position or re-enable the extension. This option is enabled automatically if a replacement for the Dash is detected. In any case, using Dash to Dock extension with V-Shell is problematic and not recommended.'),
+            itemFactory.newSwitch(),
+            'fixUbuntuDock'
+        )
+    );*/
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Workarounds')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Fix New Window Not In Focus'),
+            _('If you often find that the app window you open from the Activities overview does not get focus, try enabling this option.'),
+            itemFactory.newSwitch(),
+            'newWindowFocusFix'
         )
     );
 
