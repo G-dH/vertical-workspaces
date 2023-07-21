@@ -462,6 +462,9 @@ class Extension {
     }
 
     _updateSettings(settings, key) {
+        // update settings cache and option variables
+        this.opt._updateSettings();
+
         // avoid overload while loading profile - update only once
         // delayed gsettings writes are processed alphabetically
         if (key === 'aaa-loading-profile') {
@@ -471,7 +474,7 @@ class Extension {
             this._timeouts.loadingProfile = GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
                 100, () => {
-                    this._updateVShell();
+                    this.activateVShell();
                     this._timeouts.loadingProfile = 0;
                     return GLib.SOURCE_REMOVE;
                 });
@@ -483,8 +486,6 @@ class Extension {
             const index = key.replace('profile-data-', '');
             Main.notify(`${Me.metadata.name}`, `Profile ${index} has been updated`);
         }
-
-        this.opt._updateSettings();
 
         this.opt.WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
         // update variables that cannot be processed within settings
@@ -500,7 +501,7 @@ class Extension {
 
         this.opt.DASH_VISIBLE = this.opt.DASH_VISIBLE && !_Util.getEnabledExtensions('dash-to-panel@jderose9.github.com').length;
 
-        this.opt.MAX_ICON_SIZE = this.opt.get('dashMaxIconSize', true);
+        this.opt.MAX_ICON_SIZE = this.opt.get('dashMaxIconSize');
         if (this.opt.MAX_ICON_SIZE < 16) {
             this.opt.MAX_ICON_SIZE = 64;
             this.opt.set('dashMaxIconSize', 64);
@@ -514,9 +515,9 @@ class Extension {
 
         imports.ui.workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = this.opt.OVERVIEW_MODE === 1 ? 0.1 : 0.95;
 
-        if (!_Util.dashIsDashToDock()) { // DtD has its own opacity control
+        /* if (!_Util.dashIsDashToDock()) { // DtD has its own opacity control
             this.dashModule.updateStyle(dash);
-        }
+        }*/
 
         // adjust search entry style for OM2
         if (this.opt.OVERVIEW_MODE2)
@@ -529,7 +530,7 @@ class Extension {
         St.Settings.get().slow_down_factor = this.opt.ANIMATION_TIME_FACTOR;
         imports.ui.search.MAX_LIST_SEARCH_RESULTS_ROWS = this.opt.SEARCH_MAX_ROWS;
 
-        this.opt.START_Y_OFFSET = (this.opt.get('panelModule', true) && this.opt.PANEL_OVERVIEW_ONLY && this.opt.PANEL_POSITION_TOP) ||
+        this.opt.START_Y_OFFSET = (this.opt.get('panelModule') && this.opt.PANEL_OVERVIEW_ONLY && this.opt.PANEL_POSITION_TOP) ||
             // better to add unnecessary space than to have a panel overlapping other objects
             _Util.getEnabledExtensions('hidetopbar').length
             ? Main.panel.height
@@ -558,7 +559,7 @@ class Extension {
         if (key?.includes('panel'))
             this.panelModule.update();
 
-        if (key?.includes('dash') || key?.includes('search') || key?.includes('icon'))
+        if (key?.includes('dash') || key?.includes('icon'))
             this.dashModule.update();
 
         if (key?.includes('hot-corner') || key?.includes('dash'))
@@ -609,7 +610,7 @@ class Extension {
 
     _switchPageShortcuts() {
         //                                          ignore screen lock
-        if (!this.opt.get('enablePageShortcuts', true || this._sessionLockActive))
+        if (!this.opt.get('enablePageShortcuts') || this._sessionLockActive)
             return;
 
         const vertical = global.workspaceManager.layout_rows === -1;
