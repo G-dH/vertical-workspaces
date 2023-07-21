@@ -599,6 +599,7 @@ class Extension {
         }
 
         if (key?.includes('app-grid') ||
+            key?.includes('app-folder') ||
             key === 'show-search-entry' ||
             key === 'ws-thumbnail-scale' ||
             key === 'ws-thumbnail-scale-appgrid') {

@@ -580,8 +580,8 @@ function _getLayoutOptionList(itemFactory) {
             'notificationPosition',
             [
                 [_('Top Left'), 0],
-                [_('Top Center'), 1],
-                [_('Top Right (Default)'), 2],
+                [_('Top Center (Default)'), 1],
+                [_('Top Right'), 2],
                 [_('Bottom Left'), 3],
                 [_('Bottom Center'), 4],
                 [_('Bottom Right'), 5],
@@ -1508,15 +1508,32 @@ function _getBehaviorOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Apps Order'),
-            _('Choose sorting method for the app grid. Note that sorting by alphabet and usage ignores folders'),
+            _('App Grid Order'),
+            _('Choose sorting method for the app grid. Note that sorting by usage ignores folders'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'appGridOrder',
             [
                 [_('Custom (Default)'), 0],
-                [_('Alphabet - No Folders'), 1],
-                [_('Usage - No Folders'), 2],
+                [_('Alphabet - Folders First'), 1],
+                [_('Alphabet - Folders Last'), 2],
+                [_('Usage - No Folders'), 3],
+            ],
+            'appDisplayModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('App Folder Order'),
+            _('Choose sorting method for app folders'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'appFolderOrder',
+            [
+                [_('Custom (Default)'), 0],
+                [_('Alphabet'), 1],
+                [_('Usage'), 2],
             ],
             'appDisplayModule'
         )
