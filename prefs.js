@@ -1449,7 +1449,7 @@ function _getBehaviorOptionList(itemFactory) {
             // itemFactory.newDropDown(),
             'winPreviewSecBtnAction',
             [
-                [_('Activate DND (Default)'), 0],
+                [_('Activate Window (Default)'), 0],
                 [_('Close Window'), 1],
                 [_('Search For Same App Windows'), 2],
             ],
@@ -1465,7 +1465,7 @@ function _getBehaviorOptionList(itemFactory) {
             // itemFactory.newDropDown(),
             'winPreviewMidBtnAction',
             [
-                [_('Activate DND (Default)'), 0],
+                [_('Activate Window (Default)'), 0],
                 [_('Close Window'), 1],
                 [_('Search For Same App Windows'), 2],
             ],
