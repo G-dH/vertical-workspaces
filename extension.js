@@ -96,7 +96,7 @@ let Misc;
 let Me;
 
 // gettext
-//let _;
+// let _;
 
 export default class VShell extends Extension {
     _init() {
@@ -155,8 +155,8 @@ export default class VShell extends Extension {
 
         Me.metadata = this.metadata;
         Me.gSettings = this.getSettings();
-        Me.gettext = _;//this.gettext.bind(this);
-        //_ = Me.gettext;
+        Me.gettext = _;// this.gettext.bind(this);
+        // _ = Me.gettext;
         Me.Settings = Settings;
         Me.Util = _Util;
         Me.AppDisplayOverride = AppDisplayOverride;
@@ -194,8 +194,8 @@ export default class VShell extends Extension {
         // If Dash to Dock is enabled, disabling V-Shell can end in broken overview
         Ui.Main.overview.hide();
         Me.Util.clearGlobals();
-        this._clearGlobals();
         log(`${Me.metadata.name}: disabled`);
+        this._clearGlobals();
     }
 
     _getModuleList() {
@@ -831,7 +831,7 @@ export default class VShell extends Extension {
             return;
 
         if (!Me._vShellStatusMessage) {
-            const sm = new /*Ui.Main.*/RestartMessage(_('Updating V-Shell...'));
+            const sm = new /* Ui.Main.*/RestartMessage(_('Updating V-Shell...'));
             sm.set_style('background-color: rgba(0,0,0,0.3);');
             sm.open();
             Me._vShellStatusMessage = sm;
