@@ -9,114 +9,113 @@
 
 'use strict';
 
-const Gtk = imports.gi.Gtk;
-const GLib = imports.gi.GLib;
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import Gio from 'gi://Gio';
+import Gtk from 'gi://Gtk';
+import Adw from 'gi://Adw';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me             = ExtensionUtils.getCurrentExtension();
-const Settings       = Me.imports.lib.settings;
+import { ExtensionPreferences, gettext as _ } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import * as Config from 'resource:///org/gnome/Shell/Extensions/js/misc/config.js';
 
-const ItemFactory = Me.imports.lib.optionsFactory.ItemFactory;
-const AdwPrefs = Me.imports.lib.optionsFactory.AdwPrefs;
-const LegacyPrefs = Me.imports.lib.optionsFactory.LegacyPrefs;
+import * as Settings from './lib/settings.js';
+import * as Util from './lib/util.js';
+import * as OptionsFactory from './lib/optionsFactory.js';
 
-const shellVersion   = Settings.shellVersion;
-
-// gettext
-const _  = Settings._;
-
-// libadwaita is available starting with GNOME Shell 42.
-let Adw = null;
-try {
-    Adw = imports.gi.Adw;
-} catch (e) {}
+let Gi;
+let Misc;
+let Me;
+//let _;
 
 let gOptions;
 
-function init() {
-    ExtensionUtils.initTranslations(Me.metadata['gettext-domain']);
-    gOptions = new Settings.Options();
-}
+export default class BurnMyWindowsPreferences extends ExtensionPreferences {
+    constructor(metadata) {
+        super(metadata);
+        Gi = {};
+        Gi.GLib = GLib;
+        Gi.GObject = GObject;
+        Gi.Gio = Gio;
+        Gi.Gtk = Gtk;
+        Gi.Adw = Adw;
 
-function _getPageList() {
-    const itemFactory = new ItemFactory(gOptions);
-    const pageList = [
-        {
-            name: 'profiles',
-            title: _('Profiles'),
-            iconName: 'open-menu-symbolic',
-            optionList: _getProfilesOptionList(itemFactory),
-        },
-        {
-            name: 'layout',
-            title: _('Layout'),
-            iconName: 'view-grid-symbolic',
-            optionList: _getLayoutOptionList(itemFactory),
-        },
-        {
-            name: 'appearance',
-            title: _('Appearance'),
-            iconName: 'view-reveal-symbolic',
-            optionList: _getAppearanceOptionList(itemFactory),
-        },
-        {
-            name: 'behavior',
-            title: _('Behavior'),
-            iconName: 'system-run-symbolic',
-            optionList: _getBehaviorOptionList(itemFactory),
-        },
-        {
-            name: 'modules',
-            title: _('Modules'),
-            iconName: 'application-x-addon-symbolic',
-            optionList: _getModulesOptionList(itemFactory),
-        },
-        {
-            name: 'misc',
-            title: _('Misc'),
-            iconName: 'preferences-other-symbolic',
-            optionList: _getMiscOptionList(itemFactory),
-        },
-        {
-            name: 'about',
-            title: _('About'),
-            iconName: 'preferences-system-details-symbolic',
-            optionList: _getAboutOptionList(itemFactory),
-        },
-    ];
+        Misc = {};
+        Misc.Config = Config;
 
-    return pageList;
-}
+        Me = {};
+        Me.Settings = Settings;
+        Me.Util = Util;
 
-function fillPreferencesWindow(window) {
-    window = new AdwPrefs(gOptions).getFilledWindow(window, _getPageList());
-    window.connect('close-request', () => {
-        gOptions.destroy();
-        gOptions = null;
-    });
+        Me.gSettings = this.getSettings();
+        Me.gettext = _;this.gettext;
+        //_ = this.gettext;
+        Me.metadata = this.metadata;
+        
+        Me.Opt = new Me.Settings.Options(Gi, Me);
+        gOptions = Me.Opt;
 
-    window.set_default_size(800, 800);
-}
+        OptionsFactory.init(Gi, Me);
+    }
 
-function buildPrefsWidget() {
-    const prefsWidget = new LegacyPrefs(gOptions).getPrefsWidget(_getPageList());
+    _getPageList() {
+        const itemFactory = new OptionsFactory.ItemFactory();
+        const pageList = [
+            {
+                name: 'profiles',
+                title: _('Profiles'),
+                iconName: 'open-menu-symbolic',
+                optionList: _getProfilesOptionList(itemFactory),
+            },
+            {
+                name: 'layout',
+                title: _('Layout'),
+                iconName: 'view-grid-symbolic',
+                optionList: _getLayoutOptionList(itemFactory),
+            },
+            {
+                name: 'appearance',
+                title: _('Appearance'),
+                iconName: 'view-reveal-symbolic',
+                optionList: _getAppearanceOptionList(itemFactory),
+            },
+            {
+                name: 'behavior',
+                title: _('Behavior'),
+                iconName: 'system-run-symbolic',
+                optionList: _getBehaviorOptionList(itemFactory),
+            },
+            {
+                name: 'modules',
+                title: _('Modules'),
+                iconName: 'application-x-addon-symbolic',
+                optionList: _getModulesOptionList(itemFactory),
+            },
+            {
+                name: 'misc',
+                title: _('Misc'),
+                iconName: 'preferences-other-symbolic',
+                optionList: _getMiscOptionList(itemFactory),
+            },
+            {
+                name: 'about',
+                title: _('About'),
+                iconName: 'preferences-system-details-symbolic',
+                optionList: _getAboutOptionList(itemFactory),
+            },
+        ];
 
-    prefsWidget.connect('realize', widget => {
-        const window = widget.get_root ? widget.get_root() : widget.get_toplevel();
-        const width = 800;
-        const height = 800;
-        window.set_default_size(width, height);
-        const headerbar = window.get_titlebar();
-        headerbar.title_widget = prefsWidget._stackSwitcher;
+        return pageList;
+    }
 
-        const signal = Gtk.get_major_version() === 3 ? 'destroy' : 'close-request';
-        window.connect(signal, () => {
+    fillPreferencesWindow(window) {
+        window = new OptionsFactory.AdwPrefs(gOptions).getFilledWindow(window, this._getPageList());
+        window.connect('close-request', () => {
             gOptions.destroy();
             gOptions = null;
         });
-    });
 
-    return prefsWidget;
+        window.set_default_size(840, 800);
+    }
 }
 
 // ////////////////////////////////////////////////////////////////////
@@ -174,8 +173,8 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Dash Position'),
             null,
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'dashPosition',
             [
                 [_('Top'), 0],
@@ -199,7 +198,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    const dashPositionAdjustment = new Gtk.Adjustment({
+    const dashPositionAdjustment = new Gi.Gtk.Adjustment({
         upper: 100,
         lower: -100,
         step_increment: 1,
@@ -207,7 +206,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const dashPositionScale = itemFactory.newScale(dashPositionAdjustment);
-    dashPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
+    dashPositionScale.add_mark(0, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Fine Tune Dash Position'),
@@ -293,7 +292,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    const wstPositionAdjustment = new Gtk.Adjustment({
+    const wstPositionAdjustment = new Gi.Gtk.Adjustment({
         upper: 100,
         lower: -100,
         step_increment: 1,
@@ -301,7 +300,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const wstPositionScale = itemFactory.newScale(wstPositionAdjustment);
-    wstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
+    wstPositionScale.add_mark(0, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Fine Tune Workspace Thumbnails Position'),
@@ -320,7 +319,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    const wsThumbnailScaleAdjustment = new Gtk.Adjustment({
+    const wsThumbnailScaleAdjustment = new Gi.Gtk.Adjustment({
         upper: 30,
         lower: 0,
         step_increment: 1,
@@ -328,7 +327,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const wsThumbnailScale = itemFactory.newScale(wsThumbnailScaleAdjustment);
-    wsThumbnailScale.add_mark(13, Gtk.PositionType.TOP, null);
+    wsThumbnailScale.add_mark(13, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Thumbnails Max Scale'),
@@ -338,7 +337,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    const wsThumbnailAppScaleAdjustment = new Gtk.Adjustment({
+    const wsThumbnailAppScaleAdjustment = new Gi.Gtk.Adjustment({
         upper: 30,
         lower: 0,
         step_increment: 1,
@@ -346,7 +345,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const wsThumbnailAppScale = itemFactory.newScale(wsThumbnailAppScaleAdjustment);
-    wsThumbnailAppScale.add_mark(0, Gtk.PositionType.TOP, null);
+    wsThumbnailAppScale.add_mark(0, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Thumbnails Max Scale - App View'),
@@ -362,7 +361,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    const wsScaleAdjustment = new Gtk.Adjustment({
+    const wsScaleAdjustment = new Gi.Gtk.Adjustment({
         upper: 100,
         lower: 30,
         step_increment: 1,
@@ -370,7 +369,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const wsScaleScale = itemFactory.newScale(wsScaleAdjustment);
-    wsScaleScale.add_mark(100, Gtk.PositionType.TOP, null);
+    wsScaleScale.add_mark(100, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspaces Scale'),
@@ -380,7 +379,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    const wsSpacingAdjustment = new Gtk.Adjustment({
+    const wsSpacingAdjustment = new Gi.Gtk.Adjustment({
         upper: 500,
         lower: 10,
         step_increment: 1,
@@ -388,7 +387,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const wsSpacingScale = itemFactory.newScale(wsSpacingAdjustment);
-    wsSpacingScale.add_mark(350, Gtk.PositionType.TOP, null);
+    wsSpacingScale.add_mark(350, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspaces Spacing'),
@@ -414,7 +413,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    const agPageAdjustment = new Gtk.Adjustment({
+    const agPageAdjustment = new Gi.Gtk.Adjustment({
         upper: 100,
         lower: 50,
         step_increment: 1,
@@ -422,7 +421,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const agPageWidthScale = itemFactory.newScale(agPageAdjustment);
-    agPageWidthScale.add_mark(90, Gtk.PositionType.TOP, null);
+    agPageWidthScale.add_mark(90, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('App Grid Page Width Scale'),
@@ -458,7 +457,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    const searchViewScaleAdjustment = new Gtk.Adjustment({
+    const searchViewScaleAdjustment = new Gi.Gtk.Adjustment({
         upper: 150,
         lower: 50,
         step_increment: 1,
@@ -466,7 +465,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const searchViewScale = itemFactory.newScale(searchViewScaleAdjustment);
-    searchViewScale.add_mark(100, Gtk.PositionType.TOP, null);
+    searchViewScale.add_mark(100, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Search Results Width'),
@@ -523,7 +522,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    const hAdjustment = new Gtk.Adjustment({
+    const hAdjustment = new Gi.Gtk.Adjustment({
         lower: 0,
         upper: 100,
         step_increment: 1,
@@ -531,7 +530,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const hScale = itemFactory.newScale(hAdjustment);
-    hScale.add_mark(50, Gtk.PositionType.TOP, null);
+    hScale.add_mark(50, Gi.Gtk.PositionType.TOP, null);
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -544,7 +543,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    const vAdjustment = new Gtk.Adjustment({
+    const vAdjustment = new Gi.Gtk.Adjustment({
         lower: 0,
         upper: 100,
         step_increment: 1,
@@ -552,7 +551,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const vScale = itemFactory.newScale(vAdjustment);
-    vScale.add_mark(50, Gtk.PositionType.TOP, null);
+    vScale.add_mark(50, Gi.Gtk.PositionType.TOP, null);
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -633,7 +632,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    const secWstPositionAdjustment = new Gtk.Adjustment({
+    const secWstPositionAdjustment = new Gi.Gtk.Adjustment({
         upper: 100,
         lower: -100,
         step_increment: 1,
@@ -641,7 +640,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const secWstPositionScale = itemFactory.newScale(secWstPositionAdjustment);
-    secWstPositionScale.add_mark(0, Gtk.PositionType.TOP, null);
+    secWstPositionScale.add_mark(0, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Fine Tune Workspace Thumbnails Position'),
@@ -651,7 +650,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    const secWsThumbnailScaleAdjustment = new Gtk.Adjustment({
+    const secWsThumbnailScaleAdjustment = new Gi.Gtk.Adjustment({
         upper: 30,
         lower: 5,
         step_increment: 1,
@@ -659,7 +658,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const secWsThumbnailScale = itemFactory.newScale(secWsThumbnailScaleAdjustment);
-    secWsThumbnailScale.add_mark(13, Gtk.PositionType.TOP, null);
+    secWsThumbnailScale.add_mark(13, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Thumbnails Max Scale'),
@@ -669,7 +668,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    const wsSecScaleAdjustment = new Gtk.Adjustment({
+    const wsSecScaleAdjustment = new Gi.Gtk.Adjustment({
         upper: 100,
         lower: 30,
         step_increment: 1,
@@ -677,7 +676,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const wsSecScaleScale = itemFactory.newScale(wsSecScaleAdjustment);
-    wsScaleScale.add_mark(100, Gtk.PositionType.TOP, null);
+    wsScaleScale.add_mark(100, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Preview Scale'),
@@ -750,7 +749,7 @@ function _getAppearanceOptionList(itemFactory) {
         )
     );
 
-    const dashBgAdjustment = new Gtk.Adjustment({
+    const dashBgAdjustment = new Gi.Gtk.Adjustment({
         upper: 100,
         lower: 0,
         step_increment: 1,
@@ -769,7 +768,7 @@ function _getAppearanceOptionList(itemFactory) {
         )
     );
 
-    const dashRadAdjustment = new Gtk.Adjustment({
+    const dashRadAdjustment = new Gi.Gtk.Adjustment({
         upper: 50,
         lower: 0,
         step_increment: 1,
@@ -907,7 +906,7 @@ function _getAppearanceOptionList(itemFactory) {
         )
     );
 
-    const wsPreviewBgRadiusAdjustment = new Gtk.Adjustment({
+    const wsPreviewBgRadiusAdjustment = new Gi.Gtk.Adjustment({
         upper: 60,
         lower: 5,
         step_increment: 1,
@@ -915,7 +914,7 @@ function _getAppearanceOptionList(itemFactory) {
     });
 
     const wsPreviewBgRadiusSpinButton = itemFactory.newScale(wsPreviewBgRadiusAdjustment);
-    wsPreviewBgRadiusSpinButton.add_mark(30, Gtk.PositionType.TOP, null);
+    wsPreviewBgRadiusSpinButton.add_mark(30, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Background Corner Radius'),
@@ -997,7 +996,7 @@ function _getAppearanceOptionList(itemFactory) {
         )
     );
 
-    const columnsAdjustment = new Gtk.Adjustment({
+    const columnsAdjustment = new Gi.Gtk.Adjustment({
         upper: 15,
         lower: 0,
         step_increment: 1,
@@ -1014,7 +1013,7 @@ function _getAppearanceOptionList(itemFactory) {
         'appDisplayModule'
     ));
 
-    const rowsAdjustment = new Gtk.Adjustment({
+    const rowsAdjustment = new Gi.Gtk.Adjustment({
         upper: 15,
         lower: 0,
         step_increment: 1,
@@ -1031,7 +1030,7 @@ function _getAppearanceOptionList(itemFactory) {
         'appDisplayModule'
     ));
 
-    const folderColumnsAdjustment = new Gtk.Adjustment({
+    const folderColumnsAdjustment = new Gi.Gtk.Adjustment({
         upper: 15,
         lower: 0,
         step_increment: 1,
@@ -1048,7 +1047,7 @@ function _getAppearanceOptionList(itemFactory) {
         'appDisplayModule'
     ));
 
-    const folderRowsAdjustment = new Gtk.Adjustment({
+    const folderRowsAdjustment = new Gi.Gtk.Adjustment({
         upper: 15,
         lower: 0,
         step_increment: 1,
@@ -1065,7 +1064,7 @@ function _getAppearanceOptionList(itemFactory) {
         'appDisplayModule'
     ));
 
-    const appGridSpacingAdjustment = new Gtk.Adjustment({
+    const appGridSpacingAdjustment = new Gi.Gtk.Adjustment({
         upper: 30,
         lower: 5,
         step_increment: 1,
@@ -1073,7 +1072,7 @@ function _getAppearanceOptionList(itemFactory) {
     });
 
     const appGridSpacingScale = itemFactory.newScale(appGridSpacingAdjustment);
-    appGridSpacingScale.add_mark(12, Gtk.PositionType.TOP, null);
+    appGridSpacingScale.add_mark(12, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Grid Spacing'),
@@ -1111,7 +1110,7 @@ function _getAppearanceOptionList(itemFactory) {
         )
     );
 
-    const maxSearchResultsAdjustment = new Gtk.Adjustment({
+    const maxSearchResultsAdjustment = new Gi.Gtk.Adjustment({
         upper: 50,
         lower: 5,
         step_increment: 1,
@@ -1119,10 +1118,10 @@ function _getAppearanceOptionList(itemFactory) {
     });
 
     const maxSearchResultsSpinButton = itemFactory.newScale(maxSearchResultsAdjustment);
-    maxSearchResultsSpinButton.add_mark(10, Gtk.PositionType.TOP, null);
-    maxSearchResultsSpinButton.add_mark(20, Gtk.PositionType.TOP, null);
-    maxSearchResultsSpinButton.add_mark(30, Gtk.PositionType.TOP, null);
-    maxSearchResultsSpinButton.add_mark(40, Gtk.PositionType.TOP, null);
+    maxSearchResultsSpinButton.add_mark(10, Gi.Gtk.PositionType.TOP, null);
+    maxSearchResultsSpinButton.add_mark(20, Gi.Gtk.PositionType.TOP, null);
+    maxSearchResultsSpinButton.add_mark(30, Gi.Gtk.PositionType.TOP, null);
+    maxSearchResultsSpinButton.add_mark(40, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Max Search Results Rows'),
@@ -1150,7 +1149,7 @@ function _getAppearanceOptionList(itemFactory) {
         )
     );
 
-    const brightnessBgAdjustment = new Gtk.Adjustment({
+    const brightnessBgAdjustment = new Gi.Gtk.Adjustment({
         upper: 100,
         lower: 0,
         step_increment: 1,
@@ -1167,7 +1166,7 @@ function _getAppearanceOptionList(itemFactory) {
         )
     );
 
-    const blurBgAdjustment = new Gtk.Adjustment({
+    const blurBgAdjustment = new Gi.Gtk.Adjustment({
         upper: 100,
         lower: 0,
         step_increment: 1,
@@ -1184,7 +1183,7 @@ function _getAppearanceOptionList(itemFactory) {
         )
     );
 
-    const blurAppBgAdjustment = new Gtk.Adjustment({
+    const blurAppBgAdjustment = new Gi.Gtk.Adjustment({
         upper: 100,
         lower: 0,
         step_increment: 1,
@@ -1613,8 +1612,8 @@ function _getBehaviorOptionList(itemFactory) {
         _('Reset App Grid Layout'),
         _('Removes all stored app grid positions, after reset icons will be sorted alphabetically, except folder contents'),
         itemFactory.newResetButton(() => {
-            const settings = ExtensionUtils.getSettings('org.gnome.shell');
-            settings.set_value('app-picker-layout', new GLib.Variant('aa{sv}', []));
+            const settings = Misc.ExtensionUtils.getSettings('org.gnome.shell');
+            settings.set_value('app-picker-layout', new Gi.GLib.Variant('aa{sv}', []));
         })
     ));
 
@@ -1622,7 +1621,7 @@ function _getBehaviorOptionList(itemFactory) {
         _('Remove App Grid Folders'),
         _('Removes all folders, folder apps will move to the root grid'),
         itemFactory.newResetButton(() => {
-            const settings = ExtensionUtils.getSettings('org.gnome.desktop.app-folders');
+            const settings = Misc.ExtensionUtils.getSettings('org.gnome.desktop.app-folders');
             settings.set_strv('folder-children', []);
         })
     ));
@@ -1700,7 +1699,7 @@ function _getBehaviorOptionList(itemFactory) {
         )
     );
 
-    const animationSpeedAdjustment = new Gtk.Adjustment({
+    const animationSpeedAdjustment = new Gi.Gtk.Adjustment({
         upper: 500,
         lower: 1,
         step_increment: 10,
@@ -1708,7 +1707,7 @@ function _getBehaviorOptionList(itemFactory) {
     });
 
     const animationSpeedScale = itemFactory.newScale(animationSpeedAdjustment);
-    animationSpeedScale.add_mark(100, Gtk.PositionType.TOP, null);
+    animationSpeedScale.add_mark(100, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Animation Speed'),
