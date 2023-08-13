@@ -15,7 +15,7 @@ import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import { ExtensionPreferences, gettext as _ } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import { ExtensionPreferences } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 import * as Config from 'resource:///org/gnome/Shell/Extensions/js/misc/config.js';
 
 import * as Settings from './lib/settings.js';
@@ -25,7 +25,9 @@ import * as OptionsFactory from './lib/optionsFactory.js';
 let Gi;
 let Misc;
 let Me;
-// let _;
+
+// gettext
+let _;
 
 let gOptions;
 
@@ -48,7 +50,7 @@ export default class VShell extends ExtensionPreferences {
 
         Me.gSettings = this.getSettings();
         Me.gettext = this.gettext.bind(this);
-        // _ = this.gettext;
+        _ = Me.gettext;
         Me.metadata = this.metadata;
 
         Me.Opt = new Me.Settings.Options(Gi, Me);

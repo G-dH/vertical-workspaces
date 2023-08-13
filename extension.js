@@ -60,7 +60,7 @@ import * as Settings from './lib/settings.js';
 import * as _Util from './lib/util.js';
 import * as AppDisplayOverride from './lib/appDisplay.js';
 
-import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import { LayoutModule } from './lib/layout.js';
 import { WorkspacesViewModule } from './lib/workspacesView.js';
@@ -96,7 +96,7 @@ let Misc;
 let Me;
 
 // gettext
-// let _;
+let _;
 
 export default class VShell extends Extension {
     _init() {
@@ -155,8 +155,8 @@ export default class VShell extends Extension {
 
         Me.metadata = this.metadata;
         Me.gSettings = this.getSettings();
-        Me.gettext = _;// this.gettext.bind(this);
-        // _ = Me.gettext;
+        Me.gettext = this.gettext.bind(this);
+        _ = Me.gettext;
         Me.Settings = Settings;
         Me.Util = _Util;
         Me.AppDisplayOverride = AppDisplayOverride;
@@ -168,7 +168,7 @@ export default class VShell extends Extension {
         Me.Util.init(Gi, Ui, Misc, Me);
     }
 
-    _clearGlobals() {
+    cleanGlobals() {
         Gi = null;
         Ui = null;
         Misc = null;
@@ -193,9 +193,9 @@ export default class VShell extends Extension {
 
         // If Dash to Dock is enabled, disabling V-Shell can end in broken overview
         Ui.Main.overview.hide();
-        Me.Util.clearGlobals();
+        Me.Util.cleanGlobals();
         log(`${Me.metadata.name}: disabled`);
-        this._clearGlobals();
+
     }
 
     _getModuleList() {
@@ -258,8 +258,10 @@ export default class VShell extends Extension {
         Me.Opt.destroy();
         Me.Opt = null;
 
-        for (let module of this._getModuleList())
+        for (let module of this._getModuleList()) {
+            this[module].cleanGlobals();
             delete this[module];
+        }
 
         delete this.opt;
     }
