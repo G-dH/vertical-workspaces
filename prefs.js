@@ -25,11 +25,11 @@ import * as OptionsFactory from './lib/optionsFactory.js';
 let Gi;
 let Misc;
 let Me;
-//let _;
+// let _;
 
 let gOptions;
 
-export default class BurnMyWindowsPreferences extends ExtensionPreferences {
+export default class VShell extends ExtensionPreferences {
     constructor(metadata) {
         super(metadata);
         Gi = {};
@@ -47,10 +47,10 @@ export default class BurnMyWindowsPreferences extends ExtensionPreferences {
         Me.Util = Util;
 
         Me.gSettings = this.getSettings();
-        Me.gettext = _;this.gettext;
-        //_ = this.gettext;
+        Me.gettext = this.gettext.bind(this);
+        // _ = this.gettext;
         Me.metadata = this.metadata;
-        
+
         Me.Opt = new Me.Settings.Options(Gi, Me);
         gOptions = Me.Opt;
 
