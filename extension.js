@@ -10,6 +10,9 @@
 
 'use strict';
 
+const ExtensionUtils = imports.misc.extensionUtils;
+const Import = ExtensionUtils.getCurrentExtension().imports.lib.import;
+
 let Gi;
 let Ui;
 let Misc;
@@ -17,138 +20,32 @@ let Me;
 let _;
 
 function init() {
-    const ExtensionUtils = imports.misc.extensionUtils;
     ExtensionUtils.initTranslations();
     return new Extension();
 }
 
 class Extension {
     _init() {
-        Gi = {};
-        Gi._Gi = imports._gi;
-        Gi.GLib = imports.gi.GLib;
-        Gi.Clutter = imports.gi.Clutter;
-        Gi.St = imports.gi.St;
-        Gi.Meta = imports.gi.Meta;
-        Gi.Shell = imports.gi.Shell;
-        Gi.GObject = imports.gi.GObject;
-        Gi.Gio = imports.gi.Gio;
-        Gi.Pango = imports.gi.Pango;
-        Gi.Graphene = imports.gi.Graphene;
-        Gi.Gtk = imports.gi.Gtk;
-        Gi.Gdk = imports.gi.Gdk;
-        Gi.Atk = imports.gi.Atk;
+        Import.init();
+        Gi = Import.Gi;
+        Ui = Import.Ui;
+        Misc = Import.Misc;
+        Me = Import.Me;
 
-        Ui = {};
-        Ui.Main = imports.ui.main;
-        Ui.Workspace = imports.ui.workspace;
-        Ui.Search = imports.ui.search;
-        Ui.DND = imports.ui.dnd;
-        Ui.AppDisplay = imports.ui.appDisplay;
-        Ui.IconGrid = imports.ui.iconGrid;
-        Ui.Dash = imports.ui.dash;
-        Ui.AppFavorites = imports.ui.appFavorites;
-        Ui.Overview = imports.ui.overview;
-        Ui.Panel = imports.ui.panel;
-        Ui.SwipeTracker = imports.ui.swipeTracker;
-        Ui.AltTab = imports.ui.altTab;
-        Ui.Layout = imports.ui.layout;
-        Ui.OsdWindow = imports.ui.osdWindow;
-        Ui.OverviewControls = imports.ui.overviewControls;
-        Ui.WorkspacesView = imports.ui.workspacesView;
-        Ui.WorkspaceThumbnail = imports.ui.workspaceThumbnail;
-        Ui.Background = imports.ui.background;
-        Ui.MessageTray = imports.ui.messageTray;
-        Ui.WindowAttentionHandler = imports.ui.windowAttentionHandler;
-        Ui.WindowManager = imports.ui.windowManager;
-        Ui.WindowPreview = imports.ui.windowPreview;
-        Ui.WorkspaceSwitcherPopup = imports.ui.workspaceSwitcherPopup;
-        Ui.WorkspaceAnimation = imports.ui.workspaceAnimation;
-        Ui.AppMenu = imports.ui.appMenu;
-        Ui.PopupMenu = imports.ui.popupMenu;
-        Ui.BoxPointer = imports.ui.boxpointer;
-
-        Misc = {};
-        Misc.Config = imports.misc.config;
-        Misc.shellVersion = parseFloat(Misc.Config.PACKAGE_VERSION);
-        Misc.ExtensionUtils = imports.misc.extensionUtils;
-        Misc.Util = imports.misc.util;
-
-        Me = {};
-        const MyEx = Misc.ExtensionUtils.getCurrentExtension();
-        Me.imports = MyEx.imports;
-        Me.metadata = MyEx.metadata;
-        Me.gSettings = Misc.ExtensionUtils.getSettings(Me.metadata['settings-schema']);
-        Me.Settings = MyEx.imports.lib.settings;
-        Me.gettext = imports.gettext.domain(Me.metadata['gettext-domain']).gettext;
-        Me.Util = MyEx.imports.lib.util;
-        Me.AppDisplayOverride = MyEx.imports.lib.appDisplay;
-
-        // gettext
-        _  = Me.gettext;
-
-        Me.WindowSearchProvider = Me.imports.lib.windowSearchProvider;
-        Me.RecentFilesSearchProvider = Me.imports.lib.recentFilesSearchProvider;
-
-        Me.Opt = new Me.Settings.Options(Gi, Misc, Me);
+        _ = Me.gettext;
         this.opt = Me.Opt;
 
         Me.Util.init(Gi, Ui, Misc, Me);
 
-        const AppDisplayModule = Me.imports.lib.appDisplay.AppDisplayModule;
-        this.appDisplayModule = new AppDisplayModule(Gi, Ui, Misc, Me);
-        const AppFavoritesModule = Me.imports.lib.appFavorites.AppFavoritesModule;
-        this.appFavoritesModule = new AppFavoritesModule(Gi, Ui, Misc, Me);
-        const DashModule = Me.imports.lib.dash.DashModule;
-        this.dashModule = new DashModule(Gi, Ui, Misc, Me);
-        const IconGridModule = Me.imports.lib.iconGrid.IconGridModule;
-        this.iconGridModule = new IconGridModule(Gi, Ui, Misc, Me);
-        const LayoutModule = Me.imports.lib.layout.LayoutModule;
-        this.layoutModule = new LayoutModule(Gi, Ui, Misc, Me);
-        const MessageTrayModule = Me.imports.lib.messageTray.MessageTrayModule;
-        this.messageTrayModule = new MessageTrayModule(Gi, Ui, Misc, Me);
-        const OsdWindowModule = Me.imports.lib.osdWindow.OsdWindowModule;
-        this.osdWindowModule = new OsdWindowModule(Gi, Ui, Misc, Me);
-        const OverviewModule = Me.imports.lib.overview.OverviewModule;
-        this.overviewModule = new OverviewModule(Gi, Ui, Misc, Me);
-        const OverlayKeyModule = Me.imports.lib.overlayKey.OverlayKeyModule;
-        this.overlayKeyModule = new OverlayKeyModule(Gi, Ui, Misc, Me);
-        const OverviewControlsModule = Me.imports.lib.overviewControls.OverviewControlsModule;
-        this.overviewControlsModule = new OverviewControlsModule(Gi, Ui, Misc, Me);
-        const PanelModule = Me.imports.lib.panel.PanelModule;
-        this.panelModule = new PanelModule(Gi, Ui, Misc, Me);
-        const SearchModule = Me.imports.lib.search.SearchModule;
-        this.searchModule = new SearchModule(Gi, Ui, Misc, Me);
-        const SearchControllerModule = Me.imports.lib.searchController.SearchControllerModule;
-        this.searchControllerModule = new SearchControllerModule(Gi, Ui, Misc, Me);
-        const SwipeTrackerModule = Me.imports.lib.swipeTracker.SwipeTrackerModule;
-        this.swipeTrackerModule = new SwipeTrackerModule(Gi, Ui, Misc, Me);
-        const WindowAttentionHandlerModule = Me.imports.lib.windowAttentionHandler.WindowAttentionHandlerModule;
-        this.windowAttentionHandlerModule = new WindowAttentionHandlerModule(Gi, Ui, Misc, Me);
-        const WindowManagerModule  = Me.imports.lib.windowManager.WindowManagerModule;
-        this.windowManagerModule = new WindowManagerModule(Gi, Ui, Misc, Me);
-        const WindowPreviewModule = Me.imports.lib.windowPreview.WindowPreviewModule;
-        this.windowPreviewModule = new WindowPreviewModule(Gi, Ui, Misc, Me);
-        const WorkspaceAnimationModule = Me.imports.lib.workspaceAnimation.WorkspaceAnimationModule;
-        this.workspaceAnimationModule = new WorkspaceAnimationModule(Gi, Ui, Misc, Me);
-        const WorkspaceModule = Me.imports.lib.workspace.WorkspaceModule;
-        this.workspaceModule = new WorkspaceModule(Gi, Ui, Misc, Me);
-        const WorkspaceSwitcherPopupModule = Me.imports.lib.workspaceSwitcherPopup.WorkspaceSwitcherPopupModule;
-        this.workspaceSwitcherPopupModule = new WorkspaceSwitcherPopupModule(Gi, Ui, Misc, Me);
-        const WorkspaceThumbnailModule = Me.imports.lib.workspaceThumbnail.WorkspaceThumbnailModule;
-        this.workspaceThumbnailModule = new WorkspaceThumbnailModule(Gi, Ui, Misc, Me);
-        const WorkspacesViewModule = Me.imports.lib.workspacesView.WorkspacesViewModule;
-        this.workspacesViewModule = new WorkspacesViewModule(Gi, Ui, Misc, Me);
-        const WindowSearchProviderModule = Me.imports.lib.windowSearchProvider.WindowSearchProviderModule;
-        this.windowSearchProviderModule = new WindowSearchProviderModule(Gi, Ui, Misc, Me);
-        const RecentFilesSearchProviderModule = Me.imports.lib.recentFilesSearchProvider.RecentFilesSearchProviderModule;
-        this.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Gi, Ui, Misc, Me);
+        Me.moduleList.forEach(module => {
+            this[module] = new Me.Modules[module](Gi, Ui, Misc, Me);
+        });
     }
 
     enable() {
         this._init();
 
-        this.activateVShell();
+        this._activateVShell();
 
         log(`${Me.metadata.name}: enabled`);
     }
@@ -156,56 +53,27 @@ class Extension {
     // Reason for using "unlock-dialog" session mode:
     // Updating the "appDisplay" content every time the screen is locked/unlocked takes quite a lot of time and affects the user experience.
     disable() {
-        this.removeVShell();
+        this._removeVShell();
         this._disposeModules();
+        Import.cleanGlobals();
+        this.opt = null;
 
         // If Dash to Dock is enabled, disabling V-Shell can end in broken overview
         Ui.Main.overview.hide();
         log(`${Me.metadata.name}: disabled`);
     }
 
-    _getModuleList() {
-        return [
-            'appDisplayModule',
-            'appFavoritesModule',
-            'dashModule',
-            'iconGridModule',
-            'layoutModule',
-            'messageTrayModule',
-            'overviewControlsModule',
-            'overviewModule',
-            'overlayKeyModule',
-            'osdWindowModule',
-            'panelModule',
-            'swipeTrackerModule',
-            'searchControllerModule',
-            'searchModule',
-            'recentFilesSearchProviderModule',
-            'windowAttentionHandlerModule',
-            'windowManagerModule',
-            'windowPreviewModule',
-            'windowSearchProviderModule',
-            'workspaceModule',
-            'workspaceAnimationModule',
-            'workspacesViewModule',
-            'workspaceSwitcherPopupModule',
-            'workspaceThumbnailModule',
-        ];
-    }
-
     _disposeModules() {
         Me.Opt.destroy();
         Me.Opt = null;
 
-        for (let module of this._getModuleList()) {
+        for (let module of Me.moduleList) {
             this[module].cleanGlobals();
             delete this[module];
         }
-
-        delete this.opt;
     }
 
-    activateVShell() {
+    _activateVShell() {
         this._enabled = true;
 
         this._removeTimeouts();
@@ -237,7 +105,7 @@ class Extension {
         this._setInitialWsIndex();
     }
 
-    removeVShell() {
+    _removeVShell() {
         this._enabled = false;
 
         const reset = true;
@@ -504,7 +372,7 @@ class Extension {
                     log(`[${Me.metadata.name}]: Updating extension ...`);
                     // for case the monitor configuration has been changed, update all
                     Me._resetInProgress = true;
-                    this.activateVShell();
+                    this._activateVShell();
                     Me._resetInProgress = false;
                 }
                 this._timeouts.reset = 0;
@@ -535,7 +403,7 @@ class Extension {
             this._timeouts.loadingProfile = Gi.GLib.timeout_add(
                 Gi.GLib.PRIORITY_DEFAULT,
                 100, () => {
-                    this.activateVShell();
+                    this._activateVShell();
                     this._timeouts.loadingProfile = 0;
                     return Gi.GLib.SOURCE_REMOVE;
                 });
@@ -603,7 +471,7 @@ class Extension {
 
     _applySettings(key) {
         if (key?.endsWith('-module')) {
-            for (let module of this._getModuleList()) {
+            for (let module of Me.moduleList) {
                 if (this.opt.options[module] && key === this.opt.options[module][1]) {
                     if (key === 'app-display-module')
                         this._showStatusMessage();
