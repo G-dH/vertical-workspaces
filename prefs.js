@@ -9,43 +9,32 @@
 
 'use strict';
 
-let Gi = {};
-Gi.GLib = imports.gi.GLib;
-Gi.GObject = imports.gi.GObject;
-Gi.Gio = imports.gi.Gio;
-Gi.Gtk = imports.gi.Gtk;
-Gi.Adw = imports.gi.Adw;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Import = ExtensionUtils.getCurrentExtension().imports.lib.import;
+const GObject = imports.gi.GObject;
 
-let Misc = {};
-Misc.Config = imports.misc.config;
-Misc.shellVersion = parseFloat(Misc.Config.PACKAGE_VERSION);
-Misc.ExtensionUtils = imports.misc.extensionUtils;
-
-let Me = {};
-const MyEx = Misc.ExtensionUtils.getCurrentExtension();
-Me.imports = MyEx.imports;
-Me.metadata = MyEx.metadata;
-Me.gSettings = Misc.ExtensionUtils.getSettings(Me.metadata['settings-schema']);
-Me.Settings = MyEx.imports.lib.settings;
-Me.gettext = imports.gettext.domain(Me.metadata['gettext-domain']).gettext;
-Me.Util = MyEx.imports.lib.util;
-
-const OptionsFactory = Me.imports.lib.optionsFactory;
-
-// gettext
-let _ = Me.gettext;
+let Gi;
+let Misc;
+let Me;
+let _;
 
 let gOptions;
 
 function init() {
-    Misc.ExtensionUtils.initTranslations(Me.metadata['gettext-domain']);
-    Me.Opt = new Me.Settings.Options(Gi, Misc, Me);
+    Import.init(true);
+    Gi = Import.Gi;
+    Misc = Import.Misc;
+    Me = Import.Me;
+
+    _ = Me.gettext;
     gOptions = Me.Opt;
-    OptionsFactory.init(Gi, Misc, Me);
+
+    Gi.DropDownItem = DropDownItem;
+    Me.OptionsFactory.init(Gi, Misc, Me);
 }
 
 function _getPageList() {
-    const itemFactory = new OptionsFactory.ItemFactory();
+    const itemFactory = new Me.OptionsFactory.ItemFactory();
     const pageList = [
         {
             name: 'profiles',
@@ -95,34 +84,39 @@ function _getPageList() {
 }
 
 function fillPreferencesWindow(window) {
-    window = new OptionsFactory.AdwPrefs(gOptions).getFilledWindow(window, _getPageList());
+    window = new Me.OptionsFactory.AdwPrefs(gOptions).getFilledWindow(window, _getPageList());
     window.connect('close-request', () => {
         gOptions.destroy();
         gOptions = null;
+        Gi = null;
+        Misc = null;
+        Me = null;
+        _ = null;
+        Import.cleanGlobals();
     });
 
     window.set_default_size(800, 800);
 }
 
-const DropDownItem = Gi.GObject.registerClass({
+const DropDownItem = GObject.registerClass({
     GTypeName: 'DropdownItem',
     Properties: {
-        'text': Gi.GObject.ParamSpec.string(
+        'text': GObject.ParamSpec.string(
             'text',
             'Text',
             'DropDown item text',
-            Gi.GObject.ParamFlags.READWRITE,
+            GObject.ParamFlags.READWRITE,
             ''
         ),
-        'id': Gi.GObject.ParamSpec.int(
+        'id': GObject.ParamSpec.int(
             'id',
             'Id',
             'Item id stored in settings',
-            Gi.GObject.ParamFlags.READWRITE,
+            GObject.ParamFlags.READWRITE,
             0, 100, 0
         ),
     },
-}, class DropDownItem extends Gi.GObject.Object {
+}, class DropDownItem extends GObject.Object {
     get text() {
         return this._text;
     }
@@ -140,29 +134,6 @@ const DropDownItem = Gi.GObject.registerClass({
     }
 }
 );
-
-Gi.DropDownItem = DropDownItem;
-
-/* function buildPrefsWidget() {
-    const prefsWidget = new LegacyPrefs(gOptions).getPrefsWidget(_getPageList());
-
-    prefsWidget.connect('realize', widget => {
-        const window = widget.get_root ? widget.get_root() : widget.get_toplevel();
-        const width = 800;
-        const height = 800;
-        window.set_default_size(width, height);
-        const headerbar = window.get_titlebar();
-        headerbar.title_widget = prefsWidget._stackSwitcher;
-
-        const signal = Gi.Gtk.get_major_version() === 3 ? 'destroy' : 'close-request';
-        window.connect(signal, () => {
-            gOptions.destroy();
-            gOptions = null;
-        });
-    });
-
-    return prefsWidget;
-}*/
 
 // ////////////////////////////////////////////////////////////////////
 function _getProfilesOptionList(itemFactory) {
