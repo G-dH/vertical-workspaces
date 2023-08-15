@@ -160,8 +160,8 @@ export default class VShell extends Extension {
         Me.Settings = Settings;
         Me.Util = _Util;
         Me.AppDisplayOverride = AppDisplayOverride;
-        Me.WindowSearchProvider = WindowSearchProvider;
-        Me.RecentFilesSearchProvider = RecentFilesSearchProvider;
+        Me.WSP_PREFIX = WindowSearchProviderModule._PREFIX;
+        Me.RFSP_PREFIX = RecentFilesSearchProviderModule._PREFIX;
 
         Me.Opt = new Me.Settings.Options(Gi, Me);
 
