@@ -57,6 +57,7 @@ Navigate to the directory you want to download the source code and execute follo
 
     git clone https://github.com/G-dH/vertical-workspaces.git
     cd vertical-workspaces
+    git checkout esm-modules
     make install
 
 If you get `Can't recursively copy directory` error, take a look at issue #51.
