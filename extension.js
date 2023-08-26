@@ -38,7 +38,7 @@ class Extension {
         Me.Util.init(Gi, Ui, Misc, Me);
 
         Me.moduleList.forEach(module => {
-            this[module] = new Me.Modules[module](Gi, Ui, Misc, Me);
+            Me.Modules[module] = new Me.Modules[module](Gi, Ui, Misc, Me);
         });
     }
 
@@ -67,10 +67,11 @@ class Extension {
         Me.Opt.destroy();
         Me.Opt = null;
 
-        for (let module of Me.moduleList) {
-            this[module].cleanGlobals();
-            delete this[module];
-        }
+        for (let module of Me.moduleList)
+            Me.Modules[module].cleanGlobals();
+
+
+        Me.Modules = null;
     }
 
     _activateVShell() {
@@ -188,13 +189,13 @@ class Extension {
             // the panel must be visible when screen is locked
             this._sessionModeConId = Ui.Main.sessionMode.connect('updated', () => {
                 if (Ui.Main.sessionMode.isLocked) {
-                    this.panelModule.update(true);
+                    Me.Modules.panelModule.update(true);
                 } else {
                     // delayed because we need to be able to fix potential damage caused by other extensions during unlock
                     this._timeouts.unlock = Gi.GLib.idle_add(Gi.GLib.PRIORITY_LOW,
                         () => {
-                            this.panelModule.update();
-                            this.overviewControlsModule.update();
+                            Me.Modules.panelModule.update();
+                            Me.Modules.overviewControlsModule.update();
 
                             this._timeouts.unlock = 0;
                             return Gi.GLib.SOURCE_REMOVE;
@@ -259,36 +260,36 @@ class Extension {
     }
 
     _updateOverrides(reset = false) {
-        this.workspacesViewModule.update(reset);
-        this.workspaceThumbnailModule.update(reset);
-        this.overviewModule.update(reset);
-        this.overviewControlsModule.update(reset);
+        Me.Modules.workspacesViewModule.update(reset);
+        Me.Modules.workspaceThumbnailModule.update(reset);
+        Me.Modules.overviewModule.update(reset);
+        Me.Modules.overviewControlsModule.update(reset);
 
-        this.workspaceModule.update(reset);
-        this.windowPreviewModule.update(reset);
-        this.windowManagerModule.update(reset);
+        Me.Modules.workspaceModule.update(reset);
+        Me.Modules.windowPreviewModule.update(reset);
+        Me.Modules.windowManagerModule.update(reset);
 
-        this.layoutModule.update(reset);
-        this.dashModule.update(reset);
-        this.panelModule.update(reset);
+        Me.Modules.layoutModule.update(reset);
+        Me.Modules.dashModule.update(reset);
+        Me.Modules.panelModule.update(reset);
         // the panel must be visible when screen is locked
         // at startup time, panel will be updated from the startupAnimation after allocation
         if (!reset && Ui.Main.sessionMode.isLocked && !Ui.Main.layoutManager._startingUp)
-            this.panelModule._showPanel(true);
+            Me.Modules.panelModule._showPanel(true);
             // PanelModule._showPanel(true);
             // hide panel so it appears directly on the final place
         /* else if (Ui.Main.layoutManager._startingUp && !Meta.is_restart())
             Ui.Main.panel.opacity = 0;*/
 
-        this.workspaceAnimationModule.update(reset);
-        this.workspaceSwitcherPopupModule.update(reset);
+        Me.Modules.workspaceAnimationModule.update(reset);
+        Me.Modules.workspaceSwitcherPopupModule.update(reset);
 
-        this.swipeTrackerModule.update(reset);
+        Me.Modules.swipeTrackerModule.update(reset);
 
-        this.searchModule.update(reset);
+        Me.Modules.searchModule.update(reset);
 
-        this.windowSearchProviderModule.update(reset);
-        this.recentFilesSearchProviderModule.update(reset);
+        Me.Modules.windowSearchProviderModule.update(reset);
+        Me.Modules.recentFilesSearchProviderModule.update(reset);
 
         // don't rebuild app grid on any screen lock
         // even if the extension includes unlock-screen session mode
@@ -305,8 +306,8 @@ class Extension {
         //    if (!Ui.Main.layoutManager._startingUp)
         //        this._showStatusMessage();
         // IconGrid needs to be patched before AppDisplay
-        //    this.iconGridModule.update(reset);
-        //    this.appDisplayModule.update(reset);
+        //    Me.Modules.iconGridModule.update(reset);
+        //    Me.Modules.appDisplayModule.update(reset);
         // } else {
         //    this._sessionLockActive = false;
         //    this._showStatusMessage(false);
@@ -320,15 +321,14 @@ class Extension {
             this._showStatusMessage(false);
         }
         // IconGrid needs to be patched before AppDisplay
-        this.iconGridModule.update(reset);
-        this.appDisplayModule.update(reset);
+        Me.Modules.appDisplayModule.update(reset);
 
-        this.windowAttentionHandlerModule.update(reset);
-        this.appFavoritesModule.update(reset);
-        this.messageTrayModule.update(reset);
-        this.osdWindowModule.update(reset);
-        this.overlayKeyModule.update(reset);
-        this.searchControllerModule.update(reset);
+        Me.Modules.windowAttentionHandlerModule.update(reset);
+        Me.Modules.appFavoritesModule.update(reset);
+        Me.Modules.messageTrayModule.update(reset);
+        Me.Modules.osdWindowModule.update(reset);
+        Me.Modules.overlayKeyModule.update(reset);
+        Me.Modules.searchControllerModule.update(reset);
 
         if (!reset)
             Ui.Main.overview._overview.controls.setInitialTranslations();
@@ -383,11 +383,11 @@ class Extension {
 
     // the key modules that can be affected by the supported incompatible extensions
     _repairOverrides() {
-        this.overviewModule.update();
-        this.overviewControlsModule.update();
-        this.windowPreviewModule.update();
-        this.panelModule.update();
-        this.dashModule.update();
+        Me.Modules.overviewModule.update();
+        Me.Modules.overviewControlsModule.update();
+        Me.Modules.windowPreviewModule.update();
+        Me.Modules.panelModule.update();
+        Me.Modules.dashModule.update();
     }
 
     _updateSettings(settings, key) {
@@ -445,7 +445,7 @@ class Extension {
         Ui.Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = this.opt.OVERVIEW_MODE === 1 ? 0.1 : 0.95;
 
         /* if (!Me.Util.dashIsDashToDock()) { // DtD has its own opacity control
-            this.dashModule.updateStyle(dash);
+            Me.Modules.dashModule.updateStyle(dash);
         }*/
 
         // adjust search entry style for OM2
@@ -475,7 +475,7 @@ class Extension {
                 if (this.opt.options[module] && key === this.opt.options[module][1]) {
                     if (key === 'app-display-module')
                         this._showStatusMessage();
-                    this[module].update();
+                    Me.Modules[module].update();
                     break;
                 }
             }
@@ -486,44 +486,44 @@ class Extension {
         this._switchPageShortcuts();
 
         if (key?.includes('panel'))
-            this.panelModule.update();
+            Me.Modules.panelModule.update();
 
         if (key?.includes('dash') || key?.includes('icon'))
-            this.dashModule.update();
+            Me.Modules.dashModule.update();
 
         if (key?.includes('hot-corner') || key?.includes('dash'))
-            this.layoutModule.update();
+            Me.Modules.layoutModule.update();
 
         switch (key) {
         case 'ws-thumbnails-position':
             this._updateOverrides();
             break;
         case 'workspace-switcher-animation':
-            this.workspaceAnimationModule.update();
+            Me.Modules.workspaceAnimationModule.update();
             break;
         case 'search-width-scale':
-            this.searchModule.update();
+            Me.Modules.searchModule.update();
             break;
         case 'favorites-notify':
-            this.appFavoritesModule.update();
+            Me.Modules.appFavoritesModule.update();
             break;
         case 'window-attention-mode':
-            this.windowAttentionHandlerModule.update();
+            Me.Modules.windowAttentionHandlerModule.update();
             break;
         case 'show-ws-preview-bg':
-            this.panelModule.update();
+            Me.Modules.panelModule.update();
             break;
         case 'notification-position':
-            this.messageTrayModule.update();
+            Me.Modules.messageTrayModule.update();
             break;
         case 'osd-position':
-            this.osdWindowModule.update();
+            Me.Modules.osdWindowModule.update();
             break;
         case 'overlay-key':
-            this.overlayKeyModule.update();
+            Me.Modules.overlayKeyModule.update();
             break;
         case 'always-activate-selected-window':
-            this.windowPreviewModule.update();
+            Me.Modules.windowPreviewModule.update();
             break;
         }
 
@@ -533,8 +533,7 @@ class Extension {
             key === 'ws-thumbnail-scale' ||
             key === 'ws-thumbnail-scale-appgrid') {
             this._showStatusMessage();
-            this.iconGridModule.update();
-            this.appDisplayModule.update();
+            Me.Modules.appDisplayModule.update();
         }
     }
 
