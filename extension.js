@@ -87,9 +87,6 @@ import { WorkspaceSwitcherPopupModule } from './lib/workspaceSwitcherPopup.js';
 import { WindowSearchProviderModule } from './lib/windowSearchProvider.js';
 import { RecentFilesSearchProviderModule } from './lib/recentFilesSearchProvider.js';
 
-import * as WindowSearchProvider from './lib/windowSearchProvider.js';
-import * as RecentFilesSearchProvider from './lib/recentFilesSearchProvider.js';
-
 let Gi;
 let Ui;
 let Misc;
@@ -195,73 +192,47 @@ export default class VShell extends Extension {
         Ui.Main.overview.hide();
         Me.Util.cleanGlobals();
         log(`${Me.metadata.name}: disabled`);
-
     }
 
     _getModuleList() {
-        return [
-            'workspacesViewModule',
-            'workspaceThumbnailModule',
-            'workspaceSwitcherPopupModule',
-            'workspaceAnimationModule',
-            'workspaceModule',
-            'windowManagerModule',
-            'windowPreviewModule',
-            'windowAttentionHandlerModule',
-            'swipeTrackerModule',
-            'searchControllerModule',
-            'searchModule',
-            'panelModule',
-            'overviewControlsModule',
-            'overviewModule',
-            'overlayKeyModule',
-            'osdWindowModule',
-            'messageTrayModule',
-            'layoutModule',
-            'iconGridModule',
-            'dashModule',
-            'appFavoritesModule',
-            'appDisplayModule',
-            'windowSearchProviderModule',
-            'recentFilesSearchProviderModule',
-        ];
+        return Object.keys(Me.Modules);
     }
 
     _initModules() {
-        this.appDisplayModule = new AppDisplayModule(Gi, Ui, Misc, Me);
-        this.appFavoritesModule = new AppFavoritesModule(Gi, Ui, Misc, Me);
-        this.dashModule = new DashModule(Gi, Ui, Misc, Me);
-        this.iconGridModule = new IconGridModule(Gi, Ui, Misc, Me);
-        this.layoutModule = new LayoutModule(Gi, Ui, Misc, Me);
-        this.messageTrayModule = new MessageTrayModule(Gi, Ui, Misc, Me);
-        this.overviewModule = new OverviewModule(Gi, Ui, Misc, Me);
-        this.overviewControlsModule = new OverviewControlsModule(Gi, Ui, Misc, Me);
-        this.osdWindowModule = new OsdWindowModule(Gi, Ui, Misc, Me);
-        this.overlayKeyModule = new OverlayKeyModule(Gi, Ui, Misc, Me);
-        this.panelModule = new PanelModule(Gi, Ui, Misc, Me);
-        this.searchModule = new SearchModule(Gi, Ui, Misc, Me);
-        this.searchControllerModule = new SearchControllerModule(Gi, Ui, Misc, Me);
-        this.swipeTrackerModule = new SwipeTrackerModule(Gi, Ui, Misc, Me);
-        this.windowAttentionHandlerModule = new WindowAttentionHandlerModule(Gi, Ui, Misc, Me);
-        this.windowPreviewModule = new WindowPreviewModule(Gi, Ui, Misc, Me);
-        this.windowManagerModule = new WindowManagerModule(Gi, Ui, Misc, Me);
-        this.workspaceModule = new WorkspaceModule(Gi, Ui, Misc, Me);
-        this.workspaceAnimationModule = new WorkspaceAnimationModule(Gi, Ui, Misc, Me);
-        this.workspaceSwitcherPopupModule = new WorkspaceSwitcherPopupModule(Gi, Ui, Misc, Me);
-        this.workspaceThumbnailModule = new WorkspaceThumbnailModule(Gi, Ui, Misc, Me);
-        this.workspacesViewModule = new WorkspacesViewModule(Gi, Ui, Misc, Me);
-        this.windowSearchProviderModule = new WindowSearchProviderModule(Gi, Ui, Misc, Me);
-        this.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Gi, Ui, Misc, Me);
+        Me.Modules = {};
+        Me.Modules.appDisplayModule = new AppDisplayModule(Gi, Ui, Misc, Me);
+        Me.Modules.appFavoritesModule = new AppFavoritesModule(Gi, Ui, Misc, Me);
+        Me.Modules.dashModule = new DashModule(Gi, Ui, Misc, Me);
+        Me.Modules.iconGridModule = new IconGridModule(Gi, Ui, Misc, Me);
+        Me.Modules.layoutModule = new LayoutModule(Gi, Ui, Misc, Me);
+        Me.Modules.messageTrayModule = new MessageTrayModule(Gi, Ui, Misc, Me);
+        Me.Modules.overviewModule = new OverviewModule(Gi, Ui, Misc, Me);
+        Me.Modules.overviewControlsModule = new OverviewControlsModule(Gi, Ui, Misc, Me);
+        Me.Modules.osdWindowModule = new OsdWindowModule(Gi, Ui, Misc, Me);
+        Me.Modules.overlayKeyModule = new OverlayKeyModule(Gi, Ui, Misc, Me);
+        Me.Modules.panelModule = new PanelModule(Gi, Ui, Misc, Me);
+        Me.Modules.searchModule = new SearchModule(Gi, Ui, Misc, Me);
+        Me.Modules.searchControllerModule = new SearchControllerModule(Gi, Ui, Misc, Me);
+        Me.Modules.swipeTrackerModule = new SwipeTrackerModule(Gi, Ui, Misc, Me);
+        Me.Modules.windowAttentionHandlerModule = new WindowAttentionHandlerModule(Gi, Ui, Misc, Me);
+        Me.Modules.windowPreviewModule = new WindowPreviewModule(Gi, Ui, Misc, Me);
+        Me.Modules.windowManagerModule = new WindowManagerModule(Gi, Ui, Misc, Me);
+        Me.Modules.workspaceModule = new WorkspaceModule(Gi, Ui, Misc, Me);
+        Me.Modules.workspaceAnimationModule = new WorkspaceAnimationModule(Gi, Ui, Misc, Me);
+        Me.Modules.workspaceSwitcherPopupModule = new WorkspaceSwitcherPopupModule(Gi, Ui, Misc, Me);
+        Me.Modules.workspaceThumbnailModule = new WorkspaceThumbnailModule(Gi, Ui, Misc, Me);
+        Me.Modules.workspacesViewModule = new WorkspacesViewModule(Gi, Ui, Misc, Me);
+        Me.Modules.windowSearchProviderModule = new WindowSearchProviderModule(Gi, Ui, Misc, Me);
+        Me.Modules.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Gi, Ui, Misc, Me);
     }
 
     _disposeModules() {
         Me.Opt.destroy();
         Me.Opt = null;
 
-        for (let module of this._getModuleList()) {
-            this[module].cleanGlobals();
-            delete this[module];
-        }
+        for (let module of this._getModuleList())
+            Me.Modules[module].cleanGlobals();
+        Me.Modules = null;
 
         delete this.opt;
     }
@@ -381,13 +352,13 @@ export default class VShell extends Extension {
             // the panel must be visible when screen is locked
             this._sessionModeConId = Ui.Main.sessionMode.connect('updated', () => {
                 if (Ui.Main.sessionMode.isLocked) {
-                    this.panelModule.update(true);
+                    Me.Modules.panelModule.update(true);
                 } else {
                     // delayed because we need to be able to fix potential damage caused by other extensions during unlock
                     this._timeouts.unlock = Gi.GLib.idle_add(Gi.GLib.PRIORITY_LOW,
                         () => {
-                            this.panelModule.update();
-                            this.overviewControlsModule.update();
+                            Me.Modules.panelModule.update();
+                            Me.Modules.overviewControlsModule.update();
 
                             this._timeouts.unlock = 0;
                             return Gi.GLib.SOURCE_REMOVE;
@@ -452,36 +423,36 @@ export default class VShell extends Extension {
     }
 
     _updateOverrides(reset = false) {
-        this.workspacesViewModule.update(reset);
-        this.workspaceThumbnailModule.update(reset);
-        this.overviewModule.update(reset);
-        this.overviewControlsModule.update(reset);
+        Me.Modules.workspacesViewModule.update(reset);
+        Me.Modules.workspaceThumbnailModule.update(reset);
+        Me.Modules.overviewModule.update(reset);
+        Me.Modules.overviewControlsModule.update(reset);
 
-        this.workspaceModule.update(reset);
-        this.windowPreviewModule.update(reset);
-        this.windowManagerModule.update(reset);
+        Me.Modules.workspaceModule.update(reset);
+        Me.Modules.windowPreviewModule.update(reset);
+        Me.Modules.windowManagerModule.update(reset);
 
-        this.layoutModule.update(reset);
-        this.dashModule.update(reset);
-        this.panelModule.update(reset);
+        Me.Modules.layoutModule.update(reset);
+        Me.Modules.dashModule.update(reset);
+        Me.Modules.panelModule.update(reset);
         // the panel must be visible when screen is locked
         // at startup time, panel will be updated from the startupAnimation after allocation
         if (!reset && Ui.Main.sessionMode.isLocked && !Ui.Main.layoutManager._startingUp)
-            this.panelModule._showPanel(true);
+            Me.Modules.panelModule._showPanel(true);
             // PanelModule._showPanel(true);
             // hide panel so it appears directly on the final place
         /* else if (Ui.Main.layoutManager._startingUp && !Meta.is_restart())
             Ui.Main.panel.opacity = 0;*/
 
-        this.workspaceAnimationModule.update(reset);
-        this.workspaceSwitcherPopupModule.update(reset);
+        Me.Modules.workspaceAnimationModule.update(reset);
+        Me.Modules.workspaceSwitcherPopupModule.update(reset);
 
-        this.swipeTrackerModule.update(reset);
+        Me.Modules.swipeTrackerModule.update(reset);
 
-        this.searchModule.update(reset);
+        Me.Modules.searchModule.update(reset);
 
-        this.windowSearchProviderModule.update(reset);
-        this.recentFilesSearchProviderModule.update(reset);
+        Me.Modules.windowSearchProviderModule.update(reset);
+        Me.Modules.recentFilesSearchProviderModule.update(reset);
 
         // don't rebuild app grid on any screen lock
         // even if the extension includes unlock-screen session mode
@@ -498,8 +469,8 @@ export default class VShell extends Extension {
         //    if (!Ui.Main.layoutManager._startingUp)
         //        this._showStatusMessage();
         // IconGrid needs to be patched before AppDisplay
-        //    this.iconGridModule.update(reset);
-        //    this.appDisplayModule.update(reset);
+        //    Me.Modules.iconGridModule.update(reset);
+        //    Me.Modules.appDisplayModule.update(reset);
         // } else {
         //    this._sessionLockActive = false;
         //    this._showStatusMessage(false);
@@ -512,16 +483,15 @@ export default class VShell extends Extension {
             this._sessionLockActive = false;
             this._showStatusMessage(false);
         }
-        // IconGrid needs to be patched before AppDisplay
-        this.iconGridModule.update(reset);
-        this.appDisplayModule.update(reset);
+        // iconGridModule will be updated from appDisplayModule
+        Me.Modules.appDisplayModule.update(reset);
 
-        this.windowAttentionHandlerModule.update(reset);
-        this.appFavoritesModule.update(reset);
-        this.messageTrayModule.update(reset);
-        this.osdWindowModule.update(reset);
-        this.overlayKeyModule.update(reset);
-        this.searchControllerModule.update(reset);
+        Me.Modules.windowAttentionHandlerModule.update(reset);
+        Me.Modules.appFavoritesModule.update(reset);
+        Me.Modules.messageTrayModule.update(reset);
+        Me.Modules.osdWindowModule.update(reset);
+        Me.Modules.overlayKeyModule.update(reset);
+        Me.Modules.searchControllerModule.update(reset);
 
         if (!reset)
             Ui.Main.overview._overview.controls.setInitialTranslations();
@@ -576,11 +546,11 @@ export default class VShell extends Extension {
 
     // the key modules that can be affected by the supported incompatible extensions
     _repairOverrides() {
-        this.overviewModule.update();
-        this.overviewControlsModule.update();
-        this.windowPreviewModule.update();
-        this.panelModule.update();
-        this.dashModule.update();
+        Me.Modules.overviewModule.update();
+        Me.Modules.overviewControlsModule.update();
+        Me.Modules.windowPreviewModule.update();
+        Me.Modules.panelModule.update();
+        Me.Modules.dashModule.update();
     }
 
     _updateSettings(settings, key) {
@@ -638,7 +608,7 @@ export default class VShell extends Extension {
         // Ui.Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = this.opt.OVERVIEW_MODE === 1 ? 0.1 : 0.95; // 45 incompatible
 
         /* if (!Me.Util.dashIsDashToDock()) { // DtD has its own opacity control
-            this.dashModule.updateStyle(dash);
+            Me.Modules.dashModule.updateStyle(dash);
         }*/
 
         // adjust search entry style for OM2
@@ -664,10 +634,10 @@ export default class VShell extends Extension {
     _applySettings(key) {
         if (key?.endsWith('-module')) {
             for (let module of this._getModuleList()) {
-                if (key === this.opt.options[module][1]) {
+                if (this.opt.options[module] && key === this.opt.options[module][1]) {
                     if (key === 'app-display-module')
                         this._showStatusMessage();
-                    this[module].update();
+                    Me.Modules[module].update();
                     break;
                 }
             }
@@ -678,44 +648,44 @@ export default class VShell extends Extension {
         this._switchPageShortcuts();
 
         if (key?.includes('panel'))
-            this.panelModule.update();
+            Me.Modules.panelModule.update();
 
         if (key?.includes('dash') || key?.includes('icon'))
-            this.dashModule.update();
+            Me.Modules.dashModule.update();
 
         if (key?.includes('hot-corner') || key?.includes('dash'))
-            this.layoutModule.update();
+            Me.Modules.layoutModule.update();
 
         switch (key) {
         case 'ws-thumbnails-position':
             this._updateOverrides();
             break;
         case 'workspace-switcher-animation':
-            this.workspaceAnimationModule.update();
+            Me.Modules.workspaceAnimationModule.update();
             break;
         case 'search-width-scale':
-            this.searchModule.update();
+            Me.Modules.searchModule.update();
             break;
         case 'favorites-notify':
-            this.appFavoritesModule.update();
+            Me.Modules.appFavoritesModule.update();
             break;
         case 'window-attention-mode':
-            this.windowAttentionHandlerModule.update();
+            Me.Modules.windowAttentionHandlerModule.update();
             break;
         case 'show-ws-preview-bg':
-            this.panelModule.update();
+            Me.Modules.panelModule.update();
             break;
         case 'notification-position':
-            this.messageTrayModule.update();
+            Me.Modules.messageTrayModule.update();
             break;
         case 'osd-position':
-            this.osdWindowModule.update();
+            Me.Modules.osdWindowModule.update();
             break;
         case 'overlay-key':
-            this.overlayKeyModule.update();
+            Me.Modules.overlayKeyModule.update();
             break;
         case 'always-activate-selected-window':
-            this.windowPreviewModule.update();
+            Me.Modules.windowPreviewModule.update();
             break;
         }
 
@@ -725,8 +695,7 @@ export default class VShell extends Extension {
             key === 'ws-thumbnail-scale' ||
             key === 'ws-thumbnail-scale-appgrid') {
             this._showStatusMessage();
-            this.iconGridModule.update();
-            this.appDisplayModule.update();
+            Me.Modules.appDisplayModule.update();
         }
     }
 
