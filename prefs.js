@@ -252,7 +252,7 @@ function _getLayoutOptionList(itemFactory) {
         )
     );
 
-    optionList.push(
+    /* optionList.push(
         itemFactory.getRowWidget(
             _('Recent Files Icon Position'),
             _('Allows to add "Search Recent Files" icon into Dash (if recent files search provider enabled on the Behavior tab) so you can directly toggle recent files search provider results. You can also use Ctrl + Space hotkey'),
@@ -266,7 +266,7 @@ function _getLayoutOptionList(itemFactory) {
             ],
             'dashModule'
         )
-    );
+    );*/
 
 
     optionList.push(
@@ -1286,7 +1286,7 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Disable'), 0],
                 [_('Applications (Default)'), 1],
                 [_('Search Windows'), 2],
-                [_('Search Recent Files'), 3],
+                // [_('Search Recent Files'), 3],
             ],
             'overlayKeyModule'
         )
@@ -1667,15 +1667,6 @@ function _getBehaviorOptionList(itemFactory) {
         )
     );
 
-    /* optionList.push(
-        itemFactory.getRowWidget(
-            _('Enable Recent Files Search Provider'),
-            _('Activates the recent files search provider that can be triggered by a dash icon, Ctrl + Space hotkey or by typing "fq//" prefix in the search entry field. This option needs File History option enabled in the GNOME Privacy settings'),
-            itemFactory.newSwitch(),
-            'searchRecentFilesEnable'
-        )
-    );*/
-
     optionList.push(
         itemFactory.getRowWidget(
             _('Enable Fuzzy Match'),
@@ -1873,14 +1864,14 @@ function _getModulesOptionList(itemFactory) {
         )
     );
 
-    optionList.push(
+    /* optionList.push(
         itemFactory.getRowWidget(
             _('RecentFilesSearchProvider'),
             _('Activates the recent files search provider that can be triggered by a dash icon, Ctrl + Space hotkey or by typing "fq//" prefix in the search entry field. This option needs File History option enabled in the GNOME Privacy settings'),
             itemFactory.newSwitch(),
             'recentFilesSearchProviderModule'
         )
-    );
+    );*/
 
     optionList.push(
         itemFactory.getRowWidget(

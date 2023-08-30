@@ -19,7 +19,6 @@ import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import Pango from 'gi://Pango';
 import Graphene from 'gi://Graphene';
-import Gtk from 'gi://Gtk';
 import Gdk from 'gi://Gdk';
 import Atk from 'gi://Atk';
 
@@ -85,7 +84,7 @@ import { WorkspaceAnimationModule } from './lib/workspaceAnimation.js';
 import { WorkspaceModule } from './lib/workspace.js';
 import { WorkspaceSwitcherPopupModule } from './lib/workspaceSwitcherPopup.js';
 import { WindowSearchProviderModule } from './lib/windowSearchProvider.js';
-import { RecentFilesSearchProviderModule } from './lib/recentFilesSearchProvider.js';
+// import { RecentFilesSearchProviderModule } from './lib/recentFilesSearchProvider.js';
 
 let Gi;
 let Ui;
@@ -112,7 +111,7 @@ export default class VShell extends Extension {
         Gi.Gio = Gio;
         Gi.Pango = Pango;
         Gi.Graphene = Graphene;
-        Gi.Gtk = Gtk;
+        // Gi.Gtk = Gtk;
         Gi.Gdk = Gdk;
         Gi.Atk = Atk;
 
@@ -158,7 +157,8 @@ export default class VShell extends Extension {
         Me.Util = _Util;
         Me.AppDisplayOverride = AppDisplayOverride;
         Me.WSP_PREFIX = WindowSearchProviderModule._PREFIX;
-        Me.RFSP_PREFIX = RecentFilesSearchProviderModule._PREFIX;
+        // Me.RFSP_PREFIX = RecentFilesSearchProviderModule._PREFIX;
+        Me.repairOverrides = this._repairOverrides;
 
         Me.Opt = new Me.Settings.Options(Gi, Me);
 
@@ -223,7 +223,7 @@ export default class VShell extends Extension {
         Me.Modules.workspaceThumbnailModule = new WorkspaceThumbnailModule(Gi, Ui, Misc, Me);
         Me.Modules.workspacesViewModule = new WorkspacesViewModule(Gi, Ui, Misc, Me);
         Me.Modules.windowSearchProviderModule = new WindowSearchProviderModule(Gi, Ui, Misc, Me);
-        Me.Modules.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Gi, Ui, Misc, Me);
+        // Me.Modules.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Gi, Ui, Misc, Me);
     }
 
     _disposeModules() {
@@ -452,7 +452,7 @@ export default class VShell extends Extension {
         Me.Modules.searchModule.update(reset);
 
         Me.Modules.windowSearchProviderModule.update(reset);
-        Me.Modules.recentFilesSearchProviderModule.update(reset);
+        // Me.Modules.recentFilesSearchProviderModule.update(reset);
 
         // don't rebuild app grid on any screen lock
         // even if the extension includes unlock-screen session mode
@@ -548,6 +548,8 @@ export default class VShell extends Extension {
     _repairOverrides() {
         Me.Modules.overviewModule.update();
         Me.Modules.overviewControlsModule.update();
+        Me.Modules.layoutModule.update();
+        Me.Modules.workspacesViewModule.update();
         Me.Modules.windowPreviewModule.update();
         Me.Modules.panelModule.update();
         Me.Modules.dashModule.update();
