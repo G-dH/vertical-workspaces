@@ -40,6 +40,8 @@ class Extension {
         Me.moduleList.forEach(module => {
             Me.Modules[module] = new Me.Modules[module](Gi, Ui, Misc, Me);
         });
+
+        Me.repairOverrides = this._repairOverrides;
     }
 
     enable() {
@@ -385,6 +387,7 @@ class Extension {
     _repairOverrides() {
         Me.Modules.overviewModule.update();
         Me.Modules.overviewControlsModule.update();
+        Me.Modules.workspacesViewModule.update();
         Me.Modules.windowPreviewModule.update();
         Me.Modules.panelModule.update();
         Me.Modules.dashModule.update();
