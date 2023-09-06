@@ -19,7 +19,6 @@ import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import Pango from 'gi://Pango';
 import Graphene from 'gi://Graphene';
-import Gdk from 'gi://Gdk';
 import Atk from 'gi://Atk';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -52,6 +51,7 @@ import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
 import * as ExtensionUtils from 'resource:///org/gnome/shell/misc/extensionUtils.js';
 import * as Util from 'resource:///org/gnome/shell/misc/util.js';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
+import * as Params from 'resource:///org/gnome/shell/misc/params.js';
 
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 
@@ -112,7 +112,6 @@ export default class VShell extends Extension {
         Gi.Pango = Pango;
         Gi.Graphene = Graphene;
         // Gi.Gtk = Gtk;
-        Gi.Gdk = Gdk;
         Gi.Atk = Atk;
 
         Ui.Main = Main;
@@ -142,6 +141,7 @@ export default class VShell extends Extension {
         Ui.AppMenu = AppMenu;
         Ui.PopupMenu = PopupMenu;
         Ui.BoxPointer = BoxPointer;
+        Ui.Params = Params;
 
         Misc.Config = Config;
         Misc.shellVersion = parseFloat(Misc.Config.PACKAGE_VERSION);
@@ -174,11 +174,14 @@ export default class VShell extends Extension {
 
     enable() {
         this._init();
+        // flag for Util.getEnabledExtensions()
+        Me.extensionsLoadIncomplete = Ui.Main.layoutManager._startingUp;
         this.opt = Me.Opt;
 
         this._initModules();
         this.activateVShell();
 
+        Me.extensionsLoadIncomplete = false;
         log(`${Me.metadata.name}: enabled`);
     }
 
@@ -606,8 +609,6 @@ export default class VShell extends Extension {
             this.opt.APP_GRID_ICON_SIZE_DEFAULT = this.opt.APP_GRID_ACTIVE_PREVIEW && !this.opt.APP_GRID_USAGE ? 128 : 64;
             this.opt.APP_GRID_FOLDER_ICON_SIZE_DEFAULT = 64;
         }
-
-        // Ui.Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = this.opt.OVERVIEW_MODE === 1 ? 0.1 : 0.95; // 45 incompatible
 
         /* if (!Me.Util.dashIsDashToDock()) { // DtD has its own opacity control
             Me.Modules.dashModule.updateStyle(dash);
