@@ -46,9 +46,11 @@ class Extension {
 
     enable() {
         this._init();
+        // flag for Util.getEnabledExtensions()
+        Me.extensionsLoadIncomplete = Ui.Main.layoutManager._startingUp;
 
         this._activateVShell();
-
+        Me.extensionsLoadIncomplete = false;
         log(`${Me.metadata.name}: enabled`);
     }
 
@@ -291,7 +293,7 @@ class Extension {
         Me.Modules.searchModule.update(reset);
 
         Me.Modules.windowSearchProviderModule.update(reset);
-        Me.Modules.recentFilesSearchProviderModule.update(reset);
+        // Me.Modules.recentFilesSearchProviderModule.update(reset);
 
         // don't rebuild app grid on any screen lock
         // even if the extension includes unlock-screen session mode
