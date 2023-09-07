@@ -1241,7 +1241,7 @@ function _getBehaviorOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Overview Mode'),
+            _('Activities Overview Mode'),
             _('The Expose Windows on Hover mode does not expose the workspace preview windows until the mouse pointer enters any window\nThe Static Workspace mode keeps the workspace static when you activate the overview, it only shows Dash, workspace thumbnails and search entry over the workspace and only clicking on an active workspace thumbnail activates the default overview'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
@@ -1292,8 +1292,29 @@ function _getBehaviorOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Single-Press Action'),
+            _('Disable or change behavior when you press and release the Super key. The "Search Windows" options requires the WindowSearchProvider module to be activated'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'overlayKeyPrimary',
+            [
+                [_('Disable'), 0],
+                [_('Follow Global Overview Mode (Default)'), 1],
+                [_('Overview (Default)'), 2],
+                [_('Applications'), 3],
+                [_('Overview - Static WS Preview'), 4],
+                [_('Overview - Static Workspace'), 5],
+                [_('Search Windows'), 6],
+                // [_('Search Recent Files'), 7],
+            ],
+            'overlayKeyModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Double-Press Action'),
-            _('Disable or change behavior when you double-press the Super key. The "Search" options require the respective search provider to be activated'),
+            _('Disable or change behavior when you double-press the Super key. The "Search Windows" option requires the WindowSearchProvider module to be activated. The "Static WS Overview - Expose Windows" option allows you to switch to default Activities Overview window picker view if you set static workspace (preview) for the single press/release Super key action'),
             itemFactory.newComboBox(),
             // itemFactory.newDropDown(),
             'overlayKeySecondary',
@@ -1301,7 +1322,8 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Disable'), 0],
                 [_('Applications (Default)'), 1],
                 [_('Search Windows'), 2],
-                [_('Search Recent Files'), 3],
+                [_('Activities Overview - Window Picker'), 3],
+                // [_('Search Recent Files'), 4],
             ],
             'overlayKeyModule'
         )
@@ -1322,9 +1344,12 @@ function _getBehaviorOptionList(itemFactory) {
             'hotCornerAction',
             [
                 [_('Disable'), 0],
-                [_('Overview'), 1],
-                [_('Applications'), 2],
-                [_('Search Windows'), 3],
+                [_('Follow Global Overview Mode'), 1],
+                [_('Overview - Window Picker'), 2],
+                [_('Applications'), 3],
+                [_('Overview - Static WS Preview'), 4],
+                [_('Overview - Static Workspace'), 5],
+                [_('Search Windows'), 6],
             ],
             'layoutModule'
         )
