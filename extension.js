@@ -261,8 +261,11 @@ export default class VShell extends Extension {
         // if Dash to Dock detected force enable "Fix for DtD" option
         this._updateFixDashToDockOption();
 
-        // update overview background wallpaper if enabled
-        Ui.Main.overview._overview.controls._setBackground();
+        // update overview background wallpaper if enabled, but don't set it too early on session startup
+        // because it crashes wayland
+        if (!Ui.Main.layoutManager._startingUp || Gi.Meta.is_restart())
+            Ui.Main.overview._overview.controls._setBackground();
+
         this._updateSettingsConnection();
 
         // store dash _workId so we will be able to detect replacement when entering overview
@@ -317,8 +320,7 @@ export default class VShell extends Extension {
     }
 
     _storeDashId() {
-        const dash = Ui.Main.overview.dash;
-        this._prevDash = dash._workId;
+        this._prevDash = Ui.Main.overview.dash._workId;
     }
 
     _setInitialWsIndex() {
@@ -340,7 +342,6 @@ export default class VShell extends Extension {
 
         // force enable Fix Dash to Dock option if DtD detected
         this.opt._watchDashToDock = dtdEnabled;
-        // this.opt.set('fixUbuntuDock', dtdEnabled);
     }
 
     _updateConnections() {
@@ -556,6 +557,7 @@ export default class VShell extends Extension {
         Me.Modules.windowPreviewModule.update();
         Me.Modules.panelModule.update();
         Me.Modules.dashModule.update();
+        this._updateSettings();
     }
 
     _updateSettings(settings, key) {
@@ -787,7 +789,7 @@ export default class VShell extends Extension {
 
     // Status dialog that appears during updating V-Shell configuration and blocks inputs
     _showStatusMessage(show = true) {
-        if ((show && Me._resetInProgress) || Ui.Main.layoutManager._startingUp)
+        if ((show && Me._resetInProgress) || Ui.Main.layoutManager._startingUp || !Ui.Main.overview._overview.controls._appDisplay._sortOrderedItemsAlphabetically)
             return;
 
         if (Me._vShellMessageTimeoutId) {
