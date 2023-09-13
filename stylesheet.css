@@ -41,6 +41,10 @@
 
 #dash.vertical .app-well-app-running-dot {
 	margin: 4px 0px;
+}
+
+#dash.vertical .app-well-app-running-dot-custom {
+	margin: 4px 0px;
 	width: 2px;
 	height: 16px;
 }
@@ -64,7 +68,7 @@
 }
 
 .dash-background-light {
-	background-color: rgba(200, 200, 200, 0.2);
+	background-color: rgb(200, 200, 200);
 	border-color: rgba(150, 150, 150, 0.4);
 }
 
@@ -73,6 +77,10 @@
 }
 
 .app-well-app-running-dot {
+	margin-bottom: 12px;
+}
+
+.app-well-app-running-dot-custom {
 	margin-bottom: 12px;
 	width: 16px;
 	height: 2px;
@@ -108,6 +116,11 @@
 
 .ws-tmb-labeled {
 	border: 0px;
+}
+
+.ws-tmb-transparent {
+	border: 0px;
+	background-color: rgba(200, 200, 200, 0.2);
 }
 
 /* app grid page indicatos */

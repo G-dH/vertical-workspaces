@@ -99,8 +99,11 @@ class Extension {
         // if Dash to Dock detected force enable "Fix for DtD" option
         this._updateFixDashToDockOption();
 
-        // update overview background wallpaper if enabled
-        Ui.Main.overview._overview.controls._setBackground();
+        // update overview background wallpaper if enabled, but don't set it too early on session startup
+        // because it crashes wayland
+        if (!Ui.Main.layoutManager._startingUp || Gi.Meta.is_restart())
+            Ui.Main.overview._overview.controls._setBackground();
+
         this._updateSettingsConnection();
 
         // store dash _workId so we will be able to detect replacement when entering overview
@@ -339,8 +342,14 @@ class Extension {
     }
 
     _onShowingOverview() {
+        if (Ui.Main.layoutManager._startingUp)
+            return;
+
         // store pointer X coordinate for OVERVIEW_MODE 1 window spread - if mouse pointer is steady, don't spread
         this.opt.showingPointerX = global.get_pointer()[0];
+
+        if (!Ui.Main.overview._overview.controls._bgManagers && (this.opt.SHOW_BG_IN_OVERVIEW || this.opt.SHOW_WS_PREVIEW_BG))
+            Ui.Main.overview._overview.controls._setBackground();
 
         if (this.opt._watchDashToDock) {
             // workaround for Dash to Dock (Ubuntu Dock) breaking overview allocations after enabled and changed position
@@ -449,10 +458,6 @@ class Extension {
 
         Ui.Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = this.opt.OVERVIEW_MODE === 1 ? 0.1 : 0.95;
 
-        /* if (!Me.Util.dashIsDashToDock()) { // DtD has its own opacity control
-            Me.Modules.dashModule.updateStyle(dash);
-        }*/
-
         // adjust search entry style for OM2
         if (this.opt.OVERVIEW_MODE2)
             Ui.Main.overview.searchEntry.add_style_class_name('search-entry-om2');
@@ -493,7 +498,7 @@ class Extension {
         if (key?.includes('panel'))
             Me.Modules.panelModule.update();
 
-        if (key?.includes('dash') || key?.includes('icon'))
+        if (key?.includes('dash') || key?.includes('icon') || key?.includes('dot-style'))
             Me.Modules.dashModule.update();
 
         if (key?.includes('hot-corner') || key?.includes('dash'))
@@ -534,6 +539,7 @@ class Extension {
 
         if (key?.includes('app-grid') ||
             key?.includes('app-folder') ||
+            key?.includes('dot-style') ||
             key === 'show-search-entry' ||
             key === 'ws-thumbnail-scale' ||
             key === 'ws-thumbnail-scale-appgrid') {
@@ -627,7 +633,7 @@ class Extension {
 
     // Status dialog that appears during updating V-Shell configuration and blocks inputs
     _showStatusMessage(show = true) {
-        if ((show && Me._resetInProgress) || Ui.Main.layoutManager._startingUp)
+        if ((show && Me._resetInProgress) || Ui.Main.layoutManager._startingUp || !Ui.Main.overview._overview.controls._appDisplay._sortOrderedItemsAlphabetically)
             return;
 
         if (Me._vShellMessageTimeoutId) {
