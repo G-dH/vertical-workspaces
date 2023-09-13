@@ -2106,6 +2106,21 @@ function _getMiscOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Performance')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Smooth App Grid Animations'),
+            _('This option allows V-Shell to pre-realize app grid and app folders during session startup in order to avoid stuttering animations when using them for the first time. If enabled, the session startup needs a little bit more time to finish and necessary memory will be allocated at this time'),
+            itemFactory.newSwitch(),
+            'appGridPerformance'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Workarounds')
         )
     );

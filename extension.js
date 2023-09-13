@@ -480,7 +480,7 @@ export default class VShell extends Extension {
         //    this._showStatusMessage(false);
         // }
 
-        if (!this._sessionLockActive && !Ui.Main.layoutManager._startingUp) {
+        if (!this._sessionLockActive && !Ui.Main.layoutManager._startingUp && this.opt.APP_GRID_PERFORMANCE) {
             // Avoid showing status at startup, can cause freeze
             this._showStatusMessage();
         } else if (this._sessionLockActive) {
@@ -504,6 +504,8 @@ export default class VShell extends Extension {
     _onShowingOverview() {
         if (Ui.Main.layoutManager._startingUp)
             return;
+
+        Ui.Main.overview._overview.controls.opacity = 255;
 
         // store pointer X coordinate for OVERVIEW_MODE 1 window spread - if mouse pointer is steady, don't spread
         this.opt.showingPointerX = global.get_pointer()[0];

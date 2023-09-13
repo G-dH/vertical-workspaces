@@ -289,6 +289,9 @@
     <key type="b" name="new-window-focus-fix">
       <default>false</default>
     </key>
+    <key type="b" name="app-grid-performance">
+      <default>true</default>
+    </key>
 
     <key type="b" name="workspace-switcher-popup-module">
       <default>true</default>
