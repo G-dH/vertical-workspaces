@@ -666,7 +666,7 @@ export default class VShell extends Extension {
         if (key?.includes('panel'))
             Me.Modules.panelModule.update();
 
-        if (key?.includes('dash') || key?.includes('icon'))
+        if (key?.includes('dash') || key?.includes('icon') || key?.includes('dot-style'))
             Me.Modules.dashModule.update();
 
         if (key?.includes('hot-corner') || key?.includes('dash'))
@@ -707,6 +707,7 @@ export default class VShell extends Extension {
 
         if (key?.includes('app-grid') ||
             key?.includes('app-folder') ||
+            key?.includes('dot-style') ||
             key === 'show-search-entry' ||
             key === 'ws-thumbnail-scale' ||
             key === 'ws-thumbnail-scale-appgrid') {

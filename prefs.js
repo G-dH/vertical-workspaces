@@ -802,6 +802,21 @@ function _getAppearanceOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Running App Indicator'),
+            _('Allows you to change style of the running app indicator under the app icon'),
+            itemFactory.newComboBox(),
+            // itemFactory.newDropDown(),
+            'runningDotStyle',
+            [
+                [_('Dot (Default)'), 0],
+                [_('Line'), 1],
+            ],
+            'dashModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Workspace Thumbnails')
         )
     );
