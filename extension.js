@@ -502,8 +502,14 @@ export default class VShell extends Extension {
     }
 
     _onShowingOverview() {
+        if (Ui.Main.layoutManager._startingUp)
+            return;
+
         // store pointer X coordinate for OVERVIEW_MODE 1 window spread - if mouse pointer is steady, don't spread
         this.opt.showingPointerX = global.get_pointer()[0];
+
+        if (!Ui.Main.overview._overview.controls._bgManagers && (this.opt.SHOW_BG_IN_OVERVIEW || this.opt.SHOW_WS_PREVIEW_BG))
+            Ui.Main.overview._overview.controls._setBackground();
 
         if (this.opt._watchDashToDock) {
             // workaround for Dash to Dock (Ubuntu Dock) breaking overview allocations after enabled and changed position
@@ -621,6 +627,11 @@ export default class VShell extends Extension {
             Ui.Main.overview.searchEntry.add_style_class_name('search-entry-om2');
         else
             Ui.Main.overview.searchEntry.remove_style_class_name('search-entry-om2');
+
+        if (this.opt.OVERVIEW_MODE === 1)
+            Me.Modules.workspaceModule.setWindowPreviewMaxScale(0.1);
+        else
+            Me.Modules.workspaceModule.setWindowPreviewMaxScale(0.95);
 
         Ui.Main.overview.searchEntry.visible = this.opt.SHOW_SEARCH_ENTRY;
         Ui.Main.overview.searchEntry.opacity = 255;
