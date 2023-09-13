@@ -347,6 +347,9 @@
     <key type="b" name="recent-files-search-provider-module">
       <default>true</default>
     </key>
+    <key type="b" name="app-grid-performance">
+      <default>true</default>
+    </key>
 
     <key type="b" name="aaa-loading-profile">
       <default>false</default>
