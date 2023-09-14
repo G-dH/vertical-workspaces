@@ -241,6 +241,12 @@
     <key type="i" name="ws-sw-popup-mode">
       <default>1</default>
     </key>
+    <key type="b" name="ws-switcher-wraparound">
+      <default>false</default>
+    </key>
+    <key type="b" name="ws-switcher-ignore-last">
+      <default>false</default>
+    </key>
     <key type="i" name="favorites-notify">
       <default>1</default>
     </key>
