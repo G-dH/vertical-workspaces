@@ -1508,6 +1508,7 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Activate Window (Default)'), 0],
                 [_('Close Window'), 1],
                 [_('Search For Same App Windows'), 2],
+                [_('Create Window Thumbnail - PIP'), 3],
             ],
             'windowPreviewModule'
         )
@@ -1524,6 +1525,7 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Activate Window (Default)'), 0],
                 [_('Close Window'), 1],
                 [_('Search For Same App Windows'), 2],
+                [_('Create Window Thumbnail - PIP'), 3],
             ],
             'windowPreviewModule'
         )
@@ -1539,6 +1541,7 @@ function _getBehaviorOptionList(itemFactory) {
             [
                 [_('Activate Window (Default)'), 0],
                 [_('Search For Same App Windows'), 1],
+                [_('Create Window Thumbnail - PIP'), 2],
             ],
             'windowPreviewModule'
         )
@@ -1835,6 +1838,24 @@ function _getBehaviorOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Switcher')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Wraparound'),
+            _('Continue from the last workspace to the first and vice versa'),
+            itemFactory.newSwitch(),
+            'wsSwitcherWraparound'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Ignore Last (empty) Workspace'),
+            _('In Dynamic workspaces mode, there is always one empty workspace at the end. Switcher can ignore this last workspace'),
+            itemFactory.newSwitch(),
+            'wsSwitcherIgnoreLast'
         )
     );
 
