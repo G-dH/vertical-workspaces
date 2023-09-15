@@ -11,7 +11,7 @@
 'use strict';
 
 const ExtensionUtils = imports.misc.extensionUtils;
-const Import = ExtensionUtils.getCurrentExtension().imports.lib.import;
+const Dependencies = ExtensionUtils.getCurrentExtension().imports.lib.dependencies.Dependencies;
 
 let Gi;
 let Ui;
@@ -27,14 +27,14 @@ function init() {
 
 class Extension {
     _init() {
-        Import.init();
-        Gi = Import.Gi;
-        Ui = Import.Ui;
-        Misc = Import.Misc;
-        Me = Import.Me;
+        this.dependencies = new Dependencies();
+        Gi = this.dependencies.Gi;
+        Ui = this.dependencies.Ui;
+        Misc = this.dependencies.Misc;
+        Me = this.dependencies.Me;
 
         _ = Me.gettext;
-        opt = Me.Opt;
+        opt = Me.opt;
 
         Me.Util.init(Gi, Ui, Misc, Me);
 
@@ -60,7 +60,7 @@ class Extension {
     disable() {
         this._removeVShell();
         this._disposeModules();
-        Import.cleanGlobals();
+        this.dependencies = null;
         opt = null;
 
         // If Dash to Dock is enabled, disabling V-Shell can end in broken overview
@@ -69,12 +69,11 @@ class Extension {
     }
 
     _disposeModules() {
-        Me.Opt.destroy();
-        Me.Opt = null;
+        Me.opt.destroy();
+        Me.opt = null;
 
         for (let module of Me.moduleList)
             Me.Modules[module].cleanGlobals();
-
 
         Me.Modules = null;
     }
@@ -693,7 +692,7 @@ class Extension {
     _getNeighbor(direction) {
         // workspace matrix is supported
         const activeIndex = this.index();
-        const ignoreLast = opt.WS_IGNORE_LAST ? 1 : 0;
+        const ignoreLast = opt.WS_IGNORE_LAST && !Ui.Main.overview._shown ? 1 : 0;
         const wraparound = opt.WS_WRAPAROUND;
         const nWorkspaces = global.workspace_manager.n_workspaces;
         const lastIndex = nWorkspaces - 1 - ignoreLast;

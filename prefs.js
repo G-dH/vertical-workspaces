@@ -10,7 +10,7 @@
 'use strict';
 
 const ExtensionUtils = imports.misc.extensionUtils;
-const Import = ExtensionUtils.getCurrentExtension().imports.lib.import;
+const Dependencies = ExtensionUtils.getCurrentExtension().imports.lib.dependencies.Dependencies;
 const GObject = imports.gi.GObject;
 
 let Gi;
@@ -18,18 +18,17 @@ let Misc;
 let Me;
 let _;
 
-let gOptions;
+let opt;
 
 function init() {
-    Import.init(true);
-    Gi = Import.Gi;
-    Misc = Import.Misc;
-    Me = Import.Me;
+    const dependencies = new Dependencies(true);
+    Gi = dependencies.Gi;
+    Misc = dependencies.Misc;
+    Me = dependencies.Me;
 
     _ = Me.gettext;
-    gOptions = Me.Opt;
+    opt = Me.opt;
 
-    Gi.DropDownItem = DropDownItem;
     Me.OptionsFactory.init(Gi, Misc, Me);
 }
 
@@ -84,56 +83,18 @@ function _getPageList() {
 }
 
 function fillPreferencesWindow(window) {
-    window = new Me.OptionsFactory.AdwPrefs(gOptions).getFilledWindow(window, _getPageList());
+    window = new Me.OptionsFactory.AdwPrefs(opt).getFilledWindow(window, _getPageList());
     window.connect('close-request', () => {
-        gOptions.destroy();
-        gOptions = null;
+        opt.destroy();
+        opt = null;
         Gi = null;
         Misc = null;
         Me = null;
         _ = null;
-        Import.cleanGlobals();
     });
 
     window.set_default_size(800, 800);
 }
-
-const DropDownItem = GObject.registerClass({
-    GTypeName: 'DropdownItem',
-    Properties: {
-        'text': GObject.ParamSpec.string(
-            'text',
-            'Text',
-            'DropDown item text',
-            GObject.ParamFlags.READWRITE,
-            ''
-        ),
-        'id': GObject.ParamSpec.int(
-            'id',
-            'Id',
-            'Item id stored in settings',
-            GObject.ParamFlags.READWRITE,
-            0, 100, 0
-        ),
-    },
-}, class DropDownItem extends GObject.Object {
-    get text() {
-        return this._text;
-    }
-
-    set text(text) {
-        this._text = text;
-    }
-
-    get id() {
-        return this._id;
-    }
-
-    set id(id) {
-        this._id = id;
-    }
-}
-);
 
 // ////////////////////////////////////////////////////////////////////
 function _getProfilesOptionList(itemFactory) {
@@ -151,25 +112,25 @@ function _getProfilesOptionList(itemFactory) {
     optionList.push(itemFactory.getRowWidget(
         _('Profile 1'),
         null,
-        itemFactory.newPresetButton(gOptions, 1)
+        itemFactory.newPresetButton(opt, 1)
     ));
 
     optionList.push(itemFactory.getRowWidget(
         _('Profile 2'),
         null,
-        itemFactory.newPresetButton(gOptions, 2)
+        itemFactory.newPresetButton(opt, 2)
     ));
 
     optionList.push(itemFactory.getRowWidget(
         _('Profile 3'),
         null,
-        itemFactory.newPresetButton(gOptions, 3)
+        itemFactory.newPresetButton(opt, 3)
     ));
 
     optionList.push(itemFactory.getRowWidget(
         _('Profile 4'),
         null,
-        itemFactory.newPresetButton(gOptions, 4)
+        itemFactory.newPresetButton(opt, 4)
     ));
 
     return optionList;
@@ -190,7 +151,7 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Dash Position'),
             null,
-            // itemFactory.newComboBox(),
+            // // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'dashPosition',
             [
@@ -239,8 +200,8 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Show Apps Icon Position'),
             _('Sets the position of the "Show Applications" icon in the Dash'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'showAppsIconPosition',
             [
                 [_('Hide'), 2],
@@ -255,8 +216,8 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Open Windows Icon Position'),
             _('Allows to add "Search Open Windows" icon into Dash (if window search provider enabled on the Behavior tab) so you can directly toggle window search provider results. You can also use the secondary mouse button click on the Show Apps Icon, or the Space hotkey'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'dashShowWindowsIcon',
             [
                 [_('Hide'), 0],
@@ -271,8 +232,8 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Recent Files Icon Position'),
             _('Allows to add "Search Recent Files" icon into Dash (if recent files search provider enabled on the Behavior tab) so you can directly toggle recent files search provider results. You can also use Ctrl + Space hotkey'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'dashShowRecentFilesIcon',
             [
                 [_('Hide'), 0],
@@ -294,8 +255,8 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Thumbnails Position / Workspaces Orientation'),
             _('Position of the workspace thumbnails on the screen also sets orientation of the workspaces to vertical or horizontal. You have two options to disable workspace thumbnails, one sets workspaces to vertical orientation, the second one to horizontal.'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'workspaceThumbnailsPosition',
             // this mess is just because of backward compatibility
             [
@@ -504,8 +465,8 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Main Panel Position'),
             _('Allows to place the main panel at the bottom of the primary display'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'panelPosition',
             [
                 [_('Top (Default)'), 0],
@@ -519,8 +480,8 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Main Panel Visibility'),
             _('Allows to hide main panel when not needed'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'panelVisibility',
             [
                 [_('Always Visible (Default)'), 0],
@@ -591,8 +552,8 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Notification Banner Position'),
             _('Choose where the notification banners appear on the screen'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'notificationPosition',
             [
                 [_('Top Left'), 0],
@@ -610,8 +571,8 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('OSD Popup Position'),
             _('Choose where the OSD pop-ups (like sound volume level) appear on the screen'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'osdPosition',
             [
                 [_('Disable'), 0],
@@ -637,8 +598,8 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Workspace Thumbnails Position'),
             _('Allows to place workspace thumbnails of secondary monitors on the opposite side than on the primary monitor'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'secWsThumbnailsPosition',
             [
                 [_('Same as Primary'), 2],
@@ -733,8 +694,8 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Dash Max Icon Size'),
             _('Maximum size of Dash icons in pixels'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'dashMaxIconSize',
             [
                 [_('128'), 128],
@@ -755,8 +716,8 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Dash Background Style'),
             _('Allows you to change the background color of the dash to match the search results an app folders'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'dashBgColor',
             [
                 [_('Default'), 0],
@@ -819,8 +780,8 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Running App Indicator'),
             _('Allows you to change style of the running app indicator under the app icon'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'runningDotStyle',
             [
                 [_('Dot (Default)'), 0],
@@ -840,8 +801,8 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Show Workspace Thumbnail Labels'),
             _('Each workspace thumbnail can show label with its index and name (if defined in the system settings) or name/title of its most recently used app/window'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'showWsTmbLabels',
             [
                 [_('Disable'), 0],
@@ -881,8 +842,8 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Window Preview App Icon Size'),
             null,
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'winPreviewIconSize',
             [
                 [_('64 (Default)'), 0],
@@ -899,8 +860,8 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Window Title Position / Visibility'),
             _('Sets the position of the window title that is displayed when the mouse hovers over the window or can always be visible'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'winTitlePosition',
             [
                 [_('Inside Window'), 0],
@@ -966,8 +927,8 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Icon Size'),
             _('Allows to set a fixed app grid icon size and bypass the default adaptive algorithm'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'appGridIconSize',
             [
                 [_('Adaptive (Default)'), -1],
@@ -994,8 +955,8 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Folder Icon Size'),
             _('Allows to set a fixed icon size and bypass the default adaptive algorithm in the open folder dialog'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'appGridFolderIconSize',
             [
                 [_('Adaptive (Default)'), -1],
@@ -1011,13 +972,12 @@ function _getAppearanceOptionList(itemFactory) {
         )
     );
 
-    const folderIconGridCombo = itemFactory.newComboBox();
+    const folderIconGridCombo = itemFactory.newDropDown();
     optionList.push(
         itemFactory.getRowWidget(
             _('Max App Folder Icon Grid Size'),
             _('Sets a grid size (number of icons) in the folder preview. 3x3 options automatically switches between 2x2 and 3x3 grid depending on the number of icons in the folder'),
             folderIconGridCombo,
-            // itemFactory.newDropDown(),
             'appGridFolderIconGrid',
             [
                 [_('2x2 (Default)'), 2],
@@ -1126,8 +1086,8 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Search Icon Size'),
             _('Size of results provided by the App Search Provider - smaller size allows to fit more results'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'searchIconSize',
             [
                 [_('128'), 128],
@@ -1258,8 +1218,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Activities Overview Mode'),
             _('The Expose Windows on Hover mode does not expose the workspace preview windows until the mouse pointer enters any window\nThe Static Workspace mode keeps the workspace static when you activate the overview, it only shows Dash, workspace thumbnails and search entry over the workspace and only clicking on an active workspace thumbnail activates the default overview'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'overviewMode',
             [
                 [_('Default'), 0],
@@ -1273,8 +1233,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Startup State'),
             _('Allows to change the state in which GNOME Shell starts a session'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'startupState',
             [
                 [_('Overview (Default)'), 0],
@@ -1288,8 +1248,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Escape Key Behavior'),
             _('Allows you to close the overview with a single press of the Escape key, even from the application grid or from search, if the search entry field does not have focus'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'overviewEscBehavior',
             [
                 [_('Default'), 0],
@@ -1309,8 +1269,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Single-Press Action'),
             _('Disable or change behavior when you press and release the Super key. The "Search Windows" options requires the WindowSearchProvider module to be activated'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'overlayKeyPrimary',
             [
                 [_('Disable'), 0],
@@ -1330,8 +1290,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Double-Press Action'),
             _('Disable or change behavior when you double-press the Super key. The "Search Windows" option requires the WindowSearchProvider module to be activated. The "Static WS Overview - Expose Windows" option allows you to switch to default Activities Overview window picker view if you set static workspace (preview) for the single press/release Super key action'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'overlayKeySecondary',
             [
                 [_('Disable'), 0],
@@ -1354,8 +1314,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Hot Corner Action'),
             _('Disable or change behavior of the hot corner. Holding down the Ctrl key while hitting the hot corner switches between Overview/Applications actions'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'hotCornerAction',
             [
                 [_('Disable'), 0],
@@ -1374,8 +1334,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Hot Corner Position'),
             _('Choose which corner of your monitors will be active. If you choose "Follow Dash" option, the corner will be placed near the left or top edge of the Dash. The last option extends the hot corner trigger to cover the entire ege of the monitor where Dash is located'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'hotCornerPosition',
             [
                 [_('Default'), 0],
@@ -1395,7 +1355,6 @@ function _getBehaviorOptionList(itemFactory) {
             _('Enable Hot Corner in Full-Screen Mode'),
             _('If you often work with full-screen applications and want the hot corner to be usable'),
             itemFactory.newSwitch(),
-            // itemFactory.newDropDown(),
             'hotCornerFullscreen',
             null,
             'layoutModule'
@@ -1407,7 +1366,6 @@ function _getBehaviorOptionList(itemFactory) {
             _('Show Ripples Animation'),
             _('The ripple animation is played when the hot corner is activated. The ripple size has been reduced to be less distracting'),
             itemFactory.newSwitch(),
-            // itemFactory.newDropDown(),
             'hotCornerRipples',
             null,
             'layoutModule'
@@ -1424,8 +1382,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Icon - Click Behavior'),
             _('Choose your preferred behavior when clicking on an app icon. The "Prefer Current Workspace" option opens a new app window if not present in the current workspace. The "Open New Window" option also switches behavior of the middle click to "Activate" since its default behavior is to open a new window'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'dashShowWindowsBeforeActivation',
             [
                 [_('Activate App Immediately'), 0],
@@ -1441,8 +1399,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Icon - Scroll Action'),
             _('Choose the behavior when scrolling over an app icon. The window cycler works with a list of windows sorted by the "Most Recently Used" and grouped by workspaces. Scrolling up cycles through previously used windows on the same workspace and then switches to another workspace, if any'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'dashIconScroll',
             [
                 [_('Default'), 0],
@@ -1457,8 +1415,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Search Windows Icon - Scroll Action'),
             _('Choose the behavior when scrolling over the Search Windows icon. The window cycler works with a list of windows sorted by "Most Recently Used" of the current workspace or all workspaces. Scrolling up cycles through previously used windows on the same workspace, or all windows regardless workspace. This option is mainly useful for the static workspace overview mode.'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'searchWindowsIconScroll',
             [
                 [_('Default'), 0],
@@ -1479,8 +1437,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Close Workspace Button'),
             _('The Close Workspace button appears on the workspace thumbnail when you hover over it and allows you to close all windows on the workspace. You can choose a "safety lock" to prevent accidental use'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'closeWsButtonMode',
             [
                 [_('Disable'), 0],
@@ -1501,8 +1459,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Secondary Button Click Action'),
             _('Allows you to add a secondary mouse click action to the window preview'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'winPreviewSecBtnAction',
             [
                 [_('Activate Window (Default)'), 0],
@@ -1518,8 +1476,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Middle Button Click Action'),
             _('Allows you to add a middle mouse click action to the window preview'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'winPreviewMidBtnAction',
             [
                 [_('Activate Window (Default)'), 0],
@@ -1535,8 +1493,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Icon Click Action'),
             _('Select the action to take when the application icon on the window preview is clicked'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'windowIconClickAction',
             [
                 [_('Activate Window (Default)'), 0],
@@ -1552,7 +1510,6 @@ function _getBehaviorOptionList(itemFactory) {
             _('Always Activate Selected'),
             _('If enabled, the currently selected window will be activated when leaving the Overview even without clicking. Usage example - press Super to open the Overview, place mouse pointer over a window, press Super again to activate the window'),
             itemFactory.newSwitch(),
-            // itemFactory.newDropDown(),
             'alwaysActivateSelectedWindow',
             null,
             'windowPreviewModule'
@@ -1569,8 +1526,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Grid Order'),
             _('Choose sorting method for the app grid. Note that sorting by usage ignores folders'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'appGridOrder',
             [
                 [_('Custom (Default)'), 0],
@@ -1586,8 +1543,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Folder Order'),
             _('Choose sorting method for app folders'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'appFolderOrder',
             [
                 [_('Custom (Default)'), 0],
@@ -1602,8 +1559,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Grid Content'),
             _('The default Shell removes favorite apps, this option allows to duplicate them in the grid or remove also running applications. Option "Favorites and Running First" only works with the Alphabet and Usage sorting'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'appGridContent',
             [
                 [_('Include All'), 0],
@@ -1621,7 +1578,6 @@ function _getBehaviorOptionList(itemFactory) {
             _('Active Icons in Folder Preview'),
             _('If enabled, icons in the folder review behaves like normal icons, you can activate or even drag them directly, without having to open the folder first'),
             itemFactory.newSwitch(),
-            // itemFactory.newDropDown(),
             'appGridActivePreview',
             null,
             'appDisplayModule'
@@ -1633,7 +1589,6 @@ function _getBehaviorOptionList(itemFactory) {
             _('Center Open Folders'),
             _('App folder may open in the center of the screen or above the source folder icon'),
             itemFactory.newSwitch(),
-            // itemFactory.newDropDown(),
             'appGridFolderCenter',
             null,
             'appDisplayModule'
@@ -1645,7 +1600,6 @@ function _getBehaviorOptionList(itemFactory) {
             _('Allow Incomplete Pages'),
             _('If disabled, icons from the next page (if any) are automatically moved to fill any empty slot left after an icon was (re)moved (to a folder for example)'),
             itemFactory.newSwitch(),
-            // itemFactory.newDropDown(),
             'appGridIncompletePages',
             null,
             'appDisplayModule'
@@ -1656,8 +1610,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Labels Behavior'),
             _('Choose how and when to display app names'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'appGridNamesMode',
             [
                 [_('Ellipsized - Expand Selected (Default)'), 0],
@@ -1712,8 +1666,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Window Search Provider - Sorting'),
             _('Choose the window sorting method'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'searchWindowsOrder',
             [
                 [_('Most Recently Used (MRU)'), 0],
@@ -1787,8 +1741,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Grid Animation'),
             _('When entering the App Grid view, the app grid animates from the edge of the screen. You can choose the direction, keep the Default (direction will be selected automatically) or disable the animation if you don\'t like it'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'appGridAnimation',
             [
                 [_('Default'), 4],
@@ -1805,8 +1759,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Search View Animation'),
             _('When search is activated the search view with search results can animate from the edge of the screen. You can choose the direction, keep the Default (currently Bottom to Top) or disable the animation if you don\'t like it.'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'searchViewAnimation',
             [
                 [_('Default'), 4],
@@ -1824,8 +1778,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Workspace Preview Animation'),
             _('When entering / leaving the App Grid / Search view, the workspace preview can animate to/from workspace thumbnail.'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'workspaceAnimation',
             [
                 [_('Disable'), 0],
@@ -1863,8 +1817,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Workspace Switcher Animation'),
             _('Allows you to disable movement of the desktop background during workspace switcher animation outside of the overview. The Static Background mode also keeps Conky and desktop icons on their place during switching.'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'workspaceSwitcherAnimation',
             [
                 [_('Default'), 0],
@@ -1878,8 +1832,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Workspace Switcher Popup Mode'),
             _('This popup shows up when you switch workspace using a keyboard shortcut or gesture outside of the overview. You can to disable the popup at all, or show it on the current monitor (the one with mouse pointer) instead of the primary.'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'wsSwPopupMode',
             [
                 [_('Disable'), 0],
@@ -1900,8 +1854,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Window Attention Handler'),
             _('When a window requires attention (often a new window), GNOME Shell shows you a notification about it. You can disable popups of these messages (notification will be pushed into the message tray silently) or focus the source window immediately instead'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'windowAttentionMode',
             [
                 [_('Show Notifications (Default)'), 0],
@@ -1916,8 +1870,8 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Favorites'),
             _('Disable pin/unpin app notifications'),
-            itemFactory.newComboBox(),
-            // itemFactory.newDropDown(),
+            // itemFactory.newComboBox(),
+            itemFactory.newDropDown(),
             'favoritesNotify',
             [
                 [_('Show Notifications (Default)'), 1],
