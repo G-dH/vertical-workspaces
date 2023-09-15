@@ -691,11 +691,12 @@ class Extension {
     }
 
     _getNeighbor(direction) {
+        // workspace matrix is supported
         const activeIndex = this.index();
-        const ignoreLast = opt.WS_IGNORE_LAST;
+        const ignoreLast = opt.WS_IGNORE_LAST ? 1 : 0;
         const wraparound = opt.WS_WRAPAROUND;
-        const nWorkspaces = global.workspace_manager.n_workspaces - (ignoreLast ? 1 : 0);
-        const lastIndex = nWorkspaces - 1;
+        const nWorkspaces = global.workspace_manager.n_workspaces;
+        const lastIndex = nWorkspaces - 1 - ignoreLast;
         const rows = global.workspace_manager.layout_rows > -1 ? global.workspace_manager.layout_rows : nWorkspaces;
         const columns = global.workspace_manager.layout_columns > -1 ? global.workspace_manager.layout_columns : nWorkspaces;
 
@@ -710,7 +711,7 @@ class Extension {
             if (wraparound && !neighborExists) {
                 index = currentRow * columns + columns - 1;
                 const maxIndexOnLastRow = lastIndex % columns;
-                index = index < lastIndex ? index : currentRow * columns + maxIndexOnLastRow;
+                index = index < (lastIndex - ignoreLast) ? index : currentRow * columns + maxIndexOnLastRow;
             }
         } else if (direction === Gi.Meta.MotionDirection.RIGHT) {
             index += 1;
@@ -724,7 +725,7 @@ class Extension {
             neighborExists = index > -1;
             if (wraparound && !neighborExists) {
                 index = rows * columns + index;
-                index = index < nWorkspaces ? index : index - columns;
+                index = index < nWorkspaces - ignoreLast ? index : index - columns;
             }
         } else if (direction === Gi.Meta.MotionDirection.DOWN) {
             index += columns;
