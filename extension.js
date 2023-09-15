@@ -94,6 +94,7 @@ let Me;
 
 // gettext
 let _;
+let opt;
 
 export default class VShell extends Extension {
     _init() {
@@ -177,7 +178,7 @@ export default class VShell extends Extension {
         this._init();
         // flag for Util.getEnabledExtensions()
         Me.extensionsLoadIncomplete = Ui.Main.layoutManager._startingUp;
-        this.opt = Me.Opt;
+        opt = Me.Opt;
 
         this._initModules();
         this.activateVShell();
@@ -238,12 +239,13 @@ export default class VShell extends Extension {
         for (let module of this._getModuleList())
             Me.Modules[module].cleanGlobals();
         Me.Modules = null;
-
-        delete this.opt;
+        opt = null;
     }
 
     activateVShell() {
         this._enabled = true;
+
+        this._originalGetNeighbor = Gi.Meta.Workspace.prototype.get_neighbor;
 
         this._removeTimeouts();
         this._timeouts = {};
@@ -309,6 +311,8 @@ export default class VShell extends Extension {
         // hide status message if shown
         this._showStatusMessage(false);
         this._prevDash = null;
+
+        Gi.Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;
     }
 
     _removeTimeouts() {
@@ -334,8 +338,8 @@ export default class VShell extends Extension {
     }
 
     _updateSettingsConnection() {
-        if (!this.opt._extensionUpdateId)
-            this.opt._extensionUpdateId = this.opt.connect('changed', this._updateSettings.bind(this));
+        if (!opt._extensionUpdateId)
+            opt._extensionUpdateId = opt.connect('changed', this._updateSettings.bind(this));
     }
 
     _updateFixDashToDockOption() {
@@ -343,7 +347,7 @@ export default class VShell extends Extension {
                               Me.Util.getEnabledExtensions('ubuntu-dock').length);
 
         // force enable Fix Dash to Dock option if DtD detected
-        this.opt._watchDashToDock = dtdEnabled;
+        opt._watchDashToDock = dtdEnabled;
     }
 
     _updateConnections() {
@@ -398,7 +402,7 @@ export default class VShell extends Extension {
                     const reset = [1, 2].includes(extension.state);
                     const dashReplacement = uuid.includes('dash-to-dock') || uuid.includes('ubuntu-dock') || uuid.includes('dash-to-panel');
                     if (dashReplacement && reset)
-                        this.opt._watchDashToDock = true;
+                        opt._watchDashToDock = true;
                     if (!Ui.Main.layoutManager._startingUp && reset && dashReplacement)
                         this._updateVShell(1999);
                 }
@@ -482,7 +486,7 @@ export default class VShell extends Extension {
         //    this._showStatusMessage(false);
         // }
 
-        if (!this._sessionLockActive && !Ui.Main.layoutManager._startingUp && this.opt.APP_GRID_PERFORMANCE) {
+        if (!this._sessionLockActive && !Ui.Main.layoutManager._startingUp && opt.APP_GRID_PERFORMANCE) {
             // Avoid showing status at startup, can cause freeze
             this._showStatusMessage();
         } else if (this._sessionLockActive) {
@@ -511,12 +515,12 @@ export default class VShell extends Extension {
         Ui.Main.overview._overview.controls.opacity = 255;
 
         // store pointer X coordinate for OVERVIEW_MODE 1 window spread - if mouse pointer is steady, don't spread
-        this.opt.showingPointerX = global.get_pointer()[0];
+        opt.showingPointerX = global.get_pointer()[0];
 
-        if (!Ui.Main.overview._overview.controls._bgManagers && (this.opt.SHOW_BG_IN_OVERVIEW || this.opt.SHOW_WS_PREVIEW_BG))
+        if (!Ui.Main.overview._overview.controls._bgManagers && (opt.SHOW_BG_IN_OVERVIEW || opt.SHOW_WS_PREVIEW_BG))
             Ui.Main.overview._overview.controls._setBackground();
 
-        if (this.opt._watchDashToDock) {
+        if (opt._watchDashToDock) {
             // workaround for Dash to Dock (Ubuntu Dock) breaking overview allocations after enabled and changed position
             // DtD replaces dock and its _workId on every position change
             const dash = Ui.Main.overview.dash;
@@ -573,7 +577,7 @@ export default class VShell extends Extension {
 
     _updateSettings(settings, key) {
         // update settings cache and option variables
-        this.opt._updateSettings();
+        opt._updateSettings();
 
         // avoid overload while loading profile - update only once
         // delayed gsettings writes are processed alphabetically
@@ -597,30 +601,30 @@ export default class VShell extends Extension {
             Ui.Main.notify(`${Me.metadata.name}`, `Profile ${index} has been updated`);
         }
 
-        this.opt.WORKSPACE_MIN_SPACING = Ui.Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
+        opt.WORKSPACE_MIN_SPACING = Ui.Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
         // update variables that cannot be processed within settings
         const dash = Ui.Main.overview.dash;
         if (Me.Util.dashIsDashToDock()) {
-            this.opt.DASH_POSITION = dash._position;
-            this.opt.DASH_TOP = this.opt.DASH_POSITION === 0;
-            this.opt.DASH_RIGHT = this.opt.DASH_POSITION === 1;
-            this.opt.DASH_BOTTOM = this.opt.DASH_POSITION === 2;
-            this.opt.DASH_LEFT = this.opt.DASH_POSITION === 3;
-            this.opt.DASH_VERTICAL = this.opt.DASH_LEFT || this.opt.DASH_RIGHT;
+            opt.DASH_POSITION = dash._position;
+            opt.DASH_TOP = opt.DASH_POSITION === 0;
+            opt.DASH_RIGHT = opt.DASH_POSITION === 1;
+            opt.DASH_BOTTOM = opt.DASH_POSITION === 2;
+            opt.DASH_LEFT = opt.DASH_POSITION === 3;
+            opt.DASH_VERTICAL = opt.DASH_LEFT || opt.DASH_RIGHT;
         }
 
-        this.opt.DASH_VISIBLE = this.opt.DASH_VISIBLE && !Me.Util.getEnabledExtensions('dash-to-panel@jderose9.github.com').length;
+        opt.DASH_VISIBLE = opt.DASH_VISIBLE && !Me.Util.getEnabledExtensions('dash-to-panel@jderose9.github.com').length;
 
-        this.opt.MAX_ICON_SIZE = this.opt.get('dashMaxIconSize');
-        if (this.opt.MAX_ICON_SIZE < 16) {
-            this.opt.MAX_ICON_SIZE = 64;
-            this.opt.set('dashMaxIconSize', 64);
+        opt.MAX_ICON_SIZE = opt.get('dashMaxIconSize');
+        if (opt.MAX_ICON_SIZE < 16) {
+            opt.MAX_ICON_SIZE = 64;
+            opt.set('dashMaxIconSize', 64);
         }
 
         const monitorWidth = global.display.get_monitor_geometry(global.display.get_primary_monitor()).width;
         if (monitorWidth < 1600) {
-            this.opt.APP_GRID_ICON_SIZE_DEFAULT = this.opt.APP_GRID_ACTIVE_PREVIEW && !this.opt.APP_GRID_USAGE ? 128 : 64;
-            this.opt.APP_GRID_FOLDER_ICON_SIZE_DEFAULT = 64;
+            opt.APP_GRID_ICON_SIZE_DEFAULT = opt.APP_GRID_ACTIVE_PREVIEW && !opt.APP_GRID_USAGE ? 128 : 64;
+            opt.APP_GRID_FOLDER_ICON_SIZE_DEFAULT = 64;
         }
 
         /* if (!Me.Util.dashIsDashToDock()) { // DtD has its own opacity control
@@ -628,25 +632,31 @@ export default class VShell extends Extension {
         }*/
 
         // adjust search entry style for OM2
-        if (this.opt.OVERVIEW_MODE2)
+        if (opt.OVERVIEW_MODE2)
             Ui.Main.overview.searchEntry.add_style_class_name('search-entry-om2');
         else
             Ui.Main.overview.searchEntry.remove_style_class_name('search-entry-om2');
 
-        if (this.opt.OVERVIEW_MODE === 1)
+        if (opt.OVERVIEW_MODE === 1)
             Me.Modules.workspaceModule.setWindowPreviewMaxScale(0.1);
         else
             Me.Modules.workspaceModule.setWindowPreviewMaxScale(0.95);
 
-        Ui.Main.overview.searchEntry.visible = this.opt.SHOW_SEARCH_ENTRY;
+        Ui.Main.overview.searchEntry.visible = opt.SHOW_SEARCH_ENTRY;
         Ui.Main.overview.searchEntry.opacity = 255;
-        Gi.St.Settings.get().slow_down_factor = this.opt.ANIMATION_TIME_FACTOR;
+        Gi.St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
 
-        this.opt.START_Y_OFFSET = (this.opt.get('panelModule') && this.opt.PANEL_OVERVIEW_ONLY && this.opt.PANEL_POSITION_TOP) ||
+        opt.START_Y_OFFSET = (opt.get('panelModule') && opt.PANEL_OVERVIEW_ONLY && opt.PANEL_POSITION_TOP) ||
             // better to add unnecessary space than to have a panel overlapping other objects
             Me.Util.getEnabledExtensions('hidetopbar').length
             ? Ui.Main.panel.height
             : 0;
+
+        // Options for workspace switcher, apply custom function only if needed
+        if (opt.WS_WRAPAROUND || opt.WS_IGNORE_LAST)
+            Gi.Meta.Workspace.prototype.get_neighbor = this._getNeighbor;
+        else
+            Gi.Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;
 
         if (settings)
             this._applySettings(key);
@@ -655,7 +665,7 @@ export default class VShell extends Extension {
     _applySettings(key) {
         if (key?.endsWith('-module')) {
             for (let module of this._getModuleList()) {
-                if (this.opt.options[module] && key === this.opt.options[module][1]) {
+                if (opt.options[module] && key === opt.options[module][1]) {
                     if (key === 'app-display-module')
                         this._showStatusMessage();
                     Me.Modules[module].update();
@@ -723,7 +733,7 @@ export default class VShell extends Extension {
 
     _switchPageShortcuts() {
         //                                          ignore screen lock
-        if (!this.opt.get('enablePageShortcuts') || this._sessionLockActive)
+        if (!opt.get('enablePageShortcuts') || this._sessionLockActive)
             return;
 
         const vertical = global.workspaceManager.layout_rows === -1;
@@ -846,6 +856,53 @@ export default class VShell extends Extension {
                 return Gi.GLib.SOURCE_REMOVE;
             }
         );
+    }
+
+    _getNeighbor(direction) {
+        // workspace matrix is supported
+        const activeIndex = this.index();
+        const ignoreLast = opt.WS_IGNORE_LAST ? 1 : 0;
+        const wraparound = opt.WS_WRAPAROUND;
+        const nWorkspaces = global.workspace_manager.n_workspaces;
+        const lastIndex = nWorkspaces - 1 - ignoreLast;
+        const rows = global.workspace_manager.layout_rows > -1 ? global.workspace_manager.layout_rows : nWorkspaces;
+        const columns = global.workspace_manager.layout_columns > -1 ? global.workspace_manager.layout_columns : nWorkspaces;
+
+        let index = activeIndex;
+        let neighborExists;
+
+        if (direction === Gi.Meta.MotionDirection.LEFT) {
+            index -= 1;
+            const currentRow = Math.floor(activeIndex / columns);
+            const indexRow = Math.floor(index / columns);
+            neighborExists = index > -1 && indexRow === currentRow;
+            if (wraparound && !neighborExists) {
+                index = currentRow * columns + columns - 1;
+                const maxIndexOnLastRow = lastIndex % columns;
+                index = index < (lastIndex - ignoreLast) ? index : currentRow * columns + maxIndexOnLastRow;
+            }
+        } else if (direction === Gi.Meta.MotionDirection.RIGHT) {
+            index += 1;
+            const currentRow = Math.floor(activeIndex / columns);
+            const indexRow = Math.floor(index / columns);
+            neighborExists = index <= lastIndex && indexRow === currentRow;
+            if (wraparound && !neighborExists)
+                index = currentRow * columns;
+        } else if (direction === Gi.Meta.MotionDirection.UP) {
+            index -= columns;
+            neighborExists = index > -1;
+            if (wraparound && !neighborExists) {
+                index = rows * columns + index;
+                index = index < nWorkspaces - ignoreLast ? index : index - columns;
+            }
+        } else if (direction === Gi.Meta.MotionDirection.DOWN) {
+            index += columns;
+            neighborExists = index <= lastIndex;
+            if (wraparound && !neighborExists)
+                index %= columns;
+        }
+
+        return global.workspace_manager.get_workspace_by_index(neighborExists || wraparound ? index : activeIndex);
     }
 }
 

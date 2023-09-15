@@ -1819,6 +1819,24 @@ function _getBehaviorOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Wraparound'),
+            _('Continue from the last workspace to the first and vice versa'),
+            itemFactory.newSwitch(),
+            'wsSwitcherWraparound'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Ignore Last (empty) Workspace'),
+            _('In Dynamic workspaces mode, there is always one empty workspace at the end. Switcher can ignore this last workspace'),
+            itemFactory.newSwitch(),
+            'wsSwitcherIgnoreLast'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Workspace Switcher Animation'),
             _('Allows you to disable movement of the desktop background during workspace switcher animation outside of the overview. The Static Background mode also keeps Conky and desktop icons on their place during switching.'),
             itemFactory.newComboBox(),
