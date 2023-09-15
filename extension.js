@@ -84,6 +84,7 @@ import { WorkspaceAnimationModule } from './lib/workspaceAnimation.js';
 import { WorkspaceModule } from './lib/workspace.js';
 import { WorkspaceSwitcherPopupModule } from './lib/workspaceSwitcherPopup.js';
 import { WindowSearchProviderModule } from './lib/windowSearchProvider.js';
+import { WinTmbModule } from './lib/winTmb.js';
 // import { RecentFilesSearchProviderModule } from './lib/recentFilesSearchProvider.js';
 
 let Gi;
@@ -227,6 +228,7 @@ export default class VShell extends Extension {
         Me.Modules.workspacesViewModule = new WorkspacesViewModule(Gi, Ui, Misc, Me);
         Me.Modules.windowSearchProviderModule = new WindowSearchProviderModule(Gi, Ui, Misc, Me);
         // Me.Modules.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Gi, Ui, Misc, Me);
+        Me.Modules.winTmbModule = new WinTmbModule(Gi, Ui, Misc, Me);
     }
 
     _disposeModules() {
@@ -496,6 +498,7 @@ export default class VShell extends Extension {
         Me.Modules.osdWindowModule.update(reset);
         Me.Modules.overlayKeyModule.update(reset);
         Me.Modules.searchControllerModule.update(reset);
+        Me.Modules.winTmbModule.update(reset);
 
         if (!reset)
             Ui.Main.overview._overview.controls.setInitialTranslations();

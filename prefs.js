@@ -1493,6 +1493,7 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Activate Window (Default)'), 0],
                 [_('Close Window'), 1],
                 [_('Search For Same App Windows'), 2],
+                [_('Create Window Thumbnail - PIP'), 3],
             ],
             'windowPreviewModule'
         )
@@ -1509,6 +1510,7 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Activate Window (Default)'), 0],
                 [_('Close Window'), 1],
                 [_('Search For Same App Windows'), 2],
+                [_('Create Window Thumbnail - PIP'), 3],
             ],
             'windowPreviewModule'
         )
@@ -1524,6 +1526,7 @@ function _getBehaviorOptionList(itemFactory) {
             [
                 [_('Activate Window (Default)'), 0],
                 [_('Search For Same App Windows'), 1],
+                [_('Create Window Thumbnail - PIP'), 2],
             ],
             'windowPreviewModule'
         )
