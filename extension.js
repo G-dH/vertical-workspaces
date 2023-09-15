@@ -162,7 +162,7 @@ export default class VShell extends Extension {
         // Me.RFSP_PREFIX = RecentFilesSearchProviderModule._PREFIX;
         Me.repairOverrides = this._repairOverrides;
 
-        Me.Opt = new Me.Settings.Options(Gi, Me);
+        Me.opt = new Me.Settings.Options(Gi, Me);
 
         Me.Util.init(Gi, Ui, Misc, Me);
     }
@@ -178,7 +178,7 @@ export default class VShell extends Extension {
         this._init();
         // flag for Util.getEnabledExtensions()
         Me.extensionsLoadIncomplete = Ui.Main.layoutManager._startingUp;
-        opt = Me.Opt;
+        opt = Me.opt;
 
         this._initModules();
         this.activateVShell();
@@ -233,8 +233,8 @@ export default class VShell extends Extension {
     }
 
     _disposeModules() {
-        Me.Opt.destroy();
-        Me.Opt = null;
+        Me.opt.destroy();
+        Me.opt = null;
 
         for (let module of this._getModuleList())
             Me.Modules[module].cleanGlobals();
@@ -861,7 +861,7 @@ export default class VShell extends Extension {
     _getNeighbor(direction) {
         // workspace matrix is supported
         const activeIndex = this.index();
-        const ignoreLast = opt.WS_IGNORE_LAST ? 1 : 0;
+        const ignoreLast = opt.WS_IGNORE_LAST && !Ui.Main.overview._shown ? 1 : 0;
         const wraparound = opt.WS_WRAPAROUND;
         const nWorkspaces = global.workspace_manager.n_workspaces;
         const lastIndex = nWorkspaces - 1 - ignoreLast;
