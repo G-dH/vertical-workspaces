@@ -519,7 +519,7 @@ export default class VShell extends Extension {
         // store pointer X coordinate for OVERVIEW_MODE 1 window spread - if mouse pointer is steady, don't spread
         opt.showingPointerX = global.get_pointer()[0];
 
-        if (!Ui.Main.overview._overview.controls._bgManagers && (opt.SHOW_BG_IN_OVERVIEW || opt.SHOW_WS_PREVIEW_BG))
+        if (!Ui.Main.overview._overview.controls._bgManagers && (opt.SHOW_BG_IN_OVERVIEW || opt.SHOW_WS_PREVIEW_BG) && !Me.Util.getEnabledExtensions('blur-my-shell').length)
             Ui.Main.overview._overview.controls._setBackground();
 
         if (opt._watchDashToDock) {
