@@ -52,6 +52,7 @@ import * as ExtensionUtils from 'resource:///org/gnome/shell/misc/extensionUtils
 import * as Util from 'resource:///org/gnome/shell/misc/util.js';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
 import * as Params from 'resource:///org/gnome/shell/misc/params.js';
+import * as SystemActions from 'resource:///org/gnome/shell/misc/systemActions.js';
 
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 
@@ -149,6 +150,7 @@ export default class VShell extends Extension {
         Misc.shellVersion = parseFloat(Misc.Config.PACKAGE_VERSION);
         Misc.ExtensionUtils = ExtensionUtils;
         Misc.Util = Util;
+        Misc.SystemActions = SystemActions;
         Misc.getSettings = this.getSettings.bind(this);
 
         Me.metadata = this.metadata;
