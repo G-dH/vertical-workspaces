@@ -1216,7 +1216,7 @@ function _getBehaviorOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Activities Overview Mode'),
+            _('Overview Mode'),
             _('The Expose Windows on Hover mode does not expose the workspace preview windows until the mouse pointer enters any window\nThe Static Workspace mode keeps the workspace static when you activate the overview, it only shows Dash, workspace thumbnails and search entry over the workspace and only clicking on an active workspace thumbnail activates the default overview'),
             // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
@@ -1903,14 +1903,14 @@ function _getModulesOptionList(itemFactory) {
         )
     );
 
-    optionList.push(
+    /* optionList.push(
         itemFactory.getRowWidget(
             _('RecentFilesSearchProvider'),
             _('Activates the recent files search provider that can be triggered by a dash icon, Ctrl + Space hotkey or by typing "fq//" prefix in the search entry field. This option needs File History option enabled in the GNOME Privacy settings'),
             itemFactory.newSwitch(),
             'recentFilesSearchProviderModule'
         )
-    );
+    );*/
 
     optionList.push(
         itemFactory.getRowWidget(
