@@ -506,7 +506,7 @@ export default class VShell extends Extension {
         Me.Modules.searchControllerModule.update(reset);
         Me.Modules.winTmbModule.update(reset);
 
-        if (!reset)
+        if (!reset && !Ui.Main.layoutManager._startingUp)
             Ui.Main.overview._overview.controls.setInitialTranslations();
     }
 
