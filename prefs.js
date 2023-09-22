@@ -332,7 +332,7 @@ function _getLayoutOptionList(itemFactory) {
     wsThumbnailScale.add_mark(13, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
-            _('Workspace Thumbnails Max Scale'),
+            _('Workspace Thumbnails Max Scale - Window Picker'),
             _('Adjusts maximum size of the workspace thumbnails in the overview (% relative to display width)'),
             wsThumbnailScale,
             'wsThumbnailScale'
@@ -347,11 +347,11 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const wsThumbnailAppScale = itemFactory.newScale(wsThumbnailAppScaleAdjustment);
-    wsThumbnailAppScale.add_mark(0, Gi.Gtk.PositionType.TOP, null);
+    wsThumbnailAppScale.add_mark(13, Gi.Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Thumbnails Max Scale - App View'),
-            _('Set to 0 to follow "Workspace Thumbnails Max Scale" scale. Allows you to set different thumbnails scale for the Applications view'),
+            _('Allows you to set different thumbnails scale for the Applications view'),
             wsThumbnailAppScale,
             'wsThumbnailScaleAppGrid'
         )
@@ -654,7 +654,7 @@ function _getLayoutOptionList(itemFactory) {
 
     const secWsThumbnailScaleAdjustment = new Gi.Gtk.Adjustment({
         upper: 30,
-        lower: 5,
+        lower: 0,
         step_increment: 1,
         page_increment: 1,
     });
