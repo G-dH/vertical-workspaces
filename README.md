@@ -2,7 +2,7 @@
 
 A GNOME Shell extension that lets you customize your GNOME Shell UX to suit your workflow, whether you like horizontally or vertically stacked workspaces.
 
-Currently supported GNOME versions: 42, 43, 44
+Currently supported GNOME versions: 42 - 45
 
 [<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
 
@@ -25,13 +25,13 @@ Currently supported GNOME versions: 42, 43, 44
 - Static background in workspace switcher (outside overview). Keeps Conky below, DING desktop icons stay visible (if not covered by windows)
 - Control over transition animations, including speed
 - Window search provider with *Space* hotkey allows quick window navigation
-- Recent files search provider with *Ctrl + Space* hotkey
+- ~~Recent files search provider with Ctrl + Space hotkey~~
 - Reorder workspaces in overview using *Shift + Scroll* or *Shift + Page Up/Down*
 - Adds *Force Quit*, *Close Windows on Current Workspace* and *Move Windows to Current Workspace* items to app icon menu. The latter action can be activated using *Shift + click* on app icon
 - Change notification banners and OSD popups position
 - Window attention handler options can activate the attention-demanding window immediately or silence its notification
 - Optional position of the hot corner that can follow the dash and expand to hot edge
-- Super key double-press options
+- Super key behavior options
 
 ## Changelog
 [CHANGELOG.md](CHANGELOG.md)
@@ -55,8 +55,17 @@ The most recent version in the repository is the one I'm currently using and dev
 You may need to install `git`, `make`, `gettext` and `glib2.0` for successful installation.
 Navigate to the directory you want to download the source code and execute following commands in the terminal:
 
+GNOME 42 - 44:
+
     git clone https://github.com/G-dH/vertical-workspaces.git
     cd vertical-workspaces
+    make install
+
+GNOME 45:
+
+    git clone https://github.com/G-dH/vertical-workspaces.git
+    cd vertical-workspaces
+    git checkout esm-modules
     make install
 
 If you get `Can't recursively copy directory` error, take a look at issue #51.

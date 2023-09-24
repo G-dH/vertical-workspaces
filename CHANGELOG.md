@@ -8,7 +8,7 @@
 - App Grid sorting options allow alphabetical order with folders
 
 **Removed:**
-- *Recent files search provider* because it uses no longer allowed Gtk library and also can cause issues when recent files are on disconnected partitions
+- *Recent files search provider* because it uses no longer allowed (in extensions) Gtk library and also can cause issues when recent files are on disconnected partitions
 
 **Fixed:**
 - App grid has less rows than it should
