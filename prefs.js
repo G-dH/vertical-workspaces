@@ -1298,7 +1298,7 @@ function _getBehaviorOptionList(itemFactory) {
             'overlayKeyPrimary',
             [
                 [_('Disable'), 0],
-                [_('Follow Global Overview Mode (Default)'), 1],
+                [_('Follow Global Overview Mode'), 1],
                 [_('Overview (Default)'), 2],
                 [_('Applications'), 3],
                 [_('Overview - Static WS Preview'), 4],
@@ -1321,7 +1321,7 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Disable'), 0],
                 [_('Applications (Default)'), 1],
                 [_('Search Windows'), 2],
-                [_('Activities Overview - Window Picker'), 3],
+                [_('Overview - Window Picker'), 3],
                 // [_('Search Recent Files'), 4],
             ],
             'overlayKeyModule'
