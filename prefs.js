@@ -729,8 +729,6 @@ function _getAppearanceOptionList(itemFactory) {
                 [_('64'),   64],
                 [_('48'),   48],
                 [_('32'),   32],
-                [_('24'),   24],
-                [_('16'),   16],
             ],
             'dashModule'
         )
