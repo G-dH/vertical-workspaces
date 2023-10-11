@@ -1223,6 +1223,31 @@ function _getAppearanceOptionList(itemFactory) {
         )
     );
 
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Window Thumbnails (PIP)')
+        )
+    );
+
+    const winTmbAdjustment = new Gi.Gtk.Adjustment({
+        upper: 50,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const winTmbScale = itemFactory.newScale(winTmbAdjustment);
+    winTmbScale.add_mark(15, Gi.Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Default Window Thumbnail (PIP) Scale (% of screen height)'),
+            _('Default scale of window thumbnail (like Picture In Picture) that you can create using the app icon menu or window preview action'),
+            winTmbScale,
+            'windowThumbnailScale'
+        )
+    );
+
     return optionList;
 }
 // ----------------------------------------------------------------
@@ -2048,6 +2073,15 @@ function _getModulesOptionList(itemFactory) {
             _('Window preview options, fixes an upstream bug that fills the system log with errors when you close a window from the overview or exit the overview with a gesture when any window is selected'),
             itemFactory.newSwitch(),
             'windowPreviewModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('WindowThumbnail'),
+            _('Create Window Thumbnail (PIP) option in the app icon menu and window preview actions'),
+            itemFactory.newSwitch(),
+            'windowThumbnailModule'
         )
     );
 
