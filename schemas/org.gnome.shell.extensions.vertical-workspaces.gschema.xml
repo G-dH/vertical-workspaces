@@ -298,6 +298,9 @@
     <key type="b" name="app-grid-performance">
       <default>true</default>
     </key>
+    <key type="i" name="window-thumbnail-scale">
+      <default>15</default>
+    </key>
 
     <key type="b" name="workspace-switcher-popup-module">
       <default>true</default>
@@ -315,6 +318,9 @@
       <default>true</default>
     </key>
     <key type="b" name="win-attention-handler-module">
+      <default>true</default>
+    </key>
+    <key type="b" name="window-thumbnail-module">
       <default>true</default>
     </key>
     <key type="b" name="swipe-tracker-module">
