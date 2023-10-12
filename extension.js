@@ -10,58 +10,25 @@
 
 'use strict';
 
-import GLib from 'gi://GLib';
 import Clutter from 'gi://Clutter';
-import St from 'gi://St';
-import Meta from 'gi://Meta';
-import Shell from 'gi://Shell';
+import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
-import Gio from 'gi://Gio';
-import Pango from 'gi://Pango';
-import Graphene from 'gi://Graphene';
-import Atk from 'gi://Atk';
+import Meta from 'gi://Meta';
+import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import * as Workspace from 'resource:///org/gnome/shell/ui/workspace.js';
-import * as Search from 'resource:///org/gnome/shell/ui/search.js';
-import * as DND from 'resource:///org/gnome/shell/ui/dnd.js';
-import * as AppDisplay from 'resource:///org/gnome/shell/ui/appDisplay.js';
-import * as IconGrid from 'resource:///org/gnome/shell/ui/iconGrid.js';
-import * as Dash from 'resource:///org/gnome/shell/ui/dash.js';
-import * as AppFavorites from 'resource:///org/gnome/shell/ui/appFavorites.js';
-import * as Overview from 'resource:///org/gnome/shell/ui/overview.js';
-import * as Panel from 'resource:///org/gnome/shell/ui/panel.js';
-import * as SwipeTracker from 'resource:///org/gnome/shell/ui/swipeTracker.js';
-import * as AltTab from 'resource:///org/gnome/shell/ui/altTab.js';
-import * as Layout from 'resource:///org/gnome/shell/ui/layout.js';
-import * as OsdWindow from 'resource:///org/gnome/shell/ui/osdWindow.js';
-import * as OverviewControls from 'resource:///org/gnome/shell/ui/overviewControls.js';
-import * as WorkspacesView from 'resource:///org/gnome/shell/ui/workspacesView.js';
-import * as WorkspaceThumbnail from 'resource:///org/gnome/shell/ui/workspaceThumbnail.js';
-import * as Background from 'resource:///org/gnome/shell/ui/background.js';
-import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
-import * as WindowAttentionHandler from 'resource:///org/gnome/shell/ui/windowAttentionHandler.js';
-import * as WindowManager from 'resource:///org/gnome/shell/ui/windowManager.js';
-import * as WindowPreview from 'resource:///org/gnome/shell/ui/windowPreview.js';
-import * as WorkspaceSwitcherPopup from 'resource:///org/gnome/shell/ui/workspaceSwitcherPopup.js';
-import * as WorkspaceAnimation from 'resource:///org/gnome/shell/ui/workspaceAnimation.js';
-import * as AppMenu from 'resource:///org/gnome/shell/ui/appMenu.js';
-import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
-import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
-import * as ExtensionUtils from 'resource:///org/gnome/shell/misc/extensionUtils.js';
-import * as Util from 'resource:///org/gnome/shell/misc/util.js';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
-import * as Params from 'resource:///org/gnome/shell/misc/params.js';
-import * as SystemActions from 'resource:///org/gnome/shell/misc/systemActions.js';
 
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 
+import * as Extension from 'resource:///org/gnome/shell/extensions/extension.js';
+
+// Me imports
 import * as Settings from './lib/settings.js';
 import * as _Util from './lib/util.js';
 import * as AppDisplayOverride from './lib/appDisplay.js';
 
-import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
-
+// Me Modules import
 import { LayoutModule } from './lib/layout.js';
 import { WorkspacesViewModule } from './lib/workspacesView.js';
 import { WorkspaceThumbnailModule } from './lib/workspaceThumbnail.js';
@@ -88,71 +55,18 @@ import { WindowSearchProviderModule } from './lib/windowSearchProvider.js';
 import { WinTmbModule } from './lib/winTmb.js';
 // import { RecentFilesSearchProviderModule } from './lib/recentFilesSearchProvider.js';
 
-let Gi;
-let Ui;
-let Misc;
 let Me;
 
 // gettext
 let _;
 let opt;
 
-export default class VShell extends Extension {
+export default class VShell extends Extension.Extension {
     _init() {
-        Gi = {};
-        Ui = {};
-        Misc = {};
         Me = {};
 
-        Gi._Gi = imports._gi;
-        Gi.GLib = GLib;
-        Gi.Clutter = Clutter;
-        Gi.St = St;
-        Gi.Meta = Meta;
-        Gi.Shell = Shell;
-        Gi.GObject = GObject;
-        Gi.Gio = Gio;
-        Gi.Pango = Pango;
-        Gi.Graphene = Graphene;
-        // Gi.Gtk = Gtk;
-        Gi.Atk = Atk;
-
-        Ui.Main = Main;
-        Ui.Workspace = Workspace;
-        Ui.Search = Search;
-        Ui.DND = DND;
-        Ui.AppDisplay = AppDisplay;
-        Ui.IconGrid = IconGrid;
-        Ui.Dash = Dash;
-        Ui.AppFavorites = AppFavorites;
-        Ui.Overview = Overview;
-        Ui.Panel = Panel;
-        Ui.SwipeTracker = SwipeTracker;
-        Ui.AltTab = AltTab;
-        Ui.Layout = Layout;
-        Ui.OsdWindow = OsdWindow;
-        Ui.OverviewControls = OverviewControls;
-        Ui.WorkspacesView = WorkspacesView;
-        Ui.WorkspaceThumbnail = WorkspaceThumbnail;
-        Ui.Background = Background;
-        Ui.MessageTray = MessageTray;
-        Ui.WindowAttentionHandler = WindowAttentionHandler;
-        Ui.WindowManager = WindowManager;
-        Ui.WindowPreview = WindowPreview;
-        Ui.WorkspaceSwitcherPopup = WorkspaceSwitcherPopup;
-        Ui.WorkspaceAnimation = WorkspaceAnimation;
-        Ui.AppMenu = AppMenu;
-        Ui.PopupMenu = PopupMenu;
-        Ui.BoxPointer = BoxPointer;
-        Ui.Params = Params;
-
-        Misc.Config = Config;
-        Misc.shellVersion = parseFloat(Misc.Config.PACKAGE_VERSION);
-        Misc.ExtensionUtils = ExtensionUtils;
-        Misc.Util = Util;
-        Misc.SystemActions = SystemActions;
-        Misc.getSettings = this.getSettings.bind(this);
-
+        Me.getSettings = this.getSettings.bind(this);
+        Me.shellVersion = parseFloat(Config.PACKAGE_VERSION);
         Me.metadata = this.metadata;
         Me.gSettings = this.getSettings();
         Me.gettext = this.gettext.bind(this);
@@ -164,22 +78,19 @@ export default class VShell extends Extension {
         // Me.RFSP_PREFIX = RecentFilesSearchProviderModule._PREFIX;
         Me.repairOverrides = this._repairOverrides;
 
-        Me.opt = new Me.Settings.Options(Gi, Me);
+        Me.opt = new Me.Settings.Options(Me);
 
-        Me.Util.init(Gi, Ui, Misc, Me);
+        Me.Util.init(Me);
     }
 
     cleanGlobals() {
-        Gi = null;
-        Ui = null;
-        Misc = null;
         Me = null;
     }
 
     enable() {
         this._init();
         // flag for Util.getEnabledExtensions()
-        Me.extensionsLoadIncomplete = Ui.Main.layoutManager._startingUp;
+        Me.extensionsLoadIncomplete = Main.layoutManager._startingUp;
         opt = Me.opt;
 
         this._initModules();
@@ -196,7 +107,7 @@ export default class VShell extends Extension {
         this._disposeModules();
 
         // If Dash to Dock is enabled, disabling V-Shell can end in broken overview
-        Ui.Main.overview.hide();
+        Main.overview.hide();
         Me.Util.cleanGlobals();
         log(`${Me.metadata.name}: disabled`);
     }
@@ -207,31 +118,31 @@ export default class VShell extends Extension {
 
     _initModules() {
         Me.Modules = {};
-        Me.Modules.appDisplayModule = new AppDisplayModule(Gi, Ui, Misc, Me);
-        Me.Modules.appFavoritesModule = new AppFavoritesModule(Gi, Ui, Misc, Me);
-        Me.Modules.dashModule = new DashModule(Gi, Ui, Misc, Me);
-        Me.Modules.iconGridModule = new IconGridModule(Gi, Ui, Misc, Me);
-        Me.Modules.layoutModule = new LayoutModule(Gi, Ui, Misc, Me);
-        Me.Modules.messageTrayModule = new MessageTrayModule(Gi, Ui, Misc, Me);
-        Me.Modules.overviewModule = new OverviewModule(Gi, Ui, Misc, Me);
-        Me.Modules.overviewControlsModule = new OverviewControlsModule(Gi, Ui, Misc, Me);
-        Me.Modules.osdWindowModule = new OsdWindowModule(Gi, Ui, Misc, Me);
-        Me.Modules.overlayKeyModule = new OverlayKeyModule(Gi, Ui, Misc, Me);
-        Me.Modules.panelModule = new PanelModule(Gi, Ui, Misc, Me);
-        Me.Modules.searchModule = new SearchModule(Gi, Ui, Misc, Me);
-        Me.Modules.searchControllerModule = new SearchControllerModule(Gi, Ui, Misc, Me);
-        Me.Modules.swipeTrackerModule = new SwipeTrackerModule(Gi, Ui, Misc, Me);
-        Me.Modules.windowAttentionHandlerModule = new WindowAttentionHandlerModule(Gi, Ui, Misc, Me);
-        Me.Modules.windowPreviewModule = new WindowPreviewModule(Gi, Ui, Misc, Me);
-        Me.Modules.windowManagerModule = new WindowManagerModule(Gi, Ui, Misc, Me);
-        Me.Modules.workspaceModule = new WorkspaceModule(Gi, Ui, Misc, Me);
-        Me.Modules.workspaceAnimationModule = new WorkspaceAnimationModule(Gi, Ui, Misc, Me);
-        Me.Modules.workspaceSwitcherPopupModule = new WorkspaceSwitcherPopupModule(Gi, Ui, Misc, Me);
-        Me.Modules.workspaceThumbnailModule = new WorkspaceThumbnailModule(Gi, Ui, Misc, Me);
-        Me.Modules.workspacesViewModule = new WorkspacesViewModule(Gi, Ui, Misc, Me);
-        Me.Modules.windowSearchProviderModule = new WindowSearchProviderModule(Gi, Ui, Misc, Me);
-        // Me.Modules.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Gi, Ui, Misc, Me);
-        Me.Modules.winTmbModule = new WinTmbModule(Gi, Ui, Misc, Me);
+        Me.Modules.appDisplayModule = new AppDisplayModule(Me);
+        Me.Modules.appFavoritesModule = new AppFavoritesModule(Me);
+        Me.Modules.dashModule = new DashModule(Me);
+        Me.Modules.iconGridModule = new IconGridModule(Me);
+        Me.Modules.layoutModule = new LayoutModule(Me);
+        Me.Modules.messageTrayModule = new MessageTrayModule(Me);
+        Me.Modules.overviewModule = new OverviewModule(Me);
+        Me.Modules.overviewControlsModule = new OverviewControlsModule(Me);
+        Me.Modules.osdWindowModule = new OsdWindowModule(Me);
+        Me.Modules.overlayKeyModule = new OverlayKeyModule(Me);
+        Me.Modules.panelModule = new PanelModule(Me);
+        Me.Modules.searchModule = new SearchModule(Me);
+        Me.Modules.searchControllerModule = new SearchControllerModule(Me);
+        Me.Modules.swipeTrackerModule = new SwipeTrackerModule(Me);
+        Me.Modules.windowAttentionHandlerModule = new WindowAttentionHandlerModule(Me);
+        Me.Modules.windowPreviewModule = new WindowPreviewModule(Me);
+        Me.Modules.windowManagerModule = new WindowManagerModule(Me);
+        Me.Modules.workspaceModule = new WorkspaceModule(Me);
+        Me.Modules.workspaceAnimationModule = new WorkspaceAnimationModule(Me);
+        Me.Modules.workspaceSwitcherPopupModule = new WorkspaceSwitcherPopupModule(Me);
+        Me.Modules.workspaceThumbnailModule = new WorkspaceThumbnailModule(Me);
+        Me.Modules.workspacesViewModule = new WorkspacesViewModule(Me);
+        Me.Modules.windowSearchProviderModule = new WindowSearchProviderModule(Me);
+        // Me.Modules.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Me);
+        Me.Modules.winTmbModule = new WinTmbModule(Me);
     }
 
     _disposeModules() {
@@ -247,7 +158,7 @@ export default class VShell extends Extension {
     activateVShell() {
         this._enabled = true;
 
-        this._originalGetNeighbor = Gi.Meta.Workspace.prototype.get_neighbor;
+        this._originalGetNeighbor = Meta.Workspace.prototype.get_neighbor;
 
         this._removeTimeouts();
         this._timeouts = {};
@@ -269,8 +180,8 @@ export default class VShell extends Extension {
 
         // update overview background wallpaper if enabled, but don't set it too early on session startup
         // because it crashes wayland
-        if (!Ui.Main.layoutManager._startingUp || Gi.Meta.is_restart())
-            Ui.Main.overview._overview.controls._setBackground();
+        if (!Main.layoutManager._startingUp || Meta.is_restart())
+            Main.overview._overview.controls._setBackground();
 
         this._updateSettingsConnection();
 
@@ -288,7 +199,7 @@ export default class VShell extends Extension {
         this._removeTimeouts();
 
         this._removeConnections();
-        Ui.Main.overview._overview.controls._setBackground(reset);
+        Main.overview._overview.controls._setBackground(reset);
 
         // remove changes mede by VShell modules
         this._updateOverrides(reset);
@@ -298,43 +209,43 @@ export default class VShell extends Extension {
 
         // remove any position offsets from dash and ws thumbnails
         if (!Me.Util.dashNotDefault()) {
-            Ui.Main.overview.dash.translation_x = 0;
-            Ui.Main.overview.dash.translation_y = 0;
+            Main.overview.dash.translation_x = 0;
+            Main.overview.dash.translation_y = 0;
         }
-        Ui.Main.overview._overview._controls._thumbnailsBox.translation_x = 0;
-        Ui.Main.overview._overview._controls._thumbnailsBox.translation_y = 0;
-        Ui.Main.overview._overview._controls._searchEntryBin.translation_y = 0;
-        Ui.Main.overview._overview._controls.set_child_above_sibling(Ui.Main.overview._overview._controls._workspacesDisplay, null);
+        Main.overview._overview._controls._thumbnailsBox.translation_x = 0;
+        Main.overview._overview._controls._thumbnailsBox.translation_y = 0;
+        Main.overview._overview._controls._searchEntryBin.translation_y = 0;
+        Main.overview._overview._controls.set_child_above_sibling(Main.overview._overview._controls._workspacesDisplay, null);
         // restore default animation speed
-        Gi.St.Settings.get().slow_down_factor = 1;
+        St.Settings.get().slow_down_factor = 1;
 
         // restore default dash background style
-        Ui.Main.overview.dash._background.set_style('');
+        Main.overview.dash._background.set_style('');
         // hide status message if shown
         this._showStatusMessage(false);
         this._prevDash = null;
 
-        Gi.Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;
+        Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;
     }
 
     _removeTimeouts() {
         if (this._timeouts) {
             Object.values(this._timeouts).forEach(id => {
                 if (id)
-                    Gi.GLib.source_remove(id);
+                    GLib.source_remove(id);
             });
         }
         this._timeouts = null;
     }
 
     _storeDashId() {
-        this._prevDash = Ui.Main.overview.dash._workId;
+        this._prevDash = Main.overview.dash._workId;
     }
 
     _setInitialWsIndex() {
-        if (Ui.Main.layoutManager._startingUp) {
-            Gi.GLib.idle_add(Gi.GLib.PRIORITY_LOW, () => {
-                Ui.Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
+        if (Main.layoutManager._startingUp) {
+            GLib.idle_add(GLib.PRIORITY_LOW, () => {
+                Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
             });
         }
     }
@@ -354,26 +265,26 @@ export default class VShell extends Extension {
 
     _updateConnections() {
         if (!this._monitorsChangedConId)
-            this._monitorsChangedConId = Ui.Main.layoutManager.connect('monitors-changed', () => this._updateVShell(2000));
+            this._monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => this._updateVShell(2000));
 
 
         if (!this._showingOverviewConId)
-            this._showingOverviewConId = Ui.Main.overview.connect('showing', this._onShowingOverview.bind(this));
+            this._showingOverviewConId = Main.overview.connect('showing', this._onShowingOverview.bind(this));
 
         if (!this._sessionModeConId) {
             // the panel must be visible when screen is locked
-            this._sessionModeConId = Ui.Main.sessionMode.connect('updated', () => {
-                if (Ui.Main.sessionMode.isLocked) {
+            this._sessionModeConId = Main.sessionMode.connect('updated', () => {
+                if (Main.sessionMode.isLocked) {
                     Me.Modules.panelModule.update(true);
                 } else {
                     // delayed because we need to be able to fix potential damage caused by other extensions during unlock
-                    this._timeouts.unlock = Gi.GLib.idle_add(Gi.GLib.PRIORITY_LOW,
+                    this._timeouts.unlock = GLib.idle_add(GLib.PRIORITY_LOW,
                         () => {
                             Me.Modules.panelModule.update();
                             Me.Modules.overviewControlsModule.update();
 
                             this._timeouts.unlock = 0;
-                            return Gi.GLib.SOURCE_REMOVE;
+                            return GLib.SOURCE_REMOVE;
                         }
                     );
                 }
@@ -381,7 +292,7 @@ export default class VShell extends Extension {
         }
 
         if (!this._watchDockSigId) {
-            this._watchDockSigId = Ui.Main.extensionManager.connect('extension-state-changed',
+            this._watchDockSigId = Main.extensionManager.connect('extension-state-changed',
                 (source, extension) => {
                     const uuid = extension.uuid;
                     // ExtensionState = {
@@ -405,7 +316,7 @@ export default class VShell extends Extension {
                     const dashReplacement = uuid.includes('dash-to-dock') || uuid.includes('ubuntu-dock') || uuid.includes('dash-to-panel');
                     if (dashReplacement && reset)
                         opt._watchDashToDock = true;
-                    if (!Ui.Main.layoutManager._startingUp && reset && dashReplacement)
+                    if (!Main.layoutManager._startingUp && reset && dashReplacement)
                         this._updateVShell(1999);
                 }
             );
@@ -414,22 +325,22 @@ export default class VShell extends Extension {
 
     _removeConnections() {
         if (this._monitorsChangedConId) {
-            Ui.Main.layoutManager.disconnect(this._monitorsChangedConId);
+            Main.layoutManager.disconnect(this._monitorsChangedConId);
             this._monitorsChangedConId = 0;
         }
 
         if (this._showingOverviewConId) {
-            Ui.Main.overview.disconnect(this._showingOverviewConId);
+            Main.overview.disconnect(this._showingOverviewConId);
             this._showingOverviewConId = 0;
         }
 
         if (this._sessionModeConId) {
-            Ui.Main.sessionMode.disconnect(this._sessionModeConId);
+            Main.sessionMode.disconnect(this._sessionModeConId);
             this._sessionModeConId = 0;
         }
 
         if (this._watchDockSigId) {
-            Ui.Main.extensionManager.disconnect(this._watchDockSigId);
+            Main.extensionManager.disconnect(this._watchDockSigId);
             this._watchDockSigId = 0;
         }
     }
@@ -449,12 +360,12 @@ export default class VShell extends Extension {
         Me.Modules.panelModule.update(reset);
         // the panel must be visible when screen is locked
         // at startup time, panel will be updated from the startupAnimation after allocation
-        if (!reset && Ui.Main.sessionMode.isLocked && !Ui.Main.layoutManager._startingUp)
+        if (!reset && Main.sessionMode.isLocked && !Main.layoutManager._startingUp)
             Me.Modules.panelModule._showPanel(true);
             // PanelModule._showPanel(true);
             // hide panel so it appears directly on the final place
-        /* else if (Ui.Main.layoutManager._startingUp && !Meta.is_restart())
-            Ui.Main.panel.opacity = 0;*/
+        /* else if (Main.layoutManager._startingUp && !Meta.is_restart())
+            Main.panel.opacity = 0;*/
 
         Me.Modules.workspaceAnimationModule.update(reset);
         Me.Modules.workspaceSwitcherPopupModule.update(reset);
@@ -472,13 +383,13 @@ export default class VShell extends Extension {
         // when screen lock is activated for the first time
         // because every first disable of each extension rebases
         // the entire extensions stack that was enabled later
-        if (Ui.Main.sessionMode.isLocked)
+        if (Main.sessionMode.isLocked)
             this._sessionLockActive = true;
 
         // This covers unnecessary enable/disable cycles during first screen lock, but is not allowed by the EGO rules
-        // if (!this._sessionLockActive || !Ui.Main.extensionManager._getEnabledExtensions().includes(Me.metadata.uuid)) {
+        // if (!this._sessionLockActive || !Main.extensionManager._getEnabledExtensions().includes(Me.metadata.uuid)) {
         // Avoid showing status at startup, can cause freeze
-        //    if (!Ui.Main.layoutManager._startingUp)
+        //    if (!Main.layoutManager._startingUp)
         //        this._showStatusMessage();
         // IconGrid needs to be patched before AppDisplay
         //    Me.Modules.iconGridModule.update(reset);
@@ -488,7 +399,7 @@ export default class VShell extends Extension {
         //    this._showStatusMessage(false);
         // }
 
-        if (!this._sessionLockActive && !Ui.Main.layoutManager._startingUp && opt.APP_GRID_PERFORMANCE) {
+        if (!this._sessionLockActive && !Main.layoutManager._startingUp && opt.APP_GRID_PERFORMANCE) {
             // Avoid showing status at startup, can cause freeze
             this._showStatusMessage();
         } else if (this._sessionLockActive) {
@@ -506,45 +417,45 @@ export default class VShell extends Extension {
         Me.Modules.searchControllerModule.update(reset);
         Me.Modules.winTmbModule.update(reset);
 
-        if (!reset && !Ui.Main.layoutManager._startingUp)
-            Ui.Main.overview._overview.controls.setInitialTranslations();
+        if (!reset && !Main.layoutManager._startingUp)
+            Main.overview._overview.controls.setInitialTranslations();
     }
 
     _onShowingOverview() {
-        if (Ui.Main.layoutManager._startingUp)
+        if (Main.layoutManager._startingUp)
             return;
 
-        Ui.Main.overview._overview.controls.opacity = 255;
+        Main.overview._overview.controls.opacity = 255;
 
         // store pointer X coordinate for OVERVIEW_MODE 1 window spread - if mouse pointer is steady, don't spread
         opt.showingPointerX = global.get_pointer()[0];
 
-        if (!Ui.Main.overview._overview.controls._bgManagers && (opt.SHOW_BG_IN_OVERVIEW || opt.SHOW_WS_PREVIEW_BG) && !Me.Util.getEnabledExtensions('blur-my-shell').length)
-            Ui.Main.overview._overview.controls._setBackground();
+        if (!Main.overview._overview.controls._bgManagers && (opt.SHOW_BG_IN_OVERVIEW || opt.SHOW_WS_PREVIEW_BG) && !Me.Util.getEnabledExtensions('blur-my-shell').length)
+            Main.overview._overview.controls._setBackground();
 
         if (opt._watchDashToDock) {
             // workaround for Dash to Dock (Ubuntu Dock) breaking overview allocations after enabled and changed position
             // DtD replaces dock and its _workId on every position change
-            const dash = Ui.Main.overview.dash;
+            const dash = Main.overview.dash;
             if (this._prevDash !== dash._workId)
                 this._updateVShell(0);
         }
     }
 
     _updateVShell(timeout = 200) {
-        if (!this._enabled || Ui.Main.layoutManager._startingUp)
+        if (!this._enabled || Main.layoutManager._startingUp)
             return;
 
         if (this._timeouts.reset)
-            Gi.GLib.source_remove(this._timeouts.reset);
-        this._timeouts.reset = Gi.GLib.timeout_add(
-            Gi.GLib.PRIORITY_DEFAULT,
+            GLib.source_remove(this._timeouts.reset);
+        this._timeouts.reset = GLib.timeout_add(
+            GLib.PRIORITY_DEFAULT,
             timeout,
             () => {
                 if (!this._enabled)
-                    return Gi.GLib.SOURCE_REMOVE;
+                    return GLib.SOURCE_REMOVE;
 
-                const dash = Ui.Main.overview.dash;
+                const dash = Main.overview.dash;
                 if (timeout < 2000) { // timeout < 2000 for partial update
                     this._prevDash = dash._workId;
                     log(`[${Me.metadata.name}]: Dash has been replaced, updating extension ...`);
@@ -560,7 +471,7 @@ export default class VShell extends Extension {
                     Me._resetInProgress = false;
                 }
                 this._timeouts.reset = 0;
-                return Gi.GLib.SOURCE_REMOVE;
+                return GLib.SOURCE_REMOVE;
             }
         );
     }
@@ -586,13 +497,13 @@ export default class VShell extends Extension {
         if (key === 'aaa-loading-profile') {
             this._showStatusMessage();
             if (this._timeouts.loadingProfile)
-                Gi.GLib.source_remove(this._timeouts.loadingProfile);
-            this._timeouts.loadingProfile = Gi.GLib.timeout_add(
-                Gi.GLib.PRIORITY_DEFAULT,
+                GLib.source_remove(this._timeouts.loadingProfile);
+            this._timeouts.loadingProfile = GLib.timeout_add(
+                GLib.PRIORITY_DEFAULT,
                 100, () => {
                     this.activateVShell();
                     this._timeouts.loadingProfile = 0;
-                    return Gi.GLib.SOURCE_REMOVE;
+                    return GLib.SOURCE_REMOVE;
                 });
         }
         if (this._timeouts.loadingProfile)
@@ -600,12 +511,12 @@ export default class VShell extends Extension {
 
         if (key?.includes('profile-data')) {
             const index = key.replace('profile-data-', '');
-            Ui.Main.notify(`${Me.metadata.name}`, `Profile ${index} has been updated`);
+            Main.notify(`${Me.metadata.name}`, `Profile ${index} has been updated`);
         }
 
-        opt.WORKSPACE_MIN_SPACING = Ui.Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
+        opt.WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
         // update variables that cannot be processed within settings
-        const dash = Ui.Main.overview.dash;
+        const dash = Main.overview.dash;
         if (Me.Util.dashIsDashToDock()) {
             opt.DASH_POSITION = dash._position;
             opt.DASH_TOP = opt.DASH_POSITION === 0;
@@ -629,30 +540,30 @@ export default class VShell extends Extension {
 
         // adjust search entry style for OM2
         if (opt.OVERVIEW_MODE2)
-            Ui.Main.overview.searchEntry.add_style_class_name('search-entry-om2');
+            Main.overview.searchEntry.add_style_class_name('search-entry-om2');
         else
-            Ui.Main.overview.searchEntry.remove_style_class_name('search-entry-om2');
+            Main.overview.searchEntry.remove_style_class_name('search-entry-om2');
 
         if (opt.OVERVIEW_MODE === 1)
             Me.Modules.workspaceModule.setWindowPreviewMaxScale(0.1);
         else
             Me.Modules.workspaceModule.setWindowPreviewMaxScale(0.95);
 
-        Ui.Main.overview.searchEntry.visible = opt.SHOW_SEARCH_ENTRY;
-        Ui.Main.overview.searchEntry.opacity = 255;
-        Gi.St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
+        Main.overview.searchEntry.visible = opt.SHOW_SEARCH_ENTRY;
+        Main.overview.searchEntry.opacity = 255;
+        St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
 
         opt.START_Y_OFFSET = (opt.get('panelModule') && opt.PANEL_OVERVIEW_ONLY && opt.PANEL_POSITION_TOP) ||
             // better to add unnecessary space than to have a panel overlapping other objects
             Me.Util.getEnabledExtensions('hidetopbar').length
-            ? Ui.Main.panel.height
+            ? Main.panel.height
             : 0;
 
         // Options for workspace switcher, apply custom function only if needed
         if (opt.WS_WRAPAROUND || opt.WS_IGNORE_LAST)
-            Gi.Meta.Workspace.prototype.get_neighbor = this._getNeighbor;
+            Meta.Workspace.prototype.get_neighbor = this._getNeighbor;
         else
-            Gi.Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;
+            Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;
 
         if (settings)
             this._applySettings(key);
@@ -671,7 +582,7 @@ export default class VShell extends Extension {
             return;
         }
 
-        Ui.Main.overview._overview.controls._setBackground();
+        Main.overview._overview.controls._setBackground();
         this._switchPageShortcuts();
 
         if (key?.includes('panel'))
@@ -734,7 +645,7 @@ export default class VShell extends Extension {
 
         const vertical = global.workspaceManager.layout_rows === -1;
         const schema = 'org.gnome.desktop.wm.keybindings';
-        const settings = Misc.getSettings(schema);
+        const settings = Me.getSettings(schema);
 
         const keyLeft = 'switch-to-workspace-left';
         const keyRight = 'switch-to-workspace-right';
@@ -812,11 +723,11 @@ export default class VShell extends Extension {
 
     // Status dialog that appears during updating V-Shell configuration and blocks inputs
     _showStatusMessage(show = true) {
-        if ((show && Me._resetInProgress) || Ui.Main.layoutManager._startingUp || !Ui.Main.overview._overview.controls._appDisplay._sortOrderedItemsAlphabetically)
+        if ((show && Me._resetInProgress) || Main.layoutManager._startingUp || !Main.overview._overview.controls._appDisplay._sortOrderedItemsAlphabetically)
             return;
 
         if (Me._vShellMessageTimeoutId) {
-            Gi.GLib.source_remove(Me._vShellMessageTimeoutId);
+            GLib.source_remove(Me._vShellMessageTimeoutId);
             Me._vShellMessageTimeoutId = 0;
         }
 
@@ -830,15 +741,15 @@ export default class VShell extends Extension {
             return;
 
         if (!Me._vShellStatusMessage) {
-            const sm = new /* Ui.Main.*/RestartMessage(_('Updating V-Shell...'));
+            const sm = new /* Main.*/RestartMessage(_('Updating V-Shell...'));
             sm.set_style('background-color: rgba(0,0,0,0.3);');
             sm.open();
             Me._vShellStatusMessage = sm;
         }
 
         // just for case the message wasn't removed from appDisplay after App Grid realization
-        Me._vShellMessageTimeoutId = Gi.GLib.timeout_add_seconds(
-            Gi.GLib.PRIORITY_DEFAULT,
+        Me._vShellMessageTimeoutId = GLib.timeout_add_seconds(
+            GLib.PRIORITY_DEFAULT,
             5,
             () => {
                 if (Me._vShellStatusMessage) {
@@ -849,7 +760,7 @@ export default class VShell extends Extension {
                 }
 
                 Me._vShellMessageTimeoutId = 0;
-                return Gi.GLib.SOURCE_REMOVE;
+                return GLib.SOURCE_REMOVE;
             }
         );
     }
@@ -857,7 +768,7 @@ export default class VShell extends Extension {
     _getNeighbor(direction) {
         // workspace matrix is supported
         const activeIndex = this.index();
-        const ignoreLast = opt.WS_IGNORE_LAST && !Ui.Main.overview._shown ? 1 : 0;
+        const ignoreLast = opt.WS_IGNORE_LAST && !Main.overview._shown ? 1 : 0;
         const wraparound = opt.WS_WRAPAROUND;
         const nWorkspaces = global.workspace_manager.n_workspaces;
         const lastIndex = nWorkspaces - 1 - ignoreLast;
@@ -867,7 +778,7 @@ export default class VShell extends Extension {
         let index = activeIndex;
         let neighborExists;
 
-        if (direction === Gi.Meta.MotionDirection.LEFT) {
+        if (direction === Meta.MotionDirection.LEFT) {
             index -= 1;
             const currentRow = Math.floor(activeIndex / columns);
             const indexRow = Math.floor(index / columns);
@@ -877,21 +788,21 @@ export default class VShell extends Extension {
                 const maxIndexOnLastRow = lastIndex % columns;
                 index = index < (lastIndex - ignoreLast) ? index : currentRow * columns + maxIndexOnLastRow;
             }
-        } else if (direction === Gi.Meta.MotionDirection.RIGHT) {
+        } else if (direction === Meta.MotionDirection.RIGHT) {
             index += 1;
             const currentRow = Math.floor(activeIndex / columns);
             const indexRow = Math.floor(index / columns);
             neighborExists = index <= lastIndex && indexRow === currentRow;
             if (wraparound && !neighborExists)
                 index = currentRow * columns;
-        } else if (direction === Gi.Meta.MotionDirection.UP) {
+        } else if (direction === Meta.MotionDirection.UP) {
             index -= columns;
             neighborExists = index > -1;
             if (wraparound && !neighborExists) {
                 index = rows * columns + index;
                 index = index < nWorkspaces - ignoreLast ? index : index - columns;
             }
-        } else if (direction === Gi.Meta.MotionDirection.DOWN) {
+        } else if (direction === Meta.MotionDirection.DOWN) {
             index += columns;
             neighborExists = index <= lastIndex;
             if (wraparound && !neighborExists)
