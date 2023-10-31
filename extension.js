@@ -273,20 +273,21 @@ export default class VShell extends Extension.Extension {
 
         if (!this._sessionModeConId) {
             // the panel must be visible when screen is locked
-            this._sessionModeConId = Main.sessionMode.connect('updated', () => {
-                if (Main.sessionMode.isLocked) {
-                    Me.Modules.panelModule.update(true);
-                } else {
-                    // delayed because we need to be able to fix potential damage caused by other extensions during unlock
+            this._sessionModeConId = Main.sessionMode.connect('updated', session => {
+                if (session.currentMode === 'user' || session.parentMode === 'user') {
                     this._timeouts.unlock = GLib.idle_add(GLib.PRIORITY_LOW,
                         () => {
                             Me.Modules.panelModule.update();
                             Me.Modules.overviewControlsModule.update();
+                            Me.Modules.winTmbModule.showThumbnails();
 
                             this._timeouts.unlock = 0;
                             return GLib.SOURCE_REMOVE;
                         }
                     );
+                } else if (session.currentMode === 'unlock-dialog') {
+                    Me.Modules.panelModule.update(true);
+                    Me.Modules.winTmbModule.hideThumbnails();
                 }
             });
         }
@@ -357,7 +358,9 @@ export default class VShell extends Extension.Extension {
 
         Me.Modules.layoutModule.update(reset);
         Me.Modules.dashModule.update(reset);
-        Me.Modules.panelModule.update(reset);
+        // avoid enabling panel module when session is locked
+        if (reset || (!reset && !Main.sessionMode.isLocked))
+            Me.Modules.panelModule.update(reset);
         // the panel must be visible when screen is locked
         // at startup time, panel will be updated from the startupAnimation after allocation
         if (!reset && Main.sessionMode.isLocked && !Main.layoutManager._startingUp)
