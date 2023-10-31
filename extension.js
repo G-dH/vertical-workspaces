@@ -110,7 +110,6 @@ class Extension {
     disable() {
         this._removeVShell();
         this._disposeModules();
-        this.dependencies = null;
         opt = null;
 
         // If Dash to Dock is enabled, disabling V-Shell can end in broken overview
@@ -248,12 +247,8 @@ class Extension {
 
         if (!this._sessionModeConId) {
             // the panel must be visible when screen is locked
-            this._sessionModeConId = Main.sessionMode.connect('updated', () => {
-                if (Main.sessionMode.isLocked) {
-                    Me.Modules.panelModule.update(true);
-                    Me.Modules.winTmbModule.hideThumbnails();
-                } else {
-                    // delayed because we need to be able to fix potential damage caused by other extensions during unlock
+            this._sessionModeConId = Main.sessionMode.connect('updated', session => {
+                if (session.currentMode === 'user' || session.parentMode === 'user') {
                     this._timeouts.unlock = GLib.idle_add(GLib.PRIORITY_LOW,
                         () => {
                             Me.Modules.panelModule.update();
@@ -264,6 +259,9 @@ class Extension {
                             return GLib.SOURCE_REMOVE;
                         }
                     );
+                } else if (session.currentMode === 'unlock-dialog') {
+                    Me.Modules.panelModule.update(true);
+                    Me.Modules.winTmbModule.hideThumbnails();
                 }
             });
         }
@@ -334,7 +332,9 @@ class Extension {
 
         Me.Modules.layoutModule.update(reset);
         Me.Modules.dashModule.update(reset);
-        Me.Modules.panelModule.update(reset);
+        // avoid enabling panel module when session is locked
+        if (reset || (!reset && !Main.sessionMode.isLocked))
+            Me.Modules.panelModule.update(reset);
         // the panel must be visible when screen is locked
         // at startup time, panel will be updated from the startupAnimation after allocation
         if (!reset && Main.sessionMode.isLocked && !Main.layoutManager._startingUp)
