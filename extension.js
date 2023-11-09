@@ -53,7 +53,7 @@ import { WorkspaceModule } from './lib/workspace.js';
 import { WorkspaceSwitcherPopupModule } from './lib/workspaceSwitcherPopup.js';
 import { WindowSearchProviderModule } from './lib/windowSearchProvider.js';
 import { WinTmbModule } from './lib/winTmb.js';
-// import { RecentFilesSearchProviderModule } from './lib/recentFilesSearchProvider.js';
+import { RecentFilesSearchProviderModule } from './lib/recentFilesSearchProvider.js';
 
 let Me;
 
@@ -75,7 +75,7 @@ export default class VShell extends Extension.Extension {
         Me.Util = _Util;
         Me.AppDisplayOverride = AppDisplayOverride;
         Me.WSP_PREFIX = WindowSearchProviderModule._PREFIX;
-        // Me.RFSP_PREFIX = RecentFilesSearchProviderModule._PREFIX;
+        Me.RFSP_PREFIX = RecentFilesSearchProviderModule._PREFIX;
         Me.repairOverrides = this._repairOverrides;
 
         Me.opt = new Me.Settings.Options(Me);
@@ -141,7 +141,7 @@ export default class VShell extends Extension.Extension {
         Me.Modules.workspaceThumbnailModule = new WorkspaceThumbnailModule(Me);
         Me.Modules.workspacesViewModule = new WorkspacesViewModule(Me);
         Me.Modules.windowSearchProviderModule = new WindowSearchProviderModule(Me);
-        // Me.Modules.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Me);
+        Me.Modules.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Me);
         Me.Modules.winTmbModule = new WinTmbModule(Me);
     }
 
@@ -378,7 +378,7 @@ export default class VShell extends Extension.Extension {
         Me.Modules.searchModule.update(reset);
 
         Me.Modules.windowSearchProviderModule.update(reset);
-        // Me.Modules.recentFilesSearchProviderModule.update(reset);
+        Me.Modules.recentFilesSearchProviderModule.update(reset);
 
         // don't rebuild app grid on any screen lock
         // even if the extension includes unlock-screen session mode
@@ -582,7 +582,6 @@ export default class VShell extends Extension.Extension {
                     break;
                 }
             }
-            return;
         }
 
         Main.overview._overview.controls._setBackground();
@@ -591,7 +590,7 @@ export default class VShell extends Extension.Extension {
         if (key?.includes('panel'))
             Me.Modules.panelModule.update();
 
-        if (key?.includes('dash') || key?.includes('icon') || key?.includes('dot-style'))
+        if (key?.includes('dash') || key?.includes('icon') || key?.includes('dot-style') || key?.includes('provider'))
             Me.Modules.dashModule.update();
 
         if (key?.includes('hot-corner') || key?.includes('dash'))
