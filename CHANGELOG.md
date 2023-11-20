@@ -1,14 +1,11 @@
 ## Changelog:
-### v38 (not yet released)
+### v44.9 (not yet released)
 **Added:**
 - *Window Thumbnail - PIP* option in app icon menu and as an click actions for Window Preview
 - Workspace switcher options *Wraparound* and *Ignore Last (empty)*
 - *Overlay key (Super)* and *Hot Corner* actions offer different overview modes independent on global *Overview Mode*
 - Workspace thumbnails background without wallpaper is now semi-transparent to match other overview elements
 - App Grid sorting options allow alphabetical order with folders
-
-**Removed:**
-- *Recent files search provider* because it uses no longer allowed (in extensions) Gtk library and also can cause issues when recent files are on disconnected partitions
 
 **Fixed:**
 - App grid has less rows than it should
@@ -18,8 +15,9 @@
 - Setting background wallpaper too early on startup can crash Wayland session
 
 **Other changes:**
+- Since GNOME 45 V-Shell has 2 versions - one for GS 45 and the second for GS 42-44. Versioning no longer depends on EGO's upload counter
 - Dash light style background opacity is not limited
-- Refactored imports and other parts of the code
+- Refactored Recent Files Search Provider and other modules
 - Prefs - ComboBox replaced with (finally fixed) DropDown
 
 
