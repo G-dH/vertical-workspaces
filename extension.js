@@ -149,8 +149,10 @@ export default class VShell extends Extension.Extension {
         Me.opt.destroy();
         Me.opt = null;
 
-        for (let module of this._getModuleList())
-            Me.Modules[module].cleanGlobals();
+        for (let module of this._getModuleList()) {
+            if (!Me.Modules[module].moduleEnabled)
+                Me.Modules[module].cleanGlobals();
+        }
         Me.Modules = null;
         opt = null;
     }
@@ -389,28 +391,22 @@ export default class VShell extends Extension.Extension {
         if (Main.sessionMode.isLocked)
             this._sessionLockActive = true;
 
-        // This covers unnecessary enable/disable cycles during first screen lock, but is not allowed by the EGO rules
-        // if (!this._sessionLockActive || !Main.extensionManager._getEnabledExtensions().includes(Me.metadata.uuid)) {
-        // Avoid showing status at startup, can cause freeze
-        //    if (!Main.layoutManager._startingUp)
-        //        this._showStatusMessage();
-        // IconGrid needs to be patched before AppDisplay
-        //    Me.Modules.iconGridModule.update(reset);
-        //    Me.Modules.appDisplayModule.update(reset);
-        // } else {
-        //    this._sessionLockActive = false;
-        //    this._showStatusMessage(false);
-        // }
+        // This covers unnecessary enable/disable cycles during first screen lock when extensions are rebased, but is not allowed by the EGO rules
+        if (!this._sessionLockActive || !Main.extensionManager._getEnabledExtensions().includes(Me.metadata.uuid)) {
+            // iconGridModule will be updated from appDisplayModule
+            Me.Modules.appDisplayModule.update(reset);
+        }
 
         if (!this._sessionLockActive && !Main.layoutManager._startingUp && opt.APP_GRID_PERFORMANCE) {
             // Avoid showing status at startup, can cause freeze
             this._showStatusMessage();
-        } else if (this._sessionLockActive) {
-            this._sessionLockActive = false;
-            this._showStatusMessage(false);
         }
+
+        if (!Main.sessionMode.isLocked)
+            this._sessionLockActive = false;
+
         // iconGridModule will be updated from appDisplayModule
-        Me.Modules.appDisplayModule.update(reset);
+        // Me.Modules.appDisplayModule.update(reset);
 
         Me.Modules.windowAttentionHandlerModule.update(reset);
         Me.Modules.appFavoritesModule.update(reset);
