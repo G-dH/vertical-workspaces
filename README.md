@@ -2,7 +2,7 @@
 
 A GNOME Shell extension that lets you customize your GNOME Shell UX to suit your workflow, whether you like horizontally or vertically stacked workspaces.
 
-Currently supported GNOME versions: 45.beta.1
+Currently supported GNOME versions: 42 - 45
 
 [<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
 
@@ -51,13 +51,21 @@ Install the extension (`--force` switch needs to be used only if some version of
     gnome-extensions install --force vertical-workspaces@G-dH.github.com.zip
 
 ### Installation from GitHub repository
-The most recent version in the repository is the one I'm currently using and developing on my own systems, problems may occur, but usually nothing serious. The repository version may change often and doesn't updates automatically on your system, but once the stable release shows up on extensions.gnome.org, it should be updated automatically from there. If you want to help me, use this latest version and report bugs.
+The most recent version in the repository is the one I'm currently using and developing on my own systems, problems may occur, but usually nothing serious. The repository version may change often and doesn't updates automatically on your system. If you want to help me, use this latest version and report bugs.
 You may need to install `git`, `make`, `gettext` and `glib2.0` for successful installation.
 Navigate to the directory you want to download the source code and execute following commands in the terminal:
 
+GNOME 45:
+
     git clone https://github.com/G-dH/vertical-workspaces.git
     cd vertical-workspaces
-    git checkout esm-modules
+    make install
+
+GNOME 42 - 44:
+
+    git clone https://github.com/G-dH/vertical-workspaces.git
+    cd vertical-workspaces
+    git checkout gnome-42-44
     make install
 
 If you get `Can't recursively copy directory` error, take a look at issue #51.
