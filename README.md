@@ -32,6 +32,7 @@ Currently supported GNOME versions: 42 - 45
 - Window attention handler options can activate the attention-demanding window immediately or silence its notification
 - Optional position of the hot corner that can follow the dash and expand to hot edge
 - Super key double-press options
+- Window thumbnail (PIP) options allows you to create scaled down clone of the window by clicking on it's preview in the overview (secondary mouse buttons or window preview icon)
 
 ## Changelog
 [CHANGELOG.md](CHANGELOG.md)
