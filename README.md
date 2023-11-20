@@ -25,13 +25,14 @@ Currently supported GNOME versions: 42 - 45
 - Static background in workspace switcher (outside overview). Keeps Conky below, DING desktop icons stay visible (if not covered by windows)
 - Control over transition animations, including speed
 - Window search provider with *Space* hotkey allows quick window navigation
-- ~~Recent files search provider with Ctrl + Space hotkey~~
+- Recent files search provider with Ctrl + Space hotkey
 - Reorder workspaces in overview using *Shift + Scroll* or *Shift + Page Up/Down*
 - Adds *Force Quit*, *Close Windows on Current Workspace* and *Move Windows to Current Workspace* items to app icon menu. The latter action can be activated using *Shift + click* on app icon
 - Change notification banners and OSD popups position
 - Window attention handler options can activate the attention-demanding window immediately or silence its notification
 - Optional position of the hot corner that can follow the dash and expand to hot edge
 - Super key behavior options
+- Window thumbnail (PIP) options allows you to create scaled down clone of the window by clicking on it's preview in the overview (secondary mouse buttons or window preview icon)
 
 ## Changelog
 [CHANGELOG.md](CHANGELOG.md)
