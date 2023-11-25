@@ -1,6 +1,6 @@
 ## Changelog:
 
-### v45.1 (not yet released)
+### v45.1 for GNOME 45.1+ (2023-11-25) v44.9 for GNOME 42-44 (not yet released)
 **Added:**
 - *Window Thumbnail - PIP* option in app icon menu and as an click actions for Window Preview
 - Workspace switcher options *Wraparound* and *Ignore Last (empty)*
