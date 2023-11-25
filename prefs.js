@@ -1408,6 +1408,17 @@ function _getBehaviorOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Isolate Workspaces'),
+            _('Dash will only show apps and windows from the current workspace'),
+            itemFactory.newSwitch(),
+            'dashIsolateWorkspaces',
+            null,
+            'dashModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('App Icon - Click Behavior'),
             _('Choose your preferred behavior when clicking on an app icon. The "Prefer Current Workspace" option opens a new app window if not present in the current workspace. The "Open New Window" option also switches behavior of the middle click to "Activate" since its default behavior is to open a new window'),
             // itemFactory.newComboBox(),
@@ -1422,6 +1433,8 @@ function _getBehaviorOptionList(itemFactory) {
             'dashModule'
         )
     );
+    /* appClickDropDown.set_sensitive(opt.DASH_ISOLATE_WS);
+    isolateSwitch.connect('notify::active', w => appClickDropDown.set_sensitive(!w.active));*/
 
     optionList.push(
         itemFactory.getRowWidget(
