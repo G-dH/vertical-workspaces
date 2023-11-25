@@ -1433,8 +1433,6 @@ function _getBehaviorOptionList(itemFactory) {
             'dashModule'
         )
     );
-    /* appClickDropDown.set_sensitive(opt.DASH_ISOLATE_WS);
-    isolateSwitch.connect('notify::active', w => appClickDropDown.set_sensitive(!w.active));*/
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -1944,14 +1942,14 @@ function _getModulesOptionList(itemFactory) {
         )
     );
 
-    /* optionList.push(
+    optionList.push(
         itemFactory.getRowWidget(
             _('RecentFilesSearchProvider'),
             _('Activates the recent files search provider that can be triggered by a dash icon, Ctrl + Space hotkey or by typing "fq//" prefix in the search entry field. This option needs File History option enabled in the GNOME Privacy settings'),
             itemFactory.newSwitch(),
             'recentFilesSearchProviderModule'
         )
-    );*/
+    );
 
     optionList.push(
         itemFactory.getRowWidget(
