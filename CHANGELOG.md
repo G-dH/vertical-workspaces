@@ -1,6 +1,10 @@
 ## Changelog:
+### v45.2 for GNOME 45.1+ (not yet released) v44.10 for GNOME 42-44 (not yet released)
+**Added:**
+- *Dash* option *Isolate Workspaces* on *Behavior* tab
 
-### v45.1 for GNOME 45.1+ (2023-11-25) v44.9 for GNOME 42-44 (not yet released)
+
+### v45.1 for GNOME 45.1+ (EGO 2023-11-25) v44.9 for GNOME 42-44 (not released)
 **Added:**
 - *Window Thumbnail - PIP* option in app icon menu and as an click actions for Window Preview
 - Workspace switcher options *Wraparound* and *Ignore Last (empty)*
@@ -19,7 +23,7 @@
 - Since GNOME 45 V-Shell has 2 versions - one for GS 45 and the second for GS 42-44. Versioning no longer depends on EGO's upload counter
 - Dash light style background opacity is not limited
 - Refactored Recent Files Search Provider and other modules
-- Prefs - ComboBox replaced with (finally fixed) DropDown
+- Settings window - ComboBox replaced with (finally fixed) DropDown
 
 
 ### v37 (2023-07-01)
