@@ -217,7 +217,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Open Windows Icon Position'),
-                _('Allows to add "Search Open Windows" icon into Dash (if window search provider enabled on the Behavior tab) so you can directly toggle window search provider results. You can also use the secondary mouse button click on the Show Apps Icon, or the Space hotkey'),
+                _('Allows to add "Search Open Windows" icon into Dash (if window search provider enabled on the Modules tab) so you can directly toggle window search provider results. You can also use the secondary mouse button click on the Show Apps Icon, or the Space hotkey'),
                 // itemFactory.newComboBox(),
                 itemFactory.newDropDown(),
                 'dashShowWindowsIcon',
@@ -233,10 +233,26 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Recent Files Icon Position'),
-                _('Allows to add "Search Recent Files" icon into Dash (if recent files search provider enabled on the Behavior tab) so you can directly toggle recent files search provider results. You can also use Ctrl + Space hotkey'),
+                _('Allows to add "Search Recent Files" icon into Dash (if recent files search provider enabled on the Modules tab) so you can directly toggle recent files search provider results. You can also use Ctrl + Space hotkey'),
                 // itemFactory.newComboBox(),
                 itemFactory.newDropDown(),
                 'dashShowRecentFilesIcon',
+                [
+                    [_('Hide'), 0],
+                    [_('Start'), 1],
+                    [_('End'), 2],
+                ],
+                'dashModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Extensions Icon Position'),
+                _('Allows to add "Search Extensions" icon into Dash (if extensions search provider enabled on the Module tab) so you can directly toggle extensions search provider results. You can also use the Ctrl + Shift + Space hotkey'),
+                // itemFactory.newComboBox(),
+                itemFactory.newDropDown(),
+                'dashShowExtensionsIcon',
                 [
                     [_('Hide'), 0],
                     [_('Start'), 1],
@@ -1921,6 +1937,15 @@ export default class VShell extends ExtensionPreferences {
                 _('Activates the recent files search provider that can be triggered by a dash icon, Ctrl + Space hotkey or by typing "fq//" prefix in the search entry field. This option needs File History option enabled in the GNOME Privacy settings'),
                 itemFactory.newSwitch(),
                 'recentFilesSearchProviderModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('ExtensionsSearchProvider'),
+                _('Activates the extensions search provider that adds extensions to the search results. You can also use "eq//" prefix (also by pressing the Ctrl + Shift + Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
+                itemFactory.newSwitch(),
+                'extensionsSearchProviderModule'
             )
         );
 

@@ -52,8 +52,9 @@ import { WorkspaceAnimationModule } from './lib/workspaceAnimation.js';
 import { WorkspaceModule } from './lib/workspace.js';
 import { WorkspaceSwitcherPopupModule } from './lib/workspaceSwitcherPopup.js';
 import { WindowSearchProviderModule } from './lib/windowSearchProvider.js';
-import { WinTmbModule } from './lib/winTmb.js';
 import { RecentFilesSearchProviderModule } from './lib/recentFilesSearchProvider.js';
+import { ExtensionsSearchProviderModule } from './lib/extensionsSearchProvider.js';
+import { WinTmbModule } from './lib/winTmb.js';
 
 let Me;
 
@@ -76,6 +77,7 @@ export default class VShell extends Extension.Extension {
         Me.AppDisplayOverride = AppDisplayOverride;
         Me.WSP_PREFIX = WindowSearchProviderModule._PREFIX;
         Me.RFSP_PREFIX = RecentFilesSearchProviderModule._PREFIX;
+        Me.ESP_PREFIX = ExtensionsSearchProviderModule._PREFIX;
         Me.repairOverrides = this._repairOverrides;
 
         Me.opt = new Me.Settings.Options(Me);
@@ -142,6 +144,7 @@ export default class VShell extends Extension.Extension {
         Me.Modules.workspacesViewModule = new WorkspacesViewModule(Me);
         Me.Modules.windowSearchProviderModule = new WindowSearchProviderModule(Me);
         Me.Modules.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Me);
+        Me.Modules.extensionsSearchProviderModule = new ExtensionsSearchProviderModule(Me);
         Me.Modules.winTmbModule = new WinTmbModule(Me);
     }
 
@@ -381,6 +384,7 @@ export default class VShell extends Extension.Extension {
 
         Me.Modules.windowSearchProviderModule.update(reset);
         Me.Modules.recentFilesSearchProviderModule.update(reset);
+        Me.Modules.extensionsSearchProviderModule.update(reset);
 
         // don't rebuild app grid on any screen lock
         // even if the extension includes unlock-screen session mode
