@@ -47,6 +47,7 @@ class Extension {
         Me.moduleList = this._getModuleList();
         Me.WSP_PREFIX = Me.Modules.windowSearchProviderModule._PREFIX;
         Me.RFSP_PREFIX = Me.Modules.recentFilesSearchProviderModule._PREFIX;
+        Me.ESP_PREFIX = Me.Modules.extensionsSearchProviderModule._PREFIX;
 
         Me.opt = new Me.Settings.Options(Me);
         _ = Me.gettext;
@@ -88,6 +89,7 @@ class Extension {
             windowSearchProviderModule:         Me.imports.lib.windowSearchProvider.WindowSearchProviderModule,
             winTmbModule:                       Me.imports.lib.winTmb.WinTmbModule,
             recentFilesSearchProviderModule:    Me.imports.lib.recentFilesSearchProvider.RecentFilesSearchProviderModule,
+            extensionsSearchProviderModule:     Me.imports.lib.extensionsSearchProvider.ExtensionsSearchProviderModule,
         };
     }
 
@@ -353,6 +355,7 @@ class Extension {
 
         Me.Modules.windowSearchProviderModule.update(reset);
         Me.Modules.recentFilesSearchProviderModule.update(reset);
+        Me.Modules.extensionsSearchProviderModule.update(reset);
 
         // don't rebuild app grid on any screen lock
         // even if the extension includes unlock-screen session mode
