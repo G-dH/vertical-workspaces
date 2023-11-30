@@ -1174,6 +1174,23 @@ export default class VShell extends ExtensionPreferences {
             )
         );
 
+        const searchBrightnessBgAdjustment = new Gtk.Adjustment({
+            upper: 100,
+            lower: 0,
+            step_increment: 1,
+            page_increment: 10,
+        });
+
+        const searchBgBrightnessScale = itemFactory.newScale(searchBrightnessBgAdjustment);
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Brightness for Search View'),
+                _('Allows you to set a lower background brightness for search view mode where text visibility is more important'),
+                searchBgBrightnessScale,
+                'searchBgBrightness'
+            )
+        );
+
         const blurBgAdjustment = new Gtk.Adjustment({
             upper: 100,
             lower: 0,
