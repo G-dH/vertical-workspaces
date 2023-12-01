@@ -2,6 +2,8 @@
 ### v45.2 for GNOME 45.1+ (not yet released) v44.10 for GNOME 42-44 (not yet released)
 **Added:**
 - *Dash* option *Isolate Workspaces* on *Behavior* tab
+- *Brightness for Search View* option allows adjusting background wallpaper brightness in overview search view
+- *Extensions Search Provider* module allows to search for extensions from the overview, open their settings and enable or disable them
 
 
 ### v45.1 for GNOME 45.1+ (EGO 2023-11-25) v44.9 for GNOME 42-44 (not released)

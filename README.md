@@ -17,6 +17,7 @@ Currently supported GNOME versions: 42 - 45
 - Support for secondary monitors, workspace thumbnails can be placed on the opposite side than on the primary monitor
 - Wallpaper background with adjustable blur effect and brightness in the overview
 - Custom Dash icon size and on-click/scroll behavior
+- Optional workspace isolated Dash
 - Dash background transparency and corner radius adjustments
 - Adjustable app grid icon size, number of columns and rows, content, optional active and draggable icons in folder preview in optional 3x3 grid
 - Custom search view width, app results icons size and number of result lists rows, improved app search
@@ -26,6 +27,7 @@ Currently supported GNOME versions: 42 - 45
 - Control over transition animations, including speed
 - Window search provider with *Space* hotkey allows quick window navigation
 - Recent files search provider with *Ctrl + Space* hotkey
+- Extensions search provider with *Ctrl + Shift + Space* hotkey allows to search for extensions, open their settings and enable or disable them
 - Reorder workspaces in overview using *Shift + Scroll* or *Shift + Page Up/Down*
 - Adds *Force Quit*, *Close Windows on Current Workspace* and *Move Windows to Current Workspace* items to app icon menu. The latter action can be activated using *Shift + click* on app icon
 - Change notification banners and OSD popups position
@@ -33,6 +35,7 @@ Currently supported GNOME versions: 42 - 45
 - Optional position of the hot corner that can follow the dash and expand to hot edge
 - Super key double-press options
 - Window thumbnail (PIP) options allows you to create scaled down clone of the window by clicking on its preview in the overview (secondary mouse buttons or window preview icon)
+
 
 ## Changelog
 [CHANGELOG.md](CHANGELOG.md)
