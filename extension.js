@@ -396,10 +396,10 @@ export default class VShell extends Extension.Extension {
             this._sessionLockActive = true;
 
         // This covers unnecessary enable/disable cycles during first screen lock when extensions are rebased, but is not allowed by the EGO rules
-        if (!this._sessionLockActive || !Main.extensionManager._getEnabledExtensions().includes(Me.metadata.uuid)) {
+        //if (!this._sessionLockActive || !Main.extensionManager._getEnabledExtensions().includes(Me.metadata.uuid)) {
             // iconGridModule will be updated from appDisplayModule
-            Me.Modules.appDisplayModule.update(reset);
-        }
+        //    Me.Modules.appDisplayModule.update(reset);
+        //}
 
         if (!this._sessionLockActive && !Main.layoutManager._startingUp && opt.APP_GRID_PERFORMANCE) {
             // Avoid showing status at startup, can cause freeze
@@ -410,7 +410,7 @@ export default class VShell extends Extension.Extension {
             this._sessionLockActive = false;
 
         // iconGridModule will be updated from appDisplayModule
-        // Me.Modules.appDisplayModule.update(reset);
+        Me.Modules.appDisplayModule.update(reset);
 
         Me.Modules.windowAttentionHandlerModule.update(reset);
         Me.Modules.appFavoritesModule.update(reset);
