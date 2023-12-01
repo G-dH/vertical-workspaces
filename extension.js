@@ -104,7 +104,7 @@ class Extension {
 
         this._activateVShell();
         Me.extensionsLoadIncomplete = false;
-        log(`${Me.metadata.name}: enabled`);
+        console.debug(`${Me.metadata.name}: enabled`);
     }
 
     // Reason for using "unlock-dialog" session mode:
@@ -116,7 +116,7 @@ class Extension {
 
         // If Dash to Dock is enabled, disabling V-Shell can end in broken overview
         Main.overview.hide();
-        log(`${Me.metadata.name}: disabled`);
+        console.debug(`${Me.metadata.name}: disabled`);
     }
 
     _disposeModules() {
@@ -366,26 +366,15 @@ class Extension {
         if (Main.sessionMode.isLocked)
             this._sessionLockActive = true;
 
-        // This covers unnecessary enable/disable cycles during first screen lock, but is not allowed by the EGO rules
-        // if (!this._sessionLockActive || !Main.extensionManager._getEnabledExtensions().includes(Me.metadata.uuid)) {
-        // Avoid showing status at startup, can cause freeze
-        //    if (!Main.layoutManager._startingUp)
-        //        this._showStatusMessage();
-        // IconGrid needs to be patched before AppDisplay
-        //    Me.Modules.iconGridModule.update(reset);
-        //    Me.Modules.appDisplayModule.update(reset);
-        // } else {
-        //    this._sessionLockActive = false;
-        //    this._showStatusMessage(false);
-        // }
-
         if (!this._sessionLockActive && !Main.layoutManager._startingUp && opt.APP_GRID_PERFORMANCE) {
             // Avoid showing status at startup, can cause freeze
             this._showStatusMessage();
-        } else if (this._sessionLockActive) {
-            this._sessionLockActive = false;
-            this._showStatusMessage(false);
         }
+
+        if (!Main.sessionMode.isLocked)
+            this._sessionLockActive = false;
+
+        // iconGridModule will be updated from appDisplayModule
         Me.Modules.appDisplayModule.update(reset);
 
         Me.Modules.windowAttentionHandlerModule.update(reset);
@@ -413,6 +402,7 @@ class Extension {
             Main.overview._overview.controls._setBackground();
 
         if (opt._watchDashToDock) {
+            console.debug('          _onShowingOverview watch DtD');
             // workaround for Dash to Dock (Ubuntu Dock) breaking overview allocations after enabled and changed position
             // DtD replaces dock and its _workId on every position change
             const dash = Main.overview.dash;
