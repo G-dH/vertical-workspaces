@@ -26,7 +26,6 @@ import * as Extension from 'resource:///org/gnome/shell/extensions/extension.js'
 // Me imports
 import * as Settings from './lib/settings.js';
 import * as _Util from './lib/util.js';
-import * as AppDisplayOverride from './lib/appDisplay.js';
 
 // Me Modules import
 import { LayoutModule } from './lib/layout.js';
@@ -57,7 +56,6 @@ import { ExtensionsSearchProviderModule } from './lib/extensionsSearchProvider.j
 import { WinTmbModule } from './lib/winTmb.js';
 
 let Me;
-
 // gettext
 let _;
 let opt;
@@ -70,23 +68,24 @@ export default class VShell extends Extension.Extension {
         Me.shellVersion = parseFloat(Config.PACKAGE_VERSION);
         Me.metadata = this.metadata;
         Me.gSettings = this.getSettings();
-        Me.gettext = this.gettext.bind(this);
-        _ = Me.gettext;
         Me.Settings = Settings;
         Me.Util = _Util;
-        Me.AppDisplayOverride = AppDisplayOverride;
+        Me.gettext = this.gettext.bind(this);
+        _ = Me.gettext;
+
         Me.WSP_PREFIX = WindowSearchProviderModule._PREFIX;
         Me.RFSP_PREFIX = RecentFilesSearchProviderModule._PREFIX;
         Me.ESP_PREFIX = ExtensionsSearchProviderModule._PREFIX;
-        Me.repairOverrides = this._repairOverrides;
 
         Me.opt = new Me.Settings.Options(Me);
 
         Me.Util.init(Me);
     }
 
-    cleanGlobals() {
+    _cleanGlobals() {
         Me = null;
+        opt = null;
+        _ = null;
     }
 
     enable() {
@@ -99,6 +98,7 @@ export default class VShell extends Extension.Extension {
         this.activateVShell();
 
         Me.extensionsLoadIncomplete = false;
+
         console.debug(`${Me.metadata.name}: enabled`);
     }
 
@@ -110,8 +110,10 @@ export default class VShell extends Extension.Extension {
 
         // If Dash to Dock is enabled, disabling V-Shell can end in broken overview
         Main.overview.hide();
-        Me.Util.cleanGlobals();
+
         console.debug(`${Me.metadata.name}: disabled`);
+
+        this._cleanGlobals();
     }
 
     _getModuleList() {
@@ -156,6 +158,9 @@ export default class VShell extends Extension.Extension {
             if (!Me.Modules[module].moduleEnabled)
                 Me.Modules[module].cleanGlobals();
         }
+
+        Me.Util.cleanGlobals();
+
         Me.Modules = null;
         opt = null;
     }
