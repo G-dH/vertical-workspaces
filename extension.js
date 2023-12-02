@@ -433,13 +433,13 @@ class Extension {
                 const dash = Main.overview.dash;
                 if (timeout < 2000) { // timeout < 2000 for partial update
                     this._prevDash = dash._workId;
-                    log(`[${Me.metadata.name}]: Dash has been replaced, updating extension ...`);
+                    console.warn(`[${Me.metadata.name}]: Dash has been replaced, updating extension ...`);
                     Me._resetInProgress = true;
                     // update only necessary modules if dash has been replaced
                     this._repairOverrides();
                     Me._resetInProgress = false;
                 } else {
-                    log(`[${Me.metadata.name}]: Updating extension ...`);
+                    console.warn(`[${Me.metadata.name}]: Updating extension ...`);
                     // for case the monitor configuration has been changed, update all
                     Me._resetInProgress = true;
                     this._activateVShell();
