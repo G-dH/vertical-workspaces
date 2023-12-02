@@ -23,6 +23,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const MyExtension = ExtensionUtils.getCurrentExtension();
 
 let Me;
+// gettext
 let _;
 let opt;
 
@@ -45,6 +46,7 @@ class Extension {
 
         Me.Modules = this._importModules();
         Me.moduleList = this._getModuleList();
+
         Me.WSP_PREFIX = Me.Modules.windowSearchProviderModule._PREFIX;
         Me.RFSP_PREFIX = Me.Modules.recentFilesSearchProviderModule._PREFIX;
         Me.ESP_PREFIX = Me.Modules.extensionsSearchProviderModule._PREFIX;
@@ -97,6 +99,12 @@ class Extension {
         return Object.keys(Me.Modules);
     }
 
+    _cleanGlobals() {
+        Me = null;
+        opt = null;
+        _ = null;
+    }
+
     enable() {
         this._init();
         // flag for Util.getEnabledExtensions()
@@ -112,20 +120,25 @@ class Extension {
     disable() {
         this._removeVShell();
         this._disposeModules();
-        opt = null;
 
         // If Dash to Dock is enabled, disabling V-Shell can end in broken overview
         Main.overview.hide();
+
         console.debug(`${Me.metadata.name}: disabled`);
+
+        this._cleanGlobals();
     }
 
     _disposeModules() {
         Me.opt.destroy();
         Me.opt = null;
 
-        for (let module of Me.moduleList)
-            Me.Modules[module].cleanGlobals();
+        for (let module of Me.moduleList) {
+            if (!Me.Modules[module].moduleEnabled)
+                Me.Modules[module].cleanGlobals();
+        }
 
+        Me.Util.cleanGlobals();
         Me.Modules = null;
     }
 
@@ -408,7 +421,6 @@ class Extension {
             Main.overview._overview.controls._setBackground();
 
         if (opt._watchDashToDock) {
-            console.debug('          _onShowingOverview watch DtD');
             // workaround for Dash to Dock (Ubuntu Dock) breaking overview allocations after enabled and changed position
             // DtD replaces dock and its _workId on every position change
             const dash = Main.overview.dash;
