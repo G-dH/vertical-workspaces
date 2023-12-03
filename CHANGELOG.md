@@ -1,5 +1,5 @@
 ## Changelog:
-### v45.2 for GNOME 45.1+ (not yet released) v44.10 for GNOME 42-44 (not yet released)
+### v45.2 for GNOME 45.2+, v44.10 for GNOME 42-44 (2023-12-03)
 **Added:**
 - *Dash* option *Isolate Workspaces* on *Behavior* tab
 - *Brightness for Search View* option allows adjusting background wallpaper brightness in overview search view
