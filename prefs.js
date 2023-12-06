@@ -2206,10 +2206,14 @@ export default class VShell extends ExtensionPreferences {
             this.Me.metadata.name
         ));
 
+        const versionName = this.Me.metadata['version-name'] ?? '';
+        let version = this.Me.metadata['version'] ?? '';
+        version = versionName && version ? `/${version}` : version;
+        const versionStr = `${versionName}${version}`;
         optionList.push(itemFactory.getRowWidget(
             _('Version'),
             null,
-            itemFactory.newLabel(this.Me.metadata['version-name'])
+            itemFactory.newLabel(versionStr)
         ));
 
         optionList.push(itemFactory.getRowWidget(
