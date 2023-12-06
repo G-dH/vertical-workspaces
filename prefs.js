@@ -2224,10 +2224,14 @@ function _getAboutOptionList(itemFactory) {
         Me.metadata.name
     ));
 
+    const versionName = Me.metadata['version-name'] ?? '';
+    let version = Me.metadata['version'] ?? '';
+    version = versionName && version ? `/${version}` : version;
+    const versionStr = `${versionName}${version}`;
     optionList.push(itemFactory.getRowWidget(
         _('Version'),
         null,
-        itemFactory.newLabel(Me.metadata['version-name'])
+        itemFactory.newLabel(versionStr)
     ));
 
     optionList.push(itemFactory.getRowWidget(
