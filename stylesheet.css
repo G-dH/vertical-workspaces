@@ -5,21 +5,18 @@
 
 /* General dash */
 #dash.vertical {
-	margin-right: 6px;
-	margin-left: 6px;
-	padding: 0px 0;
-}
-
-#dash.vertical-gs3 {
-	margin-right: 0px;
-	margin-left: 0px;
-	padding: 0px 0;
+	margin: 0px;
+	padding: 0px;
 }
 
 #dash.vertical .app-well-app,
 #dash.vertical .show-apps {
-	padding-right: 8px;
-	padding-left: 8px;
+	/* left/right padding exceeds dash bg by 6px to
+	 cover spacing between dash and the edge of the screen
+	 so the icons will be selectable even at the edge
+	 this spacing must be accounted for in overview allocate() */
+	padding-right: 16px;
+	padding-left: 16px;
 	/*spacing between icons*/
 	padding-top: 1px;
 	padding-bottom: 1px;
@@ -53,18 +50,42 @@
 	margin: 0px;
 }
 
-#dash.vertical-left .dash-background {
+#dash.vertical-gs3-left .dash-background {
 	border-radius: 0 18px 18px 0;
 	border-left: 0px;
 	padding: 8px 12px 8px 4px;
 	margin-left: 0;
 }
 
-#dash.vertical-right .dash-background {
+#dash.vertical-gs3-right .dash-background {
 	border-radius: 18px 0 0 18px;
 	border-right: 0px;
 	padding: 8px 4px 8px 12px;
 	margin-right: 0;
+}
+
+#dash.vertical-gs3-left {
+	margin-right: 6px;
+	margin-left: 0px;
+	padding: 0px;
+}
+
+#dash.vertical-gs3-right {
+	margin-right: 0px;
+	margin-left: 6px;
+	padding: 0px;
+}
+
+#dash.vertical-gs3-left .app-well-app,
+#dash.vertical-gs3-left .show-apps,
+#dash.vertical-gs3-right .app-well-app,
+#dash.vertical-gs3-right .show-apps {
+	/* left/right padding exceeds dash bg by 6px to
+	 cover spacing between dash and the edge of the screen
+	 so the icons will be selectable even at the edge
+	 this spacing must be accounted for in overview allocate() */
+	padding-right: 9px;
+	padding-left: 9px;
 }
 
 .dash-background-light {
