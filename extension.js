@@ -601,6 +601,9 @@ export default class VShell extends Extension.Extension {
         if (key?.includes('hot-corner') || key?.includes('dash'))
             Me.Modules.layoutModule.update();
 
+        if (key?.includes('overlay-key'))
+            Me.Modules.overlayKeyModule.update();
+
         switch (key) {
         case 'ws-thumbnails-position':
             this._updateOverrides();
@@ -625,9 +628,6 @@ export default class VShell extends Extension.Extension {
             break;
         case 'osd-position':
             Me.Modules.osdWindowModule.update();
-            break;
-        case 'overlay-key':
-            Me.Modules.overlayKeyModule.update();
             break;
         case 'always-activate-selected-window':
             Me.Modules.windowPreviewModule.update();
