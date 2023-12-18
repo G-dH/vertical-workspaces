@@ -1875,6 +1875,21 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
+                _('Workspace Switcher Mode (Isolate Monitors)'),
+                _('Note that this is a workaround, not full-fledged feature. GNOME Shell does not support separate workspaces for each monitor, so V-Shell switches workspaces only on the primary monitor and moves windows across workspaces on secondary monitors in order to simulate independent behavior. The current monitor is determined by the position of the mouse pointer'),
+                // itemFactory.newComboBox(),
+                itemFactory.newDropDown(),
+                'wsSwitcherMode',
+                [
+                    [_('Default'), 0],
+                    [_('Current Monitor'), 1],
+                ],
+                'windowManagerModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
                 _('Workspace Switcher Popup Mode'),
                 _('This popup shows up when you switch workspace using a keyboard shortcut or gesture outside of the overview. You can to disable the popup at all, or show it on the current monitor (the one with mouse pointer) instead of the primary.'),
                 // itemFactory.newComboBox(),
@@ -2122,7 +2137,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('WorkspaceSwitcherPopup'),
-                _('Workspace switcher popup position options'),
+                _('Workspace switcher popup orientation and position options'),
                 itemFactory.newSwitch(),
                 'workspaceSwitcherPopupModule'
             )
