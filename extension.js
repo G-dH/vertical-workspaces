@@ -246,10 +246,8 @@ class Extension {
     _updateFixDashToDockOption() {
         const dtdEnabled = !!(Me.Util.getEnabledExtensions('dash-to-dock').length ||
                               Me.Util.getEnabledExtensions('ubuntu-dock').length);
-
         // force enable Fix Dash to Dock option if DtD detected
-        opt._watchDashToDock = dtdEnabled;
-        // opt.set('fixUbuntuDock', dtdEnabled);
+        this._watchDashToDock = dtdEnabled;
     }
 
     _updateConnections() {
@@ -305,7 +303,7 @@ class Extension {
                     const reset = [1, 2].includes(extension.state);
                     const dashReplacement = uuid.includes('dash-to-dock') || uuid.includes('ubuntu-dock') || uuid.includes('dash-to-panel');
                     if (dashReplacement && reset)
-                        opt._watchDashToDock = true;
+                        this._watchDashToDock = true;
                     if (!Main.layoutManager._startingUp && reset && dashReplacement)
                         this._updateVShell(1999);
                 }
@@ -420,7 +418,7 @@ class Extension {
         if (!Main.overview._overview.controls._bgManagers && (opt.SHOW_BG_IN_OVERVIEW || opt.SHOW_WS_PREVIEW_BG))
             Main.overview._overview.controls._setBackground();
 
-        if (opt._watchDashToDock) {
+        if (this._watchDashToDock) {
             // workaround for Dash to Dock (Ubuntu Dock) breaking overview allocations after enabled and changed position
             // DtD replaces dock and its _workId on every position change
             const dash = Main.overview.dash;
@@ -604,6 +602,9 @@ class Extension {
         case 'always-activate-selected-window':
             Me.Modules.windowPreviewModule.update();
             break;
+        case 'ws-switcher-mode':
+            Me.Modules.windowManagerModule.update();
+            break;
         }
 
         if (key?.includes('app-grid') ||
@@ -747,7 +748,7 @@ class Extension {
     _getNeighbor(direction) {
         // workspace matrix is supported
         const activeIndex = this.index();
-        const ignoreLast = opt.WS_IGNORE_LAST && !Main.overview._shown ? 1 : 0;
+        const ignoreLast = opt.WS_IGNORE_LAST && Meta.prefs_get_dynamic_workspaces() && !Main.overview._shown ? 1 : 0;
         const wraparound = opt.WS_WRAPAROUND;
         const nWorkspaces = global.workspace_manager.n_workspaces;
         const lastIndex = nWorkspaces - 1 - ignoreLast;
