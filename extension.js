@@ -368,20 +368,8 @@ class Extension {
         Me.Modules.recentFilesSearchProviderModule.update(reset);
         Me.Modules.extensionsSearchProviderModule.update(reset);
 
-        // don't rebuild app grid on any screen lock
-        // even if the extension includes unlock-screen session mode
-        // disable/enable is called at least once even on GS44
-        // when screen lock is activated for the first time
-        // because every first disable of each extension rebases
-        // the entire extensions stack that was enabled later
         if (Main.sessionMode.isLocked)
             this._sessionLockActive = true;
-
-        // This covers unnecessary enable/disable cycles during first screen lock when extensions are rebased, but is not allowed by the EGO rules
-        if (!this._sessionLockActive || !Main.extensionManager._getEnabledExtensions().includes(Me.metadata.uuid)) {
-            // iconGridModule will be updated from appDisplayModule
-            Me.Modules.appDisplayModule.update(reset);
-        }
 
         if (!this._sessionLockActive && !Main.layoutManager._startingUp && opt.APP_GRID_PERFORMANCE) {
             // Avoid showing status at startup, can cause freeze
@@ -392,7 +380,7 @@ class Extension {
             this._sessionLockActive = false;
 
         // iconGridModule will be updated from appDisplayModule
-        // Me.Modules.appDisplayModule.update(reset);
+        Me.Modules.appDisplayModule.update(reset);
 
         Me.Modules.windowAttentionHandlerModule.update(reset);
         Me.Modules.appFavoritesModule.update(reset);
