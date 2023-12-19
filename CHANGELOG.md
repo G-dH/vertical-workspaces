@@ -1,4 +1,18 @@
 ## Changelog:
+### v45.3 for GNOME 45.2+, v44.11 for GNOME 42-44 (not yet released)
+**Added:**
+- Option *Workspace Switcher Mode (Isolate Monitors)* can simulate independent switching of workspaces on any monitor
+- Improved *Extensions Search Provider* allows seamless extension de/activation
+
+**Fixed:**
+- DtD breaks overview on the primary monitor because of incorrect dash/dock position readings
+- *Window Switcher > Ignore Last (empty) Workspace* should work only for dynamic workspaces mode
+- *OverlayKey* module should remain disabled when the overlay-key functionality is set to default to minimize conflicts with other extensions
+- Errors from parental manager when registering search provider modules
+- Extension settings window sometimes fails to open when another extension settings window is already open
+- Vertically oriented dash items should be selectable even with the mouse pointer at the edge of the screen
+
+
 ### v45.2 for GNOME 45.2+, v44.10 for GNOME 42-44 (2023-12-02)
 **Added:**
 - *Dash* option *Isolate Workspaces* on *Behavior* tab
