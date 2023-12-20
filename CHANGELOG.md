@@ -1,5 +1,5 @@
 ## Changelog:
-### v45.3 for GNOME 45.2+, v44.11 for GNOME 42-44 (not yet released)
+### v45.3 for GNOME 45.2+, v44.11 for GNOME 42-44 (2023-12-20)
 **Added:**
 - Option *Workspace Switcher Mode (Isolate Monitors)* can simulate independent switching of workspaces on any monitor
 - Improved *Extensions Search Provider* allows seamless extension de/activation
