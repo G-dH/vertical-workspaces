@@ -279,6 +279,7 @@ StButton#vhandle {
 
 .osd-window {
 	margin: 4em;
+	margin-bottom: 8em; /* avoid overlap with dock extension */
 }
 
 .app-folder .overview-icon,
