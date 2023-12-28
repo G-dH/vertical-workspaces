@@ -332,6 +332,40 @@ export default class VShell extends Extension.Extension {
                 }
             );
         }
+
+        this._updateNewWindowConnection();
+    }
+
+    _updateNewWindowConnection() {
+        const nMonitors = global.display.get_n_monitors();
+        if (nMonitors > 1 && opt.FIX_NEW_WINDOW_MONITOR && !this._newWindowCreatedConId) {
+            this._newWindowCreatedConId = global.display.connect_after('window-created', (w, win) => {
+                if (Main.layoutManager._startingUp || win.get_window_type() !== Meta.WindowType.NORMAL)
+                    return;
+                const winActor = win.get_compositor_private();
+                const _moveWinToMonitor = () => {
+                    const currentMonitor = global.display.get_current_monitor();
+                    if (win.get_monitor() !== currentMonitor) {
+                        // some windows ignore this action if executed immediately
+                        GLib.idle_add(GLib.PRIORITY_LOW, () => {
+                            win.move_to_monitor(currentMonitor);
+                            return GLib.SOURCE_REMOVE;
+                        });
+                    }
+                };
+                if (!winActor.realized) {
+                    const realizeId = winActor.connect('realize', () => {
+                        winActor.disconnect(realizeId);
+                        _moveWinToMonitor();
+                    });
+                } else {
+                    _moveWinToMonitor();
+                }
+            });
+        } else if ((nMonitors.length === 1 || !opt.FIX_NEW_WINDOW_MONITOR) && this._newWindowCreatedConId) {
+            global.display.disconnect(this._newWindowCreatedConId);
+            this._newWindowCreatedConId = 0;
+        }
     }
 
     _removeConnections() {
@@ -353,6 +387,11 @@ export default class VShell extends Extension.Extension {
         if (this._watchDockSigId) {
             Main.extensionManager.disconnect(this._watchDockSigId);
             this._watchDockSigId = 0;
+        }
+
+        if (this._newWindowCreatedConId) {
+            global.display.disconnect(this._newWindowCreatedConId);
+            this._newWindowCreatedConId = 0;
         }
     }
 
@@ -634,6 +673,9 @@ export default class VShell extends Extension.Extension {
             break;
         case 'ws-switcher-mode':
             Me.Modules.windowManagerModule.update();
+            break;
+        case 'new-window-monitor-fix':
+            this._updateNewWindowConnection();
             break;
         }
 
