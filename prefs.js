@@ -1336,7 +1336,7 @@ function _getBehaviorOptionList(itemFactory) {
             [
                 [_('Disable'), 0],
                 [_('Follow Global Overview Mode'), 1],
-                [_('Overview (Default)'), 2],
+                [_('Overview - Window Picker (Default)'), 2],
                 [_('Applications'), 3],
                 [_('Overview - Static WS Preview'), 4],
                 [_('Overview - Static Workspace'), 5],
