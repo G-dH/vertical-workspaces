@@ -3,7 +3,7 @@
  * prefs.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022 - 2023
+ * @copyright  2022 - 2024
  * @license    GPL-3.0
  */
 
@@ -157,10 +157,10 @@ export default class VShell extends ExtensionPreferences {
                 itemFactory.newDropDown(),
                 'dashPosition',
                 [
-                    [_('Top'), 0],
-                    [_('Right'), 1],
                     [_('Bottom'), 2],
                     [_('Left'), 3],
+                    [_('Top'), 0],
+                    [_('Right'), 1],
                     [_('Hide'), 4],
                 ],
                 'dashModule'
