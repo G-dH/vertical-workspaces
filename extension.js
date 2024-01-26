@@ -3,7 +3,7 @@
  * extension.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022 - 2023
+ * @copyright  2022 - 2024
  * @license    GPL-3.0
  *
  */
@@ -200,9 +200,18 @@ export default class VShell extends Extension.Extension {
 
         // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
         this._setInitialWsIndex();
+
+        // following properties may be reduced if extensions are rebased while the overview is open
+        Main.overview._overview.controls._thumbnailsBox.remove_all_transitions();
+        Main.overview._overview.controls._thumbnailsBox.scale_x = 1;
+        Main.overview._overview.controls._thumbnailsBox.scale_y = 1;
+        Main.overview._overview.controls._thumbnailsBox.opacity = 255;
     }
 
     removeVShell() {
+        // Rebasing V-Shell when overview is open causes problems
+        Main.overview.hide();
+
         this._enabled = false;
 
         const reset = true;
