@@ -11,8 +11,8 @@
 
 #dash.vertical .app-well-app,
 #dash.vertical .show-apps {
-	/* left/right padding exceeds dash bg by 6px to
-	 cover spacing between dash and the edge of the screen
+	/* left/right padding exceeds dash bg by 6px
+	 to cover the spacing between dash and the edge of the screen
 	 so the icons will be selectable even at the edge
 	 this spacing must be accounted for in overview allocate() */
 	padding-right: 16px;
@@ -29,14 +29,15 @@
 	margin-left: 2px;
 	margin-top: 4px;
 	margin-bottom: 4px;
-	background-color: transparentize(#eeeeec, 0.7);
+	background-color: transparentize(#eeeeec, 0.6);
 }
 
 #dash.vertical .overview-icon {
 	padding: 5px 0;
 }
 
-#dash.vertical .app-well-app-running-dot {
+#dash.vertical .app-well-app-running-dot,
+#dash.vertical .app-grid-running-dot {
 	margin: 4px 0px;
 }
 
@@ -93,16 +94,16 @@
 	border-color: rgba(150, 150, 150, 0.4);
 }
 
-.dash-background-reduced {
+/*.dash-background-reduced {
 	padding: 10px;
 }
 
 .app-well-app-running-dot {
-	margin-bottom: 12px;
-}
+	margin-bottom: 8px;
+}*/
 
 .app-well-app-running-dot-custom {
-	margin-bottom: 12px;
+	/*margin-bottom: 10px;*/
 	width: 16px;
 	height: 2px;
 }
@@ -282,7 +283,8 @@ StButton#vhandle {
 	margin-bottom: 8em; /* avoid overlap with dock extension */
 }
 
-.app-folder .overview-icon,
+.app-folder-46, /* 46 only */
+.app-folder-45 .overview-icon, /* 45 only */
 .edit-folder-button,
 .folder-name-entry {
 	background-color: rgba(200, 200, 200, 0.08);
@@ -296,14 +298,68 @@ StButton#vhandle {
 	border-color: rgba(160, 160, 160, 0.3);
 }
 
-.edit-folder-button:hover,
-.app-folder:hover .overview-icon,
-.app-folder:focus .overview-icon {
+.edit-folder-button:hover, 
+.app-folder-46:hover,
+.app-folder-45:hover .overview-icon, /* 45 only */
+.app-folder-45:focus .overview-icon { /* 45 only */
 	background-color: rgba(200, 200, 200, 0.15);
 }
 
-/* reduce quick menu buttons height in GS44 */
-/*.quick-toggle,
-.quick-menu-toggle {
-	min-height: 42px;
-}*/
+
+
+#dash.vertical-46 {
+	margin: 6px;
+	padding: 0px;
+}
+
+#dash.vertical-46-gs3-left {
+	margin-left: 0px;
+}
+
+#dash.vertical-46-gs3-right {
+	margin-right: 0px;
+}
+
+#dash.vertical-46 .overview-tile,
+#dash.vertical-46 .show-apps {
+	margin: 0px;
+}
+
+#dash.vertical-46 .dash-separator {
+	height: 1px;
+	margin-right: 2px;
+	margin-left: 2px;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	background-color: transparentize(#eeeeec, 0.7);
+}
+
+#dash.vertical-46 .dash-item-container {
+	/* spacing */
+	margin: 1px;
+	/*margin-left: 16px;
+	margin-right: 16px;*/
+}
+
+#dash.vertical-46 .app-well-app-running-dot-custom {
+	margin-left: 0px;
+	width: 2px;
+	height: 16px;
+}
+
+#dash.vertical-46 .dash-background {
+	padding: 7px 16px 7px 16px;
+	margin: 0;
+}
+
+#dash.vertical-46-gs3-left .dash-background {
+	border-radius: 0 18px 18px 0;
+	border-left: 0px;
+	padding: 6px 16px 6px 16px;
+}
+
+#dash.vertical-46-gs3-right .dash-background {
+	border-radius: 18px 0 0 18px;
+	border-right: 0px;
+	padding: 6px 16px 6px 16px;
+}
