@@ -14,7 +14,7 @@
       <default>350</default>
     </key>
     <key type="i" name="ws-preview-scale">
-      <default>95</default>
+      <default>100</default>
     </key>
     <key type="i" name="secondary-ws-preview-scale">
       <default>100</default>
@@ -23,13 +23,13 @@
       <default>false</default>
     </key>
     <key type="i" name="dash-position">
-      <default>2</default>
-    </key>
-    <key type="i" name="dash-position-adjust">
       <default>0</default>
     </key>
+    <key type="i" name="dash-position-adjust">
+      <default>-100</default>
+    </key>
     <key type="i" name="show-app-icon-position">
-      <default>1</default>
+      <default>0</default>
     </key>
     <key type="i" name="dash-show-windows-icon">
       <default>1</default>
@@ -41,7 +41,7 @@
       <default>1</default>
     </key>
     <key type="i" name="wst-position-adjust">
-      <default>0</default>
+      <default>-100</default>
     </key>
     <key type="i" name="show-wst-labels">
       <default>3</default>
@@ -80,10 +80,10 @@
       <default>48</default>
     </key>
     <key type="i" name="dash-bg-opacity">
-      <default>85</default>
+      <default>20</default>
     </key>
     <key type="i" name="dash-bg-color">
-      <default>0</default>
+      <default>1</default>
     </key>
     <key type="i" name="dash-bg-radius">
       <default>18</default>
@@ -98,10 +98,10 @@
       <default>false</default>
     </key>
     <key type="b" name="show-ws-switcher-bg">
-      <default>true</default>
+      <default>false</default>
     </key>
     <key type="b" name="show-ws-preview-bg">
-      <default>false</default>
+      <default>true</default>
     </key>
     <key type="i" name="ws-preview-bg-radius">
       <default>30</default>
@@ -110,7 +110,7 @@
       <default>true</default>
     </key>
     <key type="i" name="overview-bg-blur-sigma">
-      <default>0</default>
+      <default>30</default>
     </key>
     <key type="i" name="app-grid-bg-blur-sigma">
       <default>40</default>
@@ -149,7 +149,7 @@
       <default>0</default>
     </key>
     <key type="i" name="startup-state">
-      <default>2</default>
+      <default>0</default>
     </key>
     <key type="i" name="overview-mode">
       <default>0</default>
@@ -281,7 +281,7 @@
       <default>false</default>
     </key>
     <key type="i" name="win-preview-sec-mouse-btn-action">
-      <default>2</default>
+      <default>3</default>
     </key>
     <key type="i" name="win-preview-mid-mouse-btn-action">
       <default>0</default>
@@ -393,14 +393,14 @@
       <default>""</default>
     </key>
     <key type="a{ss}" name="profile-data-2">
-      <default>{'workspaceThumbnailsPosition': '5', 'wsMaxSpacing': '80', 'wsPreviewScale': '100', 'secWsPreviewScale': '100', 'secWsPreviewShift': 'false', 'wsThumbnailsFull': 'false', 'secWsThumbnailsPosition': '2', 'dashPosition': '2', 'dashPositionAdjust': '0', 'wsTmbPositionAdjust': '0', 'showWsTmbLabels': '0', 'showWsTmbLabelsOnHover': 'false', 'closeWsButtonMode': '2', 'secWsTmbPositionAdjust': '0', 'dashMaxIconSize': '64', 'dashShowWindowsIcon': '2', 'dashShowRecentFilesIcon': '2', 'dashShowExtensionsIcon': '2', 'centerDashToWs': 'false', 'showAppsIconPosition': '1', 'wsThumbnailScale': '5', 'wsThumbnailScaleAppGrid': '15', 'secWsThumbnailScale': '5', 'showSearchEntry': 'true', 'centerSearch': 'true', 'centerAppGrid': 'true', 'dashBgOpacity': '20', 'dashBgColor': '1', 'dashBgRadius': '0', 'dashBgGS3Style': 'false', 'runningDotStyle': '1', 'enablePageShortcuts': 'true', 'showWsSwitcherBg': 'false', 'showWsPreviewBg': 'true', 'wsPreviewBgRadius': '30', 'showBgInOverview': 'true', 'overviewBgBrightness': '50', 'searchBgBrightness': '30', 'overviewBgBlurSigma': '50', 'appGridBgBlurSigma': '40', 'smoothBlurTransitions': 'false', 'appGridAnimation': '4', 'searchViewAnimation': '4', 'workspaceAnimation': '1', 'animationSpeedFactor': '100', 'winPreviewIconSize': '1', 'winTitlePosition': '0', 'startupState': '0', 'overviewMode': '0', 'wsSwitcherMode': '0', 'workspaceSwitcherAnimation': '0', 'searchIconSize': '96', 'searchViewScale': '104', 'appGridIconSize': '-1', 'appGridColumns': '0', 'appGridRows': '0', 'appGridFolderIconSize': '-1', 'appGridFolderColumns': '0', 'appGridFolderRows': '0', 'appGridFolderIconGrid': '2', 'appGridContent': '2', 'appGridIncompletePages': 'false', 'appGridOrder': '0', 'appFolderOrder': '0', 'appGridNamesMode': '1', 'appGridActivePreview': 'false', 'appGridFolderCenter': 'true', 'appGridPageWidthScale': '90', 'appGridSpacing': '12', 'searchWindowsOrder': '1', 'searchFuzzy': 'false', 'searchMaxResultsRows': '5', 'dashShowWindowsBeforeActivation': '1', 'dashIconScroll': '1', 'dashIsolateWorkspaces': 'false', 'searchWindowsIconScroll': '1', 'panelVisibility': '0', 'panelPosition': '0', 'windowAttentionMode': '0', 'wsSwPopupHPosition': '50', 'wsSwPopupVPosition': '95', 'wsSwPopupMode': '1', 'wsSwitcherWraparound': 'false', 'wsSwitcherIgnoreLast': 'false', 'favoritesNotify': '1', 'notificationPosition': '1', 'osdPosition': '6', 'hotCornerAction': '1', 'hotCornerPosition': '6', 'hotCornerFullscreen': 'true', 'hotCornerRipples': 'false', 'alwaysActivateSelectedWindow': 'false', 'winPreviewSecBtnAction': '2', 'winPreviewMidBtnAction': '1', 'winPreviewShowCloseButton': 'true', 'windowIconClickAction': '1', 'overlayKeyPrimary': '1', 'overlayKeySecondary': '1', 'overviewEscBehavior': '0', 'newWindowFocusFix': 'false', 'newWindowMonitorFix': '0', 'appGridPerformance': 'true', 'windowThumbnailScale': '20', 'workspaceSwitcherPopupModule': 'true', 'workspaceAnimationModule': 'true', 'workspaceModule': 'true', 'windowManagerModule': 'true', 'windowPreviewModule': 'true', 'windowAttentionHandlerModule': 'true', 'windowThumbnailModule': 'true', 'swipeTrackerModule': 'true', 'searchControllerModule': 'true', 'searchModule': 'true', 'panelModule': 'true', 'overlayKeyModule': 'true', 'osdWindowModule': 'true', 'messageTrayModule': 'true', 'layoutModule': 'true', 'dashModule': 'true', 'appFavoritesModule': 'true', 'appDisplayModule': 'true', 'windowSearchProviderModule': 'true', 'extensionsSearchProviderModule': 'true'}</default>
+      <default>{'workspaceThumbnailsPosition': '5', 'wsMaxSpacing': '80', 'wsPreviewScale': '100', 'secWsPreviewScale': '100', 'secWsPreviewShift': 'false', 'wsThumbnailsFull': 'false', 'secWsThumbnailsPosition': '2', 'dashPosition': '2', 'dashPositionAdjust': '0', 'wsTmbPositionAdjust': '0', 'showWsTmbLabels': '0', 'showWsTmbLabelsOnHover': 'false', 'closeWsButtonMode': '2', 'secWsTmbPositionAdjust': '0', 'dashMaxIconSize': '64', 'dashShowWindowsIcon': '2', 'dashShowRecentFilesIcon': '2', 'dashShowExtensionsIcon': '2', 'centerDashToWs': 'false', 'showAppsIconPosition': '1', 'wsThumbnailScale': '5', 'wsThumbnailScaleAppGrid': '15', 'secWsThumbnailScale': '5', 'showSearchEntry': 'false', 'centerSearch': 'true', 'centerAppGrid': 'true', 'dashBgOpacity': '20', 'dashBgColor': '1', 'dashBgRadius': '0', 'dashBgGS3Style': 'false', 'runningDotStyle': '1', 'enablePageShortcuts': 'true', 'showWsSwitcherBg': 'false', 'showWsPreviewBg': 'true', 'wsPreviewBgRadius': '30', 'showBgInOverview': 'true', 'overviewBgBrightness': '50', 'searchBgBrightness': '30', 'overviewBgBlurSigma': '50', 'appGridBgBlurSigma': '40', 'smoothBlurTransitions': 'false', 'appGridAnimation': '4', 'searchViewAnimation': '4', 'workspaceAnimation': '1', 'animationSpeedFactor': '100', 'winPreviewIconSize': '1', 'winTitlePosition': '0', 'startupState': '0', 'overviewMode': '0', 'wsSwitcherMode': '0', 'workspaceSwitcherAnimation': '0', 'searchIconSize': '96', 'searchViewScale': '104', 'appGridIconSize': '-1', 'appGridColumns': '0', 'appGridRows': '0', 'appGridFolderIconSize': '-1', 'appGridFolderColumns': '0', 'appGridFolderRows': '0', 'appGridFolderIconGrid': '2', 'appGridContent': '2', 'appGridIncompletePages': 'false', 'appGridOrder': '0', 'appFolderOrder': '0', 'appGridNamesMode': '1', 'appGridActivePreview': 'false', 'appGridFolderCenter': 'true', 'appGridPageWidthScale': '90', 'appGridSpacing': '12', 'searchWindowsOrder': '1', 'searchFuzzy': 'false', 'searchMaxResultsRows': '5', 'dashShowWindowsBeforeActivation': '1', 'dashIconScroll': '1', 'dashIsolateWorkspaces': 'false', 'searchWindowsIconScroll': '1', 'panelVisibility': '0', 'panelPosition': '0', 'windowAttentionMode': '0', 'wsSwPopupHPosition': '50', 'wsSwPopupVPosition': '95', 'wsSwPopupMode': '1', 'wsSwitcherWraparound': 'false', 'wsSwitcherIgnoreLast': 'false', 'favoritesNotify': '1', 'notificationPosition': '1', 'osdPosition': '6', 'hotCornerAction': '1', 'hotCornerPosition': '6', 'hotCornerFullscreen': 'true', 'hotCornerRipples': 'false', 'alwaysActivateSelectedWindow': 'false', 'winPreviewSecBtnAction': '2', 'winPreviewMidBtnAction': '1', 'winPreviewShowCloseButton': 'true', 'windowIconClickAction': '1', 'overlayKeyPrimary': '1', 'overlayKeySecondary': '1', 'overviewEscBehavior': '0', 'newWindowFocusFix': 'false', 'newWindowMonitorFix': '0', 'appGridPerformance': 'true', 'windowThumbnailScale': '20', 'workspaceSwitcherPopupModule': 'true', 'workspaceAnimationModule': 'true', 'workspaceModule': 'true', 'windowManagerModule': 'true', 'windowPreviewModule': 'true', 'windowAttentionHandlerModule': 'true', 'windowThumbnailModule': 'true', 'swipeTrackerModule': 'true', 'searchControllerModule': 'true', 'searchModule': 'true', 'panelModule': 'true', 'overlayKeyModule': 'true', 'osdWindowModule': 'true', 'messageTrayModule': 'true', 'layoutModule': 'true', 'dashModule': 'true', 'appFavoritesModule': 'true', 'appDisplayModule': 'true', 'windowSearchProviderModule': 'true', 'extensionsSearchProviderModule': 'true'}</default>
     </key>
 
     <key type="s" name="profile-name-3">
       <default>""</default>
     </key>
     <key type="a{ss}" name="profile-data-3">
-      <default>{'workspaceThumbnailsPosition': '0', 'wsMaxSpacing': '350', 'wsPreviewScale': '95', 'secWsPreviewScale': '100', 'secWsPreviewShift': 'false', 'wsThumbnailsFull': 'false', 'secWsThumbnailsPosition': '2', 'dashPosition': '0', 'dashPositionAdjust': '-100', 'wsTmbPositionAdjust': '-100', 'showWsTmbLabels': '3', 'showWsTmbLabelsOnHover': 'false', 'closeWsButtonMode': '2', 'secWsTmbPositionAdjust': '0', 'dashMaxIconSize': '48', 'dashShowWindowsIcon': '1', 'dashShowRecentFilesIcon': '1', 'dashShowExtensionsIcon': '1', 'centerDashToWs': 'false', 'showAppsIconPosition': '0', 'wsThumbnailScale': '13', 'wsThumbnailScaleAppGrid': '13', 'secWsThumbnailScale': '13', 'showSearchEntry': 'false', 'centerSearch': 'true', 'centerAppGrid': 'false', 'dashBgOpacity': '20', 'dashBgColor': '1', 'dashBgRadius': '0', 'dashBgGS3Style': 'false', 'runningDotStyle': '1', 'enablePageShortcuts': 'true', 'showWsSwitcherBg': 'false', 'showWsPreviewBg': 'true', 'wsPreviewBgRadius': '30', 'showBgInOverview': 'true', 'overviewBgBrightness': '60', 'searchBgBrightness': '30', 'overviewBgBlurSigma': '30', 'appGridBgBlurSigma': '80', 'smoothBlurTransitions': 'false', 'appGridAnimation': '4', 'searchViewAnimation': '4', 'workspaceAnimation': '1', 'animationSpeedFactor': '100', 'winPreviewIconSize': '1', 'winTitlePosition': '0', 'startupState': '2', 'overviewMode': '1', 'wsSwitcherMode': '0', 'workspaceSwitcherAnimation': '1', 'searchIconSize': '96', 'searchViewScale': '104', 'appGridIconSize': '-1', 'appGridColumns': '0', 'appGridRows': '0', 'appGridFolderIconSize': '-1', 'appGridFolderColumns': '0', 'appGridFolderRows': '0', 'appGridFolderIconGrid': '3', 'appGridContent': '0', 'appGridIncompletePages': 'false', 'appGridOrder': '0', 'appFolderOrder': '0', 'appGridNamesMode': '1', 'appGridActivePreview': 'true', 'appGridFolderCenter': 'false', 'appGridPageWidthScale': '90', 'appGridSpacing': '12', 'searchWindowsOrder': '1', 'searchFuzzy': 'false', 'searchMaxResultsRows': '5', 'dashShowWindowsBeforeActivation': '1', 'dashIconScroll': '1', 'dashIsolateWorkspaces': 'false', 'searchWindowsIconScroll': '1', 'panelVisibility': '0', 'panelPosition': '0', 'windowAttentionMode': '0', 'wsSwPopupHPosition': '50', 'wsSwPopupVPosition': '95', 'wsSwPopupMode': '1', 'wsSwitcherWraparound': 'false', 'wsSwitcherIgnoreLast': 'false', 'favoritesNotify': '0', 'notificationPosition': '2', 'osdPosition': '6', 'hotCornerAction': '1', 'hotCornerPosition': '1', 'hotCornerFullscreen': 'true', 'hotCornerRipples': 'true', 'alwaysActivateSelectedWindow': 'false', 'winPreviewSecBtnAction': '2', 'winPreviewMidBtnAction': '1', 'winPreviewShowCloseButton': 'true', 'windowIconClickAction': '1', 'overlayKeyPrimary': '1', 'overlayKeySecondary': '1', 'overviewEscBehavior': '0', 'newWindowFocusFix': 'false', 'newWindowMonitorFix': '0', 'appGridPerformance': 'true', 'windowThumbnailScale': '20', 'workspaceSwitcherPopupModule': 'true', 'workspaceAnimationModule': 'true', 'workspaceModule': 'true', 'windowManagerModule': 'true', 'windowPreviewModule': 'true', 'windowAttentionHandlerModule': 'true', 'windowThumbnailModule': 'true', 'swipeTrackerModule': 'true', 'searchControllerModule': 'true', 'searchModule': 'true', 'panelModule': 'true', 'overlayKeyModule': 'true', 'osdWindowModule': 'true', 'messageTrayModule': 'true', 'layoutModule': 'true', 'dashModule': 'true', 'appFavoritesModule': 'true', 'appDisplayModule': 'true', 'windowSearchProviderModule': 'true', 'extensionsSearchProviderModule': 'true'}</default>
+      <default>{'workspaceThumbnailsPosition': '0', 'wsMaxSpacing': '350', 'wsPreviewScale': '95', 'secWsPreviewScale': '100', 'secWsPreviewShift': 'false', 'wsThumbnailsFull': 'false', 'secWsThumbnailsPosition': '2', 'dashPosition': '0', 'dashPositionAdjust': '-100', 'wsTmbPositionAdjust': '-100', 'showWsTmbLabels': '3', 'showWsTmbLabelsOnHover': 'false', 'closeWsButtonMode': '2', 'secWsTmbPositionAdjust': '0', 'dashMaxIconSize': '48', 'dashShowWindowsIcon': '1', 'dashShowRecentFilesIcon': '1', 'dashShowExtensionsIcon': '1', 'centerDashToWs': 'false', 'showAppsIconPosition': '0', 'wsThumbnailScale': '13', 'wsThumbnailScaleAppGrid': '13', 'secWsThumbnailScale': '13', 'showSearchEntry': 'false', 'centerSearch': 'true', 'centerAppGrid': 'false', 'dashBgOpacity': '15', 'dashBgColor': '1', 'dashBgRadius': '0', 'dashBgGS3Style': 'false', 'runningDotStyle': '1', 'enablePageShortcuts': 'true', 'showWsSwitcherBg': 'false', 'showWsPreviewBg': 'true', 'wsPreviewBgRadius': '30', 'showBgInOverview': 'true', 'overviewBgBrightness': '60', 'searchBgBrightness': '30', 'overviewBgBlurSigma': '30', 'appGridBgBlurSigma': '80', 'smoothBlurTransitions': 'false', 'appGridAnimation': '4', 'searchViewAnimation': '4', 'workspaceAnimation': '1', 'animationSpeedFactor': '100', 'winPreviewIconSize': '1', 'winTitlePosition': '0', 'startupState': '2', 'overviewMode': '1', 'wsSwitcherMode': '0', 'workspaceSwitcherAnimation': '1', 'searchIconSize': '96', 'searchViewScale': '104', 'appGridIconSize': '-1', 'appGridColumns': '0', 'appGridRows': '0', 'appGridFolderIconSize': '-1', 'appGridFolderColumns': '0', 'appGridFolderRows': '0', 'appGridFolderIconGrid': '3', 'appGridContent': '0', 'appGridIncompletePages': 'false', 'appGridOrder': '0', 'appFolderOrder': '0', 'appGridNamesMode': '1', 'appGridActivePreview': 'true', 'appGridFolderCenter': 'false', 'appGridPageWidthScale': '90', 'appGridSpacing': '12', 'searchWindowsOrder': '1', 'searchFuzzy': 'false', 'searchMaxResultsRows': '5', 'dashShowWindowsBeforeActivation': '1', 'dashIconScroll': '1', 'dashIsolateWorkspaces': 'false', 'searchWindowsIconScroll': '1', 'panelVisibility': '0', 'panelPosition': '0', 'windowAttentionMode': '0', 'wsSwPopupHPosition': '50', 'wsSwPopupVPosition': '95', 'wsSwPopupMode': '1', 'wsSwitcherWraparound': 'false', 'wsSwitcherIgnoreLast': 'false', 'favoritesNotify': '0', 'notificationPosition': '2', 'osdPosition': '6', 'hotCornerAction': '1', 'hotCornerPosition': '1', 'hotCornerFullscreen': 'true', 'hotCornerRipples': 'true', 'alwaysActivateSelectedWindow': 'false', 'winPreviewSecBtnAction': '2', 'winPreviewMidBtnAction': '1', 'winPreviewShowCloseButton': 'true', 'windowIconClickAction': '1', 'overlayKeyPrimary': '1', 'overlayKeySecondary': '1', 'overviewEscBehavior': '0', 'newWindowFocusFix': 'false', 'newWindowMonitorFix': '0', 'appGridPerformance': 'true', 'windowThumbnailScale': '20', 'workspaceSwitcherPopupModule': 'true', 'workspaceAnimationModule': 'true', 'workspaceModule': 'true', 'windowManagerModule': 'true', 'windowPreviewModule': 'true', 'windowAttentionHandlerModule': 'true', 'windowThumbnailModule': 'true', 'swipeTrackerModule': 'true', 'searchControllerModule': 'true', 'searchModule': 'true', 'panelModule': 'true', 'overlayKeyModule': 'true', 'osdWindowModule': 'true', 'messageTrayModule': 'true', 'layoutModule': 'true', 'dashModule': 'true', 'appFavoritesModule': 'true', 'appDisplayModule': 'true', 'windowSearchProviderModule': 'true', 'extensionsSearchProviderModule': 'true'}</default>
     </key>
 
     <key type="s" name="profile-name-4">
