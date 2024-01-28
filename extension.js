@@ -73,9 +73,10 @@ export default class VShell extends Extension.Extension {
         Me.gettext = this.gettext.bind(this);
         _ = Me.gettext;
 
-        Me.WSP_PREFIX = WindowSearchProviderModule._PREFIX;
-        Me.RFSP_PREFIX = RecentFilesSearchProviderModule._PREFIX;
-        Me.ESP_PREFIX = ExtensionsSearchProviderModule._PREFIX;
+        // search prefixes for supported search providers
+        Me.WSP_PREFIX = 'wq//';
+        Me.RFSP_PREFIX = 'fq//';
+        Me.ESP_PREFIX = 'eq//';
 
         Me.opt = new Me.Settings.Options(Me);
 
