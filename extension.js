@@ -3,7 +3,7 @@
  * extension.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022 - 2023
+ * @copyright  2022 - 2024
  * @license    GPL-3.0
  *
  */
@@ -47,9 +47,10 @@ class Extension {
         Me.Modules = this._importModules();
         Me.moduleList = this._getModuleList();
 
-        Me.WSP_PREFIX = Me.Modules.windowSearchProviderModule._PREFIX;
-        Me.RFSP_PREFIX = Me.Modules.recentFilesSearchProviderModule._PREFIX;
-        Me.ESP_PREFIX = Me.Modules.extensionsSearchProviderModule._PREFIX;
+        // search prefixes for supported search providers
+        Me.WSP_PREFIX = 'wq//';
+        Me.RFSP_PREFIX = 'fq//';
+        Me.ESP_PREFIX = 'eq//';
 
         Me.opt = new Me.Settings.Options(Me);
         _ = Me.gettext;
@@ -112,6 +113,7 @@ class Extension {
 
         this._activateVShell();
         Me.extensionsLoadIncomplete = false;
+
         console.debug(`${Me.metadata.name}: enabled`);
     }
 
@@ -121,11 +123,7 @@ class Extension {
         this._removeVShell();
         this._disposeModules();
 
-        // If Dash to Dock is enabled, disabling V-Shell can end in broken overview
-        Main.overview.hide();
-
         console.debug(`${Me.metadata.name}: disabled`);
-
         this._cleanGlobals();
     }
 
@@ -177,9 +175,19 @@ class Extension {
 
         // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
         this._setInitialWsIndex();
+
+        // following properties may be reduced if extensions are rebased while the overview is open
+        Main.overview._overview.controls._thumbnailsBox.remove_all_transitions();
+        Main.overview._overview.controls._thumbnailsBox.scale_x = 1;
+        Main.overview._overview.controls._thumbnailsBox.scale_y = 1;
+        Main.overview._overview.controls._thumbnailsBox.opacity = 255;
     }
 
     _removeVShell() {
+        // Rebasing V-Shell when overview is open causes problems
+        // also if Dash to Dock is enabled, disabling V-Shell can result in a broken overview
+        Main.overview.hide();
+
         this._enabled = false;
 
         const reset = true;
