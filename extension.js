@@ -50,9 +50,7 @@ import { WindowPreviewModule } from './lib/windowPreview.js';
 import { WorkspaceAnimationModule } from './lib/workspaceAnimation.js';
 import { WorkspaceModule } from './lib/workspace.js';
 import { WorkspaceSwitcherPopupModule } from './lib/workspaceSwitcherPopup.js';
-import { WindowSearchProviderModule } from './lib/windowSearchProvider.js';
 import { RecentFilesSearchProviderModule } from './lib/recentFilesSearchProvider.js';
-import { ExtensionsSearchProviderModule } from './lib/extensionsSearchProvider.js';
 import { WinTmbModule } from './lib/winTmb.js';
 
 let Me;
@@ -109,11 +107,7 @@ export default class VShell extends Extension.Extension {
         this.removeVShell();
         this._disposeModules();
 
-        // If Dash to Dock is enabled, disabling V-Shell can end in broken overview
-        Main.overview.hide();
-
         console.debug(`${Me.metadata.name}: disabled`);
-
         this._cleanGlobals();
     }
 
@@ -145,9 +139,7 @@ export default class VShell extends Extension.Extension {
         Me.Modules.workspaceSwitcherPopupModule = new WorkspaceSwitcherPopupModule(Me);
         Me.Modules.workspaceThumbnailModule = new WorkspaceThumbnailModule(Me);
         Me.Modules.workspacesViewModule = new WorkspacesViewModule(Me);
-        Me.Modules.windowSearchProviderModule = new WindowSearchProviderModule(Me);
         Me.Modules.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Me);
-        Me.Modules.extensionsSearchProviderModule = new ExtensionsSearchProviderModule(Me);
         Me.Modules.winTmbModule = new WinTmbModule(Me);
     }
 
@@ -211,6 +203,7 @@ export default class VShell extends Extension.Extension {
 
     removeVShell() {
         // Rebasing V-Shell when overview is open causes problems
+        // also if Dash to Dock is enabled, disabling V-Shell can result in a broken overview
         Main.overview.hide();
 
         this._enabled = false;
@@ -436,9 +429,7 @@ export default class VShell extends Extension.Extension {
 
         Me.Modules.searchModule.update(reset);
 
-        Me.Modules.windowSearchProviderModule.update(reset);
         Me.Modules.recentFilesSearchProviderModule.update(reset);
-        Me.Modules.extensionsSearchProviderModule.update(reset);
 
         // don't rebuild app grid on any screen lock
         // even if the extension includes unlock-screen session mode
