@@ -89,10 +89,8 @@ class Extension {
             workspaceSwitcherPopupModule:       Me.imports.lib.workspaceSwitcherPopup.WorkspaceSwitcherPopupModule,
             workspaceThumbnailModule:           Me.imports.lib.workspaceThumbnail.WorkspaceThumbnailModule,
             workspacesViewModule:               Me.imports.lib.workspacesView.WorkspacesViewModule,
-            windowSearchProviderModule:         Me.imports.lib.windowSearchProvider.WindowSearchProviderModule,
             winTmbModule:                       Me.imports.lib.winTmb.WinTmbModule,
             recentFilesSearchProviderModule:    Me.imports.lib.recentFilesSearchProvider.RecentFilesSearchProviderModule,
-            extensionsSearchProviderModule:     Me.imports.lib.extensionsSearchProvider.ExtensionsSearchProviderModule,
         };
     }
 
@@ -411,9 +409,7 @@ class Extension {
 
         Me.Modules.searchModule.update(reset);
 
-        Me.Modules.windowSearchProviderModule.update(reset);
         Me.Modules.recentFilesSearchProviderModule.update(reset);
-        Me.Modules.extensionsSearchProviderModule.update(reset);
 
         // don't rebuild app grid on any screen lock
         // even if the extension includes unlock-screen session mode

@@ -156,7 +156,6 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Dash Position'),
             null,
-            // // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'dashPosition',
             [
@@ -205,7 +204,6 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Show Apps Icon Position'),
             _('Sets the position of the "Show Applications" icon in the Dash'),
-            // // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'showAppsIconPosition',
             [
@@ -220,8 +218,7 @@ function _getLayoutOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Open Windows Icon Position'),
-            _('Allows to add "Search Open Windows" icon into Dash (if window search provider enabled on the Modules tab) so you can directly toggle window search provider results. You can also use the secondary mouse button click on the Show Apps Icon, or the Space hotkey'),
-            // itemFactory.newComboBox(),
+            _('Allows to add "Search Open Windows" icon into Dash (if "WSP (Window Search Provider)" extension is enabled) so you can directly toggle window search provider results. You can also use the Space hotkey'),
             itemFactory.newDropDown(),
             'dashShowWindowsIcon',
             [
@@ -236,8 +233,7 @@ function _getLayoutOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Recent Files Icon Position'),
-            _('Allows to add "Search Recent Files" icon into Dash (if recent files search provider enabled on the Modules tab) so you can directly toggle recent files search provider results. You can also use Ctrl + Space hotkey'),
-            // itemFactory.newComboBox(),
+            _('Allows to add "Search Recent Files" icon into Dash (if Recent Files Search Provider enabled on the Modules tab) so you can directly toggle recent files search provider results. You can also use Ctrl + Space hotkey'),
             itemFactory.newDropDown(),
             'dashShowRecentFilesIcon',
             [
@@ -252,8 +248,7 @@ function _getLayoutOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Extensions Icon Position'),
-            _('Allows to add "Search Extensions" icon into Dash (if extensions search provider enabled on the Module tab) so you can directly toggle extensions search provider results. You can also use the Ctrl + Shift + Space hotkey'),
-            // itemFactory.newComboBox(),
+            _('Allows to add "Search Extensions" icon into Dash (if "ESP (Extensions Search Provider)" extension is enabled) so you can directly toggle extensions search provider results. You can also use the Ctrl + Shift + Space hotkey'),
             itemFactory.newDropDown(),
             'dashShowExtensionsIcon',
             [
@@ -276,7 +271,6 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Thumbnails Position / Workspaces Orientation'),
             _('Position of the workspace thumbnails on the screen also sets orientation of the workspaces to vertical or horizontal. You have two options to disable workspace thumbnails, one sets workspaces to vertical orientation, the second one to horizontal.'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'workspaceThumbnailsPosition',
             // this mess is just because of backward compatibility
@@ -486,7 +480,6 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Main Panel Position'),
             _('Allows to place the main panel at the bottom of the primary display'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'panelPosition',
             [
@@ -501,7 +494,6 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Main Panel Visibility'),
             _('Allows to hide main panel when not needed'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'panelVisibility',
             [
@@ -573,7 +565,6 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Notification Banner Position'),
             _('Choose where the notification banners appear on the screen'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'notificationPosition',
             [
@@ -592,7 +583,6 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('OSD Popup Position'),
             _('Choose where the OSD pop-ups (like sound volume level) appear on the screen'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'osdPosition',
             [
@@ -619,7 +609,6 @@ function _getLayoutOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Workspace Thumbnails Position'),
             _('Allows to place workspace thumbnails of secondary monitors on the opposite side than on the primary monitor'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'secWsThumbnailsPosition',
             [
@@ -715,7 +704,6 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Dash Max Icon Size'),
             _('Maximum size of Dash icons in pixels'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'dashMaxIconSize',
             [
@@ -735,7 +723,6 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Dash Background Style'),
             _('Allows you to change the background color of the dash to match the search results an app folders'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'dashBgColor',
             [
@@ -799,7 +786,6 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Running App Indicator'),
             _('Allows you to change style of the running app indicator under the app icon'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'runningDotStyle',
             [
@@ -820,7 +806,6 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Show Workspace Thumbnail Labels'),
             _('Each workspace thumbnail can show label with its index and name (if defined in the system settings) or name/title of its most recently used app/window'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'showWsTmbLabels',
             [
@@ -861,7 +846,6 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Window Preview App Icon Size'),
             null,
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'winPreviewIconSize',
             [
@@ -879,7 +863,6 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Window Title Position / Visibility'),
             _('Sets the position of the window title that is displayed when the mouse hovers over the window or can always be visible'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'winTitlePosition',
             [
@@ -946,7 +929,6 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Icon Size'),
             _('Allows to set a fixed app grid icon size and bypass the default adaptive algorithm'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'appGridIconSize',
             [
@@ -974,7 +956,6 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Folder Icon Size'),
             _('Allows to set a fixed icon size and bypass the default adaptive algorithm in the open folder dialog'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'appGridFolderIconSize',
             [
@@ -1105,7 +1086,6 @@ function _getAppearanceOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Search Icon Size'),
             _('Size of results provided by the App Search Provider - smaller size allows to fit more results'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'searchIconSize',
             [
@@ -1279,7 +1259,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Overview Mode'),
             _('The Expose Windows on Hover mode does not expose the workspace preview windows until the mouse pointer enters any window\nThe Static Workspace mode keeps the workspace static when you activate the overview, it only shows Dash, workspace thumbnails and search entry over the workspace and only clicking on an active workspace thumbnail activates the default overview'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'overviewMode',
             [
@@ -1294,7 +1273,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Startup State'),
             _('Allows to change the state in which GNOME Shell starts a session'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'startupState',
             [
@@ -1309,7 +1287,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Escape Key Behavior'),
             _('Allows you to close the overview with a single press of the Escape key, even from the application grid or from search, if the search entry field does not have focus'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'overviewEscBehavior',
             [
@@ -1329,8 +1306,7 @@ function _getBehaviorOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Single-Press Action'),
-            _('Disable or change behavior when you press and release the Super key. The "Search Windows" options requires the WindowSearchProvider module to be activated'),
-            // itemFactory.newComboBox(),
+            _('Disable or change behavior when you press and release the Super key. The "Search Windows" options requires the "WSP (Window Search Provider)" extension installed and enabled. Link is available on the Modules tab in Settings'),
             itemFactory.newDropDown(),
             'overlayKeyPrimary',
             [
@@ -1350,8 +1326,7 @@ function _getBehaviorOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Double-Press Action'),
-            _('Disable or change behavior when you double-press the Super key. The "Search Windows" option requires the WindowSearchProvider module to be activated. The "Static WS Overview - Expose Windows" option allows you to switch to default Activities Overview window picker view if you set static workspace (preview) for the single press/release Super key action'),
-            // itemFactory.newComboBox(),
+            _('Disable or change behavior when you double-press the Super key. The "Search Windows" option requires the "WSP (Window Search Provider)" extension installed and enabled. The "Static WS Overview - Expose Windows" option allows you to switch to default Activities Overview window picker view if you set static workspace (preview) for the single press/release Super key action'),
             itemFactory.newDropDown(),
             'overlayKeySecondary',
             [
@@ -1375,7 +1350,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Hot Corner Action'),
             _('Disable or change behavior of the hot corner. Holding down the Ctrl key while hitting the hot corner switches between Overview/Applications actions'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'hotCornerAction',
             [
@@ -1395,7 +1369,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Hot Corner Position'),
             _('Choose which corner of your monitors will be active. If you choose "Follow Dash" option, the corner will be placed near the left or top edge of the Dash. The last option extends the hot corner trigger to cover the entire ege of the monitor where Dash is located'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'hotCornerPosition',
             [
@@ -1454,7 +1427,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Icon - Click Behavior'),
             _('Choose your preferred behavior when clicking on an app icon. The "Prefer Current Workspace" option opens a new app window if not present in the current workspace. The "Open New Window" option also switches behavior of the middle click to "Activate" since its default behavior is to open a new window'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'dashShowWindowsBeforeActivation',
             [
@@ -1471,7 +1443,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Icon - Scroll Action'),
             _('Choose the behavior when scrolling over an app icon. The window cycler works with a list of windows sorted by the "Most Recently Used" and grouped by workspaces. Scrolling up cycles through previously used windows on the same workspace and then switches to another workspace, if any'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'dashIconScroll',
             [
@@ -1487,7 +1458,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Search Windows Icon - Scroll Action'),
             _('Choose the behavior when scrolling over the Search Windows icon. The window cycler works with a list of windows sorted by "Most Recently Used" of the current workspace or all workspaces. Scrolling up cycles through previously used windows on the same workspace, or all windows regardless workspace. This option is mainly useful for the static workspace overview mode.'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'searchWindowsIconScroll',
             [
@@ -1509,7 +1479,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Close Workspace Button'),
             _('The Close Workspace button appears on the workspace thumbnail when you hover over it and allows you to close all windows on the workspace. You can choose a "safety lock" to prevent accidental use'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'closeWsButtonMode',
             [
@@ -1531,7 +1500,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Secondary Button Click Action'),
             _('Allows you to add a secondary mouse click action to the window preview'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'winPreviewSecBtnAction',
             [
@@ -1548,7 +1516,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Middle Button Click Action'),
             _('Allows you to add a middle mouse click action to the window preview'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'winPreviewMidBtnAction',
             [
@@ -1565,7 +1532,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Icon Click Action'),
             _('Select the action to take when the application icon on the window preview is clicked'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'windowIconClickAction',
             [
@@ -1598,7 +1564,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Grid Order'),
             _('Choose sorting method for the app grid. Note that sorting by usage ignores folders'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'appGridOrder',
             [
@@ -1615,7 +1580,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Folder Order'),
             _('Choose sorting method for app folders'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'appFolderOrder',
             [
@@ -1631,7 +1595,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Grid Content'),
             _('The default Shell removes favorite apps, this option allows to duplicate them in the grid or remove also running applications. Option "Favorites and Running First" only works with the Alphabet and Usage sorting'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'appGridContent',
             [
@@ -1682,7 +1645,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Labels Behavior'),
             _('Choose how and when to display app names'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'appGridNamesMode',
             [
@@ -1719,38 +1681,6 @@ function _getBehaviorOptionList(itemFactory) {
         )
     );
 
-    /* optionList.push(
-        itemFactory.getRowWidget(
-            _('Window Search Provider'),
-        )
-    );*/
-
-    /* optionList.push(
-        itemFactory.getRowWidget(
-            _('Enable Window Search Provider'),
-            _('Activates the window search provider that adds open windows to the search results. You can search app names and window titles. You can also use "wq//" prefix (also by pressing the Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
-            itemFactory.newSwitch(),
-            'searchWindowsEnable'
-        )
-    );*/
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Window Search Provider - Sorting'),
-            _('Choose the window sorting method'),
-            // itemFactory.newComboBox(),
-            itemFactory.newDropDown(),
-            'searchWindowsOrder',
-            [
-                [_('Most Recently Used (MRU)'), 0],
-                [_('MRU - Current Workspace First'), 1],
-                [_('MRU - By Workspaces'), 2],
-                [_('Stable Sequence - By Workspaces'), 3],
-            ],
-            'windowSearchProviderModule'
-        )
-    );
-
     optionList.push(
         itemFactory.getRowWidget(
             _('Enable Fuzzy Match'),
@@ -1759,16 +1689,6 @@ function _getBehaviorOptionList(itemFactory) {
             'searchFuzzy'
         )
     );
-
-    /* const wspCommandSwitch = itemFactory.newSwitch();
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Enable Commands in Search Entry'),
-            _('You can use following commands separated by the space at the end of entered pattern:\n/x!   \t\t\t- close selected window\n/xa! \t\t\t- close all found windows\n/m[number] \t\t- (e.g. /m6) move selected window to workspace with given index\n/ma[number] \t- move all found windows to workspace with given index'),
-            wspCommandSwitch,
-            'searchWindowsCommands'
-        )
-    );*/
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -1804,7 +1724,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('App Grid Animation'),
             _('When entering the App Grid view, the app grid animates from the edge of the screen. You can choose the direction, keep the Default (direction will be selected automatically) or disable the animation if you don\'t like it'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'appGridAnimation',
             [
@@ -1822,7 +1741,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Search View Animation'),
             _('When search is activated the search view with search results can animate from the edge of the screen. You can choose the direction, keep the Default (currently Bottom to Top) or disable the animation if you don\'t like it.'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'searchViewAnimation',
             [
@@ -1841,7 +1759,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Workspace Preview Animation'),
             _('When entering / leaving the App Grid / Search view, the workspace preview can animate to/from workspace thumbnail.'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'workspaceAnimation',
             [
@@ -1880,7 +1797,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Workspace Switcher Animation'),
             _('Allows you to disable movement of the desktop background during workspace switcher animation outside of the overview. The Static Background mode also keeps Conky and desktop icons on their place during switching.'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'workspaceSwitcherAnimation',
             [
@@ -1895,7 +1811,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Workspace Switcher Mode (Isolate Monitors)'),
             _('Note that this is a workaround, not full-fledged feature. GNOME Shell does not support separate workspaces for each monitor, so V-Shell switches workspaces only on the primary monitor and moves windows across workspaces on secondary monitors in order to simulate independent behavior. The current monitor is determined by the position of the mouse pointer'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'wsSwitcherMode',
             [
@@ -1910,7 +1825,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Workspace Switcher Popup Mode'),
             _('This popup shows up when you switch workspace using a keyboard shortcut or gesture outside of the overview. You can to disable the popup at all, or show it on the current monitor (the one with mouse pointer) instead of the primary.'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'wsSwPopupMode',
             [
@@ -1933,7 +1847,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Window Attention Handler'),
             _('When a window requires attention (often a new window), GNOME Shell shows you a notification about it. You can disable popups of these messages (notification will be pushed into the message tray silently) or focus the source window immediately instead'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'windowAttentionMode',
             [
@@ -1949,7 +1862,6 @@ function _getBehaviorOptionList(itemFactory) {
         itemFactory.getRowWidget(
             _('Favorites'),
             _('Disable pin/unpin app notifications'),
-            // itemFactory.newComboBox(),
             itemFactory.newDropDown(),
             'favoritesNotify',
             [
@@ -1973,30 +1885,30 @@ function _getModulesOptionList(itemFactory) {
         )
     );
 
+    const wspLink = itemFactory.newLinkButton('https://github.com/G-dH/windows-search-provider?tab=readme-ov-file#wsp-windows-search-provider');
     optionList.push(
         itemFactory.getRowWidget(
-            _('WindowSearchProvider'),
-            _('Activates the window search provider that adds open windows to the search results. You can search app names and window titles. You can also use "wq//" prefix (also by pressing the Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
-            itemFactory.newSwitch(),
-            'windowSearchProviderModule'
+            _('Windows Search Provider - Moved from V-Shell to the standalone "WSP" extension'),
+            _('NOTE: This module has been released as a standalone extension with new features, click to learn more. Related V-Shell options are still available if you install the WSP extension.\n\nWSP adds adds open windows to the search results. You can search app names and window titles. You can also use "wq//" or custom prefix (also by pressing the Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
+            wspLink
+        )
+    );
+
+    const espLink = itemFactory.newLinkButton('https://github.com/G-dH/extensions-search-provider?tab=readme-ov-file#esp-extensions-search-provider');
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Extensions Search Provider - Moved from V-Shell to the standalone "ESP" extension'),
+            _('NOTE: This module has been released as a standalone extension with new features, click to learn more. Related V-Shell options are still available if you install the ESP extension.\n\nESP adds extensions to the search results. You can also use "eq//" or custom prefix (also by pressing the Ctrl + Shift + Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
+            espLink
         )
     );
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('RecentFilesSearchProvider'),
+            _('Recent Files Search Provider'),
             _('Activates the recent files search provider that can be triggered by a dash icon, Ctrl + Space hotkey or by typing "fq//" prefix in the search entry field. This option needs File History option enabled in the GNOME Privacy settings'),
             itemFactory.newSwitch(),
             'recentFilesSearchProviderModule'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('ExtensionsSearchProvider'),
-            _('Activates the extensions search provider that adds extensions to the search results. You can also use "eq//" prefix (also by pressing the Ctrl + Shift + Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
-            itemFactory.newSwitch(),
-            'extensionsSearchProviderModule'
         )
     );
 
