@@ -1,4 +1,22 @@
 ## Changelog:
+### v46.0 for GNOME 45.2+, v44.12 for GNOME 42-44 (not released yet)
+**Removed**
+- Open Windows and Extensions search providers have been removed from the V-Shell and released as a standalone WSP and ESP extensions. Respective module switches has been replaced in Settings by the links to these new extensions
+
+**Added**
+- Support for GNOME 46
+- Option **Fix New Window Not On Current Monitor** tries to work around that issue. However, success rate is not 100%
+
+**Changed**
+- Shortcuts in the overview - `Ctrl+Space` - Extensions Search Provider, `Shift+Space` - Recent Files Search Provider, `Ctrl+Shift+Space` - V-Shell Settings
+- Bottom OSD position moved so it's not overlapping dock, if used
+- Active folder icons hover animation from scale, which makes icons blurry, to the move 3px up
+
+
+**Fixed:**
+- Running app indicators too close to the app name on the app grid
+- OverlayKey module deactivates itself even if its configuration isn't consistent with the default GNOME Shell behavior
+
 ### v45.3 for GNOME 45.2+, v44.11 for GNOME 42-44 (2023-12-20)
 **Added:**
 - Option *Workspace Switcher Mode (Isolate Monitors)* can simulate independent switching of workspaces on any monitor
@@ -13,7 +31,7 @@
 - Vertically oriented dash items should be selectable even with the mouse pointer at the edge of the screen
 
 
-### v45.2 for GNOME 45.2+, v44.10 for GNOME 42-44 (2023-12-03)
+### v45.2 for GNOME 45.2+, v44.10 for GNOME 42-44 (2023-12-02)
 **Added:**
 - *Dash* option *Isolate Workspaces* on *Behavior* tab
 - *Brightness for Search View* option allows adjusting background wallpaper brightness in overview search view
