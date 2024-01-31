@@ -3,7 +3,8 @@
   "uuid": "vertical-workspaces@G-dH.github.com",
   "description": "Customize your GNOME Shell UX to suit your workflow, whether you like horizontally or vertically stacked workspaces.",
   "shell-version": [
-    "45"
+    "45",
+    "46"
   ],
   "session-modes": [
     "user",
@@ -15,7 +16,7 @@
   },
   "gettext-domain": "vertical-workspaces",
   "settings-schema": "org.gnome.shell.extensions.vertical-workspaces",
-  "version-name": "45.3",
+  "version-name": "46.0",
   "version": 999
 }
 
