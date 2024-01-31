@@ -98,11 +98,11 @@
 }
 
 .app-well-app-running-dot {
-	margin-bottom: 12px;
+	margin-bottom: 8px;
 }
 
 .app-well-app-running-dot-custom {
-	margin-bottom: 12px;
+	margin-bottom: 10px;
 	width: 16px;
 	height: 2px;
 }
@@ -203,6 +203,8 @@
 	background-color: rgb(40, 40, 40);
 }
 
+.vfade { -st-vfade-offset: 34px; }
+.hfade { -st-hfade-offset: 34px; }
 .search-section-content {
 	background-color: rgba(200, 200, 200, 0.1);
 }
