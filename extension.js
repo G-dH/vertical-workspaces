@@ -603,7 +603,6 @@ class Extension {
                     break;
                 }
             }
-            return;
         }
 
         Main.overview._overview.controls._setBackground();
@@ -612,7 +611,7 @@ class Extension {
         if (key?.includes('panel'))
             Me.Modules.panelModule.update();
 
-        if (key?.includes('dash') || key?.includes('icon') || key?.includes('dot-style'))
+        if (key?.includes('dash') || key?.includes('icon') || key?.includes('dot-style') || key?.includes('provider'))
             Me.Modules.dashModule.update();
 
         if (key?.includes('hot-corner') || key?.includes('dash'))
