@@ -93,12 +93,12 @@
 	border-color: rgba(150, 150, 150, 0.4);
 }
 
-.dash-background-reduced {
+/*.dash-background-reduced {
 	padding: 10px;
-}
+}*/
 
-.app-well-app-running-dot {
-	margin-bottom: 8px;
+#dash.horizontal .app-well-app-running-dot {
+	margin-bottom: 13px;
 }
 
 .app-well-app-running-dot-custom {
