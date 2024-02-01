@@ -2208,7 +2208,7 @@ function _getAboutOptionList(itemFactory) {
 
     optionList.push(itemFactory.getRowWidget(
         _('Buy Me a Coffee'),
-        _('If you like V-Shell, you can help me with my coffee expenses'),
+        _('Enjoying V-Shell? Consider supporting it by buying me a coffee!'),
         itemFactory.newLinkButton('https://buymeacoffee.com/georgdh')
     ));
 
