@@ -585,6 +585,12 @@ class Extension {
         else
             Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;
 
+        // delay search so it doesn't make the search view transition stuttering
+        // 150 is the default value in GNOME Shell, but the search feels laggy
+        // Of course there is some overload for fast keyboard typist
+        if (opt.SEARCH_VIEW_ANIMATION)
+            opt.SEARCH_DELAY = 150;
+
         if (settings)
             this._applySettings(key);
     }
