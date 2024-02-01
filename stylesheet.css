@@ -209,6 +209,13 @@
 	background-color: rgba(200, 200, 200, 0.1);
 }
 
+/* Reduce edge fading of search results scroll view */
+.vfade { -st-vfade-offset: 34px; }
+.hfade { -st-hfade-offset: 34px; }
+.search-section-content {
+	background-color: rgba(200, 200, 200, 0.1);
+}
+
 /* "no results" / "searching..." text*/
 .search-statustext, .search-statustext-om2 {
 	background-color: rgba(200, 200, 200, 0.1);
