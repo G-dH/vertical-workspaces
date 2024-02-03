@@ -146,6 +146,8 @@ class Extension {
         this._removeTimeouts();
         this._timeouts = {};
 
+        this._ensureOverviewIsHidden();
+
         // load VShell configuration
         this._updateSettings();
 
@@ -174,17 +176,13 @@ class Extension {
         // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
         this._setInitialWsIndex();
 
-        // following properties may be reduced if extensions are rebased while the overview is open
-        Main.overview._overview.controls._thumbnailsBox.remove_all_transitions();
-        Main.overview._overview.controls._thumbnailsBox.scale_x = 1;
-        Main.overview._overview.controls._thumbnailsBox.scale_y = 1;
-        Main.overview._overview.controls._thumbnailsBox.opacity = 255;
+        this._resetShellProperties();
     }
 
     _removeVShell() {
         // Rebasing V-Shell when overview is open causes problems
         // also if Dash to Dock is enabled, disabling V-Shell can result in a broken overview
-        Main.overview.hide();
+        this._ensureOverviewIsHidden();
 
         this._enabled = false;
 
@@ -200,6 +198,31 @@ class Extension {
         // switch PageUp/PageDown workspace switcher shortcuts
         this._switchPageShortcuts();
 
+        this._resetShellProperties();
+
+        // hide status message if shown
+        this._showStatusMessage(false);
+        this._prevDash = null;
+
+        // restore default animation speed
+        St.Settings.get().slow_down_factor = 1;
+
+        Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;
+    }
+
+    _ensureOverviewIsHidden() {
+        if (Main.overview._shown) {
+            Main.overview._shown = false;
+            // Main.overview._animationInProgress = true;
+            Main.overview._visibleTarget = false;
+            Main.overview._overview.prepareToLeaveOverview();
+            Main.overview._changeShownState('HIDING');
+            Main.overview._hideDone();
+            Main.overview.dash.showAppsButton.checked = false;
+        }
+    }
+
+    _resetShellProperties() {
         // remove any position offsets from dash and ws thumbnails
         if (!Me.Util.dashNotDefault()) {
             Main.overview.dash.translation_x = 0;
@@ -208,17 +231,18 @@ class Extension {
         Main.overview._overview._controls._thumbnailsBox.translation_x = 0;
         Main.overview._overview._controls._thumbnailsBox.translation_y = 0;
         Main.overview._overview._controls._searchEntryBin.translation_y = 0;
+        Main.overview._overview._controls._workspacesDisplay.scale_x = 1;
         Main.overview._overview._controls.set_child_above_sibling(Main.overview._overview._controls._workspacesDisplay, null);
-        // restore default animation speed
-        St.Settings.get().slow_down_factor = 1;
+
+        // following properties may be reduced if extensions are rebased while the overview is open
+        Main.overview._overview.controls._thumbnailsBox.remove_all_transitions();
+        Main.overview._overview.controls._thumbnailsBox.scale_x = 1;
+        Main.overview._overview.controls._thumbnailsBox.scale_y = 1;
+        Main.overview._overview.controls._thumbnailsBox.opacity = 255;
+        Main.overview._overview.controls._searchController._searchResults.opacity = 255;
 
         // restore default dash background style
         Main.overview.dash._background.set_style('');
-        // hide status message if shown
-        this._showStatusMessage(false);
-        this._prevDash = null;
-
-        Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;
     }
 
     _removeTimeouts() {
@@ -237,11 +261,9 @@ class Extension {
     }
 
     _setInitialWsIndex() {
-        if (Main.layoutManager._startingUp) {
-            GLib.idle_add(GLib.PRIORITY_LOW, () => {
-                Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
-            });
-        }
+        GLib.idle_add(GLib.PRIORITY_LOW, () => {
+            Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
+        });
     }
 
     _updateSettingsConnection() {
