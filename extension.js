@@ -201,6 +201,7 @@ export default class VShell extends Extension.Extension {
         // Rebasing V-Shell when overview is open causes problems
         // also if Dash to Dock is enabled, disabling V-Shell can result in a broken overview
         this._ensureOverviewIsHidden();
+        this._resetShellProperties();
 
         this._enabled = false;
 
@@ -215,8 +216,6 @@ export default class VShell extends Extension.Extension {
 
         // switch PageUp/PageDown workspace switcher shortcuts
         this._switchPageShortcuts();
-
-        this._resetShellProperties();
 
         // hide status message if shown
         this._showStatusMessage(false);
@@ -241,26 +240,28 @@ export default class VShell extends Extension.Extension {
     }
 
     _resetShellProperties() {
+        const controls = Main.overview._overview.controls;
         // remove any position offsets from dash and ws thumbnails
         if (!Me.Util.dashNotDefault()) {
-            Main.overview.dash.translation_x = 0;
-            Main.overview.dash.translation_y = 0;
+            controls.dash.translation_x = 0;
+            controls.dash.translation_y = 0;
         }
-        Main.overview._overview._controls._thumbnailsBox.translation_x = 0;
-        Main.overview._overview._controls._thumbnailsBox.translation_y = 0;
-        Main.overview._overview._controls._searchEntryBin.translation_y = 0;
-        Main.overview._overview._controls._workspacesDisplay.scale_x = 1;
-        Main.overview._overview._controls.set_child_above_sibling(Main.overview._overview._controls._workspacesDisplay, null);
+        controls._thumbnailsBox.translation_x = 0;
+        controls._thumbnailsBox.translation_y = 0;
+        controls._searchEntryBin.translation_y = 0;
+        controls._workspacesDisplay.scale_x = 1;
+        controls.set_child_above_sibling(controls._workspacesDisplay, null);
 
         // following properties may be reduced if extensions are rebased while the overview is open
-        Main.overview._overview.controls._thumbnailsBox.remove_all_transitions();
-        Main.overview._overview.controls._thumbnailsBox.scale_x = 1;
-        Main.overview._overview.controls._thumbnailsBox.scale_y = 1;
-        Main.overview._overview.controls._thumbnailsBox.opacity = 255;
-        Main.overview._overview.controls._searchController._searchResults.opacity = 255;
+        controls._thumbnailsBox.remove_all_transitions();
+        controls._thumbnailsBox.scale_x = 1;
+        controls._thumbnailsBox.scale_y = 1;
+        controls._thumbnailsBox.opacity = 255;
+
+        controls._searchController._searchResults.opacity = 255;
 
         // restore default dash background style
-        Main.overview.dash._background.set_style('');
+        controls.dash._background.set_style('');
     }
 
     _removeTimeouts() {
