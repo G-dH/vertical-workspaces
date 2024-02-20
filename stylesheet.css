@@ -169,7 +169,7 @@
 	border-radius: 0px 0px 100px 100px;
 
 }
-/*
+
 .search-entry{
 	background-color: rgba(200, 200, 200, 0.1);
 	color: white;
@@ -179,7 +179,7 @@
 .search-entry:hover,
 .search-entry:focus {
 	background-color: rgba(200, 200, 200, 0.2);
-}*/
+}
 
 .search-entry-om2 {
 	color: white;
@@ -203,6 +203,7 @@
 	background-color: rgb(40, 40, 40);
 }
 
+/* Reduce edge fading of search results scroll view */
 .vfade { -st-vfade-offset: 34px; }
 .hfade { -st-hfade-offset: 34px; }
 .search-section-content {
@@ -301,6 +302,11 @@ StButton#vhandle {
 .app-folder:hover .overview-icon,
 .app-folder:focus .overview-icon {
 	background-color: rgba(200, 200, 200, 0.15);
+}
+
+/* reverse padding */
+.ws-switcher-vertical {
+	padding: 18px 12px
 }
 
 /* reduce quick menu buttons height in GS44 */
