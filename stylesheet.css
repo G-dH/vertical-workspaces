@@ -81,7 +81,7 @@
 #dash.vertical-gs3-right .app-well-app,
 #dash.vertical-gs3-right .show-apps {
 	/* left/right padding exceeds dash bg by 6px to
-	 cover spacing between dash and the edge of the screen
+	 cover spacing between dash icons and the edge of the screen
 	 so the icons will be selectable even at the edge
 	 this spacing must be accounted for in overview allocate() */
 	padding: 0;
@@ -94,16 +94,7 @@
 	border-color: rgba(150, 150, 150, 0.4);
 }
 
-/*.dash-background-reduced {
-	padding: 10px;
-}
-
-.app-well-app-running-dot {
-	margin-bottom: 8px;
-}*/
-
 .app-well-app-running-dot-custom {
-	/*margin-bottom: 10px;*/
 	width: 16px;
 	height: 2px;
 }
@@ -114,7 +105,7 @@
     text-shadow: 1px 1px 3px rgba(33, 33, 33, 0.5);
 }
 
-/* adjustment for the vertical ws switcher indicator popup*/
+/* adjustment for the vertical ws switcher indicator popup */
 .ws-switcher-indicator {
 	padding: 3px;
 	margin: 5px;
@@ -146,30 +137,13 @@
 	background-color: rgba(200, 200, 200, 0.16);
 }
 
-/* app grid page indicatos */
+/* app grid page indicators */
 .page-indicator-icon {
 	margin: 10px 10px 10px 10px;
 }
 
 .page-indicator {
 	padding: 0px;
-}
-
-/* GS 43 App Grid - indicators that show up when dragging icon */
-.prevPageIndicator {
-	background: rgba(255, 255, 255, 0.1);
-	background-gradient-start: rgba(255, 255, 255, 0.1);
-	background-gradient-end: transparent;
-	background-gradient-direction: vertical;
-	border-radius: 100px 100px 0px 0px;
-}
-.nextPageIndicator {
-	background: rgba(255, 255, 255, 0.1);
-	background-gradient-start: transparent;
-	background-gradient-end: rgba(255, 255, 255, 0.1);
-	background-gradient-direction: vertical;
-	border-radius: 0px 0px 100px 100px;
-
 }
 
 .search-entry{
@@ -296,8 +270,8 @@ StButton#vhandle {
 
 .app-folder-46,
 .app-folder-46 .overview-tile,
-.app-folder-46 .overview-icon, /* 46 only */
-.app-folder-45 .overview-icon, /* 45 only */
+.app-folder-46 .overview-icon,
+.app-folder-45 .overview-icon,
 .edit-folder-button,
 .folder-name-entry {
 	background-color: rgba(200, 200, 200, 0.08);
@@ -313,8 +287,8 @@ StButton#vhandle {
 
 .edit-folder-button:hover, 
 .app-folder-46:hover,
-.app-folder-45:hover .overview-icon, /* 45 only */
-.app-folder-45:focus .overview-icon { /* 45 only */
+.app-folder-45:hover .overview-icon,
+.app-folder-45:focus .overview-icon {
 	background-color: rgba(200, 200, 200, 0.15);
 }
 
@@ -327,7 +301,6 @@ StButton#vhandle {
  .search-provider-icon,
  .list-search-result,
  .overview-tile {
-	 /*margin: 0px;*/
 	 background-color: transparent;
  }
  
@@ -391,7 +364,8 @@ StButton#vhandle {
 #dash.vertical-46 .show-apps {
 	margin: 0px;
 	background-color: transparent;
-	padding: 0, 16px;
+	/* this padding should keep the dash 6px from the screen edge */
+	padding: 0, 18px;
 }
 
 #dash.vertical-46 .dash-separator {
@@ -402,13 +376,6 @@ StButton#vhandle {
 	margin-bottom: 4px;
 }
 
-#dash.vertical-46 .dash-item-container {
-	/* spacing */
-	margin: 0px;
-	/*margin-left: 16px;
-	margin-right: 16px;*/
-}
-
 #dash.vertical-46 .app-well-app-running-dot-custom {
 	margin: 0px;
 	width: 2px;
@@ -416,31 +383,32 @@ StButton#vhandle {
 }
 
 #dash.vertical-46 .dash-background {
-	padding: 10px;
+	padding: 12px;
 	margin: 0;
 }
 
-#dash.vertical-46-gs3-left .overview-tile {
-	padding: 0, 10px;
+#dash.vertical-46-gs3-left .overview-tile,
+#dash.vertical-46-gs3-left .show-apps {
+	/* this padding should extend the icon tile to the edge of the dash background */
+	padding: 0, 12px;
 }
 
-#dash.vertical-46-gs3-right .overview-tile {
-	padding: 0, 10px;
+#dash.vertical-46-gs3-right .overview-tile,
+#dash.vertical-46-gs3-right .show-apps {
+	padding: 0, 12px;
 }
 
 #dash.vertical-46-gs3-left .dash-background {
 	border-radius: 0 18px 18px 0;
 	border-left: 0px;
-	padding: 10px;
 }
 
 #dash.vertical-46-gs3-right .dash-background {
 	border-radius: 18px 0 0 18px;
 	border-right: 0px;
-	padding: 10px;
 }
 
 /* reverse padding */
 .ws-switcher-vertical {
 	padding: 18px 12px
-  }
+}
