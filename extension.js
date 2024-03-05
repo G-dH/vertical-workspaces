@@ -51,7 +51,6 @@ import { WorkspaceAnimationModule } from './lib/workspaceAnimation.js';
 import { WorkspaceModule } from './lib/workspace.js';
 import { WorkspaceSwitcherPopupModule } from './lib/workspaceSwitcherPopup.js';
 import { RecentFilesSearchProviderModule } from './lib/recentFilesSearchProvider.js';
-import { WinTmbModule } from './lib/winTmb.js';
 
 let Me;
 // gettext
@@ -140,7 +139,6 @@ export default class VShell extends Extension.Extension {
         Me.Modules.workspaceThumbnailModule = new WorkspaceThumbnailModule(Me);
         Me.Modules.workspacesViewModule = new WorkspacesViewModule(Me);
         Me.Modules.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Me);
-        Me.Modules.winTmbModule = new WinTmbModule(Me);
     }
 
     _disposeModules() {
@@ -315,7 +313,6 @@ export default class VShell extends Extension.Extension {
                         () => {
                             Me.Modules.panelModule.update();
                             Me.Modules.overviewControlsModule.update();
-                            Me.Modules.winTmbModule.showThumbnails();
 
                             this._timeouts.unlock = 0;
                             return GLib.SOURCE_REMOVE;
@@ -323,7 +320,6 @@ export default class VShell extends Extension.Extension {
                     );
                 } else if (session.currentMode === 'unlock-dialog') {
                     Me.Modules.panelModule.update(true);
-                    Me.Modules.winTmbModule.hideThumbnails();
                 }
             });
         }
@@ -486,7 +482,6 @@ export default class VShell extends Extension.Extension {
         Me.Modules.osdWindowModule.update(reset);
         Me.Modules.overlayKeyModule.update(reset);
         Me.Modules.searchControllerModule.update(reset);
-        Me.Modules.winTmbModule.update(reset);
 
         if (!reset && !Main.layoutManager._startingUp)
             Main.overview._overview.controls.setInitialTranslations();
