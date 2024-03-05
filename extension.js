@@ -89,7 +89,6 @@ class Extension {
             workspaceSwitcherPopupModule:       Me.imports.lib.workspaceSwitcherPopup.WorkspaceSwitcherPopupModule,
             workspaceThumbnailModule:           Me.imports.lib.workspaceThumbnail.WorkspaceThumbnailModule,
             workspacesViewModule:               Me.imports.lib.workspacesView.WorkspacesViewModule,
-            winTmbModule:                       Me.imports.lib.winTmb.WinTmbModule,
             recentFilesSearchProviderModule:    Me.imports.lib.recentFilesSearchProvider.RecentFilesSearchProviderModule,
         };
     }
@@ -295,7 +294,6 @@ class Extension {
                         () => {
                             Me.Modules.panelModule.update();
                             Me.Modules.overviewControlsModule.update();
-                            Me.Modules.winTmbModule.showThumbnails();
 
                             this._timeouts.unlock = 0;
                             return GLib.SOURCE_REMOVE;
@@ -303,7 +301,6 @@ class Extension {
                     );
                 } else if (session.currentMode === 'unlock-dialog') {
                     Me.Modules.panelModule.update(true);
-                    Me.Modules.winTmbModule.hideThumbnails();
                 }
             });
         }
@@ -466,7 +463,6 @@ class Extension {
         Me.Modules.osdWindowModule.update(reset);
         Me.Modules.overlayKeyModule.update(reset);
         Me.Modules.searchControllerModule.update(reset);
-        Me.Modules.winTmbModule.update(reset);
 
         if (!reset && !Main.layoutManager._startingUp)
             Main.overview._overview.controls.setInitialTranslations();

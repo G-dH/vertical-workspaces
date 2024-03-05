@@ -1231,31 +1231,6 @@ function _getAppearanceOptionList(itemFactory) {
         )
     );
 
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Window Thumbnails (PIP)')
-        )
-    );
-
-    const winTmbAdjustment = new Gtk.Adjustment({
-        upper: 50,
-        lower: 5,
-        step_increment: 1,
-        page_increment: 1,
-    });
-
-    const winTmbScale = itemFactory.newScale(winTmbAdjustment);
-    winTmbScale.add_mark(15, Gtk.PositionType.TOP, null);
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Default Window Thumbnail Scale (% of screen height)'),
-            _('Default scale of window thumbnail (like Picture In Picture) that you can create using the app icon menu or window preview action'),
-            winTmbScale,
-            'windowThumbnailScale'
-        )
-    );
-
     return optionList;
 }
 // ----------------------------------------------------------------
