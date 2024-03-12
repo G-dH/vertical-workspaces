@@ -310,9 +310,6 @@
     <key type="b" name="app-grid-performance">
       <default>true</default>
     </key>
-    <key type="i" name="window-thumbnail-scale">
-      <default>15</default>
-    </key>
     <key name='highlighting-style' type='i'>
       <default>1</default>
     </key>
@@ -333,9 +330,6 @@
       <default>true</default>
     </key>
     <key type="b" name="win-attention-handler-module">
-      <default>true</default>
-    </key>
-    <key type="b" name="window-thumbnail-module">
       <default>true</default>
     </key>
     <key type="b" name="swipe-tracker-module">
@@ -486,7 +480,6 @@
         'newWindowFocusFix': 'false',
         'newWindowMonitorFix': '0',
         'appGridPerformance': 'true',
-        'windowThumbnailScale': '20',
         'highlightingStyle': '1',
 
         'workspaceSwitcherPopupModule': 'true',
@@ -495,7 +488,6 @@
         'windowManagerModule': 'true',
         'windowPreviewModule': 'true',
         'windowAttentionHandlerModule': 'true',
-        'windowThumbnailModule': 'true',
         'swipeTrackerModule': 'true',
         'searchControllerModule': 'true',
         'searchModule': 'true',
@@ -506,8 +498,7 @@
         'layoutModule': 'true',
         'dashModule': 'true',
         'appFavoritesModule': 'true',
-        'appDisplayModule': 'true',
-        'highlightingStyle': '1'
+        'appDisplayModule': 'true'
       }</default>
     </key>
 
@@ -618,7 +609,6 @@
         'newWindowFocusFix': 'false',
         'newWindowMonitorFix': '0',
         'appGridPerformance': 'true',
-        'windowThumbnailScale': '20',
         'highlightingStyle': '1',
 
         'workspaceSwitcherPopupModule': 'true',
@@ -627,7 +617,6 @@
         'windowManagerModule': 'true',
         'windowPreviewModule': 'true',
         'windowAttentionHandlerModule': 'true',
-        'windowThumbnailModule': 'true',
         'swipeTrackerModule': 'true',
         'searchControllerModule': 'true',
         'searchModule': 'true',
@@ -638,8 +627,7 @@
         'layoutModule': 'true',
         'dashModule': 'true',
         'appFavoritesModule': 'true',
-        'appDisplayModule': 'true',
-        'highlightingStyle': '1'
+        'appDisplayModule': 'true'
       }</default>
     </key>
 
@@ -750,7 +738,6 @@
         'newWindowFocusFix': 'false',
         'newWindowMonitorFix': '0',
         'appGridPerformance': 'true',
-        'windowThumbnailScale': '20',
         'highlightingStyle': '1',
 
         'workspaceSwitcherPopupModule': 'true',
@@ -759,7 +746,6 @@
         'windowManagerModule': 'true',
         'windowPreviewModule': 'true',
         'windowAttentionHandlerModule': 'true',
-        'windowThumbnailModule': 'true',
         'swipeTrackerModule': 'true',
         'searchControllerModule': 'true',
         'searchModule': 'true',
@@ -770,7 +756,7 @@
         'layoutModule': 'true',
         'dashModule': 'true',
         'appFavoritesModule': 'true',
-        'appDisplayModule': 'true',
+        'appDisplayModule': 'true'
       }</default>
     </key>
 
@@ -881,7 +867,6 @@
         'newWindowFocusFix': 'false',
         'newWindowMonitorFix': '0',
         'appGridPerformance': 'true',
-        'windowThumbnailScale': '20',
         'highlightingStyle': '1',
 
         'workspaceSwitcherPopupModule': 'true',
@@ -890,7 +875,6 @@
         'windowManagerModule': 'true',
         'windowPreviewModule': 'true',
         'windowAttentionHandlerModule': 'true',
-        'windowThumbnailModule': 'true',
         'swipeTrackerModule': 'true',
         'searchControllerModule': 'true',
         'searchModule': 'true',

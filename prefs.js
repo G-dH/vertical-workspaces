@@ -43,43 +43,36 @@ function _getPageList() {
     const itemFactory = new OptionsFactory.ItemFactory();
     const pageList = [
         {
-            name: 'profiles',
             title: _('Profiles'),
             iconName: 'open-menu-symbolic',
             optionList: _getProfilesOptionList(itemFactory),
         },
         {
-            name: 'layout',
             title: _('Layout'),
             iconName: 'view-grid-symbolic',
             optionList: _getLayoutOptionList(itemFactory),
         },
         {
-            name: 'appearance',
             title: _('Appearance'),
             iconName: 'view-reveal-symbolic',
             optionList: _getAppearanceOptionList(itemFactory),
         },
         {
-            name: 'behavior',
             title: _('Behavior'),
             iconName: 'system-run-symbolic',
             optionList: _getBehaviorOptionList(itemFactory),
         },
         {
-            name: 'modules',
             title: _('Modules'),
             iconName: 'application-x-addon-symbolic',
             optionList: _getModulesOptionList(itemFactory),
         },
         {
-            name: 'misc',
             title: _('Misc'),
             iconName: 'preferences-other-symbolic',
             optionList: _getMiscOptionList(itemFactory),
         },
         {
-            name: 'about',
             title: _('About'),
             iconName: 'preferences-system-details-symbolic',
             optionList: _getAboutOptionList(itemFactory),
@@ -1495,7 +1488,7 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Activate Window (Default)'), 0],
                 [_('Close Window'), 1],
                 [_('Search For Same App Windows'), 2],
-                [_('Create Window Thumbnail - PIP'), 3],
+                [_('Create Window Thumbnail/PiP (requires WTMB extension)'), 3],
             ],
             'windowPreviewModule'
         )
@@ -1511,7 +1504,7 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Activate Window (Default)'), 0],
                 [_('Close Window'), 1],
                 [_('Search For Same App Windows'), 2],
-                [_('Create Window Thumbnail - PIP'), 3],
+                [_('Create Window Thumbnail/PiP (requires WTMB extension)'), 3],
             ],
             'windowPreviewModule'
         )
@@ -1526,7 +1519,7 @@ function _getBehaviorOptionList(itemFactory) {
             [
                 [_('Activate Window (Default)'), 0],
                 [_('Search For Same App Windows'), 1],
-                [_('Create Window Thumbnail - PIP'), 2],
+                [_('Create Window Thumbnail/PiP (requires WTMB extension)'), 2],
             ],
             'windowPreviewModule'
         )
@@ -1894,6 +1887,14 @@ function _getModulesOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Window Thumbnails (PiP) - Moved from V-Shell to the standalone "WTMB" extension'),
+            _('NOTE: This module has been released as a standalone extension with new features, click to learn more. Related V-Shell options are still available if you install the WTMB extension.\n\nWTMB allows the creation of Picture-in-Picture like window thumbnails that you can use for monitoring of windows on another workspace'),
+            itemFactory.newLinkButton('https://github.com/G-dH/window-thumbnails?tab=readme-ov-file#wtmb-window-thumbnails')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Recent Files Search Provider'),
             _('Activates the recent files search provider that can be triggered by a dash icon, Ctrl + Space hotkey or by typing "fq//" prefix in the search entry field. This option needs File History option enabled in the GNOME Privacy settings'),
             itemFactory.newSwitch(),
@@ -2024,15 +2025,6 @@ function _getModulesOptionList(itemFactory) {
             _('Window preview options, fixes an upstream bug that fills the system log with errors when you close a window from the overview or exit the overview with a gesture when any window is selected'),
             itemFactory.newSwitch(),
             'windowPreviewModule'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('WindowThumbnail'),
-            _('Create Window Thumbnail (PIP) option in the app icon menu and window preview actions'),
-            itemFactory.newSwitch(),
-            'windowThumbnailModule'
         )
     );
 
