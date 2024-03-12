@@ -26,43 +26,36 @@ export default class VShell extends ExtensionPreferences {
         const itemFactory = new OptionsFactory.ItemFactory();
         const pageList = [
             {
-                name: 'profiles',
                 title: _('Profiles'),
                 iconName: 'open-menu-symbolic',
                 optionList: this._getProfilesOptionList(itemFactory),
             },
             {
-                name: 'layout',
                 title: _('Layout'),
                 iconName: 'view-grid-symbolic',
                 optionList: this._getLayoutOptionList(itemFactory),
             },
             {
-                name: 'appearance',
                 title: _('Appearance'),
                 iconName: 'view-reveal-symbolic',
                 optionList: this._getAppearanceOptionList(itemFactory),
             },
             {
-                name: 'behavior',
                 title: _('Behavior'),
                 iconName: 'system-run-symbolic',
                 optionList: this._getBehaviorOptionList(itemFactory),
             },
             {
-                name: 'modules',
                 title: _('Modules'),
                 iconName: 'application-x-addon-symbolic',
                 optionList: this._getModulesOptionList(itemFactory),
             },
             {
-                name: 'misc',
                 title: _('Misc'),
                 iconName: 'preferences-other-symbolic',
                 optionList: this._getMiscOptionList(itemFactory),
             },
             {
-                name: 'about',
                 title: _('About'),
                 iconName: 'preferences-system-details-symbolic',
                 optionList: this._getAboutOptionList(itemFactory),
@@ -1228,13 +1221,6 @@ export default class VShell extends ExtensionPreferences {
             )
         );
 
-
-        optionList.push(
-            itemFactory.getRowWidget(
-                _('Window Thumbnails (PIP)')
-            )
-        );
-
         return optionList;
     }
     // ----------------------------------------------------------------
@@ -1499,7 +1485,7 @@ export default class VShell extends ExtensionPreferences {
                     [_('Activate Window (Default)'), 0],
                     [_('Close Window'), 1],
                     [_('Search For Same App Windows'), 2],
-                    [_('Create Window Thumbnail - PIP'), 3],
+                    [_('Create Window Thumbnail/PiP (requires WTMB extension)'), 3],
                 ],
                 'windowPreviewModule'
             )
@@ -1515,7 +1501,7 @@ export default class VShell extends ExtensionPreferences {
                     [_('Activate Window (Default)'), 0],
                     [_('Close Window'), 1],
                     [_('Search For Same App Windows'), 2],
-                    [_('Create Window Thumbnail - PIP'), 3],
+                    [_('Create Window Thumbnail/PiP (requires WTMB extension)'), 3],
                 ],
                 'windowPreviewModule'
             )
@@ -1530,7 +1516,7 @@ export default class VShell extends ExtensionPreferences {
                 [
                     [_('Activate Window (Default)'), 0],
                     [_('Search For Same App Windows'), 1],
-                    [_('Create Window Thumbnail - PIP'), 2],
+                    [_('Create Window Thumbnail/PiP (requires WTMB extension)'), 2],
                 ],
                 'windowPreviewModule'
             )
@@ -1877,21 +1863,27 @@ export default class VShell extends ExtensionPreferences {
             )
         );
 
-        const wspLink = itemFactory.newLinkButton('https://github.com/G-dH/windows-search-provider?tab=readme-ov-file#wsp-windows-search-provider');
         optionList.push(
             itemFactory.getRowWidget(
                 _('Windows Search Provider - Moved from V-Shell to the standalone "WSP" extension'),
                 _('NOTE: This module has been released as a standalone extension with new features, click to learn more. Related V-Shell options are still available if you install the WSP extension.\n\nWSP adds adds open windows to the search results. You can search app names and window titles. You can also use "wq//" or custom prefix (also by pressing the Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
-                wspLink
+                itemFactory.newLinkButton('https://github.com/G-dH/windows-search-provider?tab=readme-ov-file#wsp-windows-search-provider')
             )
         );
 
-        const espLink = itemFactory.newLinkButton('https://github.com/G-dH/extensions-search-provider?tab=readme-ov-file#esp-extensions-search-provider');
         optionList.push(
             itemFactory.getRowWidget(
                 _('Extensions Search Provider - Moved from V-Shell to the standalone "ESP" extension'),
                 _('NOTE: This module has been released as a standalone extension with new features, click to learn more. Related V-Shell options are still available if you install the ESP extension.\n\nESP adds extensions to the search results. You can also use "eq//" or custom prefix (also by pressing the Ctrl + Shift + Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
-                espLink
+                itemFactory.newLinkButton('https://github.com/G-dH/extensions-search-provider?tab=readme-ov-file#esp-extensions-search-provider')
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Window Thumbnails (PiP) - Moved from V-Shell to the standalone "WTMB" extension'),
+                _('NOTE: This module has been released as a standalone extension with new features, click to learn more. Related V-Shell options are still available if you install the WTMB extension.\n\nWTMB allows the creation of Picture-in-Picture like window thumbnails that you can use for monitoring of windows on another workspace'),
+                itemFactory.newLinkButton('https://github.com/G-dH/window-thumbnails?tab=readme-ov-file#wtmb-window-thumbnails')
             )
         );
 
@@ -2027,15 +2019,6 @@ export default class VShell extends ExtensionPreferences {
                 _('Window preview options, fixes an upstream bug that fills the system log with errors when you close a window from the overview or exit the overview with a gesture when any window is selected'),
                 itemFactory.newSwitch(),
                 'windowPreviewModule'
-            )
-        );
-
-        optionList.push(
-            itemFactory.getRowWidget(
-                _('WindowThumbnail'),
-                _('Create Window Thumbnail (PIP) option in the app icon menu and window preview actions'),
-                itemFactory.newSwitch(),
-                'windowThumbnailModule'
             )
         );
 
