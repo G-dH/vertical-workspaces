@@ -2119,7 +2119,7 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Fix New Window Not On Current Monitor'),
+                _('Fix New Window Not On Current Monitor (experimental)'),
                 _('If you use multiple monitors, you may encounter the issue of new windows opening on a different monitor than expected. This option moves those windows to the current monitor, determined by the position of the mouse pointer. However, this is a workaround, and some windows may override it, moving the window back to the previous monitor during initialization'),
                 itemFactory.newSwitch(),
                 'newWindowMonitorFix'
