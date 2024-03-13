@@ -1,21 +1,20 @@
 ## Changelog:
-### v46.0 for GNOME 45.2+, v44.12 for GNOME 42-44 (not released yet)
-**Removed**
-- Open Windows and Extensions search providers have been removed from the V-Shell and released as a standalone WSP and ESP extensions. Respective module switches has been replaced in Settings by the links to these new extensions
-
+### v46.1 for GNOME 45.2+, v44.12 for GNOME 42-44 (not released yet)
 **Added**
 - Support for GNOME 46
-- Option **Fix New Window Not On Current Monitor** tries to work around that issue. However, success rate is not 100%
+- Option *Fix New Window Not On Current Monitor* tries to work around that issue. However, success rate is not 100%
 
 **Changed**
+- Windows and Extensions search providers have been removed from the V-Shell and released as a standalone WSP and ESP extensions. Respective module switches has been replaced in Settings by the links to these new extensions
+- Window thumbnails (PiP) module moved to the standalone extension WTMB, link added to the *Modules* tab of Settings window
 - Shortcuts in the overview - `Ctrl+Space` - Extensions Search Provider, `Shift+Space` - Recent Files Search Provider, `Ctrl+Shift+Space` - V-Shell Settings
 - Bottom OSD position moved so it's not overlapping dock, if used
 - Active folder icons hover animation from scale, which makes icons blurry, to the move 3px up
 
-
 **Fixed:**
 - Running app indicators too close to the app name on the app grid
 - OverlayKey module deactivates itself even if its configuration isn't consistent with the default GNOME Shell behavior
+
 
 ### v45.3 for GNOME 45.2+, v44.11 for GNOME 42-44 (2023-12-20)
 **Added:**
