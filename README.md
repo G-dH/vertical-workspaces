@@ -2,7 +2,7 @@
 
 A GNOME Shell extension that lets you customize your GNOME Shell UX to suit your workflow, whether you like horizontally or vertically stacked workspaces.
 
-Currently supported GNOME versions: 42 - 45
+Currently supported GNOME versions: 42 - 46
 
 [<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
 
@@ -25,17 +25,16 @@ Currently supported GNOME versions: 42 - 45
 - Title captions of window previews moved into the preview (originally beneath the preview) and can be set as always visible. Adjustable window preview icon
 - Static background in workspace switcher (outside overview). Keeps Conky below, DING desktop icons stay visible (if not covered by windows)
 - Control over transition animations, including speed
-- Window search provider with *Space* hotkey allows quick window navigation
 - Recent files search provider with *Ctrl + Space* hotkey
-- Extensions search provider with *Ctrl + Shift + Space* hotkey allows to search for extensions, open their settings and enable or disable them
+- Supports WSP (Window search provider) extension with *Space* hotkey that allows quick window navigation
+- Supports ESP (Extensions search provider) with *Ctrl + Shift + Space* hotkey that allows to search for installed extensions, open their settings and enable or disable them
 - Reorder workspaces in overview using *Shift + Scroll* or *Shift + Page Up/Down*
 - Adds *Force Quit*, *Close Windows on Current Workspace* and *Move Windows to Current Workspace* items to app icon menu. The latter action can be activated using *Shift + click* on app icon
 - Change notification banners and OSD popups position
 - Window attention handler options can activate the attention-demanding window immediately or silence its notification
 - Optional position of the hot corner that can follow the dash and expand to hot edge
 - Super key double-press options
-- Window thumbnail (PIP) options allows you to create scaled down clone of the window by clicking on its preview in the overview (secondary mouse buttons or window preview icon)
-
+- Supports WTMB (Window Thumbnails) extension that allows you to create Picture-in-Picture thumbnail of the window by clicking on its preview in the overview (secondary mouse buttons or window preview icon)
 
 ## Changelog
 [CHANGELOG.md](CHANGELOG.md)
