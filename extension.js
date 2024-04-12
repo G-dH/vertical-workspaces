@@ -89,7 +89,6 @@ class Extension {
             workspaceSwitcherPopupModule:       Me.imports.lib.workspaceSwitcherPopup.WorkspaceSwitcherPopupModule,
             workspaceThumbnailModule:           Me.imports.lib.workspaceThumbnail.WorkspaceThumbnailModule,
             workspacesViewModule:               Me.imports.lib.workspacesView.WorkspacesViewModule,
-            recentFilesSearchProviderModule:    Me.imports.lib.recentFilesSearchProvider.RecentFilesSearchProviderModule,
         };
     }
 
@@ -428,8 +427,6 @@ class Extension {
         Me.Modules.swipeTrackerModule.update(reset);
 
         Me.Modules.searchModule.update(reset);
-
-        Me.Modules.recentFilesSearchProviderModule.update(reset);
 
         // don't rebuild app grid on any screen lock
         // even if the extension includes unlock-screen session mode
