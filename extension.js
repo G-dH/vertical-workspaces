@@ -50,7 +50,6 @@ import { WindowPreviewModule } from './lib/windowPreview.js';
 import { WorkspaceAnimationModule } from './lib/workspaceAnimation.js';
 import { WorkspaceModule } from './lib/workspace.js';
 import { WorkspaceSwitcherPopupModule } from './lib/workspaceSwitcherPopup.js';
-import { RecentFilesSearchProviderModule } from './lib/recentFilesSearchProvider.js';
 
 let Me;
 // gettext
@@ -138,7 +137,6 @@ export default class VShell extends Extension.Extension {
         Me.Modules.workspaceSwitcherPopupModule = new WorkspaceSwitcherPopupModule(Me);
         Me.Modules.workspaceThumbnailModule = new WorkspaceThumbnailModule(Me);
         Me.Modules.workspacesViewModule = new WorkspacesViewModule(Me);
-        Me.Modules.recentFilesSearchProviderModule = new RecentFilesSearchProviderModule(Me);
     }
 
     _disposeModules() {
@@ -447,8 +445,6 @@ export default class VShell extends Extension.Extension {
         Me.Modules.swipeTrackerModule.update(reset);
 
         Me.Modules.searchModule.update(reset);
-
-        Me.Modules.recentFilesSearchProviderModule.update(reset);
 
         // don't rebuild app grid on any screen lock
         // even if the extension includes unlock-screen session mode

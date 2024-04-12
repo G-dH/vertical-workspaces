@@ -207,52 +207,6 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Open Windows Icon Position'),
-                _('Allows to add "Search Open Windows" icon into Dash (if "WSP (Window Search Provider)" extension is enabled) so you can directly toggle window search provider results. You can also use the Space hotkey'),
-                itemFactory.newDropDown(),
-                'dashShowWindowsIcon',
-                [
-                    [_('Hide'), 0],
-                    [_('Start'), 1],
-                    [_('End'), 2],
-                ],
-                'dashModule'
-            )
-        );
-
-        optionList.push(
-            itemFactory.getRowWidget(
-                _('Recent Files Icon Position'),
-                _('Allows to add "Search Recent Files" icon into Dash (if recent files search provider enabled on the Modules tab) so you can directly toggle recent files search provider results. You can also use Ctrl + Space hotkey'),
-                itemFactory.newDropDown(),
-                'dashShowRecentFilesIcon',
-                [
-                    [_('Hide'), 0],
-                    [_('Start'), 1],
-                    [_('End'), 2],
-                ],
-                'dashModule'
-            )
-        );
-
-        optionList.push(
-            itemFactory.getRowWidget(
-                _('Extensions Icon Position'),
-                _('Allows to add "Search Extensions" icon into Dash (if "ESP (Extensions Search Provider)" extension is enabled) so you can directly toggle extensions search provider results. You can also use the Ctrl + Shift + Space hotkey'),
-                itemFactory.newDropDown(),
-                'dashShowExtensionsIcon',
-                [
-                    [_('Hide'), 0],
-                    [_('Start'), 1],
-                    [_('End'), 2],
-                ],
-                'dashModule'
-            )
-        );
-
-
-        optionList.push(
-            itemFactory.getRowWidget(
                 _('Workspace Thumbnails / Orientation')
             )
         );
@@ -666,8 +620,8 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Shift Workspace Preview by Panel Height'),
-                _('This option can help align overview of the secondary monitor with the primary monitor'),
+                _('Shift Overview by Panel Height'),
+                _('This option can help align the overview of the secondary monitor with the primary one'),
                 itemFactory.newSwitch(),
                 'secWsPreviewShift'
             )
@@ -1884,15 +1838,6 @@ export default class VShell extends ExtensionPreferences {
                 _('Window Thumbnails (PiP) - Moved from V-Shell to the standalone "WTMB" extension'),
                 _('NOTE: This module has been released as a standalone extension with new features, click to learn more. Related V-Shell options are still available if you install the WTMB extension.\n\nWTMB allows the creation of Picture-in-Picture like window thumbnails that you can use for monitoring of windows on another workspace'),
                 itemFactory.newLinkButton('https://github.com/G-dH/window-thumbnails?tab=readme-ov-file#wtmb-window-thumbnails')
-            )
-        );
-
-        optionList.push(
-            itemFactory.getRowWidget(
-                _('RecentFilesSearchProvider'),
-                _('Activates the recent files search provider that can be triggered by a dash icon, Ctrl + Space hotkey or by typing "fq//" prefix in the search entry field. This option needs File History option enabled in the GNOME Privacy settings'),
-                itemFactory.newSwitch(),
-                'recentFilesSearchProviderModule'
             )
         );
 
