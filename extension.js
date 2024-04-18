@@ -75,6 +75,7 @@ export default class VShell extends Extension.Extension {
         Me.ESP_PREFIX = 'eq//';
 
         Me.opt = new Me.Settings.Options(Me);
+        opt = Me.opt;
 
         Me.Util.init(Me);
     }
@@ -87,14 +88,24 @@ export default class VShell extends Extension.Extension {
 
     enable() {
         this._init();
-        // flag for Util.getEnabledExtensions()
-        Me.extensionsLoadIncomplete = Main.layoutManager._startingUp;
-        opt = Me.opt;
 
         this._initModules();
-        this.activateVShell();
-
-        Me.extensionsLoadIncomplete = false;
+        const skipStartup = // prevent conflicts during startup
+                Me.Util.getEnabledExtensions('ubuntu-dock').length ||
+                Me.Util.getEnabledExtensions('dash-to-dock').length ||
+                Me.Util.getEnabledExtensions('dash-to-panel').length;
+        if (skipStartup && Main.layoutManager._startingUp) {
+            const startupId = Main.layoutManager.connect('startup-complete', () => {
+                Main.layoutManager.disconnect(startupId);
+                this._activateVShell();
+                // Since VShell has been activated with a delay, move it in extensionOrder
+                let extensionOrder = Main.extensionManager._extensionOrder;
+                const idx = extensionOrder.indexOf(this.metadata.uuid);
+                extensionOrder.push(extensionOrder.splice(idx, 1)[0]);
+            });
+        } else {
+            this._activateVShell();
+        }
 
         console.debug(`${Me.metadata.name}: enabled`);
     }
@@ -152,7 +163,7 @@ export default class VShell extends Extension.Extension {
         Me.Modules = null;
     }
 
-    activateVShell() {
+    _activateVShell() {
         this._enabled = true;
 
         this._originalGetNeighbor = Meta.Workspace.prototype.get_neighbor;
@@ -529,7 +540,7 @@ export default class VShell extends Extension.Extension {
                     console.warn(`[${Me.metadata.name}]: Updating extension ...`);
                     // for case the monitor configuration has been changed, update all
                     Me._resetInProgress = true;
-                    this.activateVShell();
+                    this._activateVShell();
                     Me._resetInProgress = false;
                 }
                 this._timeouts.reset = 0;
@@ -563,7 +574,7 @@ export default class VShell extends Extension.Extension {
             this._timeouts.loadingProfile = GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
                 100, () => {
-                    this.activateVShell();
+                    this._activateVShell();
                     this._timeouts.loadingProfile = 0;
                     return GLib.SOURCE_REMOVE;
                 });
