@@ -104,11 +104,23 @@ class Extension {
 
     enable() {
         this._init();
-        // flag for Util.getEnabledExtensions()
-        Me.extensionsLoadIncomplete = Main.layoutManager._startingUp;
 
-        this._activateVShell();
-        Me.extensionsLoadIncomplete = false;
+        const skipStartup = // prevent conflicts during startup
+                Me.Util.getEnabledExtensions('ubuntu-dock').length ||
+                Me.Util.getEnabledExtensions('dash-to-dock').length ||
+                Me.Util.getEnabledExtensions('dash-to-panel').length;
+        if (skipStartup && Main.layoutManager._startingUp) {
+            const startupId = Main.layoutManager.connect('startup-complete', () => {
+                Main.layoutManager.disconnect(startupId);
+                this._activateVShell();
+                // Since VShell has been activated with a delay, move it in extensionOrder
+                let extensionOrder = Main.extensionManager._extensionOrder;
+                const idx = extensionOrder.indexOf(this.metadata.uuid);
+                extensionOrder.push(extensionOrder.splice(idx, 1)[0]);
+            });
+        } else {
+            this._activateVShell();
+        }
 
         console.debug(`${Me.metadata.name}: enabled`);
     }
