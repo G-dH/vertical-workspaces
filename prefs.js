@@ -655,7 +655,7 @@ function _getLayoutOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Shift Overview by Panel Height'),
-            _('This option can help align the overview of the secondary monitor with the primary monitor'),
+            _('This option can help align the overview of the secondary monitor with the primary one'),
             itemFactory.newSwitch(),
             'secWsPreviewShift'
         )
@@ -2054,24 +2054,18 @@ function _getMiscOptionList(itemFactory) {
         )
     );
 
-    /* optionList.push(
+    optionList.push(
         itemFactory.getRowWidget(
-            _('Compatibility')
+            _('Workarounds / Hacks')
         )
     );
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Improve compatibility with Dash to Dock'),
-            _('With the default Ubuntu Dock and other Dash To Dock forks, you may experience issues with Activities overview after you change Dock position or re-enable the extension. This option is enabled automatically if a replacement for the Dash is detected. In any case, using Dash to Dock extension with V-Shell is problematic and not recommended.'),
+            _('Delay at Startup'),
+            _("If you encounter issues during GNOME Shell startup after logging in, which could be caused by V-Shell's incompatibility with another extension, try enabling this option. When enabled, V-Shell is activated after the startup is complete. It will activate automatically when Dash to Dock, Ubuntu Dock or Dash to Panel extensions are detected."),
             itemFactory.newSwitch(),
-            'fixUbuntuDock'
-        )
-    );*/
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Performance')
+            'delayStartup'
         )
     );
 
@@ -2081,12 +2075,6 @@ function _getMiscOptionList(itemFactory) {
             _('This option allows V-Shell to pre-realize app grid and app folders during session startup in order to avoid stuttering animations when using them for the first time. If enabled, the session startup needs a little bit more time to finish and necessary memory will be allocated at this time'),
             itemFactory.newSwitch(),
             'appGridPerformance'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Workarounds')
         )
     );
 

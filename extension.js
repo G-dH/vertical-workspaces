@@ -105,18 +105,19 @@ class Extension {
     enable() {
         this._init();
 
-        const skipStartup = // prevent conflicts during startup
+        // prevent conflicts during startup
+        const skipStartup = opt.DELAY_STARTUP ||
                 Me.Util.getEnabledExtensions('ubuntu-dock').length ||
                 Me.Util.getEnabledExtensions('dash-to-dock').length ||
                 Me.Util.getEnabledExtensions('dash-to-panel').length;
         if (skipStartup && Main.layoutManager._startingUp) {
             const startupId = Main.layoutManager.connect('startup-complete', () => {
-                Main.layoutManager.disconnect(startupId);
                 this._activateVShell();
                 // Since VShell has been activated with a delay, move it in extensionOrder
                 let extensionOrder = Main.extensionManager._extensionOrder;
                 const idx = extensionOrder.indexOf(this.metadata.uuid);
                 extensionOrder.push(extensionOrder.splice(idx, 1)[0]);
+                Main.layoutManager.disconnect(startupId);
             });
         } else {
             this._activateVShell();
@@ -311,7 +312,9 @@ class Extension {
                         }
                     );
                 } else if (session.currentMode === 'unlock-dialog') {
-                    Me.Modules.panelModule.update(true);
+                    Me.Modules.panelModule.update();
+                    Main.layoutManager.panelBox.translation_y = 0;
+                    Main.panel.opacity = 255;
                 }
             });
         }
@@ -421,39 +424,24 @@ class Extension {
 
         Me.Modules.layoutModule.update(reset);
         Me.Modules.dashModule.update(reset);
-        // avoid enabling panel module when session is locked
-        if (reset || (!reset && !Main.sessionMode.isLocked))
-            Me.Modules.panelModule.update(reset);
-        // the panel must be visible when screen is locked
-        // at startup time, panel will be updated from the startupAnimation after allocation
-        if (!reset && Main.sessionMode.isLocked && !Main.layoutManager._startingUp)
-            Me.Modules.panelModule._showPanel(true);
-            // PanelModule._showPanel(true);
-            // hide panel so it appears directly on the final place
-        /* else if (Main.layoutManager._startingUp && !Meta.is_restart())
-            Main.panel.opacity = 0;*/
+        Me.Modules.panelModule.update(reset);
 
         Me.Modules.workspaceAnimationModule.update(reset);
         Me.Modules.workspaceSwitcherPopupModule.update(reset);
-
         Me.Modules.swipeTrackerModule.update(reset);
-
         Me.Modules.searchModule.update(reset);
 
-        // don't rebuild app grid on any screen lock
-        // even if the extension includes unlock-screen session mode
-        // disable/enable is called at least once even on GS44
-        // when screen lock is activated for the first time
-        // because every first disable of each extension rebases
-        // the entire extensions stack that was enabled later
+        Me.Modules.appDisplayModule.update(reset);
+
+        Me.Modules.windowAttentionHandlerModule.update(reset);
+        Me.Modules.appFavoritesModule.update(reset);
+        Me.Modules.messageTrayModule.update(reset);
+        Me.Modules.osdWindowModule.update(reset);
+        Me.Modules.overlayKeyModule.update(reset);
+        Me.Modules.searchControllerModule.update(reset);
+
         if (Main.sessionMode.isLocked)
             this._sessionLockActive = true;
-
-        // This covers unnecessary enable/disable cycles during first screen lock when extensions are rebased, but is not allowed by the EGO rules
-        if (!this._sessionLockActive || !Main.extensionManager._getEnabledExtensions().includes(Me.metadata.uuid)) {
-            // iconGridModule will be updated from appDisplayModule
-            Me.Modules.appDisplayModule.update(reset);
-        }
 
         if (!this._sessionLockActive && !Main.layoutManager._startingUp && opt.APP_GRID_PERFORMANCE) {
             // Avoid showing status at startup, can cause freeze
@@ -463,18 +451,13 @@ class Extension {
         if (!Main.sessionMode.isLocked)
             this._sessionLockActive = false;
 
-        // iconGridModule will be updated from appDisplayModule
-        // Me.Modules.appDisplayModule.update(reset);
-
-        Me.Modules.windowAttentionHandlerModule.update(reset);
-        Me.Modules.appFavoritesModule.update(reset);
-        Me.Modules.messageTrayModule.update(reset);
-        Me.Modules.osdWindowModule.update(reset);
-        Me.Modules.overlayKeyModule.update(reset);
-        Me.Modules.searchControllerModule.update(reset);
-
+        // Move overview actors to default positions
         if (!reset && !Main.layoutManager._startingUp)
             Main.overview._overview.controls.setInitialTranslations();
+        if (this._sessionLockActive) {
+            Main.layoutManager.panelBox.translation_y = 0;
+            Main.panel.opacity = 255;
+        }
     }
 
     _onShowingOverview() {

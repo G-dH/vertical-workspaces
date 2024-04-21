@@ -313,6 +313,9 @@
     <key name='highlighting-style' type='i'>
       <default>1</default>
     </key>
+    <key type="b" name="delay-startup">
+      <default>false</default>
+    </key>
 
     <key type="b" name="workspace-switcher-popup-module">
       <default>true</default>
