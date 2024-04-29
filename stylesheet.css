@@ -139,11 +139,26 @@
 
 /* app grid page indicators */
 .page-indicator-icon {
-	margin: 10px 10px 10px 10px;
+	margin: 0px;
 }
 
 .page-indicator {
 	padding: 0px;
+}
+
+.page-indicators {
+	spacing: 20px;
+	margin: 0;
+}
+
+.page-indicators-horizontal {
+	margin: 0;
+	margin-bottom: 18px;
+}
+
+.page-indicators-vertical {
+	margin: 0;
+	margin-right: 18px;
 }
 
 .search-entry{
@@ -257,6 +272,22 @@ StButton#vhandle {
     height: 18px;
 }
 
+.prev-page-indicator {
+	background: rgba(255, 255, 255, 0.1);
+	background-gradient-start: rgba(255, 255, 255, 0.1);
+	background-gradient-end: transparent;
+	background-gradient-direction: vertical;
+	border-radius: 100px 100px 0px 0px;
+}
+.next-page-indicator {
+	background: rgba(255, 255, 255, 0.1);
+	background-gradient-start: transparent;
+	background-gradient-end: rgba(255, 255, 255, 0.1);
+	background-gradient-direction: vertical;
+	border-radius: 0px 0px 100px 100px;
+
+}
+
 /* reduce size of hot corner ripples to half */
 .ripple-box {
 	width: 26px;
@@ -266,6 +297,10 @@ StButton#vhandle {
 .osd-window {
 	margin: 4em;
 	margin-bottom: 8em; /* avoid overlap with dock extension */
+}
+
+.app-folder-dialog-container {
+	padding: 30px;
 }
 
 .app-folder-46,
@@ -285,7 +320,8 @@ StButton#vhandle {
 	border-color: rgba(160, 160, 160, 0.3);
 }
 
-.edit-folder-button:hover, 
+.edit-folder-button:hover,
+.page-navigation-arrow:hover,
 .app-folder-46:hover,
 .app-folder-45:hover .overview-icon,
 .app-folder-45:focus .overview-icon {
@@ -298,26 +334,27 @@ StButton#vhandle {
 }
 
 /* 46 changes the default bg color from transparent to the solid color blending with widget background */
- .search-provider-icon,
- .list-search-result,
- .overview-tile {
+.page-navigation-arrow,
+.search-provider-icon,
+.list-search-result,
+.overview-tile {
 	 background-color: transparent;
  }
  
  /* Needed only for 46+, but doesn't hurt 45 */
- .search-provider-icon:hover,
- .search-provider-icon:focus,
- .search-provider-icon:selected,
- .list-search-result:hover,
- .list-search-result:focus,
- .list-search-result:selected,
- .overview-tile:hover,
- .overview-tile:focus,
- .overview-tile:selected,
- .overview-icon:hover,
- .overview-icon:focus,
- .overview-icon:selected {
-	 background-color: rgba(200, 200, 200, 0.15);
+.search-provider-icon:hover,
+.search-provider-icon:focus,
+.search-provider-icon:selected,
+.list-search-result:hover,
+.list-search-result:focus,
+.list-search-result:selected,
+.app-folder-dialog .overview-tile:hover,
+.app-folder-dialog .overview-tile:focus,
+.app-folder-dialog .overview-tile:selected,
+.overview-icon:hover,
+.overview-icon:focus,
+.overview-icon:selected {
+	background-color: rgba(200, 200, 200, 0.15);
  }
 
 .app-folder-46,
@@ -330,21 +367,24 @@ StButton#vhandle {
 
 .app-folder-46 .overview-icon,
  #dash.dash-46 .overview-icon {
-	 background-color: transparent;
+	background-color: transparent;
  }
  
  #dash.dash-46 .overview-tile,
  #dash.dash-46 .show-apps {
-	 background-color: transparent;
+	background-color: transparent;
  }
- 
- #dash.dash-46 .overview-tile:hover .overview-icon,
- #dash.dash-46 .overview-tile:focus .overview-icon,
- #dash.dash-46 .overview-tile:selected .overview-icon,
- #dash.dash-46 .show-apps:hover .overview-icon,
- #dash.dash-46 .show-apps:focus .overview-icon,
- #dash.dash-46 .show-apps:selected .overview-icon {
-	 background-color: rgba(200, 200, 200, 0.15);
+
+.app-display-46 .overview-tile:hover,
+.app-display-46 .overview-tile:focus,
+.app-display-46 .overview-tile:selected,
+#dash.dash-46 .overview-tile:hover .overview-icon,
+#dash.dash-46 .overview-tile:focus .overview-icon,
+#dash.dash-46 .overview-tile:selected .overview-icon,
+#dash.dash-46 .show-apps:hover .overview-icon,
+#dash.dash-46 .show-apps:focus .overview-icon,
+#dash.dash-46 .show-apps:selected .overview-icon {
+	background-color: rgba(200, 200, 200, 0.15);
  }
 
 #dash.vertical-46 {
