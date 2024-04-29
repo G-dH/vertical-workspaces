@@ -146,22 +146,37 @@
 
 /* app grid page indicatos */
 .page-indicator-icon {
-	margin: 10px 10px 10px 10px;
+	margin: 0px;
 }
 
 .page-indicator {
 	padding: 0px;
 }
 
+.page-indicators {
+	spacing: 20px;
+	margin: 0;
+}
+
+.page-indicators-horizontal {
+	margin: 0;
+	margin-bottom: 18px;
+}
+
+.page-indicators-vertical {
+	margin: 0;
+	margin-right: 18px;
+}
+
 /* GS 43 App Grid - indicators that show up when dragging icon */
-.prevPageIndicator {
+.prev-page-indicator {
 	background: rgba(255, 255, 255, 0.1);
 	background-gradient-start: rgba(255, 255, 255, 0.1);
 	background-gradient-end: transparent;
 	background-gradient-direction: vertical;
 	border-radius: 100px 100px 0px 0px;
 }
-.nextPageIndicator {
+.next-page-indicator {
 	background: rgba(255, 255, 255, 0.1);
 	background-gradient-start: transparent;
 	background-gradient-end: rgba(255, 255, 255, 0.1);
@@ -288,6 +303,10 @@ StButton#vhandle {
 .edit-folder-button,
 .folder-name-entry {
 	background-color: rgba(200, 200, 200, 0.08);
+}
+
+.app-folder-dialog-container {
+	padding: 30px;
 }
 
 .app-folder-dialog-vshell {
