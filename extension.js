@@ -584,7 +584,8 @@ export default class VShell extends Extension.Extension {
         opt.DASH_VISIBLE = opt.DASH_VISIBLE && !Me.Util.getEnabledExtensions('dash-to-panel@jderose9.github.com').length;
 
         const monitorWidth = global.display.get_monitor_geometry(global.display.get_primary_monitor()).width;
-        if (monitorWidth < 1600) {
+        const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
+        if (monitorWidth / scaleFactor < 1600) {
             opt.APP_GRID_ICON_SIZE_DEFAULT = opt.APP_GRID_ACTIVE_PREVIEW && !opt.APP_GRID_USAGE ? 128 : 64;
             opt.APP_GRID_FOLDER_ICON_SIZE_DEFAULT = 64;
         }
