@@ -210,37 +210,6 @@ function _getLayoutOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Open Windows Icon Position'),
-            _('Allows to add "Search Open Windows" icon into Dash (if "WSP (Window Search Provider)" extension is installed and enabled) so you can directly toggle window search provider results. You can also use the Space hotkey'),
-            itemFactory.newDropDown(),
-            'dashShowWindowsIcon',
-            [
-                [_('Hide'), 0],
-                [_('Start'), 1],
-                [_('End'), 2],
-            ],
-            'dashModule'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Extensions Icon Position'),
-            _('Allows to add "Search Extensions" icon into Dash (if "ESP (Extensions Search Provider)" extension is installed and enabled) so you can directly toggle extensions search provider results. You can also use the Ctrl + Shift + Space hotkey'),
-            itemFactory.newDropDown(),
-            'dashShowExtensionsIcon',
-            [
-                [_('Hide'), 0],
-                [_('Start'), 1],
-                [_('End'), 2],
-            ],
-            'dashModule'
-        )
-    );
-
-
-    optionList.push(
-        itemFactory.getRowWidget(
             _('Workspace Thumbnails / Orientation')
         )
     );
@@ -944,7 +913,7 @@ function _getAppearanceOptionList(itemFactory) {
                 [_('80'), 80],
                 [_('64'), 64],
                 [_('48'), 48],
-                [_('32'), 32],
+                // [_('32'), 32],
             ],
             'appDisplayModule'
         )
@@ -976,7 +945,7 @@ function _getAppearanceOptionList(itemFactory) {
     const columnsSpinBtn = itemFactory.newSpinButton(columnsAdjustment);
     optionList.push(itemFactory.getRowWidget(
         _('Columns per Page (0 for adaptive grid)'),
-        _('Number of columns in the application grid. If set to 0 (the default), the number will be set automatically to fit the available width'),
+        _('Number of columns in the application grid. If set to 0, the number will be set automatically to fit the available width'),
         columnsSpinBtn,
         'appGridColumns',
         null,
@@ -993,7 +962,7 @@ function _getAppearanceOptionList(itemFactory) {
     const rowsSpinBtn = itemFactory.newSpinButton(rowsAdjustment);
     optionList.push(itemFactory.getRowWidget(
         _('Rows per Page (0 for adaptive grid)'),
-        _('Number of rows in the application grid. If set to 0 (the default), the number will be set automatically to fit the available height'),
+        _('Number of rows in the application grid. If set to 0, the number will be set automatically to fit the available height'),
         rowsSpinBtn,
         'appGridRows',
         null,
@@ -1009,8 +978,8 @@ function _getAppearanceOptionList(itemFactory) {
 
     const folderColumnsSpinBtn = itemFactory.newSpinButton(folderColumnsAdjustment);
     optionList.push(itemFactory.getRowWidget(
-        _('Folder Columns per Page (0 for adaptive grid)'),
-        _('Number of columns in folder grid. If you leave the value at 0, the number of columns will be calculated to fit all the folder icons on one page'),
+        _('App Folders - Maximum Number Of Columns (0 for automatic)'),
+        _('Specifies the maximum number of columns per page in folder grids. If you leave the value at 0, the maximum number of columns will be calculated based on available space. The actual folder grid dimensions will be determined by the number of items within the set limits'),
         folderColumnsSpinBtn,
         'appGridFolderColumns',
         null,
@@ -1026,8 +995,8 @@ function _getAppearanceOptionList(itemFactory) {
 
     const folderRowsSpinBtn = itemFactory.newSpinButton(folderRowsAdjustment);
     optionList.push(itemFactory.getRowWidget(
-        _('Folder Rows per Page (0 for adaptive grid)'),
-        _('Number of rows in folder grid. If you leave the value at 0, the number of rows will be calculated to fit all the folder icons on one page'),
+        _('App Folders - Maximum Number Of Rows (0 for automatic)'),
+        _('Specifies the maximum number of rows per page in folder grids. If you leave the value at 0, the maximum number of rows will be calculated based on available space. The actual folder grid dimensions will be determined by the number of items within the set limits'),
         folderRowsSpinBtn,
         'appGridFolderRows',
         null,
