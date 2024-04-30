@@ -1,5 +1,26 @@
 ## Changelog:
-### v46.1 for GNOME 45.2+, v44.12 for GNOME 42-44 (not released yet)
+### v46.1 (not yet released)
+**Fixed:**
+- Conflicts with Dash to Dock can crash GNOME at startup
+- V-Shell affects Dash to Dock icons highlighting
+- Search entry and results allocation ignore Dash to Dock
+- App folder dialogs sizing and positioning
+- Secondary monitor overview alignment with the primary one (option)
+- Removed all code related to the removed modules
+
+**Added:**
+- Option *Delay at Startup* which delays the activation of V-Shell after login. V-Shell automatically uses this option if detects DtD, Ubuntu Dock and Dash to Panel
+- Close button to the app folder dialog
+
+**Changed**
+- App grid module has been refactored to be more efficient and reliable
+- Removed 32px option for app grid icon size
+- *Remove* folder button moved to the left side of the folder dialog
+- Folder grid columns and rows settings are now used as maximum limits rather than fixed page size, which allows you to limit the default adaptive algorithm
+- All app grid settings moved to the separate tab
+
+
+### v46.0 for GNOME 45.2+ (2024-03-30 ego), v44.12 for GNOME 42-44 (not released)
 **Added**
 - Support for GNOME 46
 - Option *Fix New Window Not On Current Monitor* tries to work around that issue. However, success rate is not 100%
