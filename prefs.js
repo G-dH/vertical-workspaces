@@ -1744,7 +1744,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Grid Spacing'),
-                _('Adjusts the spacing between icons in a grid, the real impact is on folders'),
+                _('Adjusts the spacing between icons in a grid. V-Shell uses this value to calculate grid dimensions for adaptive options. However, the main grid automatically adjusts the spacing for the grid and available space, while folder grids use the spacing exactly as set here'),
                 appGridSpacingScale,
                 'appGridSpacing',
                 null,
