@@ -303,37 +303,21 @@ StButton#vhandle {
 	padding: 30px;
 }
 
-.app-folder-46,
-.app-folder-46 .overview-tile,
-.app-folder-46 .overview-icon,
-.app-folder-45 .overview-icon,
-.edit-folder-button,
-.folder-name-entry {
-	background-color: rgba(200, 200, 200, 0.08);
-}
-
-.app-folder-dialog-vshell {
-	background-color: rgba(200, 200, 200, 0.08);
-}
-
 .app-folder-dialog {
 	border-color: rgba(160, 160, 160, 0.3);
 }
 
-.edit-folder-button:hover,
-.page-navigation-arrow:hover,
-.app-folder-46:hover,
-.app-folder-45:hover .overview-icon,
-.app-folder-45:focus .overview-icon {
-	background-color: rgba(200, 200, 200, 0.15);
-}
-
 /* add missing spacing between buttons */
-.edit-folder-button-46 {
-	margin-right: 6px;
+.folder-button-margin {
+	margin-left: 12px;
 }
 
 /* 46 changes the default bg color from transparent to the solid color blending with widget background */
+#dash.dash-46 .show-apps,
+#dash.dash-46 .overview-tile,
+#dash.dash-46 .overview-icon,
+.app-folder-45 .overview-icon, /* 45 only */
+.app-folder-46 .overview-icon,
 .page-navigation-arrow,
 .search-provider-icon,
 .list-search-result,
@@ -342,12 +326,29 @@ StButton#vhandle {
  }
  
  /* Needed only for 46+, but doesn't hurt 45 */
+#dash.dash-46 .overview-tile:hover .overview-icon,
+#dash.dash-46 .overview-tile:focus .overview-icon,
+#dash.dash-46 .overview-tile:selected .overview-icon,
+#dash.dash-46 .show-apps:hover .overview-icon,
+#dash.dash-46 .show-apps:focus .overview-icon,
+#dash.dash-46 .show-apps:selected .overview-icon,
+.edit-folder-button:hover,
+.page-navigation-arrow:hover,
 .search-provider-icon:hover,
 .search-provider-icon:focus,
 .search-provider-icon:selected,
 .list-search-result:hover,
 .list-search-result:focus,
 .list-search-result:selected,
+.app-display-46 .overview-tile:hover,
+.app-display-46 .overview-tile:focus,
+.app-display-46 .overview-tile:selected,
+.app-folder-46:hover,
+.app-folder-45:hover .overview-icon,
+.app-folder-45:focus .overview-icon,
+#searchResults .overview-tile:hover,
+#searchResults .overview-tile:focus,
+#searchResults .overview-tile:selected,
 .app-folder-dialog .overview-tile:hover,
 .app-folder-dialog .overview-tile:focus,
 .app-folder-dialog .overview-tile:selected,
@@ -357,35 +358,17 @@ StButton#vhandle {
 	background-color: rgba(200, 200, 200, 0.15);
  }
 
+.app-folder-dialog,
+.edit-folder-button,
+.folder-name-entry,
 .app-folder-46,
 .app-folder-46 .overview-tile,
-.app-folder-45 .overview-icon, /* 45 only */
+.app-folder-45 .overview-icon,
 .edit-folder-button,
 .folder-name-entry {
 	background-color: rgba(200, 200, 200, 0.08);
 }
 
-.app-folder-46 .overview-icon,
- #dash.dash-46 .overview-icon {
-	background-color: transparent;
- }
- 
- #dash.dash-46 .overview-tile,
- #dash.dash-46 .show-apps {
-	background-color: transparent;
- }
-
-.app-display-46 .overview-tile:hover,
-.app-display-46 .overview-tile:focus,
-.app-display-46 .overview-tile:selected,
-#dash.dash-46 .overview-tile:hover .overview-icon,
-#dash.dash-46 .overview-tile:focus .overview-icon,
-#dash.dash-46 .overview-tile:selected .overview-icon,
-#dash.dash-46 .show-apps:hover .overview-icon,
-#dash.dash-46 .show-apps:focus .overview-icon,
-#dash.dash-46 .show-apps:selected .overview-icon {
-	background-color: rgba(200, 200, 200, 0.15);
- }
 
 #dash.vertical-46 {
 	margin: 0px;
