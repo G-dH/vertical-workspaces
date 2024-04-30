@@ -1513,6 +1513,8 @@ export default class VShell extends ExtensionPreferences {
         return optionList;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+
     _getAppGridOptionList(itemFactory) {
         const optionList = [];
         // options item format:
@@ -1793,6 +1795,21 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
+                _('Performance')
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Smooth App Grid Animations'),
+                _('This option allows V-Shell to pre-realize app grid and app folders during session startup in order to avoid stuttering animations when using them for the first time. If enabled, the session startup needs a little bit more time to finish and necessary memory will be allocated at this time'),
+                itemFactory.newSwitch(),
+                'appGridPerformance'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
                 _('Reset')
             )
         );
@@ -1814,7 +1831,6 @@ export default class VShell extends ExtensionPreferences {
                 settings.set_strv('folder-children', []);
             })
         ));
-
 
         return optionList;
     }
@@ -2052,15 +2068,6 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Smooth App Grid Animations'),
-                _('This option allows V-Shell to pre-realize app grid and app folders during session startup in order to avoid stuttering animations when using them for the first time. If enabled, the session startup needs a little bit more time to finish and necessary memory will be allocated at this time'),
-                itemFactory.newSwitch(),
-                'appGridPerformance'
-            )
-        );
-
-        optionList.push(
-            itemFactory.getRowWidget(
                 _('Fix New Window Not In Focus'),
                 _('If you often find that the app window you open from the Activities overview does not get focus, try enabling this option.'),
                 itemFactory.newSwitch(),
@@ -2079,6 +2086,8 @@ export default class VShell extends ExtensionPreferences {
 
         return optionList;
     }
+
+    // --------------------------------------------------------------------------------------------------
 
     _getAboutOptionList(itemFactory) {
         const optionList = [];
