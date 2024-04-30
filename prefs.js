@@ -63,6 +63,11 @@ function _getPageList() {
             optionList: _getBehaviorOptionList(itemFactory),
         },
         {
+            title: _('App Grid'),
+            iconName: 'view-app-grid-symbolic',
+            optionList: _getAppGridOptionList(itemFactory),
+        },
+        {
             title: _('Modules'),
             iconName: 'application-x-addon-symbolic',
             optionList: _getModulesOptionList(itemFactory),
@@ -331,7 +336,7 @@ function _getLayoutOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspaces Spacing'),
-            _('Adjusts spacing between workspace previews so you can control how much of the adjacent workspaces overlap to the current workspace overview. Default value should set the adjacent workspaces off-screen.'),
+            _('Adjusts the spacing between workspace previews so you can control how much of the adjacent workspaces overlap to the current workspace overview. Default value should set the adjacent workspaces off-screen.'),
             wsSpacingScale,
             'wsMaxSpacing'
         )
@@ -868,163 +873,6 @@ function _getAppearanceOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('App Grid')
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Icon Size'),
-            _('Allows to set a fixed app grid icon size and bypass the default adaptive algorithm'),
-            itemFactory.newDropDown(),
-            'appGridIconSize',
-            [
-                [_('Adaptive (Default)'), -1],
-                [_('256'), 256],
-                [_('224'), 224],
-                [_('208'), 208],
-                [_('192'), 192],
-                [_('176'), 176],
-                [_('160'), 160],
-                [_('144'), 144],
-                [_('128'), 128],
-                [_('112'), 112],
-                [_('96'), 96],
-                [_('80'), 80],
-                [_('64'), 64],
-                [_('48'), 48],
-                // [_('32'), 32],
-            ],
-            'appDisplayModule'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Folder Icon Size'),
-            _('Allows to set a fixed icon size and bypass the default adaptive algorithm in the open folder dialog'),
-            itemFactory.newDropDown(),
-            'appGridFolderIconSize',
-            [
-                [_('Adaptive (Default)'), -1],
-                [_('128'), 128],
-                [_('112'), 112],
-                [_('96'), 96],
-                [_('80'), 80],
-                [_('64'), 64],
-                [_('48'), 48],
-                // [_('32'), 32],
-            ],
-            'appDisplayModule'
-        )
-    );
-
-    const folderIconGridCombo = itemFactory.newDropDown();
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Max App Folder Icon Grid Size'),
-            _('Sets a grid size (number of icons) in the folder preview. 3x3 options automatically switches between 2x2 and 3x3 grid depending on the number of icons in the folder'),
-            folderIconGridCombo,
-            'appGridFolderIconGrid',
-            [
-                [_('2x2 (Default)'), 2],
-                [_('3x3 for 5+ apps'), 3],
-                [_('3x3 for 9+ apps'), 4],
-            ],
-            'appDisplayModule'
-        )
-    );
-
-    const columnsAdjustment = new Gtk.Adjustment({
-        upper: 15,
-        lower: 0,
-        step_increment: 1,
-        page_increment: 1,
-    });
-
-    const columnsSpinBtn = itemFactory.newSpinButton(columnsAdjustment);
-    optionList.push(itemFactory.getRowWidget(
-        _('Columns per Page (0 for adaptive grid)'),
-        _('Number of columns in the application grid. If set to 0, the number will be set automatically to fit the available width'),
-        columnsSpinBtn,
-        'appGridColumns',
-        null,
-        'appDisplayModule'
-    ));
-
-    const rowsAdjustment = new Gtk.Adjustment({
-        upper: 15,
-        lower: 0,
-        step_increment: 1,
-        page_increment: 1,
-    });
-
-    const rowsSpinBtn = itemFactory.newSpinButton(rowsAdjustment);
-    optionList.push(itemFactory.getRowWidget(
-        _('Rows per Page (0 for adaptive grid)'),
-        _('Number of rows in the application grid. If set to 0, the number will be set automatically to fit the available height'),
-        rowsSpinBtn,
-        'appGridRows',
-        null,
-        'appDisplayModule'
-    ));
-
-    const folderColumnsAdjustment = new Gtk.Adjustment({
-        upper: 15,
-        lower: 0,
-        step_increment: 1,
-        page_increment: 1,
-    });
-
-    const folderColumnsSpinBtn = itemFactory.newSpinButton(folderColumnsAdjustment);
-    optionList.push(itemFactory.getRowWidget(
-        _('App Folders - Maximum Number Of Columns (0 for automatic)'),
-        _('Specifies the maximum number of columns per page in folder grids. If you leave the value at 0, the maximum number of columns will be calculated based on available space. The actual folder grid dimensions will be determined by the number of items within the set limits'),
-        folderColumnsSpinBtn,
-        'appGridFolderColumns',
-        null,
-        'appDisplayModule'
-    ));
-
-    const folderRowsAdjustment = new Gtk.Adjustment({
-        upper: 15,
-        lower: 0,
-        step_increment: 1,
-        page_increment: 1,
-    });
-
-    const folderRowsSpinBtn = itemFactory.newSpinButton(folderRowsAdjustment);
-    optionList.push(itemFactory.getRowWidget(
-        _('App Folders - Maximum Number Of Rows (0 for automatic)'),
-        _('Specifies the maximum number of rows per page in folder grids. If you leave the value at 0, the maximum number of rows will be calculated based on available space. The actual folder grid dimensions will be determined by the number of items within the set limits'),
-        folderRowsSpinBtn,
-        'appGridFolderRows',
-        null,
-        'appDisplayModule'
-    ));
-
-    const appGridSpacingAdjustment = new Gtk.Adjustment({
-        upper: 30,
-        lower: 5,
-        step_increment: 1,
-        page_increment: 5,
-    });
-
-    const appGridSpacingScale = itemFactory.newScale(appGridSpacingAdjustment);
-    appGridSpacingScale.add_mark(12, Gtk.PositionType.TOP, null);
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Grid Spacing'),
-            _('Adjusts the spacing between icons in a grid, the real impact is on folders'),
-            appGridSpacingScale,
-            'appGridSpacing',
-            null,
-            'appDisplayModule'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
             _('Search')
         )
     );
@@ -1285,7 +1133,7 @@ function _getBehaviorOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Hot Corner Action'),
-            _('Disable or change behavior of the hot corner. Holding down the Ctrl key while hitting the hot corner switches between Overview/Applications actions'),
+            _('Disable or change behavior of the hot corner. Holding down the Ctrl key while hitting the hot corner switches between Overview/Applications actions. The "Search Windows" option requires the "WSP (Window Search Provider)" extension installed and enabled.'),
             itemFactory.newDropDown(),
             'hotCornerAction',
             [
@@ -1392,21 +1240,6 @@ function _getBehaviorOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Search Windows Icon - Scroll Action'),
-            _('Choose the behavior when scrolling over the Search Windows icon. The window cycler works with a list of windows sorted by "Most Recently Used" of the current workspace or all workspaces. Scrolling up cycles through previously used windows on the same workspace, or all windows regardless workspace. This option is mainly useful for the static workspace overview mode.'),
-            itemFactory.newDropDown(),
-            'searchWindowsIconScroll',
-            [
-                [_('Default'), 0],
-                [_('Cycle All Windows'), 1],
-                [_('Cycle Windows On Current WS'), 2],
-            ],
-            'dashModule'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
             _('Workspace Thumbnails')
         )
     );
@@ -1489,127 +1322,6 @@ function _getBehaviorOptionList(itemFactory) {
             'windowPreviewModule'
         )
     );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('App Grid')
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('App Grid Order'),
-            _('Choose sorting method for the app grid. Note that sorting by usage ignores folders'),
-            itemFactory.newDropDown(),
-            'appGridOrder',
-            [
-                [_('Custom (Default)'), 0],
-                [_('Alphabet - Folders First'), 1],
-                [_('Alphabet - Folders Last'), 2],
-                [_('Usage - No Folders'), 3],
-            ],
-            'appDisplayModule'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('App Folder Order'),
-            _('Choose sorting method for app folders'),
-            itemFactory.newDropDown(),
-            'appFolderOrder',
-            [
-                [_('Custom (Default)'), 0],
-                [_('Alphabet'), 1],
-                [_('Usage'), 2],
-            ],
-            'appDisplayModule'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('App Grid Content'),
-            _('The default Shell removes favorite apps, this option allows to duplicate them in the grid or remove also running applications. Option "Favorites and Running First" only works with the Alphabet and Usage sorting'),
-            itemFactory.newDropDown(),
-            'appGridContent',
-            [
-                [_('Include All'), 0],
-                [_('Include All - Favorites and Running First'), 1],
-                [_('Exclude Favorites (Default)'), 2],
-                [_('Exclude Running'), 3],
-                [_('Exclude Favorites and Running'), 4],
-            ],
-            'appDisplayModule'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Active Icons in Folder Preview'),
-            _('If enabled, icons in the folder review behaves like normal icons, you can activate or even drag them directly, without having to open the folder first'),
-            itemFactory.newSwitch(),
-            'appGridActivePreview',
-            null,
-            'appDisplayModule'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Center Open Folders'),
-            _('App folder may open in the center of the screen or above the source folder icon'),
-            itemFactory.newSwitch(),
-            'appGridFolderCenter',
-            null,
-            'appDisplayModule'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Allow Incomplete Pages'),
-            _('If disabled, icons from the next page (if any) are automatically moved to fill any empty slot left after an icon was (re)moved (to a folder for example)'),
-            itemFactory.newSwitch(),
-            'appGridIncompletePages',
-            null,
-            'appDisplayModule'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('App Labels Behavior'),
-            _('Choose how and when to display app names'),
-            itemFactory.newDropDown(),
-            'appGridNamesMode',
-            [
-                [_('Ellipsized - Expand Selected (Default)'), 0],
-                [_('Always Expanded'), 1],
-                [_('Hidden - Show Selected Only'), 2],
-            ],
-            'appDisplayModule'
-        )
-    );
-
-    optionList.push(itemFactory.getRowWidget(
-        _('Reset App Grid Layout'),
-        _('Removes all stored app grid positions, after reset icons will be sorted alphabetically, except folder contents'),
-        itemFactory.newResetButton(() => {
-            const settings = new Gio.Settings({ schema_id: 'org.gnome.shell' });
-            settings.set_value('app-picker-layout', new GLib.Variant('aa{sv}', []));
-        })
-    ));
-
-    optionList.push(itemFactory.getRowWidget(
-        _('Remove App Grid Folders'),
-        _('Removes all folders, folder apps will move to the root grid'),
-        itemFactory.newResetButton(() => {
-            const settings = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
-            settings.set_strv('folder-children', []);
-        })
-    ));
-
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -1810,6 +1522,330 @@ function _getBehaviorOptionList(itemFactory) {
 
     return optionList;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------------
+
+function _getAppGridOptionList(itemFactory) {
+    const optionList = [];
+    // options item format:
+    // (text, caption, widget, settings-variable, [options for combo], sensitivity-depends-on-bool-variable)
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Main App Grid')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Icon Size'),
+            _('Allows to set a fixed app grid icon size and bypass the default adaptive algorithm'),
+            itemFactory.newDropDown(),
+            'appGridIconSize',
+            [
+                [_('Adaptive (Default)'), -1],
+                [_('256'), 256],
+                [_('224'), 224],
+                [_('208'), 208],
+                [_('192'), 192],
+                [_('176'), 176],
+                [_('160'), 160],
+                [_('144'), 144],
+                [_('128'), 128],
+                [_('112'), 112],
+                [_('96'), 96],
+                [_('80'), 80],
+                [_('64'), 64],
+                [_('48'), 48],
+            // [_('32'), 32],
+            ],
+            'appDisplayModule'
+        )
+    );
+
+    const columnsAdjustment = new Gtk.Adjustment({
+        upper: 15,
+        lower: 0,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const columnsSpinBtn = itemFactory.newSpinButton(columnsAdjustment);
+    optionList.push(itemFactory.getRowWidget(
+        _('Columns per Page (0 for adaptive grid)'),
+        _('Number of columns in the application grid. If set to 0, the number will be set automatically to fit the available width'),
+        columnsSpinBtn,
+        'appGridColumns',
+        null,
+        'appDisplayModule'
+    ));
+
+    const rowsAdjustment = new Gtk.Adjustment({
+        upper: 15,
+        lower: 0,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const rowsSpinBtn = itemFactory.newSpinButton(rowsAdjustment);
+    optionList.push(itemFactory.getRowWidget(
+        _('Rows per Page (0 for adaptive grid)'),
+        _('Number of rows in the application grid. If set to 0, the number will be set automatically to fit the available height'),
+        rowsSpinBtn,
+        'appGridRows',
+        null,
+        'appDisplayModule'
+    ));
+
+    const folderColumnsAdjustment = new Gtk.Adjustment({
+        upper: 15,
+        lower: 0,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Allow Incomplete Pages'),
+            _('If disabled, icons from the next page (if any) are automatically moved to fill any empty slot left after an icon was (re)moved (to a folder for example)'),
+            itemFactory.newSwitch(),
+            'appGridIncompletePages',
+            null,
+            'appDisplayModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Sorting'),
+            _('Choose sorting method for the app grid. Note that sorting by usage ignores folders'),
+            itemFactory.newDropDown(),
+            'appGridOrder',
+            [
+                [_('Custom (Default)'), 0],
+                [_('Alphabet - Folders First'), 1],
+                [_('Alphabet - Folders Last'), 2],
+                [_('Usage - No Folders'), 3],
+            ],
+            'appDisplayModule'
+        )
+    );
+
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('App Folders')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Folder Icon Size'),
+            _('Allows to set a fixed icon size and bypass the default adaptive algorithm in the open folder dialog'),
+            itemFactory.newDropDown(),
+            'appGridFolderIconSize',
+            [
+                [_('Adaptive (Default)'), -1],
+                [_('128'), 128],
+                [_('112'), 112],
+                [_('96'), 96],
+                [_('80'), 80],
+                [_('64'), 64],
+                [_('48'), 48],
+                // [_('32'), 32],
+            ],
+            'appDisplayModule'
+        )
+    );
+
+    const folderIconGridCombo = itemFactory.newDropDown();
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('App Folder Preview Grid Size'),
+            _('Sets a grid size (number of icons) in the folder icon preview. 3x3 options automatically switches between 2x2 and 3x3 grid depending on the number of icons in the folder'),
+            folderIconGridCombo,
+            'appGridFolderIconGrid',
+            [
+                [_('2x2 (Default)'), 2],
+                [_('3x3 for 5+ apps'), 3],
+                [_('3x3 for 9+ apps'), 4],
+            ],
+            'appDisplayModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Active Icons in Folder Preview'),
+            _('If enabled, icons in the folder preview behaves like normal icons, you can activate or even drag them directly, without having to open the folder first. This option also affects the app grid default icon size'),
+            itemFactory.newSwitch(),
+            'appGridActivePreview',
+            null,
+            'appDisplayModule'
+        )
+    );
+
+    const folderColumnsSpinBtn = itemFactory.newSpinButton(folderColumnsAdjustment);
+    optionList.push(itemFactory.getRowWidget(
+        _('Maximum Number Of Columns (0 for automatic)'),
+        _('Specifies the maximum number of columns per page in folder grids. If you leave the value at 0, the maximum number of columns will be calculated based on available space. The actual folder grid dimensions will be determined by the number of items within the set limits'),
+        folderColumnsSpinBtn,
+        'appGridFolderColumns',
+        null,
+        'appDisplayModule'
+    ));
+
+    const folderRowsAdjustment = new Gtk.Adjustment({
+        upper: 15,
+        lower: 0,
+        step_increment: 1,
+        page_increment: 1,
+    });
+
+    const folderRowsSpinBtn = itemFactory.newSpinButton(folderRowsAdjustment);
+    optionList.push(itemFactory.getRowWidget(
+        _('Maximum Number Of Rows (0 for automatic)'),
+        _('Specifies the maximum number of rows per page in folder grids. If you leave the value at 0, the maximum number of rows will be calculated based on available space. The actual folder grid dimensions will be determined by the number of items within the set limits'),
+        folderRowsSpinBtn,
+        'appGridFolderRows',
+        null,
+        'appDisplayModule'
+    ));
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('App Folder Order'),
+            _('Choose sorting method for app folders'),
+            itemFactory.newDropDown(),
+            'appFolderOrder',
+            [
+                [_('Custom (Default)'), 0],
+                [_('Alphabet'), 1],
+                [_('Usage'), 2],
+            ],
+            'appDisplayModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Center Open Folders'),
+            _('App folder may open in the center of the screen or above the folder source icon'),
+            itemFactory.newSwitch(),
+            'appGridFolderCenter',
+            null,
+            'appDisplayModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Layout')
+        )
+    );
+
+    const appGridSpacingAdjustment = new Gtk.Adjustment({
+        upper: 30,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 5,
+    });
+
+    const appGridSpacingScale = itemFactory.newScale(appGridSpacingAdjustment);
+    appGridSpacingScale.add_mark(12, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Grid Spacing'),
+            _('Adjusts the spacing between icons in a grid. V-Shell uses this value to calculate grid dimensions for adaptive options. However, the main grid automatically adjusts the spacing for the grid and available space, while folder grids use the spacing exactly as set here'),
+            appGridSpacingScale,
+            'appGridSpacing',
+            null,
+            'appDisplayModule'
+        )
+    );
+
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Content')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('App Grid Content'),
+            _('The default Shell removes favorite apps, this option allows to duplicate them in the grid or remove also running applications. Option "Favorites and Running First" only works with the Alphabet and Usage sorting'),
+            itemFactory.newDropDown(),
+            'appGridContent',
+            [
+                [_('Include All'), 0],
+                [_('Include All - Favorites and Running First'), 1],
+                [_('Exclude Favorites (Default)'), 2],
+                [_('Exclude Running'), 3],
+                [_('Exclude Favorites and Running'), 4],
+            ],
+            'appDisplayModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('App Labels Behavior'),
+            _('Choose how and when to display app names'),
+            itemFactory.newDropDown(),
+            'appGridNamesMode',
+            [
+                [_('Ellipsized - Expand Selected (Default)'), 0],
+                [_('Always Expanded'), 1],
+                [_('Hidden - Show Selected Only'), 2],
+            ],
+            'appDisplayModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Performance')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Smooth App Grid Animations'),
+            _('This option allows V-Shell to pre-realize app grid and app folders during session startup in order to avoid stuttering animations when using them for the first time. If enabled, the session startup needs a little bit more time to finish and necessary memory will be allocated at this time'),
+            itemFactory.newSwitch(),
+            'appGridPerformance'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Reset')
+        )
+    );
+
+    optionList.push(itemFactory.getRowWidget(
+        _('Reset App Grid Layout'),
+        _('Removes all stored app grid positions, after reset icons will be sorted alphabetically, except folder contents'),
+        itemFactory.newResetButton(() => {
+            const settings = new Gio.Settings({ schema_id: 'org.gnome.shell' });
+            settings.set_value('app-picker-layout', new GLib.Variant('aa{sv}', []));
+        })
+    ));
+
+    optionList.push(itemFactory.getRowWidget(
+        _('Remove App Grid Folders'),
+        _('Removes all folders, folder apps will move to the root grid'),
+        itemFactory.newResetButton(() => {
+            const settings = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
+            settings.set_strv('folder-children', []);
+        })
+    ));
+
+    return optionList;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------
 
 function _getModulesOptionList(itemFactory) {
     const optionList = [];
@@ -2035,15 +2071,6 @@ function _getMiscOptionList(itemFactory) {
             _("If you encounter issues during GNOME Shell startup after logging in, which could be caused by V-Shell's incompatibility with another extension, try enabling this option. When enabled, V-Shell is activated after the startup is complete. It will activate automatically when Dash to Dock, Ubuntu Dock or Dash to Panel extensions are detected."),
             itemFactory.newSwitch(),
             'delayStartup'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Smooth App Grid Animations'),
-            _('This option allows V-Shell to pre-realize app grid and app folders during session startup in order to avoid stuttering animations when using them for the first time. If enabled, the session startup needs a little bit more time to finish and necessary memory will be allocated at this time'),
-            itemFactory.newSwitch(),
-            'appGridPerformance'
         )
     );
 
