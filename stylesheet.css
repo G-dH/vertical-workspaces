@@ -307,9 +307,8 @@ StButton#vhandle {
 	border-color: rgba(160, 160, 160, 0.3);
 }
 
-/* add missing spacing between buttons */
-.folder-button-margin {
-	margin-left: 12px;
+.folder-name-container {
+	spacing: 12px;
 }
 
 /* 46 changes the default bg color from transparent to the solid color blending with widget background */
