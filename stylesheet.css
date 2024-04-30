@@ -299,6 +299,7 @@ StButton#vhandle {
 	margin-bottom: 8em; /* avoid overlap with dock extension */
 }
 
+.app-folder-dialog,
 .app-folder .overview-icon,
 .edit-folder-button,
 .folder-name-entry {
@@ -309,12 +310,12 @@ StButton#vhandle {
 	padding: 30px;
 }
 
-.app-folder-dialog-vshell {
-	background-color: rgba(200, 200, 200, 0.08);
-}
-
 .app-folder-dialog {
 	border-color: rgba(160, 160, 160, 0.3);
+}
+
+.folder-name-container {
+	spacing: 12px;
 }
 
 .edit-folder-button:hover,
