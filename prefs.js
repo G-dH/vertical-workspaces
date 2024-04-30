@@ -1853,7 +1853,7 @@ function _getModulesOptionList(itemFactory) {
     // (text, caption, widget, settings-variable, [options for combo], sensitivity-depends-on-bool-variable)
     optionList.push(
         itemFactory.getRowWidget(
-            _('V-Shell Modules (allows you to disable modules that conflict with another extension)')
+            _('Optional Modules')
         )
     );
 
@@ -1880,6 +1880,12 @@ function _getModulesOptionList(itemFactory) {
             _('Window Thumbnails (PiP) - Moved from V-Shell to the standalone "WTMB" extension'),
             _('NOTE: This module has been released as a standalone extension with new features, click to learn more. Related V-Shell options are still available if you install the WTMB extension.\n\nWTMB allows the creation of Picture-in-Picture like window thumbnails that you can use for monitoring of windows on another workspace'),
             itemFactory.newLinkButton('https://github.com/G-dH/window-thumbnails?tab=readme-ov-file#wtmb-window-thumbnails')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Built-in Modules (allows to disable modules that conflict with another extension)')
         )
     );
 
