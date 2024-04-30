@@ -1,5 +1,5 @@
 ## Changelog:
-### v46.1 (not yet released)
+### v46.1  for GNOME 45.2+, v44.12 for GNOME 42-44 (not released)
 **Fixed:**
 - Conflicts with Dash to Dock can crash GNOME at startup
 - V-Shell affects Dash to Dock icons highlighting
