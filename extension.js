@@ -880,8 +880,10 @@ export default class VShell extends Extension.Extension {
     }
 }
 
-const RestartMessage = GObject.registerClass(
-class RestartMessage extends ModalDialog.ModalDialog {
+const RestartMessage = GObject.registerClass({
+    // Registered name should be unique
+    GTypeName: `RestartMessage${Math.floor(Math.random() * 1000)}`,
+}, class RestartMessage extends ModalDialog.ModalDialog {
     _init(message) {
         super._init({
             shellReactive: true,
