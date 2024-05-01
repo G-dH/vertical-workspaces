@@ -357,6 +357,7 @@ StButton#vhandle {
 	background-color: rgba(200, 200, 200, 0.15);
  }
 
+.overview-tile:drop, /* 46 needs to add color so the highlighting style is visible on the app folder preview */
 .app-folder-dialog,
 .edit-folder-button,
 .folder-name-entry,
