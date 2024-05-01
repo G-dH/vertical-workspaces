@@ -115,7 +115,7 @@ class Extension {
                 this._activateVShell();
                 // Since VShell has been activated with a delay, move it in extensionOrder
                 let extensionOrder = Main.extensionManager._extensionOrder;
-                const idx = extensionOrder.indexOf(this.metadata.uuid);
+                const idx = extensionOrder.indexOf(Me.metadata.uuid);
                 extensionOrder.push(extensionOrder.splice(idx, 1)[0]);
                 Main.layoutManager.disconnect(startupId);
             });
