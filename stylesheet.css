@@ -35,8 +35,7 @@
 	padding: 5px 0;
 }
 
-#dash.vertical .app-well-app-running-dot,
-#dash.vertical .app-grid-running-dot {
+#dash.vertical .app-well-app-running-dot {
 	margin: 4px 0px;
 }
 
@@ -397,6 +396,10 @@ StButton#vhandle {
 	margin-left: 2px;
 	margin-top: 4px;
 	margin-bottom: 4px;
+}
+
+#dash.vertical-46 .app-grid-running-dot {
+	margin: 0px;
 }
 
 #dash.vertical-46 .app-well-app-running-dot-custom {
