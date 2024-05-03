@@ -97,6 +97,7 @@ export default class VShell extends Extension.Extension {
                 Me.Util.getEnabledExtensions('dash-to-panel').length;
         if (skipStartup && Main.layoutManager._startingUp) {
             const startupId = Main.layoutManager.connect('startup-complete', () => {
+                this._hideUpdatingMessage = true;
                 this._activateVShell();
                 // Since VShell has been activated with a delay, move it in extensionOrder
                 let extensionOrder = Main.extensionManager._extensionOrder;
@@ -174,6 +175,9 @@ export default class VShell extends Extension.Extension {
 
         this._ensureOverviewIsHidden();
 
+        // store dash _workId so we will be able to detect replacement when entering overview
+        this._storeDashId();
+
         // load VShell configuration
         this._updateSettings();
 
@@ -195,9 +199,6 @@ export default class VShell extends Extension.Extension {
             Main.overview._overview.controls._setBackground();
 
         this._updateSettingsConnection();
-
-        // store dash _workId so we will be able to detect replacement when entering overview
-        this._storeDashId();
 
         // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
         this._setInitialWsIndex();
@@ -310,7 +311,6 @@ export default class VShell extends Extension.Extension {
     _updateConnections() {
         if (!this._monitorsChangedConId)
             this._monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => this._updateVShell(2000));
-
 
         if (!this._showingOverviewConId)
             this._showingOverviewConId = Main.overview.connect('showing', this._onShowingOverview.bind(this));
@@ -810,7 +810,9 @@ export default class VShell extends Extension.Extension {
         if (!Me._vShellStatusMessage) {
             const sm = new /* Main.*/RestartMessage(_('Updating V-Shell...'));
             sm.set_style('background-color: rgba(0,0,0,0.3);');
-            sm.open();
+            if (!this._hideUpdatingMessage)
+                sm.open();
+            this._hideUpdatingMessage = false;
             Me._vShellStatusMessage = sm;
         }
 
