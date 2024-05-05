@@ -355,25 +355,6 @@ export default class VShell extends ExtensionPreferences {
             )
         );
 
-        const agPageAdjustment = new Gtk.Adjustment({
-            upper: 100,
-            lower: 50,
-            step_increment: 1,
-            page_increment: 10,
-        });
-
-        const agPageWidthScale = itemFactory.newScale(agPageAdjustment);
-        agPageWidthScale.add_mark(90, Gtk.PositionType.TOP, null);
-        optionList.push(
-            itemFactory.getRowWidget(
-                _('App Grid Page Width Scale'),
-                _('Adjusts max app grid page width relative to the available space.'),
-                agPageWidthScale,
-                'appGridPageWidthScale',
-                null,
-                'appDisplayModule'
-            )
-        );
 
         optionList.push(
             itemFactory.getRowWidget(
@@ -1080,6 +1061,16 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
+                _('Click Empty Space To Close'),
+                _('Enables clicking on an empty space in the overview to close it'),
+                itemFactory.newSwitch(),
+                'clickEmptyClose',
+                null
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
                 _('Overlay Key (Super/Windows)')
             )
         );
@@ -1731,6 +1722,26 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Layout')
+            )
+        );
+
+        const agPageAdjustment = new Gtk.Adjustment({
+            upper: 100,
+            lower: 50,
+            step_increment: 1,
+            page_increment: 10,
+        });
+
+        const agPageWidthScale = itemFactory.newScale(agPageAdjustment);
+        agPageWidthScale.add_mark(90, Gtk.PositionType.TOP, null);
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('App Grid Page Width Scale'),
+                _('Adjusts max app grid page width relative to the available space. Only for adaptive grid size algorithm (number of columns is set to 0)'),
+                agPageWidthScale,
+                'appGridPageWidthScale',
+                null,
+                'appDisplayModule'
             )
         );
 

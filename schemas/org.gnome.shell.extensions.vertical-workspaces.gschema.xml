@@ -301,6 +301,9 @@
     <key type="i" name="overview-esc-behavior">
       <default>0</default>
     </key>
+    <key type="b" name="click-empty-close">
+      <default>true</default>
+    </key>
     <key type="b" name="new-window-focus-fix">
       <default>false</default>
     </key>
