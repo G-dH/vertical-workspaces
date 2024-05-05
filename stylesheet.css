@@ -207,7 +207,6 @@
 }
 
 /* for static ws mode */
-/*.search-section-content-bg,*/
 .search-section-content-bg-om2 {
 	border-radius: 26px;
 	border: 1px, rgb(60, 60, 60);
@@ -240,7 +239,8 @@
 	border: 1px rgba(200, 200, 200, 0.1);
 }
 
-#panel:overview, .transparent-panel {
+#panel:overview,
+.transparent-panel {
 	background-color: transparent;
 }
 
