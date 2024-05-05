@@ -91,13 +91,13 @@ export default class VShell extends Extension.Extension {
         this._initModules();
 
         // prevent conflicts during startup
-        const skipStartup = opt.DELAY_STARTUP ||
+        let skipStartup = Me.gSettings.get_boolean('delay-startup') ||
                 Me.Util.getEnabledExtensions('ubuntu-dock').length ||
                 Me.Util.getEnabledExtensions('dash-to-dock').length ||
                 Me.Util.getEnabledExtensions('dash-to-panel').length;
         if (skipStartup && Main.layoutManager._startingUp) {
             const startupId = Main.layoutManager.connect('startup-complete', () => {
-                this._hideUpdatingMessage = true;
+                this._delayedStartup = true;
                 this._activateVShell();
                 // Since VShell has been activated with a delay, move it in extensionOrder
                 let extensionOrder = Main.extensionManager._extensionOrder;
@@ -173,7 +173,8 @@ export default class VShell extends Extension.Extension {
         this._removeTimeouts();
         this._timeouts = {};
 
-        this._ensureOverviewIsHidden();
+        if (!Main.layoutManager._startingUp)
+            this._ensureOverviewIsHidden();
 
         // store dash _workId so we will be able to detect replacement when entering overview
         this._storeDashId();
@@ -810,9 +811,9 @@ export default class VShell extends Extension.Extension {
         if (!Me._vShellStatusMessage) {
             const sm = new /* Main.*/RestartMessage(_('Updating V-Shell...'));
             sm.set_style('background-color: rgba(0,0,0,0.3);');
-            if (!this._hideUpdatingMessage)
+            if (!this._delayedStartup)
                 sm.open();
-            this._hideUpdatingMessage = false;
+            this._delayedStartup = false;
             Me._vShellStatusMessage = sm;
         }
 
