@@ -172,7 +172,7 @@
 
 .search-entry:hover,
 .search-entry:focus {
-	background-color: rgba(200, 200, 200, 0.2);
+	background-color: rgba(200, 200, 200, 0.1);
 }
 
 .search-entry-om2 {
@@ -191,26 +191,20 @@
 	border-radius: 26px;
 	border: 1px, rgb(60, 60, 60);
 	padding-top: 15px;
-}
-
-.search-section-content-bg-om2 {
 	background-color: rgb(40, 40, 40);
-}
-
-.search-section-content {
-	background-color: rgba(200, 200, 200, 0.1);
 }
 
 /* Reduce edge fading of search results scroll view */
 .vfade { -st-vfade-offset: 34px; }
 .hfade { -st-hfade-offset: 34px; }
 .search-section-content {
-	background-color: rgba(200, 200, 200, 0.1);
+	background-color: rgba(200, 200, 200, 0.08);
+	border: solid 1px rgba(150, 150, 150, 0.3);
 }
 
 /* "no results" / "searching..." text*/
 .search-statustext, .search-statustext-om2 {
-	background-color: rgba(200, 200, 200, 0.1);
+	background-color: rgba(200, 200, 200, 0.08);
 	color: white;
 	margin-top: 50px;
 	padding: 30px;
