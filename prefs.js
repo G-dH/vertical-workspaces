@@ -1737,7 +1737,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('App Grid Page Width Scale'),
-                _('Adjusts max app grid page width relative to the available space. Only for adaptive grid size algorithm (number of columns is set to 0)'),
+                _('Adjusts maximum app grid page width relative to the available space'),
                 agPageWidthScale,
                 'appGridPageWidthScale',
                 null,
