@@ -1,23 +1,26 @@
 ## Changelog:
-### v46.1  for GNOME 45.2+, v44.12 for GNOME 42-44 (not released)
+### v46.1  for GNOME 45.2+ (not yet released), v44.12 for GNOME 42-44 (not yet released)
 **Fixed:**
-- Conflicts with Dash to Dock can crash GNOME at startup
-- V-Shell affects Dash to Dock icons highlighting
-- Search entry and results allocation ignore Dash to Dock
-- App folder dialogs sizing and positioning
-- Secondary monitor overview alignment with the primary one (option)
-- Removed all code related to the removed modules
+- Fixed conflicts with Dash to Dock that could cause GNOME to crash at startup
+- Resolved issue where V-Shell affected Dash to Dock icon highlighting
+- Corrected search entry and results allocation to consider Dash to Dock
+- Adjusted app folder dialogs for proper sizing and positioning
+- Aligned secondary monitor overview with the primary one (option)
+- Removed all code related to previously removed modules
+- Fixed GNOME Shell recovery when V-Shell is disabled
+- The *App Grid Page Width Scale* option now works for all configurations
 
 **Added:**
-- Option *Delay at Startup* which delays the activation of V-Shell after login. V-Shell automatically uses this option if detects DtD, Ubuntu Dock and Dash to Panel
-- Close button to the app folder dialog
+- Added *Delay at Startup* option to allow delaying activation of V-Shell after login. Automatically enabled when Dash to Dock, Ubuntu Dock, or Dash to Panel is detected
+- Added *Click Empty Space To Close* option
+- Added close button to the app folder dialog
 
 **Changed**
-- App grid module has been refactored to be more efficient and reliable
-- Removed 32px option for app grid icon size
-- *Remove* folder button moved to the left side of the folder dialog
-- Folder grid columns and rows settings are now used as maximum limits rather than fixed page size, which allows you to limit the default adaptive algorithm
-- All app grid settings moved to the separate tab
+- Refactored the app grid module for improved efficiency and reliability
+- Removed the 32px option for app grid icon size
+- Moved the *Remove* folder button to the left side of the folder dialog
+- Adjusted folder grid columns and rows settings to serve as maximum limits rather than fixed page size, allowing for better control over the default adaptive algorithm
+- Relocated all app grid settings to a separate tab for better organization
 
 
 ### v46.0 for GNOME 45.2+ (2024-03-30 ego), v44.12 for GNOME 42-44 (not released)
