@@ -42,8 +42,8 @@ Currently supported GNOME versions: 42 - 46
 ### New buttons
 |Button| Description|
 |------|------------|
-| Close button in workspace thumbnail     | Close all windows on the workspace|
-| Trash button in app folder              | Remove all icons from the folder|
+| *Close button in workspace thumbnail*     | Close all windows on the workspace |
+| *Trash button in app folder*              | Remove folder - move all icons to the main grid |
 
 
 
@@ -69,7 +69,7 @@ The most recent version in the repository is the one I'm currently using and dev
 You may need to install `git`, `make`, `gettext` and `glib2.0` for successful installation.
 Navigate to the directory you want to download the source code and execute following commands in the terminal:
 
-GNOME 45:
+GNOME 45+:
 
     git clone https://github.com/G-dH/vertical-workspaces.git
     cd vertical-workspaces
@@ -91,7 +91,7 @@ After installation you need to enable the extension and access its settings.
 - Now you should see *Vertical Workspaces* extension in *Extensions* application (re-open the app if needed to load new data), where you can enable it and access its Preferences window by pressing `Settings` button.
 
 ## Credits
-This extension uses customized utils and dash modules of the [Vertical Overview extension](https://github.com/RensAlthuis/vertical-overview).
+V-Shell contains modified GNOME Shell source code and was originally based on parts of [Vertical Overview extension](https://github.com/RensAlthuis/vertical-overview).
 
 ## Buy me a coffee
 If you like my extensions and want to keep me motivated give me some useful feedback, but you can also help me with my coffee expenses:
