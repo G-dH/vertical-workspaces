@@ -302,7 +302,7 @@
       <default>0</default>
     </key>
     <key type="b" name="click-empty-close">
-      <default>true</default>
+      <default>false</default>
     </key>
     <key type="b" name="new-window-focus-fix">
       <default>false</default>
@@ -448,7 +448,7 @@
         'appGridNamesMode': '1',
         'appGridActivePreview': 'false',
         'appGridFolderCenter': 'false',
-        'appGridPageWidthScale': '100',
+        'appGridPageWidthScale': '90',
         'appGridSpacing': '12',
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
@@ -574,7 +574,7 @@
         'appGridNamesMode': '1',
         'appGridActivePreview': 'false',
         'appGridFolderCenter': 'true',
-        'appGridPageWidthScale': '90',
+        'appGridPageWidthScale': '80',
         'appGridSpacing': '12',
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
@@ -826,8 +826,8 @@
         'appGridNamesMode': '1',
         'appGridActivePreview': 'true',
         'appGridFolderCenter': 'false',
-        'appGridPageWidthScale': '90',
-        'appGridSpacing': '5',
+        'appGridPageWidthScale': '80',
+        'appGridSpacing': '12',
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
