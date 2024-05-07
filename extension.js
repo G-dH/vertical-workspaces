@@ -587,12 +587,6 @@ class Extension {
         St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
         Search.MAX_LIST_SEARCH_RESULTS_ROWS = opt.SEARCH_MAX_ROWS;
 
-        opt.START_Y_OFFSET = (opt.get('panelModule') && opt.PANEL_OVERVIEW_ONLY && opt.PANEL_POSITION_TOP) ||
-            // better to add unnecessary space than to have a panel overlapping other objects
-            Me.Util.getEnabledExtensions('hidetopbar').length
-            ? Main.panel.height
-            : 0;
-
         // Options for workspace switcher, apply custom function only if needed
         if (opt.WS_WRAPAROUND || opt.WS_IGNORE_LAST)
             Meta.Workspace.prototype.get_neighbor = this._getNeighbor;
