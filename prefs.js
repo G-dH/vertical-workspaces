@@ -1733,6 +1733,9 @@ export default class VShell extends ExtensionPreferences {
         });
 
         const agPageWidthScale = itemFactory.newScale(agPageAdjustment);
+        agPageWidthScale.add_mark(60, Gtk.PositionType.TOP, null);
+        agPageWidthScale.add_mark(70, Gtk.PositionType.TOP, null);
+        agPageWidthScale.add_mark(80, Gtk.PositionType.TOP, null);
         agPageWidthScale.add_mark(90, Gtk.PositionType.TOP, null);
         optionList.push(
             itemFactory.getRowWidget(
