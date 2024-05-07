@@ -102,7 +102,13 @@
 }
 
 #dash.horizontal .app-well-app-running-dot-custom {
-	margin-bottom: 10px;
+	margin-bottom: 13px;
+	width: 16px;
+	height: 2px;
+}
+
+/* this one is for appDisplay */
+.app-well-app-running-dot-custom {
 	width: 16px;
 	height: 2px;
 }
@@ -328,9 +334,3 @@ StButton#vhandle {
 .ws-switcher-vertical {
 	padding: 18px 12px
 }
-
-/* reduce quick menu buttons height in GS44 */
-/*.quick-toggle,
-.quick-menu-toggle {
-	min-height: 42px;
-}*/
