@@ -1,21 +1,44 @@
 ## Changelog:
-### v46.0 for GNOME 45.2+, v44.12 for GNOME 42-44 (not released yet)
-**Removed**
-- Open Windows and Extensions search providers have been removed from the V-Shell and released as a standalone WSP and ESP extensions. Respective module switches has been replaced in Settings by the links to these new extensions
+### v46.1  for GNOME 45.2+ (not yet released), v44.12 for GNOME 42-44 (not yet released)
+**Fixed:**
+- Fixed conflicts with Dash to Dock that could cause GNOME to crash at startup
+- Resolved issue where V-Shell affected Dash to Dock icon highlighting
+- Corrected search entry and results allocation to consider Dash to Dock
+- Adjusted app folder dialogs for proper sizing and positioning
+- Aligned secondary monitor overview with the primary one (option)
+- Removed all code related to previously removed modules
+- Fixed GNOME Shell recovery when V-Shell is disabled
+- The *App Grid Page Width Scale* option now works for all configurations
 
-**Added**
-- Support for GNOME 46
-- Option **Fix New Window Not On Current Monitor** tries to work around that issue. However, success rate is not 100%
+**Added:**
+- Added *Delay at Startup* option to allow delaying activation of V-Shell after login. Automatically enabled when Dash to Dock, Ubuntu Dock, or Dash to Panel is detected
+- Added *Click Empty Space To Close* option
+- Added close button to the app folder dialog
 
 **Changed**
+- Refactored the app grid module for improved efficiency and reliability
+- Removed the 32px option for app grid icon size
+- Moved the *Remove* folder button to the left side of the folder dialog
+- Adjusted folder grid columns and rows settings to serve as maximum limits rather than fixed page size, allowing for better control over the default adaptive algorithm
+- Relocated all app grid settings to a separate tab for better organization
+
+
+### v46.0 for GNOME 45.2+ (2024-03-30 ego), v44.12 for GNOME 42-44 (not released)
+**Added**
+- Support for GNOME 46
+- Option *Fix New Window Not On Current Monitor* tries to work around that issue. However, success rate is not 100%
+
+**Changed**
+- Windows and Extensions search providers have been removed from the V-Shell and released as a standalone WSP and ESP extensions. Respective module switches has been replaced in Settings by the links to these new extensions
+- Window thumbnails (PiP) module moved to the standalone extension WTMB, link added to the *Modules* tab of Settings window
 - Shortcuts in the overview - `Ctrl+Space` - Extensions Search Provider, `Shift+Space` - Recent Files Search Provider, `Ctrl+Shift+Space` - V-Shell Settings
 - Bottom OSD position moved so it's not overlapping dock, if used
 - Active folder icons hover animation from scale, which makes icons blurry, to the move 3px up
 
-
 **Fixed:**
 - Running app indicators too close to the app name on the app grid
 - OverlayKey module deactivates itself even if its configuration isn't consistent with the default GNOME Shell behavior
+
 
 ### v45.3 for GNOME 45.2+, v44.11 for GNOME 42-44 (2023-12-20)
 **Added:**

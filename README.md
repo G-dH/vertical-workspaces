@@ -2,7 +2,7 @@
 
 A GNOME Shell extension that lets you customize your GNOME Shell UX to suit your workflow, whether you like horizontally or vertically stacked workspaces.
 
-Currently supported GNOME versions: 42 - 45
+Currently supported GNOME versions: 42 - 46
 
 [<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
 
@@ -10,31 +10,42 @@ Currently supported GNOME versions: 42 - 45
 ![Custom Overview Layout](screenshots/screenshot0.jpg)
 
 ## Features
-- Vertically or horizontally stacked workspaces
-- Adjust position, orientation, scale and visibility of overview content
-- Customizable profiles offer predefined configurations for GNOME 3.xx, GNOME 40+ and another 2 custom layouts
-- 2 overview modes with static windows/workspace. The *Static Workspace* option allows you to use dash like a dock with auto-hide, but with all advantages of the activities overview
-- Support for secondary monitors, workspace thumbnails can be placed on the opposite side than on the primary monitor
-- Wallpaper background with adjustable blur effect and brightness in the overview
-- Custom Dash icon size and on-click/scroll behavior
-- Optional workspace isolated Dash
-- Dash background transparency and corner radius adjustments
-- Adjustable app grid icon size, number of columns and rows, content, optional active and draggable icons in folder preview in optional 3x3 grid
-- Custom search view width, app results icons size and number of result lists rows, improved app search
-- Workspace thumbnails can show background wallpaper and labels (always or on mouse hover) with combination of workspace index, workspace name, name of the current application and current window title
-- Title captions of window previews moved into the preview (originally beneath the preview) and can be set as always visible. Adjustable window preview icon
-- Static background in workspace switcher (outside overview). Keeps Conky below, DING desktop icons stay visible (if not covered by windows)
-- Control over transition animations, including speed
-- Window search provider with *Space* hotkey allows quick window navigation
-- Recent files search provider with *Ctrl + Space* hotkey
-- Extensions search provider with *Ctrl + Shift + Space* hotkey allows to search for extensions, open their settings and enable or disable them
-- Reorder workspaces in overview using *Shift + Scroll* or *Shift + Page Up/Down*
-- Adds *Force Quit*, *Close Windows on Current Workspace* and *Move Windows to Current Workspace* items to app icon menu. The latter action can be activated using *Shift + click* on app icon
-- Change notification banners and OSD popups position
-- Window attention handler options can activate the attention-demanding window immediately or silence its notification
-- Optional position of the hot corner that can follow the dash and expand to hot edge
-- Super key double-press options
-- Window thumbnail (PIP) options allows you to create scaled down clone of the window by clicking on its preview in the overview (secondary mouse buttons or window preview icon)
+- Supports both vertically and horizontally stacked workspaces
+- Customizable overview layout, appearance, behavior, shortcuts
+- Customizable secondary monitor overview
+- Static overview modes minimize screen content movement
+- Customizable app grid and app folders - icon size, dimensions, sorting, active folder previews
+- Customizable dash - icon size, appearance and behavior, workspace isolation, click and scroll actions
+- Customizable search - results width, number of results, improved searching
+- Customizable workspace switcher - static background
+- Notification and OSD positions and behavior
+- Window attention handler behavior
+- Hot corner/edge position
+- Customizable Super key behavior
+- Keyboard and mouse shortcuts allow advanced workspace and window control
+- 4 predefined and fully customizable profiles
+- Supports Dash to Dock / Ubuntu Dock / Dash to Panel
+
+
+## Tips and tricks
+
+### Overview - keyboard and mouse shortcuts
+|Shortcut| Description|
+|--------|------------|
+|`Shift + click on app icon in dash`                 | Move all windows of the application to the current workspace|
+|`Secondary mouse click on the activities indicator` | Open app grid|
+|`Shift + Scroll`, `Shift + Page Up/Down`            | Reorder current workspace|
+|`Shift + Ctrl + Space`                              | Open V-Shell Settings window|
+|`Space`                                             | Activate window search if *WSP (Window Search Provider)* is installed and enabled|
+
+
+### New buttons
+|Button| Description|
+|------|------------|
+| *Close button in workspace thumbnail*     | Close all windows on the workspace |
+| *Trash button in app folder*              | Remove folder - move all icons to the main grid |
+
+
 
 ## Changelog
 [CHANGELOG.md](CHANGELOG.md)
@@ -58,7 +69,7 @@ The most recent version in the repository is the one I'm currently using and dev
 You may need to install `git`, `make`, `gettext` and `glib2.0` for successful installation.
 Navigate to the directory you want to download the source code and execute following commands in the terminal:
 
-GNOME 45:
+GNOME 45+:
 
     git clone https://github.com/G-dH/vertical-workspaces.git
     cd vertical-workspaces
@@ -80,7 +91,7 @@ After installation you need to enable the extension and access its settings.
 - Now you should see *Vertical Workspaces* extension in *Extensions* application (re-open the app if needed to load new data), where you can enable it and access its Preferences window by pressing `Settings` button.
 
 ## Credits
-This extension uses customized utils and dash modules of the [Vertical Overview extension](https://github.com/RensAlthuis/vertical-overview).
+V-Shell contains modified GNOME Shell source code and was originally based on parts of [Vertical Overview extension](https://github.com/RensAlthuis/vertical-overview).
 
 ## Buy me a coffee
 If you like my extensions and want to keep me motivated give me some useful feedback, but you can also help me with my coffee expenses:
