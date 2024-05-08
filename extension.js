@@ -96,14 +96,15 @@ export default class VShell extends Extension.Extension {
                 Me.Util.getEnabledExtensions('dash-to-dock').length ||
                 Me.Util.getEnabledExtensions('dash-to-panel').length;
         if (skipStartup && Main.layoutManager._startingUp) {
-            const startupId = Main.layoutManager.connect('startup-complete', () => {
+            this._startupConId = Main.layoutManager.connect('startup-complete', () => {
                 this._delayedStartup = true;
                 this._activateVShell();
                 // Since VShell has been activated with a delay, move it in extensionOrder
                 let extensionOrder = Main.extensionManager._extensionOrder;
                 const idx = extensionOrder.indexOf(this.metadata.uuid);
                 extensionOrder.push(extensionOrder.splice(idx, 1)[0]);
-                Main.layoutManager.disconnect(startupId);
+                Main.layoutManager.disconnect(this._startupConId);
+                this._startupConId = 0;
             });
         } else {
             this._activateVShell();
@@ -115,6 +116,8 @@ export default class VShell extends Extension.Extension {
     // Reason for using "unlock-dialog" session mode:
     // Updating the "appDisplay" content every time the screen is locked/unlocked takes quite a lot of time and affects the user experience.
     disable() {
+        if (this._startupConId)
+            Main.layoutManager.disconnect(this._startupConId);
         this.removeVShell();
         this._disposeModules();
 
@@ -590,10 +593,6 @@ export default class VShell extends Extension.Extension {
             opt.APP_GRID_ICON_SIZE_DEFAULT = opt.APP_GRID_ACTIVE_PREVIEW && !opt.APP_GRID_USAGE ? 128 : 64;
             opt.APP_GRID_FOLDER_ICON_SIZE_DEFAULT = 64;
         }
-
-        /* if (!Me.Util.dashIsDashToDock()) { // DtD has its own opacity control
-            Me.Modules.dashModule.updateStyle(dash);
-        }*/
 
         // adjust search entry style for OM2
         if (opt.OVERVIEW_MODE2)
