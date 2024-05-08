@@ -111,14 +111,15 @@ class Extension {
                 Me.Util.getEnabledExtensions('dash-to-dock').length ||
                 Me.Util.getEnabledExtensions('dash-to-panel').length;
         if (skipStartup && Main.layoutManager._startingUp) {
-            const startupId = Main.layoutManager.connect('startup-complete', () => {
+            this._startupConId = Main.layoutManager.connect('startup-complete', () => {
                 this._delayedStartup = true;
                 this._activateVShell();
                 // Since VShell has been activated with a delay, move it in extensionOrder
                 let extensionOrder = Main.extensionManager._extensionOrder;
                 const idx = extensionOrder.indexOf(Me.metadata.uuid);
                 extensionOrder.push(extensionOrder.splice(idx, 1)[0]);
-                Main.layoutManager.disconnect(startupId);
+                Main.layoutManager.disconnect(this._startupConId);
+                this._startupConId = 0;
             });
         } else {
             this._activateVShell();
@@ -130,6 +131,8 @@ class Extension {
     // Reason for using "unlock-dialog" session mode:
     // Updating the "appDisplay" content every time the screen is locked/unlocked takes quite a lot of time and affects the user experience.
     disable() {
+        if (this._startupConId)
+            Main.layoutManager.disconnect(this._startupConId);
         this._removeVShell();
         this._disposeModules();
 
@@ -295,7 +298,6 @@ class Extension {
     _updateConnections() {
         if (!this._monitorsChangedConId)
             this._monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => this._updateVShell(2000));
-
 
         if (!this._showingOverviewConId)
             this._showingOverviewConId = Main.overview.connect('showing', this._onShowingOverview.bind(this));
