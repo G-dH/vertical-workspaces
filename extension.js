@@ -243,7 +243,6 @@ export default class VShell extends Extension.Extension {
     _ensureOverviewIsHidden() {
         if (Main.overview._shown) {
             Main.overview._shown = false;
-            // Main.overview._animationInProgress = true;
             Main.overview._visibleTarget = false;
             Main.overview._overview.prepareToLeaveOverview();
             Main.overview._changeShownState('HIDING');
@@ -254,11 +253,13 @@ export default class VShell extends Extension.Extension {
 
     _resetShellProperties() {
         const controls = Main.overview._overview.controls;
-        // remove any position offsets from dash and ws thumbnails
-        if (!Me.Util.dashNotDefault()) {
-            controls.dash.translation_x = 0;
-            controls.dash.translation_y = 0;
-        }
+        // layoutManager._dash retains reference to the default dash even when DtD is enabled
+        const dash = controls.layoutManager._dash;
+        // Restore default dash background style
+        dash._background.set_style('');
+
+        dash.translation_x = 0;
+        dash.translation_y = 0;
         controls._thumbnailsBox.translation_x = 0;
         controls._thumbnailsBox.translation_y = 0;
         controls._searchEntryBin.translation_y = 0;
@@ -272,9 +273,6 @@ export default class VShell extends Extension.Extension {
         controls._thumbnailsBox.opacity = 255;
 
         controls._searchController._searchResults.opacity = 255;
-
-        // restore default dash background style
-        controls.dash._background.set_style('');
     }
 
     _removeTimeouts() {
