@@ -1,5 +1,15 @@
 ## Changelog:
-### v46.1  for GNOME 45.2+ (not yet released), v44.12 for GNOME 42-44 (not yet released)
+
+### v46.2  for GNOME 45.2+ (not yet released), v44.13 for GNOME 42-44 (not yet released)
+**Fixed:**
+- Inconsistent behavior of dash icons and app grid icons (#152)
+- Sorting option doesn't work for app folders (#154)
+- V-Shell overrides Dash to Dock's background opacity setting (#155)
+- Conflicts with Dash2Dock Animated (#153)
+- Workspace thumbnails DND can be difficult to use when creating new workspaces (#128)
+
+
+### v46.1  for GNOME 45.2+ (2024-05-09), v44.12 for GNOME 42-44 (2024-05-09)
 **Fixed:**
 - Fixed conflicts with Dash to Dock that could cause GNOME to crash at startup
 - Resolved issue where V-Shell affected Dash to Dock icon highlighting
