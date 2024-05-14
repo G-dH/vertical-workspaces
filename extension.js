@@ -94,6 +94,7 @@ export default class VShell extends Extension.Extension {
         let skipStartup = Me.gSettings.get_boolean('delay-startup') ||
                 Me.Util.getEnabledExtensions('ubuntu-dock').length ||
                 Me.Util.getEnabledExtensions('dash-to-dock').length ||
+                Me.Util.getEnabledExtensions('dash2dock').length ||
                 Me.Util.getEnabledExtensions('dash-to-panel').length;
         if (skipStartup && Main.layoutManager._startingUp) {
             this._startupConId = Main.layoutManager.connect('startup-complete', () => {
