@@ -6,6 +6,7 @@
 - Sorting option doesn't work for app folders (#154)
 - V-Shell overrides Dash to Dock's background opacity setting (#155)
 - Conflicts with Dash2Dock Animated (#153)
+- When the main panel is set to show only in the overview, its content might be unclickable (#157)
 - Workspace thumbnails DND can be difficult to use when creating new workspaces (#128)
 
 
