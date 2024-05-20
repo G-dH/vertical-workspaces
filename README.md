@@ -27,7 +27,7 @@ Currently supported GNOME versions: 42 - 46
 
 
 ## Added functionality
-This section explains some of the less obvious or less invisible additions to the Shell's behavior.
+This section explains some of the less obvious or less visible additions to the Shell's behavior.
 
 ### Overview - keyboard and mouse shortcuts
 |Shortcut| Description|
