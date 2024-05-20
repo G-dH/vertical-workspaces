@@ -190,6 +190,9 @@
     <key type="i" name="app-grid-spacing">
       <default>12</default>
     </key>
+    <key type="i" name="app-grid-folder-spacing">
+      <default>12</default>
+    </key>
     <key type="b" name="app-grid-incomplete-pages">
       <default>true</default>
     </key>
@@ -206,6 +209,9 @@
       <default>false</default>
     </key>
     <key type="i" name="app-grid-page-width-scale">
+      <default>90</default>
+    </key>
+    <key type="i" name="app-grid-page-height-scale">
       <default>90</default>
     </key>
     <key type="i" name="dash-show-windows-before-activation">
@@ -449,7 +455,9 @@
         'appGridActivePreview': 'false',
         'appGridFolderCenter': 'false',
         'appGridPageWidthScale': '90',
+        'appGridPageHeightScale': '90',
         'appGridSpacing': '12',
+        'appGridFolderSpacing': '12',
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
@@ -575,7 +583,9 @@
         'appGridActivePreview': 'false',
         'appGridFolderCenter': 'true',
         'appGridPageWidthScale': '80',
+        'appGridPageHeightScale': '90',
         'appGridSpacing': '12',
+        'appGridFolderSpacing': '12',
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
@@ -701,7 +711,9 @@
         'appGridActivePreview': 'true',
         'appGridFolderCenter': 'false',
         'appGridPageWidthScale': '90',
+        'appGridPageHeightScale': '90',
         'appGridSpacing': '12',
+        'appGridFolderSpacing': '12',
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
@@ -827,7 +839,9 @@
         'appGridActivePreview': 'true',
         'appGridFolderCenter': 'false',
         'appGridPageWidthScale': '80',
+        'appGridPageHeightScale': '90',
         'appGridSpacing': '12',
+        'appGridFolderSpacing': '12',
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
