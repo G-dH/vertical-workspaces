@@ -297,7 +297,7 @@ class Extension {
 
     _updateConnections() {
         if (!this._monitorsChangedConId)
-            this._monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => this._updateVShell(2000));
+            this._monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => this._adaptToSystemChange(2000, true));
 
         if (!this._showingOverviewConId)
             this._showingOverviewConId = Main.overview.connect('showing', this._onShowingOverview.bind(this));
@@ -349,7 +349,7 @@ class Extension {
                     if (dashReplacement && reset)
                         this._watchDashToDock = true;
                     if (!Main.layoutManager._startingUp && reset && dashReplacement)
-                        this._updateVShell(1999);
+                        this._adaptToSystemChange(1999);
                 }
             );
         }
@@ -468,24 +468,16 @@ class Extension {
         if (Main.layoutManager._startingUp)
             return;
 
-        Main.overview._overview.controls.opacity = 255;
-
-        // store pointer X coordinate for OVERVIEW_MODE 1 window spread - if mouse pointer is steady, don't spread
-        opt.showingPointerX = global.get_pointer()[0];
-
-        if (!Main.overview._overview.controls._bgManagers && (opt.SHOW_BG_IN_OVERVIEW || opt.SHOW_WS_PREVIEW_BG))
-            Main.overview._overview.controls._setBackground();
-
         if (this._watchDashToDock) {
-            // workaround for Dash to Dock (Ubuntu Dock) breaking overview allocations after enabled and changed position
-            // DtD replaces dock and its _workId on every position change
+            // Workaround for Dash to Dock (Ubuntu Dock) breaking overview allocations after enabling and changing its position
+            // DtD replaces its _workId on every position change
             const dash = Main.overview.dash;
             if (this._prevDash !== dash._workId)
-                this._updateVShell(0);
+                this._adaptToSystemChange(0);
         }
     }
 
-    _updateVShell(timeout = 200) {
+    _adaptToSystemChange(timeout = 200, full = false) {
         if (!this._enabled || Main.layoutManager._startingUp)
             return;
 
@@ -499,16 +491,16 @@ class Extension {
                     return GLib.SOURCE_REMOVE;
 
                 const dash = Main.overview.dash;
-                if (timeout < 2000) { // timeout < 2000 for partial update
+                if (!full) {
                     this._prevDash = dash._workId;
-                    console.warn(`[${Me.metadata.name}]: Dash has been replaced, updating extension ...`);
+                    console.warn(`[${Me.metadata.name}] Warning: Dash has been replaced, updating overrides ...`);
                     Me._resetInProgress = true;
-                    // update only necessary modules if dash has been replaced
+                    // Only update modules that might be affected by the dock extension
                     this._repairOverrides();
                     Me._resetInProgress = false;
                 } else {
-                    console.warn(`[${Me.metadata.name}]: Updating extension ...`);
-                    // for case the monitor configuration has been changed, update all
+                    console.warn(`[${Me.metadata.name}] Warning: Updating overrides ...`);
+                    // If monitor configuration changed, update all
                     Me._resetInProgress = true;
                     this._activateVShell();
                     Me._resetInProgress = false;
@@ -617,7 +609,6 @@ class Extension {
             }
         }
 
-        Main.overview._overview.controls._setBackground();
         this._switchPageShortcuts();
 
         if (key?.includes('panel'))
