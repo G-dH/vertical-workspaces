@@ -81,6 +81,14 @@ Note that unlike the GNOME *Settings* application, *dconf Editor* allows you to 
 
 The key order follows the order in which GNOME Settings stores the shortcuts. If you add the same shortcut but with a different key order, V-Shell will not recognize it, and you might end up with the same shortcut assigned to two actions.
 
+
+### Stuttering overview animations
+On weaker hardware, you may experience stuttering in overview animations. This usually occurs due to blur effect transitions. In this scenario, you should avoid configurations where blur transitions are needed. Here are some tips on how to use the blur effect without affecting overview animations:
+- Enable `Show Workspace Preview Background`, which removes the need for blur transitions between desktop view and overview.
+- Set the same amount of blur for *Window Picker View* and *App Grid*
+- If your configuration requires blur transitions, keep the `Smooth Blur Transitions` option disabled
+
+
 ### Compatibility with other extensions
 V-Shell overrides parts of the GNOME Shell's UI code, and many extensions do the same, so conflicts are inevitable. V-Shell tries to mitigate the consequences of conflicts with the most popular extensions, which includes disabling its own modules. This means that some of V-Shell's settings may not function when conflicting extensions are enabled. V-Shell also provides manual control over its modules so the user can disable problematic ones if needed.
 
@@ -121,6 +129,7 @@ and should be disabled or restricted by the user:
 See what's changed in recent versions
 [CHANGELOG.md](CHANGELOG.md)
 
+
 ## Installation
 
 ### Installation from extensions.gnome.org
@@ -140,13 +149,13 @@ The most recent version in the repository is the one I'm currently using and dev
 You may need to install `git`, `make`, `gettext` and `glib2.0` for successful installation.
 Navigate to the directory you want to download the source code and execute following commands in the terminal:
 
-GNOME 45+:
+**GNOME 45+:**
 
     git clone https://github.com/G-dH/vertical-workspaces.git
     cd vertical-workspaces
     make install
 
-GNOME 42 - 44:
+**GNOME 42 - 44:**
 
     git clone https://github.com/G-dH/vertical-workspaces.git
     cd vertical-workspaces
@@ -164,8 +173,10 @@ After installation you need to enable the extension and access its settings.
 ## Credits
 V-Shell contains modified GNOME Shell source code and was originally based on parts of [Vertical Overview extension](https://github.com/RensAlthuis/vertical-overview).
 
+
 ## Contribution
 If you want to help with V-Shell development, please provide feedback, whether it's positive, negative, a bug report, or a feature request. Even if I don't agree with you, it can help improve V-Shell.
+
 
 ## Donations
 If you enjoy using my extensions, you can help me with my coffee expenses:
@@ -173,6 +184,7 @@ If you enjoy using my extensions, you can help me with my coffee expenses:
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png)](https://www.buymeacoffee.com/georgdh)
 
 Any support is greatly appreciated!
+
 
 ## License
 This program is distributed under the terms of the GNU General Public License, version 3 or later. See [LICENSE](./LICENSE) file for details.
