@@ -1529,6 +1529,22 @@ function _getAppGridOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('Apps Sorting'),
+            _('Choose sorting method for the app grid. Note that sorting by usage ignores folders'),
+            itemFactory.newDropDown(),
+            'appGridOrder',
+            [
+                [_('Custom (Default)'), 0],
+                [_('Alphabet - Folders First'), 1],
+                [_('Alphabet - Folders Last'), 2],
+                [_('Usage - No Folders'), 3],
+            ],
+            'appDisplayModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Icon Size'),
             _('Allows to set a fixed app grid icon size and bypass the default adaptive algorithm'),
             itemFactory.newDropDown(),
@@ -1595,6 +1611,72 @@ function _getAppGridOptionList(itemFactory) {
         page_increment: 1,
     });
 
+    const agPageAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: 50,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const agPageWidthScale = itemFactory.newScale(agPageAdjustment);
+    agPageWidthScale.add_mark(60, Gtk.PositionType.TOP, null);
+    agPageWidthScale.add_mark(70, Gtk.PositionType.TOP, null);
+    agPageWidthScale.add_mark(80, Gtk.PositionType.TOP, null);
+    agPageWidthScale.add_mark(90, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('App Grid Page Width Scale'),
+            _('Adjusts maximum app grid page width relative to the available space'),
+            agPageWidthScale,
+            'appGridPageWidthScale',
+            null,
+            'appDisplayModule'
+        )
+    );
+
+    const aghPageAdjustment = new Gtk.Adjustment({
+        upper: 100,
+        lower: 50,
+        step_increment: 1,
+        page_increment: 10,
+    });
+
+    const agPageHeightScale = itemFactory.newScale(aghPageAdjustment);
+    agPageHeightScale.add_mark(60, Gtk.PositionType.TOP, null);
+    agPageHeightScale.add_mark(70, Gtk.PositionType.TOP, null);
+    agPageHeightScale.add_mark(80, Gtk.PositionType.TOP, null);
+    agPageHeightScale.add_mark(90, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('App Grid Page Height Scale'),
+            _('Adjusts maximum app grid page height relative to the available space'),
+            agPageHeightScale,
+            'appGridPageHeightScale',
+            null,
+            'appDisplayModule'
+        )
+    );
+
+    const appGridSpacingAdjustment = new Gtk.Adjustment({
+        upper: 30,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 5,
+    });
+
+    const appGridSpacingScale = itemFactory.newScale(appGridSpacingAdjustment);
+    appGridSpacingScale.add_mark(12, Gtk.PositionType.TOP, null);
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Grid Spacing'),
+            _('Adjusts the spacing between icons in a grid. V-Shell uses this value to calculate grid dimensions for adaptive options. However, the main grid automatically adjusts the spacing for the grid and available space, while folder grids use the spacing exactly as set here'),
+            appGridSpacingScale,
+            'appGridSpacing',
+            null,
+            'appDisplayModule'
+        )
+    );
+
     optionList.push(
         itemFactory.getRowWidget(
             _('Allow Incomplete Pages'),
@@ -1606,22 +1688,7 @@ function _getAppGridOptionList(itemFactory) {
         )
     );
 
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Sorting'),
-            _('Choose sorting method for the app grid. Note that sorting by usage ignores folders'),
-            itemFactory.newDropDown(),
-            'appGridOrder',
-            [
-                [_('Custom (Default)'), 0],
-                [_('Alphabet - Folders First'), 1],
-                [_('Alphabet - Folders Last'), 2],
-                [_('Usage - No Folders'), 3],
-            ],
-            'appDisplayModule'
-        )
-    );
-
+    // --------------------------------------------------------------------------------------
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -1631,20 +1698,26 @@ function _getAppGridOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Folder Icon Size'),
-            _('Allows to set a fixed icon size and bypass the default adaptive algorithm in the open folder dialog'),
+            _('Folder Apps Sorting'),
+            _('Choose sorting method for app folders'),
             itemFactory.newDropDown(),
-            'appGridFolderIconSize',
+            'appFolderOrder',
             [
-                [_('Adaptive (Default)'), -1],
-                [_('128'), 128],
-                [_('112'), 112],
-                [_('96'), 96],
-                [_('80'), 80],
-                [_('64'), 64],
-                [_('48'), 48],
-                // [_('32'), 32],
+                [_('Custom (Default)'), 0],
+                [_('Alphabet'), 1],
+                [_('Usage'), 2],
             ],
+            'appDisplayModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Active Icons in Folder Preview'),
+            _('If enabled, icons in the folder preview behaves like normal icons, you can activate or even drag them directly, without having to open the folder first. This option also affects the app grid default icon size'),
+            itemFactory.newSwitch(),
+            'appGridActivePreview',
+            null,
             'appDisplayModule'
         )
     );
@@ -1667,14 +1740,23 @@ function _getAppGridOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Active Icons in Folder Preview'),
-            _('If enabled, icons in the folder preview behaves like normal icons, you can activate or even drag them directly, without having to open the folder first. This option also affects the app grid default icon size'),
-            itemFactory.newSwitch(),
-            'appGridActivePreview',
-            null,
+            _('Folder Icon Size'),
+            _('Allows to set a fixed icon size and bypass the default adaptive algorithm in the open folder dialog'),
+            itemFactory.newDropDown(),
+            'appGridFolderIconSize',
+            [
+                [_('Adaptive (Default)'), -1],
+                [_('128'), 128],
+                [_('112'), 112],
+                [_('96'), 96],
+                [_('80'), 80],
+                [_('64'), 64],
+                [_('48'), 48],
+            ],
             'appDisplayModule'
         )
     );
+
 
     const folderColumnsSpinBtn = itemFactory.newSpinButton(folderColumnsAdjustment);
     optionList.push(itemFactory.getRowWidget(
@@ -1703,17 +1785,22 @@ function _getAppGridOptionList(itemFactory) {
         'appDisplayModule'
     ));
 
+    const appFolderSpacingAdjustment = new Gtk.Adjustment({
+        upper: 30,
+        lower: 5,
+        step_increment: 1,
+        page_increment: 5,
+    });
+
+    const appFolderSpacingScale = itemFactory.newScale(appFolderSpacingAdjustment);
+    appFolderSpacingScale.add_mark(12, Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
-            _('App Folder Order'),
-            _('Choose sorting method for app folders'),
-            itemFactory.newDropDown(),
-            'appFolderOrder',
-            [
-                [_('Custom (Default)'), 0],
-                [_('Alphabet'), 1],
-                [_('Usage'), 2],
-            ],
+            _('Folder Grid Spacing'),
+            _('Adjusts the spacing between icons in a grid'),
+            appFolderSpacingScale,
+            'appGridFolderSpacing',
+            null,
             'appDisplayModule'
         )
     );
@@ -1721,7 +1808,7 @@ function _getAppGridOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Center Open Folders'),
-            _('App folder may open in the center of the screen or above the folder source icon'),
+            _("App folders may open in the center of the screen or be centered on the folder's source icon"),
             itemFactory.newSwitch(),
             'appGridFolderCenter',
             null,
@@ -1729,55 +1816,7 @@ function _getAppGridOptionList(itemFactory) {
         )
     );
 
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Layout')
-        )
-    );
-
-    const agPageAdjustment = new Gtk.Adjustment({
-        upper: 100,
-        lower: 50,
-        step_increment: 1,
-        page_increment: 10,
-    });
-
-    const agPageWidthScale = itemFactory.newScale(agPageAdjustment);
-    agPageWidthScale.add_mark(60, Gtk.PositionType.TOP, null);
-    agPageWidthScale.add_mark(70, Gtk.PositionType.TOP, null);
-    agPageWidthScale.add_mark(80, Gtk.PositionType.TOP, null);
-    agPageWidthScale.add_mark(90, Gtk.PositionType.TOP, null);
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('App Grid Page Width Scale'),
-            _('Adjusts maximum app grid page width relative to the available space'),
-            agPageWidthScale,
-            'appGridPageWidthScale',
-            null,
-            'appDisplayModule'
-        )
-    );
-
-    const appGridSpacingAdjustment = new Gtk.Adjustment({
-        upper: 30,
-        lower: 5,
-        step_increment: 1,
-        page_increment: 5,
-    });
-
-    const appGridSpacingScale = itemFactory.newScale(appGridSpacingAdjustment);
-    appGridSpacingScale.add_mark(12, Gtk.PositionType.TOP, null);
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Grid Spacing'),
-            _('Adjusts the spacing between icons in a grid. V-Shell uses this value to calculate grid dimensions for adaptive options. However, the main grid automatically adjusts the spacing for the grid and available space, while folder grids use the spacing exactly as set here'),
-            appGridSpacingScale,
-            'appGridSpacing',
-            null,
-            'appDisplayModule'
-        )
-    );
-
+    // --------------------------------------------------------------------------------------
 
     optionList.push(
         itemFactory.getRowWidget(
@@ -1817,6 +1856,8 @@ function _getAppGridOptionList(itemFactory) {
         )
     );
 
+    // --------------------------------------------------------------------------------------
+
     optionList.push(
         itemFactory.getRowWidget(
             _('Performance')
@@ -1831,6 +1872,8 @@ function _getAppGridOptionList(itemFactory) {
             'appGridPerformance'
         )
     );
+
+    // --------------------------------------------------------------------------------------
 
     optionList.push(
         itemFactory.getRowWidget(
