@@ -483,14 +483,6 @@ export default class VShell extends Extension.Extension {
         if (Main.layoutManager._startingUp)
             return;
 
-        Main.overview._overview.controls.opacity = 255;
-
-        // store pointer X coordinate for OVERVIEW_MODE 1 window spread - if mouse pointer is steady, don't spread
-        opt.showingPointerX = global.get_pointer()[0];
-
-        if (!Main.overview._overview.controls._bgManagers && (opt.SHOW_BG_IN_OVERVIEW || opt.SHOW_WS_PREVIEW_BG) && !Me.Util.getEnabledExtensions('blur-my-shell').length)
-            Main.overview._overview.controls._setBackground();
-
         if (this._watchDashToDock) {
             // Workaround for Dash to Dock (Ubuntu Dock) breaking overview allocations after enabling and changing its position
             // DtD replaces its _workId on every position change
@@ -636,7 +628,6 @@ export default class VShell extends Extension.Extension {
             }
         }
 
-        Main.overview._overview.controls._setBackground();
         this._switchPageShortcuts();
 
         if (key?.includes('panel'))
