@@ -96,7 +96,6 @@
 .app-grid-running-dot-custom {
 	width: 16px;
 	height: 2px;
-	offset-y: -8px; /* This value is used since GS 46.2 to set translation_y from the code */
 }
 
 .dash-label {
