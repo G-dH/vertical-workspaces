@@ -96,7 +96,11 @@
 .app-grid-running-dot-custom {
 	width: 16px;
 	height: 2px;
-	offset-y: -8; /* This value is used since GS 46.2 to set translation_y from the code */
+	offset-y: -8px; /* This value is used since GS 46.2 to set translation_y from the code */
+}
+
+.dash-label {
+	border-radius: 14px;
 }
 
 /* add shadow to the app grid app label to be readable if it overlaps light icon below */
