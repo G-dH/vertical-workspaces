@@ -39,7 +39,7 @@
 	margin: 4px 0px;
 }
 
-#dash.vertical .app-well-app-running-dot-custom {
+#dash.vertical .app-grid-running-dot-custom {
 	margin: 4px 0px;
 	width: 2px;
 	height: 16px;
@@ -93,11 +93,11 @@
 	border-color: rgba(150, 150, 150, 0.4);
 }
 
-.app-well-app-running-dot-custom {
+.app-grid-running-dot-custom {
 	width: 16px;
 	height: 2px;
+	offset-y: -8; /* This value is used since GS 46.2 to set translation_y from the code */
 }
-
 
 /* add shadow to the app grid app label to be readable if it overlaps light icon below */
 .overview-icon-with-label, .folder-name-label {
@@ -394,12 +394,14 @@ StButton#vhandle {
 
 #dash.vertical-46 .app-grid-running-dot {
 	margin: 0px;
+	offset-y: 0;
 }
 
-#dash.vertical-46 .app-well-app-running-dot-custom {
+#dash.vertical-46 .app-grid-running-dot-custom {
 	margin: 0px;
 	width: 2px;
 	height: 16px;
+	offset-y: 0;
 }
 
 #dash.vertical-46 .dash-background {
