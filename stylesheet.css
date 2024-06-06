@@ -113,6 +113,10 @@
 	height: 2px;
 }
 
+.dash-label {
+	border-radius: 14px;
+}
+
 /* add shadow to the app grid app label to be readable if it overlaps light icon below */
 .overview-icon-with-label, .folder-name-label {
     text-shadow: 1px 1px 3px rgba(33, 33, 33, 0.5);
