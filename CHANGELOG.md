@@ -1,6 +1,16 @@
 ## Changelog:
+### v46.3  for GNOME 45.2+ (not yet released), v44.14 for GNOME 42-44 (not yet released)
+**Fixed:**
+- App grid icon order and grid dimensions issues (#160)
+- App grid partially visible after login
+- Vertical dash running app indicator position in GNOME 46.2 (#150)
+- Search entry position in some overview configurations (#161)
 
-### v46.2  for GNOME 45.2+ (not yet released), v44.13 for GNOME 42-44 (not yet released)
+**Added**
+- App grid *App Grid Page Height Scale* option
+
+
+### v46.2  for GNOME 45.2+ (2024-05-15), v44.13 for GNOME 42-44 (2024-05-15)
 **Fixed:**
 - Inconsistent behavior of dash icons and app grid icons (#152)
 - Sorting option doesn't work for app folders (#154)
