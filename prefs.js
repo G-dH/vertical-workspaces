@@ -1091,7 +1091,7 @@ function _getBehaviorOptionList(itemFactory) {
                 [_('Applications'), 3],
                 [_('Overview - Static WS Preview'), 4],
                 [_('Overview - Static Workspace'), 5],
-                [_('Search Windows'), 6],
+                [_('Search Windows (requires WSP extension)'), 6],
                 // [_('Search Recent Files'), 7],
             ],
             'overlayKeyModule'
@@ -1107,7 +1107,7 @@ function _getBehaviorOptionList(itemFactory) {
             [
                 [_('Disable'), 0],
                 [_('Applications (Default)'), 1],
-                [_('Search Windows'), 2],
+                [_('Search Windows (requires WSP extension)'), 2],
                 [_('Overview - Window Picker'), 3],
                 // [_('Search Recent Files'), 4],
             ],
