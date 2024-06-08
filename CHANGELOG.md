@@ -1,5 +1,5 @@
 ## Changelog:
-### v46.3  for GNOME 45.2+ (not yet released), v44.14 for GNOME 42-44 (not yet released)
+### v46.3  for GNOME 45.2+ (2024-06-08), v44.14 for GNOME 42-44 (not yet released)
 **Fixed:**
 - App grid icon order and grid dimensions issues (#160)
 - App grid partially visible after login
