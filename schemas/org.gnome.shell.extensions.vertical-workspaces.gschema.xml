@@ -194,7 +194,7 @@
       <default>12</default>
     </key>
     <key type="b" name="app-grid-incomplete-pages">
-      <default>true</default>
+      <default>false</default>
     </key>
     <key type="i" name="app-grid-names">
       <default>1</default>
@@ -583,7 +583,7 @@
         'appGridActivePreview': 'false',
         'appGridFolderCenter': 'true',
         'appGridPageWidthScale': '80',
-        'appGridPageHeightScale': '90',
+        'appGridPageHeightScale': '100',
         'appGridSpacing': '12',
         'appGridFolderSpacing': '12',
         'searchWindowsOrder': '1',
@@ -703,7 +703,7 @@
         'appGridFolderColumns': '0',
         'appGridFolderRows': '0',
         'appGridFolderIconGrid': '3',
-        'appGridContent': '0',
+        'appGridContent': '2',
         'appGridIncompletePages': 'false',
         'appGridOrder': '0',
         'appFolderOrder': '0',
@@ -831,7 +831,7 @@
         'appGridFolderColumns': '0',
         'appGridFolderRows': '0',
         'appGridFolderIconGrid': '3',
-        'appGridContent': '0',
+        'appGridContent': '2',
         'appGridIncompletePages': 'false',
         'appGridOrder': '0',
         'appFolderOrder': '0',
@@ -839,7 +839,7 @@
         'appGridActivePreview': 'true',
         'appGridFolderCenter': 'false',
         'appGridPageWidthScale': '80',
-        'appGridPageHeightScale': '90',
+        'appGridPageHeightScale': '100',
         'appGridSpacing': '12',
         'appGridFolderSpacing': '12',
         'searchWindowsOrder': '1',
