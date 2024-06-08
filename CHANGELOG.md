@@ -4,7 +4,9 @@
 - App grid icon order and grid dimensions issues (#160)
 - App grid partially visible after login
 - Vertical dash running app indicator position in GNOME 46.2 (#150)
+- Dash label border radius is set too high for multiline labels
 - Search entry position in some overview configurations (#161)
+- Window attention handler options don't work properly
 
 **Added**
 - App grid *App Grid Page Height Scale* option
