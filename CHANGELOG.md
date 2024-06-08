@@ -10,6 +10,7 @@
 
 **Added**
 - App grid *App Grid Page Height Scale* option
+- Separated *Folder Grid Spacing* option
 
 
 ### v46.2  for GNOME 45.2+ (2024-05-15), v44.13 for GNOME 42-44 (2024-05-15)
