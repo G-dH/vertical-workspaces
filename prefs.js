@@ -1078,7 +1078,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Single-Press Action'),
-                _('Disable or change behavior when you press and release the Super key. The "Search Windows" options requires the "WSP (Window Search Provider)" extension installed and enabled. Link is available on the Modules tab in Settings'),
+                _('Disable or change behavior when you press and release the Super key. The "Search Windows" options requires the "WSP (Window Search Provider)" extension installed and enabled. Link is available on the Modules tab in Settings. If you want another extension (like AATWS) to handle the overlay key, set this option to "Overview - Window Picker (Default)" and the "Double-Press Action" option to "Applications (Default)"'),
                 itemFactory.newDropDown(),
                 'overlayKeyPrimary',
                 [
@@ -1088,7 +1088,7 @@ export default class VShell extends ExtensionPreferences {
                     [_('Applications'), 3],
                     [_('Overview - Static WS Preview'), 4],
                     [_('Overview - Static Workspace'), 5],
-                    [_('Search Windows'), 6],
+                    [_('Search Windows (requires WSP extension)'), 6],
                 // [_('Search Recent Files'), 7],
                 ],
                 'overlayKeyModule'
@@ -1104,7 +1104,7 @@ export default class VShell extends ExtensionPreferences {
                 [
                     [_('Disable'), 0],
                     [_('Applications (Default)'), 1],
-                    [_('Search Windows'), 2],
+                    [_('Search Windows (requires WSP extension)'), 2],
                     [_('Overview - Window Picker'), 3],
                 // [_('Search Recent Files'), 4],
                 ],
