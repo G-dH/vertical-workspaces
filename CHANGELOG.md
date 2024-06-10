@@ -1,7 +1,7 @@
 ## Changelog:
-### v46.3.1  for GNOME 45.2+ (2024-06-10)
+### v46.3.1  for GNOME 45.2+ (2024-06-10), v44.14 for GNOME 42-44 (not yet released)
 **Fixed:**
-- App grid height scale affects folder icon size
+- *App Grid Page Height Scale* option affects folder icon size
 - *Smooth App Grid Animations* options has no effect
 
 
