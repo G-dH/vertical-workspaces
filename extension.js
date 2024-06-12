@@ -447,7 +447,7 @@ class Extension {
         if (Main.sessionMode.isLocked)
             this._sessionLockActive = true;
 
-        if (!this._sessionLockActive && !Main.layoutManager._startingUp && opt.APP_GRID_PERFORMANCE) {
+        if (!this._sessionLockActive && !Main.layoutManager._startingUp) {
             // Avoid showing status at startup, can cause freeze
             this._showStatusMessage();
         }
@@ -755,7 +755,7 @@ class Extension {
 
     // Status dialog that appears during updating V-Shell configuration and blocks inputs
     _showStatusMessage(show = true) {
-        if ((show && Me._resetInProgress) || Main.layoutManager._startingUp || !Main.overview._overview.controls._appDisplay._sortOrderedItemsAlphabetically)
+        if ((show && Me._resetInProgress) || Main.layoutManager._startingUp || !opt.get('appDisplayModule'))
             return;
 
         if (Me._vShellMessageTimeoutId) {
@@ -773,7 +773,7 @@ class Extension {
             return;
 
         if (!Me._vShellStatusMessage) {
-            const sm = new Main.RestartMessage(_('Updating V-Shell...'));
+            const sm = new Main.RestartMessage(_('Updating V-Shell'));
             sm.set_style('background-color: rgba(0,0,0,0.3);');
             if (!this._delayedStartup)
                 sm.open();
