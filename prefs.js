@@ -633,17 +633,18 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Dash Max Icon Size'),
-                _('Maximum size of Dash icons in pixels'),
+                _('Maximum size of Dash icons in pixels. Adaptive option switches between default 64 and 48 for low resolution displays'),
                 itemFactory.newDropDown(),
                 'dashMaxIconSize',
                 [
-                    [_('128'), 128],
-                    [_('112'), 112],
-                    [_('96'),   96],
-                    [_('80'),   80],
-                    [_('64'),   64],
-                    [_('48'),   48],
-                    [_('32'),   32],
+                    [_('Adaptive (Default)'),  0],
+                    [_('128'),     128],
+                    [_('112'),     112],
+                    [_('96'),       96],
+                    [_('80'),       80],
+                    [_('64'),       64],
+                    [_('48'),       48],
+                    [_('32'),       32],
                 ],
                 'dashModule'
             )
@@ -858,10 +859,11 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('App Search Icon Size'),
-                _('Size of results provided by the App Search Provider - smaller size allows to fit more results'),
+                _('Size of results provided by the App Search Provider - smaller size allows to fit more results. Adaptive option switches between default 96 and 64 for low resolution displays'),
                 itemFactory.newDropDown(),
                 'searchIconSize',
                 [
+                    [_('Adaptive'), 0],
                     [_('128'), 128],
                     [_('112'), 112],
                     [_('96 (Default)'), 96],
