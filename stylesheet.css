@@ -230,6 +230,8 @@
 /* Reduce edge fading of search results scroll view */
 .vfade { -st-vfade-offset: 34px; }
 .hfade { -st-hfade-offset: 34px; }
+
+StButton#vhandle,
 .search-section-content {
 	background-color: rgba(200, 200, 200, 0.1);
 }
@@ -257,11 +259,6 @@
 /* reduce spacing between app icons in search results */
 .grid-search-results {
 	spacing: 4px;
-}
-
-/* hide vertical scroll bar, it's distracting in the search results */
-StButton#vhandle {
-	background-color: transparent;
 }
 
 .show-apps-icon-horizontal-hide {
