@@ -313,7 +313,7 @@ export default class VShell extends Extension.Extension {
 
     _updateConnections() {
         if (!this._monitorsChangedConId)
-            this._monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => this._adaptToSystemChange(2000, true));
+            this._monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => this._adaptToSystemChange());
 
         if (!this._showingOverviewConId)
             this._showingOverviewConId = Main.overview.connect('showing', this._onShowingOverview.bind(this));
@@ -536,6 +536,7 @@ export default class VShell extends Extension.Extension {
         Me.Modules.panelModule.update();
         Me.Modules.dashModule.update();
         this._updateSettings();
+        Main.overview._overview.controls._setBackground();
     }
 
     _updateSettings(settings, key) {
@@ -577,13 +578,6 @@ export default class VShell extends Extension.Extension {
         }
 
         opt.DASH_VISIBLE = opt.DASH_VISIBLE && !Me.Util.getEnabledExtensions('dash-to-panel@jderose9.github.com').length;
-
-        const monitorWidth = global.display.get_monitor_geometry(global.display.get_primary_monitor()).width;
-        const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
-        if (monitorWidth / scaleFactor < 1600) {
-            opt.APP_GRID_ICON_SIZE_DEFAULT = opt.APP_GRID_ACTIVE_PREVIEW && !opt.APP_GRID_USAGE ? 128 : 64;
-            opt.APP_GRID_FOLDER_ICON_SIZE_DEFAULT = 64;
-        }
 
         // adjust search entry style for OM2
         if (opt.OVERVIEW_MODE2)
