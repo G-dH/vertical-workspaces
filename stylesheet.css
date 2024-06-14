@@ -228,7 +228,9 @@ StButton#vhandle,
 
 /* reduce spacing between app icons in search results */
 .grid-search-results {
-	spacing: 4px;
+	spacing: 8px;
+	margin-left: 12px;
+	margin-right: 12px;
 }
 
 .show-apps-icon-horizontal-hide {
@@ -313,6 +315,7 @@ StButton#vhandle,
 .page-navigation-arrow,
 .search-provider-icon,
 .list-search-result,
+.grid-search-result,
 .overview-tile {
 	 background-color: transparent;
  }
@@ -341,6 +344,9 @@ StButton#vhandle,
 #searchResults .overview-tile:hover,
 #searchResults .overview-tile:focus,
 #searchResults .overview-tile:selected,
+.grid-search-result-46:hover,
+.grid-search-result-46:focus,
+.grid-search-result-46:selected,
 .app-folder-dialog .overview-tile:hover,
 .app-folder-dialog .overview-tile:focus,
 .app-folder-dialog .overview-tile:selected,
