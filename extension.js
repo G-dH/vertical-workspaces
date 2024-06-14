@@ -297,7 +297,7 @@ class Extension {
 
     _updateConnections() {
         if (!this._monitorsChangedConId)
-            this._monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => this._adaptToSystemChange(2000, true));
+            this._monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => this._adaptToSystemChange());
 
         if (!this._showingOverviewConId)
             this._showingOverviewConId = Main.overview.connect('showing', this._onShowingOverview.bind(this));
@@ -492,15 +492,14 @@ class Extension {
 
                 const dash = Main.overview.dash;
                 if (!full) {
+                    console.warn(`[${Me.metadata.name}] Warning: Updating overrides ...`);
                     this._prevDash = dash._workId;
-                    console.warn(`[${Me.metadata.name}] Warning: Dash has been replaced, updating overrides ...`);
                     Me._resetInProgress = true;
                     // Only update modules that might be affected by the dock extension
                     this._repairOverrides();
                     Me._resetInProgress = false;
                 } else {
-                    console.warn(`[${Me.metadata.name}] Warning: Updating overrides ...`);
-                    // If monitor configuration changed, update all
+                    console.warn(`[${Me.metadata.name}] Warning: Rebuilding V-Shell ...`);
                     Me._resetInProgress = true;
                     this._activateVShell();
                     Me._resetInProgress = false;
@@ -519,6 +518,8 @@ class Extension {
         Me.Modules.windowPreviewModule.update();
         Me.Modules.panelModule.update();
         Me.Modules.dashModule.update();
+        this._updateSettings();
+        Main.overview._overview.controls._setBackground();
     }
 
     _updateSettings(settings, key) {
@@ -560,13 +561,6 @@ class Extension {
         }
 
         opt.DASH_VISIBLE = opt.DASH_VISIBLE && !Me.Util.getEnabledExtensions('dash-to-panel@jderose9.github.com').length;
-
-        const monitorWidth = global.display.get_monitor_geometry(global.display.get_primary_monitor()).width;
-        const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
-        if (monitorWidth / scaleFactor < 1600) {
-            opt.APP_GRID_ICON_SIZE_DEFAULT = opt.APP_GRID_ACTIVE_PREVIEW && !opt.APP_GRID_USAGE ? 128 : 64;
-            opt.APP_GRID_FOLDER_ICON_SIZE_DEFAULT = 64;
-        }
 
         Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = opt.OVERVIEW_MODE === 1 ? 0.1 : 0.95;
 
