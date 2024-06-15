@@ -507,15 +507,14 @@ export default class VShell extends Extension.Extension {
 
                 const dash = Main.overview.dash;
                 if (!full) {
+                    console.warn(`[${Me.metadata.name}] Warning: Updating overrides ...`);
                     this._prevDash = dash._workId;
-                    console.warn(`[${Me.metadata.name}] Warning: Dash has been replaced, updating overrides ...`);
                     Me._resetInProgress = true;
                     // Only update modules that might be affected by the dock extension
                     this._repairOverrides();
                     Me._resetInProgress = false;
                 } else {
-                    console.warn(`[${Me.metadata.name}] Warning: Updating overrides ...`);
-                    // If monitor configuration changed, update all
+                    console.warn(`[${Me.metadata.name}] Warning: Rebuilding V-Shell ...`);
                     Me._resetInProgress = true;
                     this._activateVShell();
                     Me._resetInProgress = false;
