@@ -16,6 +16,6 @@
   },
   "gettext-domain": "vertical-workspaces",
   "settings-schema": "org.gnome.shell.extensions.vertical-workspaces",
-  "version-name": "46.3.1"
+  "version-name": "46.4"
 }
 
