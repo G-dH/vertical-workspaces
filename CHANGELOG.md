@@ -1,4 +1,18 @@
 ## Changelog:
+### v46.4 for GNOME 45.2+ (), v44.14 for GNOME 42-44 (not yet released)
+**Fixed:**
+- App grid: Inconsistent grid size on the same monitor when switching monitors (#160)
+- App grid: The grid layout manager's current page being out of sync with the grid's current page causes page shifts while dragging app icons and incorrect page navigation controls (#160, upstream bug)
+- App grid: After dragging an icon out of a multi-page folder, the folder view shows navigation hints the next time it is opened (#160, upstream bug)
+- App grid: Grid page switches to the page with selected icon when user starts dragging an icon on another page
+- App grid: Page indicators don't accept drop, so the app icon can't be moved to a new page
+
+**Added:**
+- *Adaptive* options for the maximum dash and app search icon size that supports low resolution and highly scaled displays
+- Search view scroll bar style to make it visible
+
+
+
 ### v46.3.1  for GNOME 45.2+ (2024-06-10), v44.14 for GNOME 42-44 (not yet released)
 **Fixed:**
 - *App Grid Page Height Scale* option affects folder icon size
