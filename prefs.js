@@ -1129,11 +1129,11 @@ export default class VShell extends ExtensionPreferences {
                 [
                     [_('Disable'), 0],
                     [_('Follow Global Overview Mode'), 1],
-                    [_('Overview - Window Picker'), 2],
+                    [_('Overview - Window Picker (Default)'), 2],
                     [_('Applications'), 3],
                     [_('Overview - Static WS Preview'), 4],
                     [_('Overview - Static Workspace'), 5],
-                    [_('Search Windows'), 6],
+                    [_('Search Windows (requires WSP extension)'), 6],
                 ],
                 'layoutModule'
             )
@@ -1846,6 +1846,18 @@ export default class VShell extends ExtensionPreferences {
                 'appDisplayModule'
             )
         );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Show Page Navigation Buttons'),
+                _("You can hide the page navigation buttons if you don't need them or want to get more space for icons. The buttons are hidden automatically when there is only one page in the app grid"),
+                itemFactory.newSwitch(),
+                'appGridShowPageArrows',
+                null,
+                'appDisplayModule'
+            )
+        );
+
 
         // --------------------------------------------------------------------------------------
 
