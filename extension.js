@@ -63,6 +63,8 @@ class Extension {
         });
 
         Me.repairOverrides = this._repairOverrides;
+
+        Me.updateMessageDialog = new Me.Util.RestartMessage();
     }
 
     _importModules() {
@@ -137,6 +139,9 @@ class Extension {
         this._removeVShell();
         this._disposeModules();
 
+        Me.updateMessageDialog.destroy();
+        Me.updateMessageDialog = null;
+
         console.debug(`${Me.metadata.name}: disabled`);
         this._cleanGlobals();
     }
@@ -156,6 +161,11 @@ class Extension {
 
     _activateVShell() {
         this._enabled = true;
+
+        if (!this._delayedStartup) {
+            Me.updateMessageDialog.showMessage();
+            this._delayedStartup = false;
+        }
 
         this._originalGetNeighbor = Meta.Workspace.prototype.get_neighbor;
 
@@ -217,8 +227,6 @@ class Extension {
         // switch PageUp/PageDown workspace switcher shortcuts
         this._switchPageShortcuts();
 
-        // hide status message if shown
-        this._showStatusMessage(false);
         this._prevDash = null;
 
         // restore default animation speed
@@ -447,11 +455,6 @@ class Extension {
         if (Main.sessionMode.isLocked)
             this._sessionLockActive = true;
 
-        if (!this._sessionLockActive && !Main.layoutManager._startingUp) {
-            // Avoid showing status at startup, can cause freeze
-            this._showStatusMessage();
-        }
-
         if (!Main.sessionMode.isLocked)
             this._sessionLockActive = false;
 
@@ -529,7 +532,6 @@ class Extension {
         // avoid overload while loading profile - update only once
         // delayed gsettings writes are processed alphabetically
         if (key === 'aaa-loading-profile') {
-            this._showStatusMessage();
             if (this._timeouts.loadingProfile)
                 GLib.source_remove(this._timeouts.loadingProfile);
             this._timeouts.loadingProfile = GLib.timeout_add(
@@ -538,7 +540,9 @@ class Extension {
                     this._activateVShell();
                     this._timeouts.loadingProfile = 0;
                     return GLib.SOURCE_REMOVE;
-                });
+                }
+            );
+            Me.updateMessageDialog.showMessage();
         }
         if (this._timeouts.loadingProfile)
             return;
@@ -595,8 +599,6 @@ class Extension {
         if (key?.endsWith('-module')) {
             for (let module of Me.moduleList) {
                 if (opt.options[module] && key === opt.options[module][1]) {
-                    if (key === 'app-display-module')
-                        this._showStatusMessage();
                     Me.Modules[module].update();
                     break;
                 }
@@ -658,10 +660,9 @@ class Extension {
             key?.includes('dot-style') ||
             key === 'show-search-entry' ||
             key === 'ws-thumbnail-scale' ||
-            key === 'ws-thumbnail-scale-appgrid') {
-            this._showStatusMessage();
+            key === 'ws-thumbnail-scale-appgrid'
+        )
             Me.Modules.appDisplayModule.update();
-        }
     }
 
     _switchPageShortcuts() {
@@ -745,52 +746,6 @@ class Extension {
         settings.set_strv(keyMoveRight, moveRight);
         settings.set_strv(keyMoveUp, moveUp);
         settings.set_strv(keyMoveDown, moveDown);
-    }
-
-    // Status dialog that appears during updating V-Shell configuration and blocks inputs
-    _showStatusMessage(show = true) {
-        if ((show && Me._resetInProgress) || Main.layoutManager._startingUp || !opt.get('appDisplayModule'))
-            return;
-
-        if (Me._vShellMessageTimeoutId) {
-            GLib.source_remove(Me._vShellMessageTimeoutId);
-            Me._vShellMessageTimeoutId = 0;
-        }
-
-        if (Me._vShellStatusMessage && !show) {
-            Me._vShellStatusMessage.close();
-            Me._vShellStatusMessage.destroy();
-            Me._vShellStatusMessage = null;
-        }
-
-        if (!show)
-            return;
-
-        if (!Me._vShellStatusMessage) {
-            const sm = new Main.RestartMessage(_('Updating V-Shell'));
-            sm.set_style('background-color: rgba(0,0,0,0.3);');
-            if (!this._delayedStartup)
-                sm.open();
-            this._delayedStartup = false;
-            Me._vShellStatusMessage = sm;
-        }
-
-        // just for case the message wasn't removed from appDisplay after App Grid realization
-        Me._vShellMessageTimeoutId = GLib.timeout_add_seconds(
-            GLib.PRIORITY_DEFAULT,
-            5,
-            () => {
-                if (Me._vShellStatusMessage) {
-                    Me._vShellStatusMessage.close();
-                    Me._vShellStatusMessage.destroy();
-                    Me._vShellStatusMessage = null;
-                    Me._resetInProgress = false;
-                }
-
-                Me._vShellMessageTimeoutId = 0;
-                return GLib.SOURCE_REMOVE;
-            }
-        );
     }
 
     _getNeighbor(direction) {
