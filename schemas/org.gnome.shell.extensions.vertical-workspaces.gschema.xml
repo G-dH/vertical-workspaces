@@ -214,6 +214,9 @@
     <key type="i" name="app-grid-page-height-scale">
       <default>90</default>
     </key>
+    <key type="b" name="app-grid-show-page-arrows">
+      <default>true</default>
+    </key>
     <key type="i" name="dash-show-windows-before-activation">
       <default>1</default>
     </key>
@@ -308,7 +311,7 @@
       <default>0</default>
     </key>
     <key type="b" name="click-empty-close">
-      <default>true</default>
+      <default>false</default>
     </key>
     <key type="b" name="new-window-focus-fix">
       <default>false</default>
@@ -317,7 +320,7 @@
       <default>false</default>
     </key>
     <key type="b" name="app-grid-performance">
-      <default>true</default>
+      <default>false</default>
     </key>
     <key name='highlighting-style' type='i'>
       <default>1</default>
@@ -458,6 +461,7 @@
         'appGridPageHeightScale': '90',
         'appGridSpacing': '12',
         'appGridFolderSpacing': '12',
+        'appGridShowPageArrows': 'false',
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
@@ -490,7 +494,6 @@
         'overviewEscBehavior': '0',
         'newWindowFocusFix': 'false',
         'newWindowMonitorFix': '0',
-        'appGridPerformance': 'true',
         'highlightingStyle': '1',
 
         'workspaceSwitcherPopupModule': 'true',
@@ -583,9 +586,10 @@
         'appGridActivePreview': 'false',
         'appGridFolderCenter': 'true',
         'appGridPageWidthScale': '80',
-        'appGridPageHeightScale': '100',
+        'appGridPageHeightScale': '90',
         'appGridSpacing': '12',
         'appGridFolderSpacing': '12',
+        'appGridShowPageArrows': 'true',
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
@@ -618,7 +622,6 @@
         'overviewEscBehavior': '0',
         'newWindowFocusFix': 'false',
         'newWindowMonitorFix': '0',
-        'appGridPerformance': 'true',
         'highlightingStyle': '1',
 
         'workspaceSwitcherPopupModule': 'true',
@@ -714,6 +717,7 @@
         'appGridPageHeightScale': '90',
         'appGridSpacing': '12',
         'appGridFolderSpacing': '12',
+        'appGridShowPageArrows': 'false',
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
@@ -746,7 +750,6 @@
         'overviewEscBehavior': '0',
         'newWindowFocusFix': 'false',
         'newWindowMonitorFix': '0',
-        'appGridPerformance': 'true',
         'highlightingStyle': '1',
 
         'workspaceSwitcherPopupModule': 'true',
@@ -839,9 +842,10 @@
         'appGridActivePreview': 'true',
         'appGridFolderCenter': 'false',
         'appGridPageWidthScale': '80',
-        'appGridPageHeightScale': '100',
+        'appGridPageHeightScale': '90',
         'appGridSpacing': '12',
         'appGridFolderSpacing': '12',
+        'appGridShowPageArrows': 'true',
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
@@ -874,7 +878,6 @@
         'overviewEscBehavior': '0',
         'newWindowFocusFix': 'false',
         'newWindowMonitorFix': '0',
-        'appGridPerformance': 'true',
         'highlightingStyle': '1',
 
         'workspaceSwitcherPopupModule': 'true',
