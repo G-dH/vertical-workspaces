@@ -154,13 +154,13 @@
 }
 
 .page-indicators-horizontal {
-	margin: 0;
-	margin-bottom: 18px;
+	margin-top: 4px;
+	margin-bottom: 6px;
 }
 
 .page-indicators-vertical {
-	margin: 0;
-	margin-right: 18px;
+	margin-left: 4px;
+	margin-right: 6px;
 }
 
 .search-entry{
@@ -228,7 +228,9 @@ StButton#vhandle,
 
 /* reduce spacing between app icons in search results */
 .grid-search-results {
-	spacing: 4px;
+	spacing: 8px;
+	margin-left: 12px;
+	margin-right: 12px;
 }
 
 .show-apps-icon-horizontal-hide {
@@ -266,18 +268,16 @@ StButton#vhandle,
 }
 
 .prev-page-indicator {
-	background: rgba(255, 255, 255, 0.1);
-	background-gradient-start: rgba(255, 255, 255, 0.1);
-	background-gradient-end: transparent;
+	background-gradient-start: transparent;
+	background-gradient-end: rgba(255, 255, 255, 0.05);
 	background-gradient-direction: vertical;
-	border-radius: 100px 100px 0px 0px;
+	border-radius: 0px 0px 30px 30px;
 }
 .next-page-indicator {
-	background: rgba(255, 255, 255, 0.1);
-	background-gradient-start: transparent;
-	background-gradient-end: rgba(255, 255, 255, 0.1);
+	background-gradient-start: rgba(255, 255, 255, 0.05);
+	background-gradient-end: transparent;
 	background-gradient-direction: vertical;
-	border-radius: 0px 0px 100px 100px;
+	border-radius: 30px 30px 0px 0px;
 
 }
 
@@ -313,6 +313,7 @@ StButton#vhandle,
 .page-navigation-arrow,
 .search-provider-icon,
 .list-search-result,
+.grid-search-result,
 .overview-tile {
 	 background-color: transparent;
  }
@@ -341,6 +342,9 @@ StButton#vhandle,
 #searchResults .overview-tile:hover,
 #searchResults .overview-tile:focus,
 #searchResults .overview-tile:selected,
+.grid-search-result-46:hover,
+.grid-search-result-46:focus,
+.grid-search-result-46:selected,
 .app-folder-dialog .overview-tile:hover,
 .app-folder-dialog .overview-tile:focus,
 .app-folder-dialog .overview-tile:selected,
@@ -433,4 +437,8 @@ StButton#vhandle,
 /* reverse padding */
 .ws-switcher-vertical {
 	padding: 18px 12px
+}
+
+.update-message {
+	background-color: rgba(0,0,0,1);
 }
