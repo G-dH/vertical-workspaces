@@ -15,8 +15,8 @@
 	 to cover the spacing between dash and the edge of the screen
 	 so the icons will be selectable even at the edge
 	 this spacing must be accounted for in overview allocate() */
-	padding-right: 16px;
-	padding-left: 16px;
+	padding-right: 24px;
+	padding-left: 24px;
 	/*spacing between icons*/
 	padding-top: 1px;
 	padding-bottom: 1px;
@@ -64,14 +64,14 @@
 }
 
 #dash.vertical-gs3-left {
-	margin-right: 6px;
+	margin-right: 12px;
 	margin-left: 0px;
 	padding: 0px;
 }
 
 #dash.vertical-gs3-right {
 	margin-right: 0px;
-	margin-left: 6px;
+	margin-left: 12px;
 	padding: 0px;
 }
 
@@ -164,6 +164,8 @@
 }
 
 .search-entry{
+	margin: 0;
+	margin-top: 12px;
 	background-color: rgba(200, 200, 200, 0.1);
 	color: white;
 	border-color: rgba(160, 160, 160, 0.4);
@@ -205,6 +207,10 @@ StButton#vhandle,
 .search-section-content {
 	background-color: rgba(200, 200, 200, 0.08);
 	border: solid 1px rgba(150, 150, 150, 0.3);
+}
+
+.search-section {
+	spacing: 12px;
 }
 
 /* "no results" / "searching..." text*/
@@ -374,10 +380,12 @@ StButton#vhandle,
 
 #dash.vertical-46-gs3-left {
 	margin-left: 0px;
+	margin-right: 12px;
 }
 
 #dash.vertical-46-gs3-right {
 	margin-right: 0px;
+	margin-left: 12px;
 }
 
 #dash.vertical-46 .overview-tile,
@@ -385,7 +393,7 @@ StButton#vhandle,
 	margin: 0px;
 	background-color: transparent;
 	/* this padding should keep the dash 6px from the screen edge */
-	padding: 0, 18px;
+	padding: 0, 24px;
 }
 
 #dash.vertical-46 .dash-separator {
