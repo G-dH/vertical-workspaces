@@ -173,7 +173,7 @@ export default class VShell extends Extension.Extension {
     _activateVShell() {
         this._enabled = true;
 
-        if (!this._delayedStartup) {
+        if (!this._delayedStartup && !Main.sessionMode.isLocked) {
             Me.updateMessageDialog.showMessage();
             this._delayedStartup = false;
         }
@@ -667,6 +667,8 @@ export default class VShell extends Extension.Extension {
         case 'new-window-monitor-fix':
             this._updateNewWindowConnection();
             break;
+        case 'click-empty-close':
+            Me.Modules.overviewControlsModule.update();
         }
 
         if (key?.includes('app-grid') ||
