@@ -14,10 +14,10 @@
       <default>350</default>
     </key>
     <key type="i" name="ws-preview-scale">
-      <default>100</default>
+      <default>95</default>
     </key>
     <key type="i" name="secondary-ws-preview-scale">
-      <default>100</default>
+      <default>95</default>
     </key>
     <key type="b" name="secondary-ws-preview-shift">
       <default>false</default>
@@ -89,7 +89,7 @@
       <default>18</default>
     </key>
     <key type="b" name="dash-bg-gs3-style">
-      <default>true</default>
+      <default>false</default>
     </key>
     <key type="i" name="running-dot-style">
       <default>1</default>
@@ -401,7 +401,7 @@
         'wsThumbnailsFull': 'false',
         'secWsThumbnailsPosition': '2',
         'dashPosition': '3',
-        'dashPositionAdjust': '0',
+        'dashPositionAdjust': '-80',
         'wsTmbPositionAdjust': '-80',
         'showWsTmbLabels': '3',
         'showWsTmbLabelsOnHover': 'false',
@@ -419,7 +419,7 @@
         'dashBgOpacity': '80',
         'dashBgColor': '0',
         'dashBgRadius': '0',
-        'dashBgGS3Style': 'true',
+        'dashBgGS3Style': 'false',
         'runningDotStyle': '1',
         'enablePageShortcuts': 'false',
         'showWsSwitcherBg': 'true',
