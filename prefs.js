@@ -273,7 +273,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Workspace Thumbnails Max Scale - Window Picker'),
-                _('Adjusts maximum size of the workspace thumbnails in the overview (% relative to display width)'),
+                _('Adjusts the maximum size of the workspace thumbnails in the overview (percentage relative to display width)'),
                 wsThumbnailScale,
                 'wsThumbnailScale'
             )
@@ -392,7 +392,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Search Results Width'),
-                _('Adjusts maximum width of search results view (% relative to default). This allows to fit more (or less) app icons into the app search result'),
+                _('Adjusts the maximum width of search results view (percentage relative to default). This allows to fit more (or less) app icons into the app search result'),
                 searchViewScale,
                 'searchViewScale',
                 null,
@@ -455,7 +455,7 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Horizontal Position (% from left)'),
+                _('Horizontal Position (percentage from the left)'),
                 _('This popup shows up when you switch workspace using a keyboard shortcut or gesture outside of the overview. You can disable it on the "Behavior" tab. If you want more control over the popup, try the "Workspace Switcher Manager" extension'),
                 hScale,
                 'wsSwPopupHPosition',
@@ -476,7 +476,7 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Vertical Position (% from top)'),
+                _('Vertical Position (percentage from the top)'),
                 null,
                 vScale,
                 'wsSwPopupVPosition',
@@ -580,7 +580,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Workspace Thumbnails Max Scale'),
-                _('Adjusts maximum size of the workspace thumbnails (% relative to display width / height) for secondary monitors'),
+                _('Adjusts maximum size of the workspace thumbnails (percentage relative to the display width / height) for secondary monitors'),
                 secWsThumbnailScale,
                 'secWsThumbnailScale'
             )
@@ -1346,7 +1346,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Animation Speed'),
-                _('Adjusts the global animation speed in % of the default duration - higher value means slower animation'),
+                _('Adjusts the global animation speed in percentage of the default duration - higher value means slower animation'),
                 animationSpeedScale,
                 'animationSpeedFactor'
             )
