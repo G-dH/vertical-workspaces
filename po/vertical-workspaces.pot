@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vertical-workspaces\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-25 09:52+0200\n"
+"POT-Creation-Date: 2024-07-19 08:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -204,8 +204,8 @@ msgstr ""
 
 #: prefs.js:276
 msgid ""
-"Adjusts maximum size of the workspace thumbnails in the overview (% relative "
-"to display width)"
+"Adjusts the maximum size of the workspace thumbnails in the overview "
+"(percentage relative to display width)"
 msgstr ""
 
 #: prefs.js:293
@@ -279,8 +279,9 @@ msgstr ""
 
 #: prefs.js:395
 msgid ""
-"Adjusts maximum width of search results view (% relative to default). This "
-"allows to fit more (or less) app icons into the app search result"
+"Adjusts the maximum width of search results view (percentage relative to "
+"default). This allows to fit more (or less) app icons into the app search "
+"result"
 msgstr ""
 
 #: prefs.js:405 prefs.js:2013
@@ -324,8 +325,7 @@ msgid "Workspace Switcher Popup"
 msgstr ""
 
 #: prefs.js:458
-#, javascript-format
-msgid "Horizontal Position (% from left)"
+msgid "Horizontal Position (percentage from the left)"
 msgstr ""
 
 #: prefs.js:459
@@ -337,8 +337,7 @@ msgid ""
 msgstr ""
 
 #: prefs.js:479
-#, javascript-format
-msgid "Vertical Position (% from top)"
+msgid "Vertical Position (percentage from the top)"
 msgstr ""
 
 #: prefs.js:490
@@ -436,8 +435,8 @@ msgstr ""
 
 #: prefs.js:583
 msgid ""
-"Adjusts maximum size of the workspace thumbnails (% relative to display "
-"width / height) for secondary monitors"
+"Adjusts maximum size of the workspace thumbnails (percentage relative to the "
+"display width / height) for secondary monitors"
 msgstr ""
 
 #: prefs.js:600
@@ -1127,10 +1126,9 @@ msgid "Animation Speed"
 msgstr ""
 
 #: prefs.js:1349
-#, javascript-format
 msgid ""
-"Adjusts the global animation speed in % of the default duration - higher "
-"value means slower animation"
+"Adjusts the global animation speed in percentage of the default duration - "
+"higher value means slower animation"
 msgstr ""
 
 #: prefs.js:1357
@@ -1946,15 +1944,15 @@ msgstr ""
 msgid "Search open windows"
 msgstr ""
 
-#: lib/dash.js:981
+#: lib/dash.js:983
 msgid "Force Quit"
 msgstr ""
 
-#: lib/dash.js:998
+#: lib/dash.js:1000
 msgid "Move App to Current Workspace ( Shift + Click )"
 msgstr ""
 
-#: lib/dash.js:1001
+#: lib/dash.js:1003
 msgid "Create Window Thumbnail/PiP"
 msgstr ""
 
