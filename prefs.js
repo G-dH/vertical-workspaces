@@ -329,11 +329,11 @@ export default class VShell extends ExtensionPreferences {
         });
 
         const wsSpacingScale = itemFactory.newScale(wsSpacingAdjustment);
-        wsSpacingScale.add_mark(350, Gtk.PositionType.TOP, null);
+        wsSpacingScale.add_mark(this.opt.WS_MAX_SPACING_OFF_SCREEN, Gtk.PositionType.TOP, null);
         optionList.push(
             itemFactory.getRowWidget(
                 _('Workspaces Spacing'),
-                _('Adjusts spacing between workspace previews so you can control how much of the adjacent workspaces overlap to the current workspace overview. Default value should set the adjacent workspaces off-screen.'),
+                _('Adjusts spacing in pixels between workspace previews, allowing you to control how much the adjacent workspaces overlap in the current workspace overview. Setting the value above 349 pixels disables the visibility of workspaces other than the current one during transitions to/from the app grid view, which can also save some graphical resources if many windows are open on other workspaces'),
                 wsSpacingScale,
                 'wsMaxSpacing'
             )
