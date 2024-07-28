@@ -241,6 +241,9 @@
     <key type="i" name="search-max-results-rows">
       <default>5</default>
     </key>
+    <key type="i" name="search-app-grid-mode">
+      <default>1</default>
+    </key>
     <key type="i" name="panel-visibility">
       <default>0</default>
     </key>
@@ -464,6 +467,7 @@
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
+        'searchAppGridMode': '1',
         'dashShowWindowsBeforeActivation': '1',
         'dashIconScroll': '1',
         'dashIsolateWorkspaces': 'false',
@@ -591,6 +595,7 @@
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
+        'searchAppGridMode': '1',
         'dashShowWindowsBeforeActivation': '1',
         'dashIconScroll': '1',
         'dashIsolateWorkspaces': 'false',
@@ -718,6 +723,7 @@
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
+        'searchAppGridMode': '1',
         'dashShowWindowsBeforeActivation': '1',
         'dashIconScroll': '1',
         'dashIsolateWorkspaces': 'false',
@@ -845,6 +851,7 @@
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
+        'searchAppGridMode': '1',
         'dashShowWindowsBeforeActivation': '1',
         'dashIconScroll': '1',
         'dashIsolateWorkspaces': 'false',
