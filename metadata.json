@@ -4,7 +4,8 @@
   "description": "Customize your GNOME Shell UX to suit your workflow, whether you like horizontally or vertically stacked workspaces.",
   "shell-version": [
     "45",
-    "46"
+    "46",
+    "47"
   ],
   "session-modes": [
     "user",
