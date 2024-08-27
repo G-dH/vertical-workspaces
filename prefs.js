@@ -1545,6 +1545,7 @@ export default class VShell extends ExtensionPreferences {
                 'appGridOrder',
                 [
                     [_('Custom (Default)'), 0],
+                    [_('Alphabet'), 4],
                     [_('Alphabet - Folders First'), 1],
                     [_('Alphabet - Folders Last'), 2],
                     [_('Usage - No Folders'), 3],
