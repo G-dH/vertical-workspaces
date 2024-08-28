@@ -6,11 +6,17 @@
 - App grid: After dragging an icon out of a multi-page folder, the folder view shows navigation hints the next time it is opened (#160, upstream bug)
 - App grid: Grid page switches to the page with selected icon when user starts dragging an icon on another page
 - App grid: Page indicators don't accept drop, so the app icon can't be moved to a new page
+- App grid: Keyboard navigation inside a folder doesn't work (upstream bug, fixed in GS 47)
+- App grid: Workspace thumbnails not re-scaling after switching workspace outside of the overview using a trackpad
+- Vertical dash: Running dot position in GNOME 46.0 (Ubuntu 24.04)
 
 **Added:**
+- GNOME 47 support
 - *Adaptive* options for the maximum dash and app search icon size that supports low resolution and highly scaled displays
 - Search view scroll bar style to make it visible
-
+- App grid: Drag-and-drop between folders
+- App grid: Added an option *App Grid Search Mode* that can be set to *Filter App Grid View*, which filters the app grid icons while you're typing, instead of switching to the default search view
+- App grid: Added *Alphabet* sorting option that sorts folders along with apps
 
 
 ### v46.3.1  for GNOME 45.2+ (2024-06-10), v44.14 for GNOME 42-44 (not yet released)
