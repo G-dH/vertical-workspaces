@@ -323,9 +323,14 @@ StButton#vhandle,
 .grid-search-result,
 .overview-tile {
 	 background-color: transparent;
- }
- 
- /* Needed only for 46+, but doesn't hurt 45 */
+}
+
+/* GS 47 removed the top margin that V-Shell needs */
+#dash.dash-46 {
+	 margin-top: 12px;
+}
+
+/* Needed only for 46+, but doesn't hurt 45 */
 #dash.dash-46 .overview-tile:hover .overview-icon,
 #dash.dash-46 .overview-tile:focus .overview-icon,
 #dash.dash-46 .overview-tile:selected .overview-icon,
