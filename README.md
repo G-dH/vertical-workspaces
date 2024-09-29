@@ -2,7 +2,7 @@
 
 A GNOME Shell extension that lets you customize your GNOME Shell UX to suit your workflow, whether you like horizontally or vertically stacked workspaces.
 
-Currently supported GNOME versions: 42 - 46
+Currently supported GNOME versions: 42 - 47
 
 [<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
 
