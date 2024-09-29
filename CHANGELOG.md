@@ -1,4 +1,8 @@
 ## Changelog:
+### v47.0
+**Added:**
+GNOME 47 support
+
 ### v46.4 for GNOME 45.2+ (), v44.14 for GNOME 42-44 (not yet released)
 **Fixed:**
 - App grid: Inconsistent grid size on the same monitor when switching monitors (#160)
