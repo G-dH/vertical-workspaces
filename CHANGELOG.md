@@ -1,9 +1,18 @@
 ## Changelog:
-### v47.0
+### v47.1 (2024-11-21)
 **Added:**
-GNOME 47 support
+- Italian translation
+- Czech translation
 
-### v46.4 for GNOME 45.2+ (), v44.14 for GNOME 42-44 (not yet released)
+**Fixed:**
+- Visual glitch in dash icons
+- Spacing in the Profie page of the Settings window 
+
+### v47.0 (2024-09-27)
+**Added:**
+- GNOME 47 support
+
+### v46.4 for GNOME 45.2+ (moved to 47.0), v44.14 for GNOME 42-44 (not yet released)
 **Fixed:**
 - App grid: Inconsistent grid size on the same monitor when switching monitors (#160)
 - App grid: The grid layout manager's current page being out of sync with the grid's current page causes page shifts while dragging app icons and incorrect page navigation controls (#160, upstream bug)
