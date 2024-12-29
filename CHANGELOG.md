@@ -5,6 +5,7 @@
 - Overview and app folder animations not starting from the beginning
 - Workspace thumbnails changing size at the end of a trackpad gesture
 - Dash app label spacing when GNOME Shell 3.x style is disabled in vertical orientation
+- Sorting of search results in the app grid view when the `Filtered App Grid View` option is enabled
 
 **Changed:**
 - Removed spacing betweeen workspaces in workspace switcher animation
