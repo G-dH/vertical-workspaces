@@ -162,7 +162,7 @@ class Extension {
     _activateVShell() {
         this._enabled = true;
 
-        if (!this._delayedStartup) {
+        if (!this._delayedStartup && !Main.sessionMode.isLocked) {
             Me.updateMessageDialog.showMessage();
             this._delayedStartup = false;
         }
@@ -286,9 +286,11 @@ class Extension {
     }
 
     _setInitialWsIndex() {
-        GLib.idle_add(GLib.PRIORITY_LOW, () => {
-            Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
-        });
+        if (Main.layoutManager._startingUp) {
+            GLib.idle_add(GLib.PRIORITY_LOW, () => {
+                Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
+            });
+        }
     }
 
     _updateSettingsConnection() {
@@ -517,6 +519,7 @@ class Extension {
     _repairOverrides() {
         Me.Modules.overviewModule.update();
         Me.Modules.overviewControlsModule.update();
+        Me.Modules.layoutModule.update();
         Me.Modules.workspacesViewModule.update();
         Me.Modules.windowPreviewModule.update();
         Me.Modules.panelModule.update();
@@ -653,6 +656,8 @@ class Extension {
         case 'new-window-monitor-fix':
             this._updateNewWindowConnection();
             break;
+        case 'click-empty-close':
+            Me.Modules.overviewControlsModule.update();
         }
 
         if (key?.includes('app-grid') ||

@@ -4,7 +4,8 @@
 */
 
 /* General dash */
-#dash.vertical {
+
+#dash-vertical {
 	margin: 0px;
 	padding: 0px;
 }
@@ -15,8 +16,8 @@
 	 cover spacing between dash and the edge of the screen
 	 so the icons will be selectable even at the edge
 	 this spacing must be accounted for in overview allocate() */
-	padding-right: 16px;
-	padding-left: 16px;
+	padding-right: 24px;
+	padding-left: 24px;
 	/*spacing between icons*/
 	padding-top: 1px;
 	padding-bottom: 1px;
@@ -169,13 +170,13 @@
 }
 
 .page-indicators-horizontal {
-	margin: 0;
-	margin-bottom: 18px;
+	margin-top: 4px;
+	margin-bottom: 6px;
 }
 
 .page-indicators-vertical {
-	margin: 0;
-	margin-right: 18px;
+	margin-left: 4px;
+	margin-right: 6px;
 }
 
 /* GS 43+ App Grid - indicators that show up when dragging icon */
@@ -194,6 +195,8 @@
 }
 
 .search-entry{
+	margin: 0;
+	margin-top: 12px;
 	background-color: rgba(200, 200, 200, 0.1);
 	color: white;
 	border-color: rgba(160, 160, 160, 0.4);
@@ -236,6 +239,10 @@
 .search-section-content {
 	background-color: rgba(200, 200, 200, 0.1);
 	border: solid 1px rgba(150, 150, 150, 0.3);
+}
+
+.search-section {
+	spacing: 12px;
 }
 
 /* "no results" / "searching..." text*/

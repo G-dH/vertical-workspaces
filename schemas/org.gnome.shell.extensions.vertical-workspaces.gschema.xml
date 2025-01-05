@@ -14,10 +14,10 @@
       <default>350</default>
     </key>
     <key type="i" name="ws-preview-scale">
-      <default>100</default>
+      <default>95</default>
     </key>
     <key type="i" name="secondary-ws-preview-scale">
-      <default>100</default>
+      <default>95</default>
     </key>
     <key type="b" name="secondary-ws-preview-shift">
       <default>false</default>
@@ -89,7 +89,7 @@
       <default>18</default>
     </key>
     <key type="b" name="dash-bg-gs3-style">
-      <default>true</default>
+      <default>false</default>
     </key>
     <key type="i" name="running-dot-style">
       <default>1</default>
@@ -240,6 +240,9 @@
     </key>
     <key type="i" name="search-max-results-rows">
       <default>5</default>
+    </key>
+    <key type="i" name="search-app-grid-mode">
+      <default>1</default>
     </key>
     <key type="i" name="panel-visibility">
       <default>0</default>
@@ -396,7 +399,7 @@
         'workspaceThumbnailsPosition': '1',
         'wsMaxSpacing': '350',
         'wsPreviewScale': '95',
-        'secWsPreviewScale': '100',
+        'secWsPreviewScale': '95',
         'secWsPreviewShift': 'false',
         'wsThumbnailsFull': 'false',
         'secWsThumbnailsPosition': '2',
@@ -421,7 +424,6 @@
         'dashBgRadius': '0',
         'dashBgGS3Style': 'true',
         'runningDotStyle': '1',
-        'enablePageShortcuts': 'false',
         'showWsSwitcherBg': 'true',
         'showWsPreviewBg': 'false',
         'wsPreviewBgRadius': '30',
@@ -465,6 +467,7 @@
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
+        'searchAppGridMode': '1',
         'dashShowWindowsBeforeActivation': '1',
         'dashIconScroll': '1',
         'dashIsolateWorkspaces': 'false',
@@ -523,8 +526,8 @@
       <default>{
         'workspaceThumbnailsPosition': '5',
         'wsMaxSpacing': '80',
-        'wsPreviewScale': '100',
-        'secWsPreviewScale': '100',
+        'wsPreviewScale': '95',
+        'secWsPreviewScale': '95',
         'secWsPreviewShift': 'false',
         'wsThumbnailsFull': 'false',
         'secWsThumbnailsPosition': '2',
@@ -549,7 +552,6 @@
         'dashBgRadius': '0',
         'dashBgGS3Style': 'false',
         'runningDotStyle': '1',
-        'enablePageShortcuts': 'true',
         'showWsSwitcherBg': 'false',
         'showWsPreviewBg': 'true',
         'wsPreviewBgRadius': '30',
@@ -593,6 +595,7 @@
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
+        'searchAppGridMode': '1',
         'dashShowWindowsBeforeActivation': '1',
         'dashIconScroll': '1',
         'dashIsolateWorkspaces': 'false',
@@ -652,7 +655,7 @@
         'workspaceThumbnailsPosition': '0',
         'wsMaxSpacing': '350',
         'wsPreviewScale': '95',
-        'secWsPreviewScale': '100',
+        'secWsPreviewScale': '95',
         'secWsPreviewShift': 'false',
         'wsThumbnailsFull': 'false',
         'secWsThumbnailsPosition': '2',
@@ -662,7 +665,7 @@
         'showWsTmbLabels': '3',
         'showWsTmbLabelsOnHover': 'false',
         'closeWsButtonMode': '2',
-        'secWsTmbPositionAdjust': '0',
+        'secWsTmbPositionAdjust': '-100',
         'dashMaxIconSize': '0',
         'centerDashToWs': 'false',
         'showAppsIconPosition': '0',
@@ -677,7 +680,6 @@
         'dashBgRadius': '0',
         'dashBgGS3Style': 'false',
         'runningDotStyle': '1',
-        'enablePageShortcuts': 'true',
         'showWsSwitcherBg': 'false',
         'showWsPreviewBg': 'true',
         'wsPreviewBgRadius': '30',
@@ -721,6 +723,7 @@
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
+        'searchAppGridMode': '1',
         'dashShowWindowsBeforeActivation': '1',
         'dashIconScroll': '1',
         'dashIsolateWorkspaces': 'false',
@@ -780,7 +783,7 @@
         'workspaceThumbnailsPosition': '6',
         'wsMaxSpacing': '65',
         'wsPreviewScale': '95',
-        'secWsPreviewScale': '100',
+        'secWsPreviewScale': '95',
         'secWsPreviewShift': 'false',
         'wsThumbnailsFull': 'false',
         'secWsThumbnailsPosition': '2',
@@ -805,7 +808,6 @@
         'dashBgRadius': '0',
         'dashBgGS3Style': 'false',
         'runningDotStyle': '1',
-        'enablePageShortcuts': 'true',
         'showWsSwitcherBg': 'true',
         'showWsPreviewBg': 'true',
         'wsPreviewBgRadius': '30',
@@ -849,6 +851,7 @@
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
+        'searchAppGridMode': '1',
         'dashShowWindowsBeforeActivation': '1',
         'dashIconScroll': '1',
         'dashIsolateWorkspaces': 'false',
