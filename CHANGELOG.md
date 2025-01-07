@@ -6,10 +6,18 @@
 - Workspace thumbnails changing size at the end of a trackpad gesture
 - Dash app label spacing when GNOME Shell 3.x style is disabled in vertical orientation
 - Sorting of search results in the app grid view when the *Filtered App Grid View* option is enabled
-- Secondary monitor workspace preview position when *Shift Overview by Panel Height* enabled 
+- Secondary monitor workspace preview position when *Shift Overview by Panel Height* enabled
+- Secondary button click on app folder icon closes overview when *Click Emty Space to Close* option enabled
+- Clicking on workspace thumbnails closes overview when *Click Empty Space to Close* option is enabled
+- Clicking on the last workspace thumbnail in static workspace mode not exposing windows
+- Window preview middle button action set to *Create Window Thumbnail* only works when the secondary button is set the same
+
+**Added**
+- Activate current window after entering overview
 
 **Changed:**
-- Removed spacing betweeen workspaces in workspace switcher animation
+- Removed spacing between workspaces in workspace switcher animation
+
 
 ### v47.1 (2024-11-21)
 **Added:**
