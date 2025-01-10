@@ -1,5 +1,5 @@
 ## Changelog:
-### v47.3 (not yet released)
+### v47.3 (2025-01-10 e.g.o)
 **Fixed:**
 - Dash: Overview closes after moving app windows to the current workspace using Shift+Click
 - Dash: Unexpected behavior when clicking an app icon with Isolate workspace or Click action > Prefer workspace options enabled
