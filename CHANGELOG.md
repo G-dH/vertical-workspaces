@@ -1,5 +1,10 @@
 ## Changelog:
-### v47.2 (not yet released)
+### v47.3 (not yet released)
+**Fixed:**
+- Overview closes after moving app windows to the current workspace using Shift+Click
+
+
+### v47.2 (2025-01-08 e.g.o)
 **Fixed:**
 - Overview background transition in Static Workspace mode
 - Overview and app folder animations not starting from the beginning
