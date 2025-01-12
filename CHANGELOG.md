@@ -1,4 +1,9 @@
 ## Changelog:
+### v47.4 (not yet released)
+**Added:**
+- Options to control added app menu items (#210)
+
+
 ### v47.3 (2025-01-10 e.g.o)
 **Fixed:**
 - Dash: Overview closes after moving app windows to the current workspace using Shift+Click

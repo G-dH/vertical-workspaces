@@ -226,6 +226,18 @@
     <key type="b" name="dash-isolate-workspaces">
       <default>false</default>
     </key>
+    <key type="b" name="app-menu-force-quit">
+      <default>true</default>
+    </key>
+    <key type="b" name="app-menu-close-wins-ws">
+      <default>true</default>
+    </key>
+    <key type="b" name="app-menu-move-app">
+      <default>true</default>
+    </key>
+    <key type="b" name="app-menu-window-tmb">
+      <default>true</default>
+    </key>
     <key type="i" name="search-windows-icon-scroll">
       <default>1</default>
     </key>
