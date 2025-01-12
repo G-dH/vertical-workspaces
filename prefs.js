@@ -1233,6 +1233,56 @@ function _getBehaviorOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('App Menu')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Add Force Quit'),
+            _('Adds a "Force Quit" menu item to the application menu that appears when right-clicking an app icon'),
+            itemFactory.newSwitch(),
+            'appMenuForceQuit',
+            null,
+            'dashModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Add Close Windows on Current Workspace'),
+            _('Adds a "Close Windows on Current Workspace" menu item to the application menu that appears when right-clicking an app icon'),
+            itemFactory.newSwitch(),
+            'appMenuCloseWinsWs',
+            null,
+            'dashModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Add Move App to Current Workspace'),
+            _('Adds a "Move App to Current Workspace" menu item to the application menu that appears when right-clicking an app icon'),
+            itemFactory.newSwitch(),
+            'appMenuMoveApp',
+            null,
+            'dashModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Add Create Window Thumbnail'),
+            _('Requires WTMB extension installed and enabled. Adds a "Create Window Thumbnail" menu item to the application menu that appears when right-clicking an app icon'),
+            itemFactory.newSwitch(),
+            'appMenuWindowTmb',
+            null,
+            'dashModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Workspace Thumbnails')
         )
     );
