@@ -1276,7 +1276,7 @@ export default class VShell extends ExtensionPreferences {
                 _('Add Create Window Thumbnail'),
                 _('Requires WTMB extension installed and enabled. Adds a "Create Window Thumbnail" menu item to the application menu that appears when right-clicking an app icon'),
                 itemFactory.newSwitch(),
-                'appMenuWWindowTmb',
+                'appMenuWindowTmb',
                 null,
                 'dashModule'
             )
