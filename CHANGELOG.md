@@ -3,6 +3,9 @@
 **Added:**
 - Options to control added app menu items (#210)
 
+**Fixed:**
+- Workspace thumbnails may change size when searching for apps in the app grid with *Filtered App Grid View* option enabled 
+
 
 ### v47.3 (2025-01-10 e.g.o)
 **Fixed:**
