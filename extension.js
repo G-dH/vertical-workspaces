@@ -540,6 +540,7 @@ export default class VShell extends Extension.Extension {
     _updateSettings(settings, key) {
         // update settings cache and option variables
         opt._updateSettings();
+        this._resetShellProperties();
 
         // avoid overload while loading profile - update only once
         // delayed gsettings writes are processed alphabetically
