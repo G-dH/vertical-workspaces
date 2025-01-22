@@ -1,5 +1,11 @@
 ## Changelog:
-### v47.4 (not yet released)
+### v47.5 (not yet released)
+**Fixed:**
+- Search result loses focus when the overview animation finishes
+- App grid is nvisible when *Filtered App Grid View* search is activated during the overview animation
+- When static workspace mode is enabled, changing the workspace mode (using arrow or Tab keys) during the overview animation is not possible
+
+### v47.4 (2025-01-14)
 **Added:**
 - Options to control added app menu items (#210)
 
