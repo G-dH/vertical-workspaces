@@ -1,9 +1,22 @@
 ## Changelog:
 ### v47.5 (not yet released)
+**Added:**
+- The maximum number of search results can now be set to less than 5
+- New workspace animation options: *All Workspaces* and *Active Workspace Only*. Previously, V-Shell only supported the *Active Workspace Only* animation.
+
 **Fixed:**
-- Search result loses focus when the overview animation finishes
-- App grid is nvisible when *Filtered App Grid View* search is activated during the overview animation
-- When static workspace mode is enabled, changing the workspace mode (using arrow or Tab keys) during the overview animation is not possible
+- Search results lose focus when the overview animation finishes
+- App grid becomes invisible when *Filtered App Grid View* search is activated during the overview animation
+- When static workspace mode is enabled, changing the workspace mode (using *arrow* or *Tab* keys) during the overview animation is not possible
+- *Show WS Thumbnail Label on Hover* option causes thumbnails to crash
+- Default search result is not selected when *WSP* extension is activated from V-Shell
+- Secondary monitor workspace thumbnails animation ends (and begins) before reaching the edge of the monitor
+- Search entry style switching in Static Overview mode
+
+**Changed:**
+- Search view transitions have been refactored and improved
+- WS 40+ profile overview transitions have been adjusted to behave more similarly to the default GNOME Shell
+
 
 ### v47.4 (2025-01-14)
 **Added:**
