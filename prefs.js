@@ -1449,12 +1449,13 @@ function _getBehaviorOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Preview Animation'),
-            _('When entering / leaving the App Grid / Search view, the workspace preview can animate to/from workspace thumbnail.'),
+            _('When entering or leaving the App Grid, the workspace preview can animate to/from workspace thumbnails'),
             itemFactory.newDropDown(),
             'workspaceAnimation',
             [
                 [_('Disable'), 0],
-                [_('Enable'), 1],
+                [_('Active Workspace Only'), 1],
+                [_('All Workspaces'), 2],
             ]
         )
     );
