@@ -882,7 +882,7 @@ export default class VShell extends ExtensionPreferences {
 
         const maxSearchResultsAdjustment = new Gtk.Adjustment({
             upper: 50,
-            lower: 5,
+            lower: 1,
             step_increment: 1,
             page_increment: 5,
         });
