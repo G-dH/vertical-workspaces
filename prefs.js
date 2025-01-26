@@ -194,8 +194,7 @@ export default class VShell extends ExtensionPreferences {
                 _('Adjusts the position of the dash on the axis given by the orientation of the workspaces'),
                 dashPositionScale,
                 'dashPositionAdjust',
-                null,
-                'dashModule'
+                null
             )
         );
 
