@@ -1,5 +1,5 @@
 ## Changelog:
-### v47.5 (not yet released)
+### v47.5 (2025-01-27)
 **Added:**
 - The maximum number of search results can now be set to less than 5
 - New workspace animation options: *All Workspaces* and *Active Workspace Only*. Previously, V-Shell only supported the *Active Workspace Only* animation.
