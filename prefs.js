@@ -916,6 +916,24 @@ function _getAppearanceOptionList(itemFactory) {
         )
     );
 
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Panel')
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Overview Panel Style'),
+            _('Panel background style in overview'),
+            itemFactory.newDropDown(),
+            'panelOverviewStyle',
+            [
+                [_('Same as Desktop'), 0],
+                [_('Transparent (Default)'), 1],
+            ]
+        )
+    );
 
     optionList.push(
         itemFactory.getRowWidget(
