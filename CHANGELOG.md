@@ -1,8 +1,16 @@
 ## Changelog:
+### v48.0 (2025-02-02)
+**Added:**
+- GNOME 48 support
+
+**Fixed:**
+- Panel not being visible when set to *Overview Only* and *Static Workspace* overview mode is activated while the global overview mode configuration differs
+
+
 ### v47.5 (2025-01-27)
 **Added:**
 - The maximum number of search results can now be set to less than 5
-- New workspace animation options: *All Workspaces* and *Active Workspace Only*. Previously, V-Shell only supported the *Active Workspace Only* animation.
+- New workspace animation options: *All Workspaces* and *Active Workspace Only*. Previously, V-Shell only supported the *Active Workspace Only* animation
 
 **Fixed:**
 - Search results lose focus when the overview animation finishes
