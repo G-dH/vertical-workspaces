@@ -2,6 +2,7 @@
 ### v48.0 (2025-02-02)
 **Added:**
 - GNOME 48 support
+- Panel overview style option
 
 **Fixed:**
 - Panel not being visible when set to *Overview Only* and *Static Workspace* overview mode is activated while the global overview mode configuration differs
