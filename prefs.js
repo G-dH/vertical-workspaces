@@ -105,12 +105,16 @@ function _getProfilesOptionList(itemFactory) {
     // options item format:
     // (text, caption, widget, settings-variable, [options for combo], sensitivity-depends-on-bool-variable)
 
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Custom Profiles'),
-            _('Sets of settings that can help you with the initial customization')
-        )
-    );
+    optionList.push(itemFactory.getRowWidget(
+        _('Custom Profiles'),
+        null
+    ));
+
+    optionList.push(itemFactory.getRowWidget(
+        _('Save your configurations'),
+        _("The predefined sets of settings, which can help you with the initial configuration and exploring V-Shell's possibilities, can be renamed and overridden by your own configurations"),
+        itemFactory.newLabel()
+    ));
 
     optionList.push(itemFactory.getRowWidget(
         _('Profile 1'),
