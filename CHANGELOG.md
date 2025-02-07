@@ -1,4 +1,8 @@
 ## Changelog:
+### v48.1 (2025-02-07)
+**Fixed:**
+- *Workspace Switcher Mode* > *Current Monitor* buggy in GNOME 48
+
 ### v48.0 (2025-02-02)
 **Added:**
 - GNOME 48 support
