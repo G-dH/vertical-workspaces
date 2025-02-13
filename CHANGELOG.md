@@ -1,4 +1,11 @@
 ## Changelog:
+### v48.2 (not yet released)
+**Fixed:**
+- Compatibility with GNOME 48.beta
+- Errors after opening overview when workspaces are disabled on secondary monitors
+- Overview transitions when using multiple overview modes
+
+
 ### v48.1 (2025-02-07)
 **Fixed:**
 - *Workspace Switcher Mode* > *Current Monitor* buggy in GNOME 48
