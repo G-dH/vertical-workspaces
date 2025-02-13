@@ -3,7 +3,7 @@
  * extension.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022 - 2024
+ * @copyright  2022 - 2025
  * @license    GPL-3.0
  *
  */
@@ -214,14 +214,13 @@ export default class VShell extends Extension.Extension {
         // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
         this._setInitialWsIndex();
 
-        this._resetShellProperties();
+        // this._resetShellProperties();
     }
 
     removeVShell() {
         // Rebasing V-Shell when overview is open causes problems
         // also if Dash to Dock is enabled, disabling V-Shell can result in a broken overview
         this._ensureOverviewIsHidden();
-        this._resetShellProperties();
 
         this._enabled = false;
 
@@ -233,6 +232,8 @@ export default class VShell extends Extension.Extension {
 
         // remove changes mede by VShell modules
         this._updateOverrides(reset);
+
+        this._resetShellProperties();
 
         // switch PageUp/PageDown workspace switcher shortcuts
         this._switchPageShortcuts();
@@ -262,7 +263,6 @@ export default class VShell extends Extension.Extension {
         const dash = controls.layoutManager._dash;
         // Restore default dash background style
         dash._background.set_style('');
-
         dash.translation_x = 0;
         dash.translation_y = 0;
         controls._thumbnailsBox.translation_x = 0;
@@ -277,7 +277,9 @@ export default class VShell extends Extension.Extension {
         controls._thumbnailsBox.scale_y = 1;
         controls._thumbnailsBox.opacity = 255;
 
+        controls._searchEntry.visible = true;
         controls._searchController._searchResults.opacity = 255;
+        Main.layoutManager.panelBox.translationY = 0;
     }
 
     _removeTimeouts() {
