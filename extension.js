@@ -270,6 +270,7 @@ export default class VShell extends Extension.Extension {
         controls._searchEntryBin.translation_y = 0;
         controls._workspacesDisplay.scale_x = 1;
         controls.set_child_above_sibling(controls._workspacesDisplay, null);
+        delete controls._dashIsAbove;
 
         // following properties may be reduced if extensions are rebased while the overview is open
         controls._thumbnailsBox.remove_all_transitions();
