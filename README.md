@@ -1,8 +1,8 @@
-# V-Shell (Vertical Workspaces)
+# V-Shell
 
 A GNOME Shell extension that lets you customize your GNOME Shell UX to suit your workflow, whether you like horizontally or vertically stacked workspaces.
 
-Currently supported GNOME versions: 42 - 47
+Currently supported GNOME versions: 42 - 48
 
 [<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/5177/vertical-workspaces/)
 
@@ -23,7 +23,7 @@ Currently supported GNOME versions: 42 - 47
 - Customizable Super key behavior
 - Keyboard and mouse shortcuts allow advanced workspace and window control
 - 4 predefined and fully customizable profiles
-- Supports Dash to Dock / Ubuntu Dock / Dash to Panel
+- Supports Dash to Dock / Ubuntu Dock / Dash to Panel extensions
 
 
 ## Added functionality
