@@ -319,8 +319,11 @@ export default class VShell extends Extension.Extension {
     }
 
     _updateConnections() {
-        if (!this._monitorsChangedConId)
-            this._monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => this._adaptToSystemChange());
+        if (!this._monitorsChangedConId) {
+            this._monitorsChangedConId = Main.layoutManager.connect(
+                'monitors-changed', () => Main.overview._overview.controls._setBackground()
+            );
+        }
 
         if (!this._showingOverviewConId)
             this._showingOverviewConId = Main.overview.connect('showing', this._onShowingOverview.bind(this));
@@ -341,7 +344,6 @@ export default class VShell extends Extension.Extension {
                 } else if (session.currentMode === 'unlock-dialog') {
                     Me.Modules.panelModule.update();
                     Main.layoutManager.panelBox.translation_y = 0;
-                    Main.panel.opacity = 255;
                 }
             });
         }
@@ -475,10 +477,8 @@ export default class VShell extends Extension.Extension {
 
         if (!reset && !Main.layoutManager._startingUp)
             Main.overview._overview.controls.setInitialTranslations();
-        if (this._sessionLockActive) {
+        if (this._sessionLockActive)
             Main.layoutManager.panelBox.translation_y = 0;
-            Main.panel.opacity = 255;
-        }
     }
 
     _onShowingOverview() {
