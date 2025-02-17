@@ -1018,15 +1018,6 @@ export default class VShell extends ExtensionPreferences {
             )
         );
 
-        optionList.push(
-            itemFactory.getRowWidget(
-                _('Smooth Blur Transitions'),
-                _('Allows for smoother blur transitions, but can affect the overall smoothness of overview animations on weak hardware'),
-                itemFactory.newSwitch(),
-                'smoothBlurTransitions'
-            )
-        );
-
         return optionList;
     }
     // ----------------------------------------------------------------
