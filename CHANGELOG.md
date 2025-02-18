@@ -1,9 +1,10 @@
 ## Changelog:
-### v48.2 (not yet released)
+### v48.2 (2025-02-18)
 **Fixed:**
 - Compatibility with GNOME 48.beta
 - Glitching blurred background on secondary monitor
 - Poor performance when transitioning to a blurred background
+- App folder dialog padding
 - Errors after opening overview when workspaces are disabled on secondary monitors
 - Errors when reconnecting monitors
 - Overview transitions when using multiple overview modes
