@@ -2,8 +2,13 @@
 ### v48.2 (not yet released)
 **Fixed:**
 - Compatibility with GNOME 48.beta
+- Glitching blurred background on secondary monitor
+- Poor performance when transitioning to a blurred background
 - Errors after opening overview when workspaces are disabled on secondary monitors
+- Errors when reconnecting monitors
 - Overview transitions when using multiple overview modes
+- Refactored Panel module; fixed issue where hidden panel was visible on adjacent monitor
+- Spacing in switch workspace animation
 
 
 ### v48.1 (2025-02-07)
