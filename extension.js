@@ -609,7 +609,8 @@ export default class VShell extends Extension.Extension {
         if (opt.SEARCH_VIEW_ANIMATION)
             opt.SEARCH_DELAY = 150;
 
-        Main.overview._overview.controls._setBackground();
+        if (Main.overview._overview.controls._setBackground)
+            Main.overview._overview.controls._setBackground();
 
         if (settings)
             this._applySettings(key);
