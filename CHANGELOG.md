@@ -1,4 +1,13 @@
 ## Changelog:
+### v48.3 (not yet released)
+**Added:**
+- Options to hide the *Close* button and configure the *Remove folder* button in the app folder dialog
+
+**Fixed:**
+- Possible overview background glitching when related settings were changed during a session
+- Panel visibility transitions and glitching at startup
+ 
+
 ### v48.2 (2025-02-18)
 **Fixed:**
 - Compatibility with GNOME 48.beta
