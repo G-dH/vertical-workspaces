@@ -6,8 +6,8 @@
 **Fixed:**
 - Possible overview background glitching when related settings were changed during a session
 - Panel visibility transitions and glitching at startup
-- App folder title centering for all button configurations
-- App folder opens last used page instead of the first one
+- App folder opens last used page instead of the first one (upstream bug)
+- Dash is not always on top in the overview
  
 
 ### v48.2 (2025-02-18)
