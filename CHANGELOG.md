@@ -1,5 +1,5 @@
 ## Changelog:
-### v48.3 (not yet released)
+### v48.3 (2025-03-02)
 **Added:**
 - Options to hide the *Close* button and configure the *Remove folder* button in the app folder dialog
 
