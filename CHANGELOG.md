@@ -1,4 +1,12 @@
 ## Changelog:
+### v48.4 (not yet released)
+**Fixed:**
+- Dash can be below workspace in the overview
+- Tab key navigation between windows in the overview doesnt work (upstream bug [5345](https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/5345) introduced in GNOME 40, fixed by implementing merge request [2591](https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/2591))
+- Double-press Super key action is hard to activate when animation time is set too short
+- Minor glitches
+
+
 ### v48.3 (2025-03-02)
 **Added:**
 - Options to hide the *Close* button and configure the *Remove folder* button in the app folder dialog
