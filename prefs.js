@@ -3,7 +3,7 @@
  * prefs.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022 - 2024
+ * @copyright  2022 - 2025
  * @license    GPL-3.0
  */
 
@@ -1915,7 +1915,7 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Content')
+                _('Content and Behavior')
             )
         );
 
@@ -1957,6 +1957,17 @@ export default class VShell extends ExtensionPreferences {
                 _("You can hide the page navigation buttons if you don't need them or want to get more space for icons. The buttons are hidden automatically when there is only one page in the app grid"),
                 itemFactory.newSwitch(),
                 'appGridShowPageArrows',
+                null,
+                'appDisplayModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Remember Page'),
+                _('Disables the default behavior in which app grid and folders always open on the first page'),
+                itemFactory.newSwitch(),
+                'appGridRememberPage',
                 null,
                 'appDisplayModule'
             )

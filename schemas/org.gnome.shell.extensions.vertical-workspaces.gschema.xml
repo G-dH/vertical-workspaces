@@ -223,6 +223,9 @@
     <key type="b" name="app-grid-show-page-arrows">
       <default>true</default>
     </key>
+    <key type="b" name="app-grid-remember-page">
+      <default>false</default>
+    </key>
     <key type="i" name="dash-show-windows-before-activation">
       <default>1</default>
     </key>
