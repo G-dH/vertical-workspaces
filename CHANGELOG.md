@@ -1,5 +1,8 @@
 ## Changelog:
 ### v48.4 (not yet released)
+**Added:**
+- App Grid option "Remember Page", which allows you to open the app grid and app folders on the last page you left instead of always opening on the first one
+
 **Fixed:**
 - Dash can be below workspace in the overview
 - Tab key navigation between windows in the overview doesnt work (upstream bug [5345](https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/5345) introduced in GNOME 40, fixed by implementing merge request [2591](https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/2591))
