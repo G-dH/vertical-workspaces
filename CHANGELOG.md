@@ -4,7 +4,7 @@
 - App Grid option "Remember Page", which allows you to open the app grid and app folders on the last page you left instead of always opening on the first one
 
 **Fixed:**
-- *App Grid Search Mode* focus navigation - now the focus behavior follows the default search view behavior
+- *App Grid Search Mode* focus navigation - now the keyboard navigation follows the default search view behavior and allows seamless navigation between the search entry and app grid icons using the Tab and Arrow keys
 - Dash can be below workspace in the overview
 - Tab key navigation between windows in the overview doesnt work (upstream bug [5345](https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/5345) introduced in GNOME 40, fixed by implementing merge request [2591](https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/2591))
 - Double-press Super key action is hard to activate when animation time is set too short
