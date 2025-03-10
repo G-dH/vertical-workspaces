@@ -1,5 +1,5 @@
 ## Changelog:
-### v48.4 (not yet released)
+### v48.4 (2025-03-10)
 **Added:**
 - App Grid option "Remember Page", which allows you to open the app grid and app folders on the last page you left instead of always opening on the first one
 
