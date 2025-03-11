@@ -12,6 +12,7 @@ Currently supported GNOME versions: 42 - 48
 - Supports both vertically and horizontally stacked workspaces
 - Customizable overview layout, appearance, behavior, shortcuts
 - Customizable secondary monitor overview
+- Customizable panel visibility
 - Static overview modes minimize screen content movement
 - Customizable app grid and app folders - icon size, dimensions, sorting, active folder previews
 - Customizable dash - icon size, appearance and behavior, workspace isolation, click and scroll actions
@@ -33,26 +34,31 @@ This section explains some of the less obvious or less visible additions to the 
 |Shortcut| Description|
 |--------|------------|
 |`Shift + click on app icon in dash`                 | Move all windows of the application to the current workspace|
-|`Secondary mouse click on the activities indicator` | Open app grid|
+|`Secondary mouse click on the activities button`    | Open app grid|
 |`Shift + Scroll`, `Shift + Page Up/Down`            | Reorder current workspace|
 |`Shift + Ctrl + Space`                              | Open V-Shell *Settings* window|
 |`Space`                                             | Activate window search with all open windows if *WSP (Window Search Provider)* is installed and enabled|
 |`Ctrl + Space`                                      | Activate extensions search with all installed extensions if *ESP (Extensions Search Provider)* is installed and enabled|
-|`Alt + Space`                                       | Focus dash so you can use arrow keys to select app icon and `Space`/`Enter` to activate it
+|`Alt + Space`, `Super + Tab`                        | Focus dash so you can use arrow keys to select app icon and `Space`/`Enter` to activate it
  
  
- ### New buttons
+### New buttons
 |Button| Description|
 |------|------------|
-| *Close button in workspace thumbnail*     | Close all windows on the workspace. Default setting requires double-click |
-| *Trash button in app folder*              | Remove folder - move all icons to the main grid. Requires double-click |
+| *Close button in workspace thumbnail*     | Close all windows on the workspace. Default configuration requires double-click |
+| *Trash button in app folder*              | Remove folder - move all icons to the main grid. Default configuration requires double-click |
 
-### Active icons in app folder previews
-To enhance the efficiency of the application menu, V-Shell offers the 'Active Icons in Folder Preview' option. When enabled, icons in the folder preview (folder icon) behave like regular app icons, allowing users to interact with them without opening the folder. V-Shell allows you to increase the number of icons in the preview from 4 to 9, as well as adjust the size of the app grid icons. This feature enables the folder icons to divide the main app grid into sections, with the most frequently used apps readily accessible while others remain hidden deeper within folders.
+### App Grid
+
+#### Type to filter app grid
+The default V-Shell configuration features a searchable app grid, allowing you to filter its content, including app folders, simply by typing when the app grid view is active. It delivers the same results as the default app search but without the constraint of the search view width. Additionally, V-Shell can search for apps by categories and keywords embedded in their launchers, making it easy to find all *system*, *game*, *internet*, or *video* applications. This functionality minimizes the need for manually organizing apps into visual categories.
+
+#### Active icons in app folder previews
+To enhance the efficiency of the application menu when using the mouse, V-Shell offers the *Active Icons in Folder Preview* option. When enabled, icons in the folder preview (folder icon) behave like regular app icons, allowing users to interact with them without opening the folder. V-Shell allows you to increase the number of icons in the preview from 4 to 9, as well as adjust the size of the app grid icons. This feature enables the folder icons to divide the main app grid into sections, with the most frequently used apps readily accessible while others remain hidden deeper within folders.
 
 ![Custom Overview Layout](screenshots/screenshot0.jpg)
  
-### Open all apps in the folder at once
+#### Open all apps in the folder at once
 Simply drag-and-drop folder onto a workspace thumbnail to open all containing applications.
 
 ## Known issues
@@ -65,7 +71,7 @@ and for horizontal only:
 The default GNOME *Settings* application only offers options to configure keyboard shortcuts for horizontally oriented workspaces. However, the `gSettings` configuration scheme provides keys for shortcuts for vertically oriented workspaces as well. You can access and configure these shortcuts using the **dconf Editor**.
 
 When V-Shell is configured to use vertically stacked workspaces, the `(Shift)+Super+PageUp/Down` shortcuts for switching workspaces stop working.
-V-Shell provides the option `Override Page Up/Down Shortcuts` to automatically switch the default `Super+PageUp/Down` and `Shift+Super+PageUp/Down` shortcuts for the current workspace orientation. If enabled, this option will move the shortcuts between following gSettings keys:
+V-Shell provides the option *Override Page Up/Down Shortcuts* to automatically switch the default `Super+PageUp/Down` and `Shift+Super+PageUp/Down` shortcuts for the current workspace orientation. If enabled, this option will move the shortcuts between following gSettings keys:
 | Horizontal orientation | Vertical orientation |
 |------------------------|----------------------|
 | `switch-to-workspace-left` | `switch-to-workspace-up`|
@@ -81,21 +87,13 @@ Note that unlike the GNOME *Settings* application, *dconf Editor* allows you to 
 
 The key order follows the order in which GNOME Settings stores the shortcuts. If you add the same shortcut but with a different key order, V-Shell will not recognize it, and you might end up with the same shortcut assigned to two actions.
 
-
-### Stuttering overview animations
-On weaker hardware, you may experience stuttering in overview animations. This usually occurs due to blur effect transitions. In this scenario, you should avoid configurations where blur transitions are needed. Here are some tips on how to use the blur effect without affecting overview animations:
-- Enable `Show Workspace Preview Background`, which removes the need for blur transitions between desktop view and overview.
-- Set the same amount of blur for *Window Picker View* and *App Grid*
-- If your configuration requires blur transitions, keep the `Smooth Blur Transitions` option disabled
-
-
 ### Compatibility with other extensions
 V-Shell overrides parts of the GNOME Shell's UI code, and many extensions do the same, so conflicts are inevitable. V-Shell tries to mitigate the consequences of conflicts with the most popular extensions, which includes disabling its own modules. This means that some of V-Shell's settings may not function when conflicting extensions are enabled. V-Shell also provides manual control over its modules so the user can disable problematic ones if needed.
 
 Please, report any incompatibility, you encounter while using V-Shell.
 
 #### Incompatible extensions
-- *Search Light* - You can achieve similar behavior by switching V-Shell to the `Static Workspace` `Overview mode`
+- *Search Light* - You can achieve similar behavior by switching V-Shell to the *Static Workspace* *Overview mode*
 
 #### V-Shell modules automatically disabled when conflicting extensions are detected
 | Module                | Extensions causing module to disable |
@@ -112,7 +110,7 @@ to prevent crashes upon GNOME Shell starting up:
 - *Dash to Panel*
 - *Dash2Dock Animated*
 
-You can enable this option manually if needed, using the `Delay at Startup` option on the *Misc* tab of the *Settings* window.
+You can enable this option manually if needed, using the *Delay at Startup* option on the *Misc* tab of the *Settings* window.
 
 #### Extensions whose functionality is included in V-Shell
 and should be disabled or restricted by the user:
