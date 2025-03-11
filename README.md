@@ -117,10 +117,10 @@ and should be disabled or restricted by the user:
 - Partially *Blur My Shell* - V-Shell provides a basic settings for the overview background, including brightness and blur effects. If you want to use *Blur My Shell*, consider disabling its options for the overview, including app folders, to prevent visual glitches and inconsistency during transitions between overview states.
 - *Alphabetical App Grid* - V-Shell provides much more options than alphabetical sorting
 - *Grand Theft Focus* and other extensions preventing showing notification instead of immediately focusing the window that demands attention
-- *Hot Edge* - V-Shell provides this functionality as an option of the `Hot Corner Position` setting
+- *Hot Edge* - V-Shell provides this functionality as an option of the *Hot Corner Position* setting
 - Some of the *Just Perfection* options including notifications/OSD positions, hiding main panel, animation speed, dash icon size and more
 - *Impatience* and extensions adjusting animation speed
-- *Click to close overview* - V-Shell provides the `Click Empty Space To Close` option
+- *Click to close overview* - V-Shell provides the *Click Empty Space To Close* option
 
 
 ## Changelog
