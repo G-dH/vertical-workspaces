@@ -1,4 +1,9 @@
 ## Changelog:
+### v48.5 (2025-03-12)
+**Fixed:**
+- Workspace preview in the overview not responding to clicks
+
+
 ### v48.4 (2025-03-10)
 **Added:**
 - App Grid option "Remember Page", which allows you to open the app grid and app folders on the last page you left instead of always opening on the first one
