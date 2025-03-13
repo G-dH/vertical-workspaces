@@ -1,4 +1,12 @@
 ## Changelog:
+### v48.6 (not yet released)
+**Added:**
+- Support for searching apps by package type - snap, flatpak, appimage
+
+**Fixed:**
+- Workspace preview scale after reordering workspaces
+- Overview background transition glitch when static overview mode is active
+
 ### v48.5 (2025-03-12)
 **Fixed:**
 - Workspace preview in the overview not responding to clicks
