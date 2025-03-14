@@ -3,7 +3,7 @@
  * prefs.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022 - 2024
+ * @copyright  2022 - 2025
  * @license    GPL-3.0
  */
 
@@ -16,7 +16,6 @@ const Gio = imports.gi.Gio;
 const ExtensionUtils = imports.misc.extensionUtils;
 const MyExtension = ExtensionUtils.getCurrentExtension();
 const OptionsFactory = MyExtension.imports.lib.optionsFactory;
-const GObject = imports.gi.GObject;
 
 let Me;
 let _;
@@ -96,7 +95,7 @@ function fillPreferencesWindow(window) {
         _ = null;
     });
 
-    window.set_default_size(800, 800);
+    window.set_default_size(840, 800);
 }
 
 // ////////////////////////////////////////////////////////////////////
@@ -197,8 +196,7 @@ function _getLayoutOptionList(itemFactory) {
             _('Adjusts the position of the dash on the axis given by the orientation of the workspaces'),
             dashPositionScale,
             'dashPositionAdjust',
-            null,
-            'dashModule'
+            null
         )
     );
 
@@ -280,7 +278,7 @@ function _getLayoutOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Thumbnails Max Scale - Window Picker'),
-            _('Adjusts maximum size of the workspace thumbnails in the overview (% relative to display width)'),
+            _('Adjusts the maximum size of the workspace thumbnails in the overview (percentage relative to display width)'),
             wsThumbnailScale,
             'wsThumbnailScale'
         )
@@ -336,11 +334,11 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const wsSpacingScale = itemFactory.newScale(wsSpacingAdjustment);
-    wsSpacingScale.add_mark(350, Gtk.PositionType.TOP, null);
+    wsSpacingScale.add_mark(opt.WS_MAX_SPACING_OFF_SCREEN, Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspaces Spacing'),
-            _('Adjusts the spacing between workspace previews so you can control how much of the adjacent workspaces overlap to the current workspace overview. Default value should set the adjacent workspaces off-screen.'),
+            _('Adjusts spacing in pixels between workspace previews, allowing you to control how much the adjacent workspaces overlap in the current workspace overview. Setting the value above 349 pixels disables the visibility of workspaces other than the current one during transitions to/from the app grid view, which can also save some graphical resources if many windows are open on other workspaces'),
             wsSpacingScale,
             'wsMaxSpacing'
         )
@@ -399,7 +397,7 @@ function _getLayoutOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Search Results Width'),
-            _('Adjusts maximum width of search results view (% relative to default). This allows to fit more (or less) app icons into the app search result'),
+            _('Adjusts the maximum width of search results view (percentage relative to default). This allows to fit more (or less) app icons into the app search result'),
             searchViewScale,
             'searchViewScale',
             null,
@@ -462,7 +460,7 @@ function _getLayoutOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Horizontal Position (% from left)'),
+            _('Horizontal Position (percentage from the left)'),
             _('This popup shows up when you switch workspace using a keyboard shortcut or gesture outside of the overview. You can disable it on the "Behavior" tab. If you want more control over the popup, try the "Workspace Switcher Manager" extension'),
             hScale,
             'wsSwPopupHPosition',
@@ -483,7 +481,7 @@ function _getLayoutOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Vertical Position (% from top)'),
+            _('Vertical Position (percentage from the top)'),
             null,
             vScale,
             'wsSwPopupVPosition',
@@ -587,7 +585,7 @@ function _getLayoutOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Thumbnails Max Scale'),
-            _('Adjusts maximum size of the workspace thumbnails (% relative to display width / height) for secondary monitors'),
+            _('Adjusts maximum size of the workspace thumbnails (percentage relative to the display width / height) for secondary monitors'),
             secWsThumbnailScale,
             'secWsThumbnailScale'
         )
@@ -601,7 +599,7 @@ function _getLayoutOptionList(itemFactory) {
     });
 
     const wsSecScaleScale = itemFactory.newScale(wsSecScaleAdjustment);
-    wsScaleScale.add_mark(100, Gtk.PositionType.TOP, null);
+    wsScaleScale.add_mark(95, Gtk.PositionType.TOP, null);
     optionList.push(
         itemFactory.getRowWidget(
             _('Workspace Preview Scale'),
@@ -645,13 +643,13 @@ function _getAppearanceOptionList(itemFactory) {
             'dashMaxIconSize',
             [
                 [_('Adaptive (Default)'),  0],
-                [_('128'), 128],
-                [_('112'), 112],
-                [_('96'),   96],
-                [_('80'),   80],
-                [_('64'),   64],
-                [_('48'),   48],
-                [_('32'),   32],
+                [_('128'),     128],
+                [_('112'),     112],
+                [_('96'),       96],
+                [_('80'),       80],
+                [_('64'),       64],
+                [_('48'),       48],
+                [_('32'),       32],
             ],
             'dashModule'
         )
@@ -885,7 +883,7 @@ function _getAppearanceOptionList(itemFactory) {
 
     const maxSearchResultsAdjustment = new Gtk.Adjustment({
         upper: 50,
-        lower: 5,
+        lower: 1,
         step_increment: 1,
         page_increment: 5,
     });
@@ -1022,15 +1020,6 @@ function _getAppearanceOptionList(itemFactory) {
         )
     );
 
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Smooth Blur Transitions'),
-            _('Allows for smoother blur transitions, but can affect the overall smoothness of overview animations on weak hardware'),
-            itemFactory.newSwitch(),
-            'smoothBlurTransitions'
-        )
-    );
-
     return optionList;
 }
 // ----------------------------------------------------------------
@@ -1105,7 +1094,7 @@ function _getBehaviorOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Single-Press Action'),
-            _('Disable or change behavior when you press and release the Super key. The "Search Windows" options requires the "WSP (Window Search Provider)" extension installed and enabled. Link is available on the Modules tab in Settings'),
+            _('Disable or change behavior when you press and release the Super key. The "Search Windows" options requires the "WSP (Window Search Provider)" extension installed and enabled. Link is available on the Modules tab in Settings. If you want another extension (like AATWS) to handle the overlay key, set this option to "Overview - Window Picker (Default)" and the "Double-Press Action" option to "Applications (Default)"'),
             itemFactory.newDropDown(),
             'overlayKeyPrimary',
             [
@@ -1148,7 +1137,7 @@ function _getBehaviorOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Hot Corner Action'),
-            _('Disable or change behavior of the hot corner. Holding down the Ctrl key while hitting the hot corner switches between Overview/Applications actions. The "Search Windows" option requires the "WSP (Window Search Provider)" extension installed and enabled.'),
+            _('Disable or change behavior of the hot corner. Holding down the Ctrl key while hitting the hot corner switches between Overview/Applications actions. The "Search Windows" option requires the "WSP (Window Search Provider)" extension installed and enabled'),
             itemFactory.newDropDown(),
             'hotCornerAction',
             [
@@ -1316,7 +1305,7 @@ function _getBehaviorOptionList(itemFactory) {
             itemFactory.newDropDown(),
             'closeWsButtonMode',
             [
-                [_('Disable'), 0],
+                [_('Hide'), 0],
                 [_('Single Click'), 1],
                 [_('Double Click'), 2],
                 [_('Ctrl Key + Click'), 3],
@@ -1396,8 +1385,22 @@ function _getBehaviorOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
+            _('App Grid Search Mode'),
+            _('Select how the search should behave when initiated from the app grid view. The "Filtered App Grid View" option shows all resulting app icons sorted by usage in the app grid view instead of switching to the default search view'),
+            itemFactory.newDropDown(),
+            'searchAppGridMode',
+            [
+                [_('Search View (Default)'), 0],
+                [_('Filtered App Grid View'), 1],
+            ],
+            'searchModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
             _('Enable Fuzzy Match'),
-            _('Enabling the fuzzy match allows you to skip letters in the pattern you are searching for and find "Firefox" even if you type "ffx". Works only for the App, Window and Recent files search providers'),
+            _('Enabling the fuzzy match allows you to skip letters in the pattern you are searching for and find "Firefox" even if you type "ffx". Works only for the App, Windows, Extensions and Recent files search providers'),
             itemFactory.newSwitch(),
             'searchFuzzy'
         )
@@ -1405,7 +1408,7 @@ function _getBehaviorOptionList(itemFactory) {
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Animations - General')
+            _('Animations')
         )
     );
 
@@ -1421,15 +1424,9 @@ function _getBehaviorOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Animation Speed'),
-            _('Adjusts the global animation speed in % of the default duration - higher value means slower animation'),
+            _('Adjusts the global animation speed in percentage of the default duration - higher value means slower animation'),
             animationSpeedScale,
             'animationSpeedFactor'
-        )
-    );
-
-    optionList.push(
-        itemFactory.getRowWidget(
-            _('Animations - Overview')
         )
     );
 
@@ -1550,7 +1547,6 @@ function _getBehaviorOptionList(itemFactory) {
         )
     );
 
-
     optionList.push(
         itemFactory.getRowWidget(
             _('Notifications')
@@ -1589,7 +1585,7 @@ function _getBehaviorOptionList(itemFactory) {
     return optionList;
 }
 
-// ---------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------
 
 function _getAppGridOptionList(itemFactory) {
     const optionList = [];
@@ -1610,6 +1606,7 @@ function _getAppGridOptionList(itemFactory) {
             'appGridOrder',
             [
                 [_('Custom (Default)'), 0],
+                [_('Alphabet'), 4],
                 [_('Alphabet - Folders First'), 1],
                 [_('Alphabet - Folders Last'), 2],
                 [_('Usage - No Folders'), 3],
@@ -1639,7 +1636,7 @@ function _getAppGridOptionList(itemFactory) {
                 [_('80'), 80],
                 [_('64'), 64],
                 [_('48'), 48],
-            // [_('32'), 32],
+                // [_('32'), 32],
             ],
             'appDisplayModule'
         )
@@ -1744,7 +1741,7 @@ function _getAppGridOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Grid Spacing'),
-            _('Adjusts the spacing between icons in a grid. V-Shell uses this value to calculate grid dimensions for adaptive options. However, the main grid automatically adjusts the spacing for the grid and available space, while folder grids use the spacing exactly as set here'),
+            _('V-Shell uses this value to calculate grid dimensions for adaptive options. However, the main grid automatically adjusts the spacing based on the grid and available space'),
             appGridSpacingScale,
             'appGridSpacing',
             null,
@@ -1832,7 +1829,6 @@ function _getAppGridOptionList(itemFactory) {
         )
     );
 
-
     const folderColumnsSpinBtn = itemFactory.newSpinButton(folderColumnsAdjustment);
     optionList.push(itemFactory.getRowWidget(
         _('Maximum Number Of Columns (0 for automatic)'),
@@ -1872,7 +1868,7 @@ function _getAppGridOptionList(itemFactory) {
     optionList.push(
         itemFactory.getRowWidget(
             _('Folder Grid Spacing'),
-            _('Adjusts the spacing between icons in a grid'),
+            _('Adjusts the spacing between icons in a folder grid'),
             appFolderSpacingScale,
             'appGridFolderSpacing',
             null,
@@ -1891,11 +1887,37 @@ function _getAppGridOptionList(itemFactory) {
         )
     );
 
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Show Close Folder Button'),
+            _('The folder can be closed by right-clicking on the folder dialog or by left-clicking outside of it. However, in some situations, the close button can be useful'),
+            itemFactory.newSwitch(),
+            'appFolderCloseButton',
+            null,
+            'appDisplayModule'
+        )
+    );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Remove Folder Button'),
+            _('The Remove Folder button lets you move all icons from the folder to the main app grid and delete the folder at once'),
+            itemFactory.newDropDown(),
+            'appFolderRemoveButton',
+            [
+                [_('Hide (Default)'), 0],
+                [_('Single Click'), 1],
+                [_('Double Click'), 2],
+            ],
+            'appDisplayModule'
+        )
+    );
+
     // --------------------------------------------------------------------------------------
 
     optionList.push(
         itemFactory.getRowWidget(
-            _('Content')
+            _('Content and Behavior')
         )
     );
 
@@ -1941,6 +1963,18 @@ function _getAppGridOptionList(itemFactory) {
             'appDisplayModule'
         )
     );
+
+    optionList.push(
+        itemFactory.getRowWidget(
+            _('Remember Page'),
+            _('Disables the default behavior in which app grid and folders always open on the first page'),
+            itemFactory.newSwitch(),
+            'appGridRememberPage',
+            null,
+            'appDisplayModule'
+        )
+    );
+
 
     // --------------------------------------------------------------------------------------
 
@@ -1988,8 +2022,6 @@ function _getAppGridOptionList(itemFactory) {
     return optionList;
 }
 
-// ---------------------------------------------------------------------------------------------------------------------------
-
 function _getModulesOptionList(itemFactory) {
     const optionList = [];
     // options item format:
@@ -2000,21 +2032,19 @@ function _getModulesOptionList(itemFactory) {
         )
     );
 
-    const wspLink = itemFactory.newLinkButton('https://github.com/G-dH/windows-search-provider?tab=readme-ov-file#wsp-windows-search-provider');
     optionList.push(
         itemFactory.getRowWidget(
             _('Windows Search Provider - Moved from V-Shell to the standalone "WSP" extension'),
             _('NOTE: This module has been released as a standalone extension with new features, click to learn more. Related V-Shell options are still available if you install the WSP extension.\n\nWSP adds adds open windows to the search results. You can search app names and window titles. You can also use "wq//" or custom prefix (also by pressing the Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
-            wspLink
+            itemFactory.newLinkButton('https://github.com/G-dH/windows-search-provider?tab=readme-ov-file#wsp-windows-search-provider')
         )
     );
 
-    const espLink = itemFactory.newLinkButton('https://github.com/G-dH/extensions-search-provider?tab=readme-ov-file#esp-extensions-search-provider');
     optionList.push(
         itemFactory.getRowWidget(
             _('Extensions Search Provider - Moved from V-Shell to the standalone "ESP" extension'),
             _('NOTE: This module has been released as a standalone extension with new features, click to learn more. Related V-Shell options are still available if you install the ESP extension.\n\nESP adds extensions to the search results. You can also use "eq//" or custom prefix (also by pressing the Ctrl + Shift + Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
-            espLink
+            itemFactory.newLinkButton('https://github.com/G-dH/extensions-search-provider?tab=readme-ov-file#esp-extensions-search-provider')
         )
     );
 
@@ -2243,6 +2273,8 @@ function _getMiscOptionList(itemFactory) {
 
     return optionList;
 }
+
+// --------------------------------------------------------------------------------------------------
 
 function _getAboutOptionList(itemFactory) {
     const optionList = [];

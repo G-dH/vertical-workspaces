@@ -208,6 +208,12 @@
     <key type="b" name="app-grid-folder-center">
       <default>false</default>
     </key>
+    <key type="i" name="app-folder-remove-button">
+      <default>1</default>
+    </key>
+    <key type="b" name="app-folder-close-button">
+      <default>true</default>
+    </key>
     <key type="i" name="app-grid-page-width-scale">
       <default>90</default>
     </key>
@@ -216,6 +222,9 @@
     </key>
     <key type="b" name="app-grid-show-page-arrows">
       <default>true</default>
+    </key>
+    <key type="b" name="app-grid-remember-page">
+      <default>false</default>
     </key>
     <key type="i" name="dash-show-windows-before-activation">
       <default>1</default>
@@ -578,7 +587,7 @@
         'smoothBlurTransitions': 'false',
         'appGridAnimation': '4',
         'searchViewAnimation': '0',
-        'workspaceAnimation': '2',
+        'workspaceAnimation': '1',
         'animationSpeedFactor': '100',
         'winPreviewIconSize': '1',
         'winTitlePosition': '0',

@@ -3,7 +3,7 @@
  * extension.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022 - 2024
+ * @copyright  2022 - 2025
  * @license    GPL-3.0
  *
  */
@@ -210,7 +210,6 @@ class Extension {
         // Rebasing V-Shell when overview is open causes problems
         // also if Dash to Dock is enabled, disabling V-Shell can result in a broken overview
         this._ensureOverviewIsHidden();
-        this._resetShellProperties();
 
         this._enabled = false;
 
@@ -218,11 +217,12 @@ class Extension {
         this._removeTimeouts();
 
         this._removeConnections();
-
         Main.overview._overview.controls._setBackground(reset);
 
         // remove changes made by VShell modules
         this._updateOverrides(reset);
+
+        this._resetShellProperties();
 
         // switch PageUp/PageDown workspace switcher shortcuts
         this._switchPageShortcuts();
@@ -252,7 +252,6 @@ class Extension {
         const dash = controls.layoutManager._dash;
         // Restore default dash background style
         dash._background.set_style('');
-
         dash.translation_x = 0;
         dash.translation_y = 0;
         controls._thumbnailsBox.translation_x = 0;
@@ -260,6 +259,7 @@ class Extension {
         controls._searchEntryBin.translation_y = 0;
         controls._workspacesDisplay.scale_x = 1;
         controls.set_child_above_sibling(controls._workspacesDisplay, null);
+        delete controls._dashIsAbove;
 
         // following properties may be reduced if extensions are rebased while the overview is open
         controls._thumbnailsBox.remove_all_transitions();
@@ -267,7 +267,9 @@ class Extension {
         controls._thumbnailsBox.scale_y = 1;
         controls._thumbnailsBox.opacity = 255;
 
+        controls._searchEntry.visible = true;
         controls._searchController._searchResults.opacity = 255;
+        Main.layoutManager.panelBox.translationY = 0;
     }
 
     _removeTimeouts() {
@@ -301,13 +303,17 @@ class Extension {
     _updateFixDashToDockOption() {
         const dtdEnabled = !!(Me.Util.getEnabledExtensions('dash-to-dock').length ||
                               Me.Util.getEnabledExtensions('ubuntu-dock').length);
+
         // force enable Fix Dash to Dock option if DtD detected
         this._watchDashToDock = dtdEnabled;
     }
 
     _updateConnections() {
-        if (!this._monitorsChangedConId)
-            this._monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => this._adaptToSystemChange());
+        if (!this._monitorsChangedConId) {
+            this._monitorsChangedConId = Main.layoutManager.connect(
+                'monitors-changed', () => Main.overview._overview.controls._setBackground()
+            );
+        }
 
         if (!this._showingOverviewConId)
             this._showingOverviewConId = Main.overview.connect('showing', this._onShowingOverview.bind(this));
@@ -328,7 +334,6 @@ class Extension {
                 } else if (session.currentMode === 'unlock-dialog') {
                     Me.Modules.panelModule.update();
                     Main.layoutManager.panelBox.translation_y = 0;
-                    Main.panel.opacity = 255;
                 }
             });
         }
@@ -359,7 +364,7 @@ class Extension {
                     if (dashReplacement && reset)
                         this._watchDashToDock = true;
                     if (!Main.layoutManager._startingUp && reset && dashReplacement)
-                        this._adaptToSystemChange(1999);
+                        this._adaptToSystemChange(2000);
                 }
             );
         }
@@ -463,10 +468,8 @@ class Extension {
         // Move overview actors to default positions
         if (!reset && !Main.layoutManager._startingUp)
             Main.overview._overview.controls.setInitialTranslations();
-        if (this._sessionLockActive) {
+        if (this._sessionLockActive)
             Main.layoutManager.panelBox.translation_y = 0;
-            Main.panel.opacity = 255;
-        }
     }
 
     _onShowingOverview() {
@@ -515,7 +518,7 @@ class Extension {
         );
     }
 
-    // the key modules that can be affected by the supported incompatible extensions
+    // Modules possibly affected by supported but incompatible extensions
     _repairOverrides() {
         Me.Modules.overviewModule.update();
         Me.Modules.overviewControlsModule.update();
@@ -531,6 +534,7 @@ class Extension {
     _updateSettings(settings, key) {
         // update settings cache and option variables
         opt._updateSettings();
+        this._resetShellProperties();
 
         // avoid overload while loading profile - update only once
         // delayed gsettings writes are processed alphabetically
@@ -569,13 +573,13 @@ class Extension {
 
         opt.DASH_VISIBLE = opt.DASH_VISIBLE && !Me.Util.getEnabledExtensions('dash-to-panel@jderose9.github.com').length;
 
-        Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = opt.OVERVIEW_MODE === 1 ? 0.1 : 0.95;
-
         // adjust search entry style for OM2
         if (opt.OVERVIEW_MODE2)
             Main.overview.searchEntry.add_style_class_name('search-entry-om2');
         else
             Main.overview.searchEntry.remove_style_class_name('search-entry-om2');
+
+Workspace.WINDOW_PREVIEW_MAXIMUM_SCALE = opt.OVERVIEW_MODE === 1 ? 0.1 : 0.95;
 
         Main.overview.searchEntry.visible = opt.SHOW_SEARCH_ENTRY;
         Main.overview.searchEntry.opacity = 255;
@@ -593,6 +597,9 @@ class Extension {
         // Of course there is some overload for fast keyboard typist
         if (opt.SEARCH_VIEW_ANIMATION)
             opt.SEARCH_DELAY = 150;
+
+        if (Main.overview._overview.controls._setBackground)
+            Main.overview._overview.controls._setBackground();
 
         if (settings)
             this._applySettings(key);
@@ -665,8 +672,7 @@ class Extension {
             key?.includes('dot-style') ||
             key === 'show-search-entry' ||
             key === 'ws-thumbnail-scale' ||
-            key === 'ws-thumbnail-scale-appgrid'
-        )
+            key === 'ws-thumbnail-scale-appgrid')
             Me.Modules.appDisplayModule.update();
     }
 
