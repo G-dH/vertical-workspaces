@@ -202,8 +202,6 @@ class Extension {
 
         // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
         this._setInitialWsIndex();
-
-        this._resetShellProperties();
     }
 
     _removeVShell() {
