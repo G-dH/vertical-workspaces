@@ -317,7 +317,7 @@
 	margin-bottom: 8em; /* avoid overlap with dock extension */
 }
 
-.app-folder-dialog,
+.app-folder-dialog-translucent,
 .app-folder .overview-icon,
 .edit-folder-button,
 .folder-name-entry {
