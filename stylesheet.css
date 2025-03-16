@@ -120,13 +120,12 @@
 
 /* add shadow to the app grid app label to be readable if it overlaps light icon below */
 .search-section-content, .overview-icon-with-label, .folder-name-label {
-    text-shadow: 1px 1px 3px rgba(33, 33, 33, 0.8);
+    text-shadow: 1px 1px 5px rgba(33, 33, 33, 0.7);
 }
 
 .list-search-result-description {
 	color: rgb(200, 200, 200);
-	text-shadow: 1px 1px 3px rgba(33, 33, 33, 0.8);
-
+	text-shadow: 1px 1px 5px rgba(10, 10, 10, 0.7);
 }
 
 /* adjustment for the vertical ws switcher indicator popup*/
