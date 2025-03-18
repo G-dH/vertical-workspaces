@@ -2,10 +2,15 @@
 ### v48.6 (not yet released)
 **Added:**
 - Support for searching apps by package type - snap, flatpak, appimage
+- Text shadow to the search results to improve readability on light backgrounds
 
 **Fixed:**
 - Workspace preview scale after reordering workspaces
+- App Grid page navigation arrows are not verticaly centered in app folders
+- Inconsistent spacing between title and icon grid in app folder dialogs
 - Overview background transition glitch when static overview mode is active
+- Overview background blur not updating immediately when the background wallpaper is changed (#223)
+
 
 ### v48.5 (2025-03-12)
 **Fixed:**
