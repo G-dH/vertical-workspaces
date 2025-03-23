@@ -340,6 +340,12 @@
     <key type="b" name="click-empty-close">
       <default>false</default>
     </key>
+    <key type="i" name="overview-sort-windows">
+      <default>0</default>
+    </key>
+    <key type="i" name="overview-select-window">
+      <default>0</default>
+    </key>
     <key type="b" name="new-window-focus-fix">
       <default>false</default>
     </key>
@@ -587,7 +593,7 @@
         'smoothBlurTransitions': 'false',
         'appGridAnimation': '4',
         'searchViewAnimation': '0',
-        'workspaceAnimation': '2',
+        'workspaceAnimation': '1',
         'animationSpeedFactor': '100',
         'winPreviewIconSize': '1',
         'winTitlePosition': '0',

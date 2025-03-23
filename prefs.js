@@ -1120,7 +1120,6 @@ export default class VShell extends ExtensionPreferences {
                     [_('Applications (Default)'), 1],
                     [_('Search Windows (requires WSP extension)'), 2],
                     [_('Overview - Window Picker'), 3],
-                // [_('Search Recent Files'), 4],
                 ],
                 'overlayKeyModule'
             )
@@ -1307,6 +1306,42 @@ export default class VShell extends ExtensionPreferences {
                     [_('Single Click'), 1],
                     [_('Double Click'), 2],
                     [_('Ctrl Key + Click'), 3],
+                ]
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Workspace Preview')
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Sort Windows'),
+                _('Sort windows in the overview differently from the default screen position. The stable sequence is determined by the order in which the windows were opened'),
+                itemFactory.newDropDown(),
+                'overviewSortWindows',
+                [
+                    [_('Position (Default)'), 0],
+                    [_('Most Recently Used'), 1],
+                    [_('Stable Sequence'), 2],
+                ],
+                'windowPreviewModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Select Window'),
+                _('Automatically select a window in the overview to speed up keyboard navigation'),
+                itemFactory.newDropDown(),
+                'overviewSelectWindow',
+                [
+                    [_('None (Default)'), 0],
+                    [_('First'), 1],
+                    [_('Currently Focused'), 2],
+                    [_('Previously Focused'), 3],
                 ]
             )
         );
