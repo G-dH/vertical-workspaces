@@ -1,15 +1,22 @@
-## Changelog:
-### v48.6 (not yet released)
-**Added:**
-- Support for searching apps by package type - snap, flatpak, appimage
-- Text shadow to the search results to improve readability on light backgrounds
+## Changelog:  
+### v48.6 (Not Yet Released)  
 
-**Fixed:**
-- Workspace preview scale after reordering workspaces
-- App Grid page navigation arrows are not verticaly centered in app folders
-- Inconsistent spacing between title and icon grid in app folder dialogs
-- Overview background transition glitch when static overview mode is active
-- Overview background blur not updating immediately when the background wallpaper is changed (#223)
+**Added:**  
+- Options to sort and automatically select window previews in the overview — *Behavior → Workspace Preview → Sort Windows / Select Window*  
+- Support for searching apps by package type (Snap, Flatpak, AppImage)  
+- Text shadows for search results to improve readability on light backgrounds  
+
+**Fixed:**  
+- Workspace preview scaling after reordering workspaces  
+- App Grid page navigation arrows not being vertically centered in app folders  
+- Inconsistent spacing between the title and icon grid in app folder dialogs  
+- Overview background transition glitch when static overview mode is active  
+- Overview background blur not updating immediately when the wallpaper is changed (#223)  
+- Overview glitching after changing configuration settings  
+- Potential incorrect window preview scaling when *Expose Windows on Hover* mode is active  
+
+**Changed:**  
+- Removed vignette effect (darkened edges) from the overview background  
 
 
 ### v48.5 (2025-03-12)
