@@ -7,13 +7,15 @@
 - Text shadows for search results to improve readability on light backgrounds  
 
 **Fixed:**  
-- Workspace preview scaling after reordering workspaces  
-- App Grid page navigation arrows not being vertically centered in app folders  
-- Inconsistent spacing between the title and icon grid in app folder dialogs  
-- Overview background transition glitch when static overview mode is active  
-- Overview background blur not updating immediately when the wallpaper is changed (#223)  
-- Overview glitching after changing configuration settings  
-- Potential incorrect window preview scaling when *Expose Windows on Hover* mode is active  
+- Workspace preview scaling after reordering workspaces
+- App Grid page navigation arrows not being vertically centered in app folders
+- Inconsistent spacing between the title and icon grid in app folder dialogs
+- Overview background transition glitch when static overview mode is active
+- Overview background blur not updating immediately when the wallpaper is changed (#223)
+- Overview glitching after changing configuration settings
+- Potential incorrect window preview scaling when *Expose Windows on Hover* mode is active
+- Overview background blur and brightness configuration breaking after a wallpaper image change
+- Workspace thumbnails' background covering windows after a wallpaper image change
 
 **Changed:**  
 - Removed vignette effect (darkened edges) from the overview background  
