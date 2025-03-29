@@ -2,9 +2,10 @@
 ### v48.6 (Not Yet Released)  
 
 **Added:**  
-- Options to sort and automatically select window previews in the overview — *Behavior → Workspace Preview → Sort Windows / Select Window*  
-- Support for searching apps by package type (Snap, Flatpak, AppImage)  
-- Text shadows for search results to improve readability on light backgrounds  
+- Options to sort and automatically select window previews in the overview — *Behavior → Workspace Preview → Sort Windows / Select Window*
+- Support for searching apps by package type (Snap, Flatpak, AppImage)
+- Text shadows for search results to improve readability on light backgrounds
+- *Window Height Compensation* option in the *Behavior* tab's *Workspace Preview* section, which controls the amount of height compensation for smaller window previews (#227)
 
 **Fixed:**  
 - Workspace preview scaling after reordering workspaces
