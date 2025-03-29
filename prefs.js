@@ -1346,6 +1346,27 @@ export default class VShell extends ExtensionPreferences {
             )
         );
 
+        const winHeightCompAdjustment = new Gtk.Adjustment({
+            upper: 100,
+            lower: 0,
+            step_increment: 10,
+            page_increment: 10,
+        });
+
+        const winHeightCompScale = itemFactory.newScale(winHeightCompAdjustment);
+        winHeightCompScale.add_mark(50, Gtk.PositionType.TOP, null);
+        winHeightCompScale.add_mark(100, Gtk.PositionType.TOP, null);
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Window Height Compensation'),
+                _('Controls the amount of height compensation for smaller window thumbnails relative to the tallest one. 0 keeps the original scale ratio, while 100 makes all thumbnails the same height'),
+                winHeightCompScale,
+                'winPreviewHeightCompensation',
+                null,
+                'workspaceModule'
+            )
+        );
+
         optionList.push(
             itemFactory.getRowWidget(
                 _('Window Preview')

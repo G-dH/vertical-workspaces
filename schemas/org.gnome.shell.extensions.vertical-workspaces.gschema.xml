@@ -328,6 +328,9 @@
     <key type="i" name="window-icon-click-action">
       <default>1</default>
     </key>
+    <key type="i" name="win-preview-height-compensation">
+      <default>50</default>
+    </key>
     <key type="i" name="overlay-key-primary">
       <default>1</default>
     </key>
