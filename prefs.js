@@ -943,10 +943,15 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Show Wallpaper'),
-                _('Replaces the solid grey background in the overview with the current desktop wallpaper'),
-                itemFactory.newSwitch(),
-                'showBgInOverview'
+                _('Show wallpaper'),
+                _('Replaces the solid grey background in the overview with the current desktop wallpaper. If you have a weak computer or prefer low system load and want to blur the wallpaper, the "Fast Blur Transitions" option is for you'),
+                itemFactory.newDropDown(),
+                'showOverviewBackground',
+                [
+                    [_('Disable (Default)'), 0],
+                    [_('Enable - Fast Blur Transitions'), 1],
+                    [_('Enable - Smooth Blur Transitions'), 2],
+                ]
             )
         );
 
@@ -960,10 +965,31 @@ export default class VShell extends ExtensionPreferences {
         const bgBrightnessScale = itemFactory.newScale(brightnessBgAdjustment);
         optionList.push(
             itemFactory.getRowWidget(
-                _('Brightness'),
+                _('Brightness - Window Picker'),
                 _('Brightness of the background wallpaper in the overview'),
                 bgBrightnessScale,
-                'overviewBgBrightness'
+                'overviewBgBrightness',
+                null,
+                'showOverviewBackground'
+            )
+        );
+
+        const appGridBrightnessBgAdjustment = new Gtk.Adjustment({
+            upper: 100,
+            lower: 0,
+            step_increment: 1,
+            page_increment: 10,
+        });
+
+        const appGridBrightnessScale = itemFactory.newScale(appGridBrightnessBgAdjustment);
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Brightness - App Grid'),
+                _('Brightness of the background wallpaper in the application menu'),
+                appGridBrightnessScale,
+                'appGridBgBrightness',
+                null,
+                'showOverviewBackground'
             )
         );
 
@@ -977,15 +1003,17 @@ export default class VShell extends ExtensionPreferences {
         const searchBgBrightnessScale = itemFactory.newScale(searchBrightnessBgAdjustment);
         optionList.push(
             itemFactory.getRowWidget(
-                _('Brightness for Search View'),
-                _('Allows you to set a lower background brightness for search view mode where text visibility is more important'),
+                _('Brightness - Search View'),
+                _('Allows you to set a lower background brightness for search view where text visibility is more important'),
                 searchBgBrightnessScale,
-                'searchBgBrightness'
+                'searchBgBrightness',
+                null,
+                'showOverviewBackground'
             )
         );
 
         const blurBgAdjustment = new Gtk.Adjustment({
-            upper: 100,
+            upper: 300,
             lower: 0,
             step_increment: 1,
             page_increment: 10,
@@ -997,12 +1025,14 @@ export default class VShell extends ExtensionPreferences {
                 _('Blur Window Picker Background'),
                 _('Sets the amount of background blur in the window picker view'),
                 bgBlurScale,
-                'overviewBgBlurSigma'
+                'overviewBgBlurSigma',
+                null,
+                'showOverviewBackground'
             )
         );
 
         const blurAppBgAdjustment = new Gtk.Adjustment({
-            upper: 100,
+            upper: 300,
             lower: 0,
             step_increment: 1,
             page_increment: 10,
@@ -1014,7 +1044,9 @@ export default class VShell extends ExtensionPreferences {
                 _('Blur App Grid/Search View Background'),
                 _('Sets the amount of background blur in the app grid and search results views'),
                 bgAppBlurScale,
-                'appGridBgBlurSigma'
+                'appGridBgBlurSigma',
+                null,
+                'showOverviewBackground'
             )
         );
 

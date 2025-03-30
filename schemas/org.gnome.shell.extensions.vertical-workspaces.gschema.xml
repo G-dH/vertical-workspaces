@@ -106,8 +106,8 @@
     <key type="i" name="ws-preview-bg-radius">
       <default>30</default>
     </key>
-    <key type="b" name="show-bg-in-overview">
-      <default>true</default>
+    <key type="i" name="show-overview-background">
+      <default>1</default>
     </key>
     <key type="i" name="overview-bg-blur-sigma">
       <default>30</default>
@@ -116,6 +116,9 @@
       <default>40</default>
     </key>
     <key type="i" name="overview-bg-brightness">
+      <default>60</default>
+    </key>
+    <key type="i" name="app-grid-bg-brightness">
       <default>60</default>
     </key>
     <key type="i" name="search-bg-brightness">
@@ -460,7 +463,6 @@
         'showWsSwitcherBg': 'true',
         'showWsPreviewBg': 'false',
         'wsPreviewBgRadius': '30',
-        'showBgInOverview': 'true',
         'overviewBgBrightness': '30',
         'searchBgBrightness': '30',
         'overviewBgBlurSigma': '0',
@@ -588,7 +590,6 @@
         'showWsSwitcherBg': 'true',
         'showWsPreviewBg': 'true',
         'wsPreviewBgRadius': '30',
-        'showBgInOverview': 'true',
         'overviewBgBrightness': '50',
         'searchBgBrightness': '30',
         'overviewBgBlurSigma': '50',
@@ -716,7 +717,6 @@
         'showWsSwitcherBg': 'false',
         'showWsPreviewBg': 'true',
         'wsPreviewBgRadius': '30',
-        'showBgInOverview': 'true',
         'overviewBgBrightness': '60',
         'searchBgBrightness': '30',
         'overviewBgBlurSigma': '30',
@@ -844,7 +844,6 @@
         'showWsSwitcherBg': 'true',
         'showWsPreviewBg': 'true',
         'wsPreviewBgRadius': '30',
-        'showBgInOverview': 'true',
         'overviewBgBrightness': '60',
         'searchBgBrightness': '30',
         'overviewBgBlurSigma': '80',
