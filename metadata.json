@@ -1,5 +1,5 @@
 {
-  "name": "V-Shell (Vertical Workspaces)",
+  "name": "V-Shell",
   "uuid": "vertical-workspaces@G-dH.github.com",
   "description": "Customize your GNOME Shell UX to suit your workflow, whether you like horizontally or vertically stacked workspaces.",
   "shell-version": [
