@@ -19,9 +19,11 @@
 - Potential incorrect window preview scaling when *Expose Windows on Hover* mode is active
 - Overview background blur and brightness configuration breaking after a wallpaper image change
 - Workspace thumbnails' background covering windows after a wallpaper image change
+- The *Always Activate Selected* option overrides window activation from the dash
+- The *Click Empty Space to Close* option interferes with window preview click actions
 
 **Changed:**  
-- Removed vignette effect (darkened edges) from the overview background  
+- Removed the vignette effect (darkened edges) from the overview background, allowing the same brightness for both the desktop and the overview
 
 
 ### v48.5 (2025-03-12)
