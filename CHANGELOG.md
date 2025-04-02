@@ -7,7 +7,9 @@
 - Text shadows for search results to improve readability on light backgrounds
 - *Window Height Compensation* option in the *Behavior* tab's *Workspace Preview* section, which controls the amount of height compensation for smaller window previews (#227)
 - The *Show Wallpaper* option now has two choices: *Enable - Fast Blur Transition* and *Enable - Smooth Blur Transition*. Both are actually smooth, but the fast method uses an opacity transition between two layers, while the latter directly controls the blur effect radius during the transition, which has higher requirements for hardware performance
-- Separate background brightnes option for the App Grid 
+- Separate background brightnes option for the App Grid
+- Workspace thumbnails animation when reordering workspaces (using Shift+Page Up/Down or Shift+Scroll Up/Down in the overview)
+- Launch animation when folder icon dropped on a workspace thumbnail
 
 **Fixed:**  
 - Workspace preview scaling after reordering workspaces
