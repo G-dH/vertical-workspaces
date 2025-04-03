@@ -1488,7 +1488,20 @@ export default class VShell extends ExtensionPreferences {
                 _('Enable Fuzzy Match'),
                 _('Enabling the fuzzy match allows you to skip letters in the pattern you are searching for and find "Firefox" even if you type "ffx". Works only for the App, Windows, Extensions and Recent files search providers'),
                 itemFactory.newSwitch(),
-                'searchFuzzy'
+                'searchFuzzy',
+                null,
+                'searchModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Include Settings Panels in App Results'),
+                _('The GNOME Settings app provides launchers for all its panels/sections. This option adds them alongside other apps, allowing you to access individual settings more quickly'),
+                itemFactory.newSwitch(),
+                'searchIncludeSettings',
+                null,
+                'searchModule'
             )
         );
 

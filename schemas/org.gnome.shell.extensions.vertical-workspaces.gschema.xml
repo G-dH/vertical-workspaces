@@ -268,6 +268,9 @@
     <key type="i" name="search-app-grid-mode">
       <default>1</default>
     </key>
+    <key type="b" name="search-include-settings">
+      <default>true</default>
+    </key>
     <key type="i" name="panel-visibility">
       <default>0</default>
     </key>
