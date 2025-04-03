@@ -10,6 +10,7 @@
 - Separate background brightnes option for the App Grid
 - Workspace thumbnails animation when reordering workspaces (using Shift+Page Up/Down or Shift+Scroll Up/Down in the overview)
 - Launch animation when folder icon dropped on a workspace thumbnail
+- Option *Include Settings Panels in App Results* in the *Search* section on *Behavior* tab allowing you to access GNOME Settings panels more quicky from the app search results 
 
 **Fixed:**  
 - Workspace preview scaling after reordering workspaces
