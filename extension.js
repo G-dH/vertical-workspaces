@@ -230,7 +230,7 @@ export default class VShell extends Extension.Extension {
         this._removeConnections();
         Main.overview._overview.controls._setBackground(reset);
 
-        // remove changes mede by VShell modules
+        // remove changes made by VShell modules
         this._updateOverrides(reset);
 
         this._resetShellProperties();
@@ -598,10 +598,10 @@ export default class VShell extends Extension.Extension {
         St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
 
         // Options for workspace switcher, apply custom function only if needed
-        if (opt.WS_WRAPAROUND || opt.WS_IGNORE_LAST)
-            Meta.Workspace.prototype.get_neighbor = this._getNeighbor;
-        else
-            Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;
+        /* if (opt.WS_WRAPAROUND || opt.WS_IGNORE_LAST)*/
+        Meta.Workspace.prototype.get_neighbor = this._getNeighbor;
+        /* else
+            Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;*/
 
         // delay search so it doesn't make the search view transition stuttering
         // 150 is the default value in GNOME Shell, but the search feels laggy
