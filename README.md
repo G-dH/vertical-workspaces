@@ -24,7 +24,7 @@ Currently supported GNOME versions: 42 - 48
 - Customizable Super key behavior
 - Keyboard and mouse shortcuts allow advanced workspace and window control
 - 4 predefined and fully customizable profiles
-- Supports Dash to Dock / Ubuntu Dock / Dash to Panel extensions
+- Fixed Tab key navigation in the Activities Overview including switching between connected monitors
 
 
 ## Added functionality
@@ -39,8 +39,8 @@ This section explains some of the less obvious or less visible additions to the 
 |`Shift + Ctrl + Space`                              | Open V-Shell *Settings* window|
 |`Space`                                             | Activate window search with all open windows if *WSP (Window Search Provider)* is installed and enabled|
 |`Ctrl + Space`                                      | Activate extensions search with all installed extensions if *ESP (Extensions Search Provider)* is installed and enabled|
-|`Alt + Space`, `Super + Tab`                        | Focus dash so you can use arrow keys to select app icon and `Space`/`Enter` to activate it
- 
+|`Alt + Space`                                       | Focus dash so you can use arrow keys to select app icon and `Space`/`Enter` to activate it
+|`Super + Tab`                                       | Cycle keyboard focus between monitors on multi-monitor system, or between workspaces if only one monitor is connected|
  
 ### New buttons
 |Button| Description|
@@ -93,7 +93,6 @@ V-Shell overrides parts of the GNOME Shell's UI code, and many extensions do the
 Please, report any incompatibility, you encounter while using V-Shell.
 
 #### Incompatible extensions
-- *Search Light* - You can achieve similar behavior by switching V-Shell to the *Static Workspace* *Overview mode*
 
 #### V-Shell modules automatically disabled when conflicting extensions are detected
 | Module                | Extensions causing module to disable |
