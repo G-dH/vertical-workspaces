@@ -10,7 +10,8 @@
 - Separate background brightnes option for the App Grid
 - Workspace thumbnails animation when reordering workspaces (using Shift+Page Up/Down or Shift+Scroll Up/Down in the overview)
 - Launch animation when folder icon dropped on a workspace thumbnail
-- Option *Include Settings Panels in App Results* in the *Search* section on *Behavior* tab allowing you to access GNOME Settings panels more quicky from the app search results 
+- Option *Include Settings Panels in App Results* in the *Search* section on *Behavior* tab allowing you to access GNOME Settings panels more quicky from the app search results
+- The *Super+Tab* hotkey can now be used in the Overview to cycle keyboard focus through workspaces or monitors on multi-monitor systems.
 
 **Fixed:**  
 - Workspace preview scaling after reordering workspaces
