@@ -1,19 +1,19 @@
 ## Changelog:  
-### v48.6 (Not Yet Released)  
+### v48.6 (Not Yet Released)
 
 **Added:**  
 - Options to sort and automatically select window previews in the overview — *Behavior → Workspace Preview → Sort Windows / Select Window*
 - Support for searching apps by package type (Snap, Flatpak, AppImage)
 - Text shadows for search results to improve readability on light backgrounds
-- *Window Height Compensation* option in the *Behavior* tab's *Workspace Preview* section, which controls the amount of height compensation for smaller window previews (#227)
-- The *Show Wallpaper* option now has two choices: *Enable - Fast Blur Transition* and *Enable - Smooth Blur Transition*. Both are actually smooth, but the fast method uses an opacity transition between two layers, while the latter directly controls the blur effect radius during the transition, which has higher requirements for hardware performance
-- Separate background brightnes option for the App Grid
-- Workspace thumbnails animation when reordering workspaces (using Shift+Page Up/Down or Shift+Scroll Up/Down in the overview)
-- Launch animation when folder icon dropped on a workspace thumbnail
-- Option *Include Settings Panels in App Results* in the *Search* section on *Behavior* tab allowing you to access GNOME Settings panels more quicky from the app search results
+- *Window Height Compensation* option in the *Behavior* tab’s *Workspace Preview* section, which controls the amount of height compensation for smaller window previews (#227)
+- The *Show Wallpaper* option now has two choices: *Enable – Fast Blur Transition* and *Enable – Smooth Blur Transition*. Both are actually smooth, but the fast method uses an opacity transition between two layers, while the latter directly controls the blur effect radius during the transition, which has higher hardware performance requirements
+- Separate background brightness option for the App Grid
+- Workspace thumbnail animation when reordering workspaces (using Shift+Page Up/Down or Shift+Scroll Up/Down in the overview)
+- Launch animation when a folder icon is dropped on a workspace thumbnail
+- Option *Include Settings Panels in App Results* in the *Search* section of the *Behavior* tab, allowing you to access GNOME Settings panels more quickly from the app search results
 - *Delete* hotkey for closing windows from the Overview
-- *Super+Tab* hotkey can now be used in the Overview to cycle keyboard focus through monitors on multi-monitor systems or through workspaces on single monitor systems
-- App search provider: Double dot .. prefix to search query allows to isolate system actions (*Power Off*, *Log Out*, ...)
+- *Super+Tab* hotkey can now be used in the Overview to cycle keyboard focus through monitors on multi-monitor systems, or through workspaces on single-monitor systems
+- App search provider: Double-dot `..` prefix to the search query allows you to isolate system actions (*Power Off*, *Log Out*, etc.)
 
 **Fixed:**  
 - Workspace preview scaling after reordering workspaces
@@ -25,8 +25,8 @@
 - Potential incorrect window preview scaling when *Expose Windows on Hover* mode is active
 - Overview background blur and brightness configuration breaking after a wallpaper image change
 - Workspace thumbnails' background covering windows after a wallpaper image change
-- The *Always Activate Selected* option overrides window activation from the dash
-- The *Click Empty Space to Close* option interferes with window preview click actions
+- The *Always Activate Selected* option overriding window activation from the dash
+- The *Click Empty Space to Close* option interfering with window preview click actions
 
 **Changed:**  
 - Removed the vignette effect (darkened edges) from the overview background, allowing the same brightness for both the desktop and the overview
