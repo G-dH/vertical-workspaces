@@ -189,26 +189,28 @@
 
 .search-entry-om2 {
 	color: white;
-	background-color: rgba(40, 40, 40, 1);
+	background-color: rgb(33, 33, 33);
 }
 
 .search-entry-om2:hover,
 .search-entry-om2:focus {
-	background-color: rgba(50, 50, 50, 1);
+	background-color: rgb(43, 43, 43);
 }
 
 /* for static ws mode */
 /*.search-section-content-bg,*/
 .search-section-content-bg-om2 {
-	border-radius: 26px;
+	border-radius: 20px;
 	border: 1px, rgb(60, 60, 60);
-	padding-top: 15px;
-	background-color: rgb(40, 40, 40);
+	padding-top: 72px;
+	padding-left: 6px;
+	padding-right: 6px;
+	background-color: rgba(22, 22, 22, 0.98);
 }
 
 /* Reduce edge fading of search results scroll view */
-.vfade { -st-vfade-offset: 34px; }
-.hfade { -st-hfade-offset: 34px; }
+.vfade { -st-vfade-offset: 0px; }
+.hfade { -st-hfade-offset: 0px; }
 
 StButton#vhandle,
 .search-section-content {
@@ -224,7 +226,7 @@ StButton#vhandle,
 .search-statustext, .search-statustext-om2 {
 	background-color: rgba(200, 200, 200, 0.08);
 	color: white;
-	margin-top: 50px;
+	margin-top: 100px;
 	padding: 30px;
 	border-radius: 20px;
 	text-shadow: 0px 0px 5px rgb(23, 23, 23);
