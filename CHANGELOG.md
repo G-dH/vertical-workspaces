@@ -11,7 +11,9 @@
 - Workspace thumbnails animation when reordering workspaces (using Shift+Page Up/Down or Shift+Scroll Up/Down in the overview)
 - Launch animation when folder icon dropped on a workspace thumbnail
 - Option *Include Settings Panels in App Results* in the *Search* section on *Behavior* tab allowing you to access GNOME Settings panels more quicky from the app search results
-- The *Super+Tab* hotkey can now be used in the Overview to cycle keyboard focus through workspaces or monitors on multi-monitor systems.
+- *Delete* hotkey for closing windows from the Overview
+- *Super+Tab* hotkey can now be used in the Overview to cycle keyboard focus through monitors on multi-monitor systems or through workspaces on single monitor systems
+- App search provider: Double dot .. prefix to search query allows to isolate system actions (*Power Off*, *Log Out*, ...)
 
 **Fixed:**  
 - Workspace preview scaling after reordering workspaces
@@ -28,6 +30,7 @@
 
 **Changed:**  
 - Removed the vignette effect (darkened edges) from the overview background, allowing the same brightness for both the desktop and the overview
+- Search view style for the *Static Workspace* overview mode, making the search entry part of the search results panel
 
 
 ### v48.5 (2025-03-12)
@@ -577,4 +580,3 @@
 - Workspace and App Grid animation options.
 - Option to automatically switch `(Shift +) Super + Page Up/Down` keyboard shortcuts for the current workspace orientation.
 - Option to expand workspace thumbnails to entire height of the work area at the expense of Dash width.
-
