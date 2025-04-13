@@ -1365,12 +1365,12 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Select Window'),
-                _('Automatically select a window in the overview to speed up keyboard navigation'),
+                _('Initial Window Selection'),
+                _('Automatically select a window in the overview and ignore the pointer to speed up keyboard navigation'),
                 itemFactory.newDropDown(),
                 'overviewSelectWindow',
                 [
-                    [_('None (Default)'), 0],
+                    [_('Pointer (Default)'), 0],
                     [_('First'), 1],
                     [_('Currently Focused'), 2],
                     [_('Previously Focused'), 3],
