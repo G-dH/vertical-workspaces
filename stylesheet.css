@@ -107,11 +107,6 @@
     text-shadow: 1px 1px 5px rgba(33, 33, 33, 0.7);
 }
 
-.search-section-content, .search-entry, .search-statustext, .list-search-result-description {
-	color: rgb(220, 220, 220);
-	text-shadow: 1px 1px 5px rgba(33, 33, 33, 0.4);
-}
-
 /* adjustment for the vertical ws switcher indicator popup */
 .ws-switcher-indicator {
 	padding: 3px;
@@ -194,6 +189,14 @@
 .search-entry-om2:hover,
 .search-entry-om2:focus {
 	background-color: rgb(43, 43, 43);
+}
+
+.search-entry, .search-section-content, .search-entry, .search-statustext, .list-search-result-description {
+	text-shadow: 1px 1px 5px rgba(33, 33, 33, 0.4);
+}
+
+.list-search-result-description {
+	color: rgb(220, 220, 220);
 }
 
 /* for static ws mode */
