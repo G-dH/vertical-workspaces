@@ -39,7 +39,7 @@ This section explains some of the less obvious or less visible additions to the 
 |`Shift + Ctrl + Space`                              | Open V-Shell *Settings* window|
 |`Space`                                             | Activate window search with all open windows if *WSP (Window Search Provider)* is installed and enabled|
 |`Ctrl + Space`                                      | Activate extensions search with all installed extensions if *ESP (Extensions Search Provider)* is installed and enabled|
-|`Alt + Space`                                       | Focus dash so you can use arrow keys to select app icon and `Space`/`Enter` to activate it
+|`Super + Space`                                     | Focus dash so you can use arrow keys to select app icon and `Space`/`Enter` to activate it, including with the `Shift` key which moves the app to the current wokspace 
 |`Super + Tab`                                       | Cycle keyboard focus between monitors on multi-monitor system, or between workspaces if only one monitor is connected|
  
 ### New buttons
@@ -92,8 +92,6 @@ V-Shell overrides parts of the GNOME Shell's UI code, and many extensions do the
 
 Please, report any incompatibility, you encounter while using V-Shell.
 
-#### Incompatible extensions
-
 #### V-Shell modules automatically disabled when conflicting extensions are detected
 | Module                | Extensions causing module to disable |
 |-----------------------|--------------------------------------|
@@ -117,7 +115,7 @@ and should be disabled or restricted by the user:
 - *Alphabetical App Grid* - V-Shell provides much more options than alphabetical sorting
 - *Grand Theft Focus* and other extensions preventing showing notification instead of immediately focusing the window that demands attention
 - *Hot Edge* - V-Shell provides this functionality as an option of the *Hot Corner Position* setting
-- Some of the *Just Perfection* options including notifications/OSD positions, hiding main panel, animation speed, dash icon size and more
+- Some of the *Just Perfection* options including overview elements visibility and size, notifications/OSD positions, hiding main panel, animation speed, and more
 - *Impatience* and extensions adjusting animation speed
 - *Click to close overview* - V-Shell provides the *Click Empty Space To Close* option
 
