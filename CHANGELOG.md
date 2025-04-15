@@ -1,5 +1,5 @@
 ## Changelog:  
-### v48.6 (Not Yet Released)
+### v48.6 (2025-04-15)
 
 **Added:**  
 - Options to sort and automatically select window previews in the overview — *Behavior → Workspace Preview → Sort Windows / Select Window*
