@@ -110,10 +110,10 @@
       <default>1</default>
     </key>
     <key type="i" name="overview-bg-blur-sigma">
-      <default>30</default>
+      <default>100</default>
     </key>
     <key type="i" name="app-grid-bg-blur-sigma">
-      <default>40</default>
+      <default>100</default>
     </key>
     <key type="i" name="overview-bg-brightness">
       <default>60</default>
@@ -467,9 +467,10 @@
         'showWsPreviewBg': 'false',
         'wsPreviewBgRadius': '30',
         'overviewBgBrightness': '30',
+        'appGridBgBrightness': '30',
         'searchBgBrightness': '30',
         'overviewBgBlurSigma': '0',
-        'appGridBgBlurSigma': '40',
+        'appGridBgBlurSigma': '100',
         'smoothBlurTransitions': 'false',
         'appGridAnimation': '4',
         'searchViewAnimation': '0',
@@ -594,9 +595,10 @@
         'showWsPreviewBg': 'true',
         'wsPreviewBgRadius': '30',
         'overviewBgBrightness': '50',
+        'overviewBgBrightness': '50',
         'searchBgBrightness': '30',
         'overviewBgBlurSigma': '50',
-        'appGridBgBlurSigma': '40',
+        'appGridBgBlurSigma': '100',
         'smoothBlurTransitions': 'false',
         'appGridAnimation': '4',
         'searchViewAnimation': '0',
@@ -721,9 +723,10 @@
         'showWsPreviewBg': 'true',
         'wsPreviewBgRadius': '30',
         'overviewBgBrightness': '60',
+        'overviewBgBrightness': '60',
         'searchBgBrightness': '30',
         'overviewBgBlurSigma': '30',
-        'appGridBgBlurSigma': '80',
+        'appGridBgBlurSigma': '100',
         'smoothBlurTransitions': 'false',
         'appGridAnimation': '4',
         'searchViewAnimation': '0',
@@ -848,9 +851,10 @@
         'showWsPreviewBg': 'true',
         'wsPreviewBgRadius': '30',
         'overviewBgBrightness': '60',
+        'overviewBgBrightness': '60',
         'searchBgBrightness': '30',
         'overviewBgBlurSigma': '80',
-        'appGridBgBlurSigma': '80',
+        'appGridBgBlurSigma': '100',
         'smoothBlurTransitions': 'false',
         'appGridAnimation': '4',
         'searchViewAnimation': '3',
