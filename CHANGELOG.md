@@ -1,6 +1,10 @@
-## Changelog:  
-### v48.6 (2025-04-15)
+## Changelog:
+### v48.7 (not yet released)
+**Added:**
+- Hotkeys *Shift+Enter* and *Ctrl+Shift+Enter* to move the selected window and all windows of the selected app, respectively, to another monitor (if connected) from the Activities overview. The target monitor is the one with the mouse pointer or the next monitor on the list if the pointer is on the same monitor
 
+
+### v48.6 (2025-04-15)
 **Added:**  
 - Options to sort and automatically select window previews in the overview — *Behavior → Workspace Preview → Sort Windows / Select Window*
 - Support for searching apps by package type (Snap, Flatpak, AppImage)
