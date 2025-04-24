@@ -1,5 +1,5 @@
 ## Changelog:
-### v48.7 (not yet released)
+### v48.7 (2025-04-24)
 **Added:**
 - Hotkeys *Shift+Enter* and *Ctrl+Shift+Enter* to move the selected window and all windows of the selected app, respectively, to another monitor (if connected) from the Activities overview. The target monitor is the one with the mouse pointer or the next monitor on the list if the pointer is on the same monitor
 
