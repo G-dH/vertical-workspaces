@@ -904,6 +904,19 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
+                _('Search Results Style'),
+                _('Sets style of the search results background. When the Static Workspace Overview Mode is active, the Dark style is used despite this option.'),
+                itemFactory.newDropDown(),
+                'searchResultsBgStyle',
+                [
+                    [_('Transparent (Default)'), 0],
+                    [_('Dark'), 1],
+                ]
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
                 _('Highlighting'),
                 _('The GNOME default highlighting style (bold) causes strings to be "randomly" ellipsized, often preventing you from seeing the whole string, even if there is space for it. The selected style will be applied to all search results globally. If you are using other extensions that offer this option, make sure you set the same setting in all of them.'),
                 itemFactory.newDropDown(),
