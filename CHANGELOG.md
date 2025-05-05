@@ -1,4 +1,17 @@
 ## Changelog:
+### v48.8 (not yet released)
+**Added:**
+- Search view style option allows using dark style background even outside of the static workspace overview mode
+
+**Fixed:**
+- Workspace thumbnails can stuck with 0 vertical scale
+- Tab key navigation inside App Grid, including app folders
+- Overview background transition from the search view
+- Default app grid search result sometimes not seleceted
+- Short search entry transition when search results use dark background
+
+
+
 ### v48.7 (2025-04-24)
 **Added:**
 - Hotkeys *Shift+Enter* and *Ctrl+Shift+Enter* to move the selected window and all windows of the selected app, respectively, to another monitor (if connected) from the Activities overview. The target monitor is the one with the mouse pointer or the next monitor on the list if the pointer is on the same monitor
