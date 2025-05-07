@@ -1,15 +1,15 @@
 ## Changelog:
 ### v48.8 (not yet released)
 **Added:**
-- Search view style option allows using dark style background even outside of the static workspace overview mode
+- A search view style option that allows using the dark background style even outside of static workspace overview mode
 
 **Fixed:**
 - Workspace thumbnails can stuck with 0 vertical scale
-- Tab key navigation inside App Grid, including app folders
+- Tab key navigation inside app grid, including app folders
 - Overview background transition from the search view
 - Default app grid search result sometimes not seleceted
 - Short search entry transition when search results use dark background
-
+- App Grid icons may overlap the search entry if the *App Grid Page Height Scale* is set above 80 and *Filter App Grid View* search mode is active
 
 
 ### v48.7 (2025-04-24)
