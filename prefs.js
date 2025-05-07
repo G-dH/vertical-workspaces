@@ -905,7 +905,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Search Results Style'),
-                _('Sets style of the search results background. When the Static Workspace Overview Mode is active, the Dark style is used despite this option.'),
+                _('Sets style of the search results background. When the Static Workspace Overview Mode is active, the Dark style is used despite this option. The Dark style also ignores the overview background blur and brightness configured for the search view'),
                 itemFactory.newDropDown(),
                 'searchResultsBgStyle',
                 [
