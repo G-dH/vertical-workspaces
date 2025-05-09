@@ -1,5 +1,5 @@
 ## Changelog:
-### v48.8 (not yet released)
+### v48.8 (2025-05-07)
 **Added:**
 - A search view style option that allows using the dark background style even outside of static workspace overview mode
 
