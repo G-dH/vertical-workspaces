@@ -46,6 +46,7 @@ V-Shell fixes the Tab key navigation and adds more hotkeys to control windows an
 |`Tab`                                               | Select next window on the current workspace. Shift reverses direction|
 |`Super + Tab`                                       | Cycle keyboard focus between monitors on multi-monitor system, or between workspaces if only one monitor is connected|
 |`Ctrl + Tab`                                        | Switch to next workspace with wrap-around functionality|
+|`Alt + Tab`                                         | Switch keyboard focus to the first icon on the Dash|
 |`Shift + click (activate)` app icon                 | Move all windows of the application to the current workspace. Works in Dash, Search and App Grid, you can use mouse click or Enter and Space keys to activate the icon|
 |`Shift + Page Up/Down`, `Shift + Scroll`            | Reorder current workspace|
 |`Shift + Enter`                                     | Move selected window to the next monitor|
