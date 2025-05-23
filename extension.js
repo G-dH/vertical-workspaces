@@ -565,7 +565,7 @@ export default class VShell extends Extension.Extension {
 
         if (key?.includes('profile-data')) {
             const index = key.replace('profile-data-', '');
-            Main.notify(`${Me.metadata.name}`, _('Profile %d has been updated'.format(index));
+            Main.notify(`${Me.metadata.name}`, _('Profile %d has been updated').format(index));
         }
 
         opt.WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
