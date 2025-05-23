@@ -158,9 +158,6 @@ export default class VShell extends Extension.Extension {
     }
 
     _disposeModules() {
-        Me.opt.destroy();
-        Me.opt = null;
-
         for (let module of this._getModuleList()) {
             if (!Me.Modules[module].moduleEnabled)
                 Me.Modules[module].cleanGlobals();
@@ -168,6 +165,8 @@ export default class VShell extends Extension.Extension {
 
         Me.Util.cleanGlobals();
         Me.Modules = null;
+        Me.opt.destroy();
+        Me.opt = null;
     }
 
     _activateVShell() {
