@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vertical-workspaces\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-10 12:13+0200\n"
-"PO-Revision-Date: 2025-05-18 11:52+0200\n"
+"POT-Creation-Date: 2025-05-23 16:24+0200\n"
+"PO-Revision-Date: 2025-05-23 16:25+0200\n"
 "Last-Translator: p-sage\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -2537,9 +2537,19 @@ msgstr "Achetez moi un café"
 msgid "Enjoying V-Shell? Consider supporting it by buying me a coffee!"
 msgstr "Vous appréciez V-Shell ? Soutenez-la en m'offrant un café !"
 
+#: extension.js:568
+#, javascript-format
+msgid "Profile %d has been updated"
+msgstr "Le profil %d a été mis à jour"
+
 #: lib/dash.js:1002
 msgid "Force Quit"
 msgstr "Forcer à quitter"
+
+#: lib/dash.js:1011
+#, javascript-format
+msgid "Close %d Windows on Current Workspace"
+msgstr "Fermer %d fenêtre(s) de l'espace de travail actuel"
 
 #: lib/dash.js:1030
 msgid "Move App to Current Workspace [Shift + Click]"
@@ -2552,6 +2562,14 @@ msgstr "Créer une vignette de fenêtre (PiP)"
 #: lib/util.js:639
 msgid "Updating V-Shell"
 msgstr "Mise à jour de V-Shell"
+
+#: lib/search.js:372
+msgid "Searching…"
+msgstr "Recherche..."
+
+#: lib/search.js:374
+msgid "No results."
+msgstr "Aucun résultat"
 
 #: lib/optionsFactory.js:297
 msgid "Reset profile to defaults"
@@ -2583,11 +2601,3 @@ msgstr "Charger le profil"
 #: lib/optionsFactory.js:339
 msgid "Save current settings into this profile"
 msgstr "Enregistrer les paramètres actuels dans ce profil"
-
-#: lib/search.js:372
-msgid "Searching…"
-msgstr "Recherche..."
-
-#: lib/search.js:374
-msgid "No results."
-msgstr "Aucun résultat"
