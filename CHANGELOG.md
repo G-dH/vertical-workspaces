@@ -1,4 +1,17 @@
 ## Changelog:
+### v48.9 (not yet released)
+**Added:**
+- French translation by @p-sage (#236)
+- Keyboard shortcuts in Overview:
+  - `Shift + Arrow` to move a window between workspaces
+  - `Ctrl + Shift + Arrow` to move a window to a new workspace
+
+**Fixed:**
+- Window preview selection not working after switching workspaces with Page Up/Down
+- Window title readability issue on secondary monitors (#238)
+- `Ctrl + Shift + Del` closed all windows on the workspace instead of just the current monitor
+
+
 ### v48.8 (2025-05-07)
 **Added:**
 - A search view style option that allows using the dark background style even outside of static workspace overview mode
