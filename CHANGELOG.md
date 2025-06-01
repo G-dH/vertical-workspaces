@@ -10,6 +10,10 @@
 - Window preview selection not working after switching workspaces with Page Up/Down
 - Window title readability issue on secondary monitors (#238)
 - `Ctrl + Shift + Del` closed all windows on the workspace instead of just the current monitor
+- Missing default value for the App Grid Brightness in profiles 2-4
+
+**Changed:**
+- `Tab` key workspace switcher in the Overview now ignores the last empty workspace 
 
 
 ### v48.8 (2025-05-07)
