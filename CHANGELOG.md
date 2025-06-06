@@ -5,6 +5,7 @@
 - Keyboard shortcuts in Overview:
   - `Shift + Arrow` to move a window between workspaces
   - `Ctrl + Shift + Arrow` to move a window to a new workspace
+- New window preview options: *Window Title Position/ Visibility* > *On Top / On Top - Always Visible* for better navigation between similar looking windows 
 
 **Fixed:**
 - Window preview selection not working after switching workspaces with Page Up/Down
