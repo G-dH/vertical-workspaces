@@ -800,9 +800,11 @@ export default class VShell extends ExtensionPreferences {
                 itemFactory.newDropDown(),
                 'winTitlePosition',
                 [
-                    [_('Inside Window'), 0],
-                    [_('Inside Window Always Visible'), 1],
                     [_('Below Window (Default)'), 2],
+                    [_('Inside Window'), 0],
+                    [_('Inside - Always Visible'), 1],
+                    [_('On Top'), 3],
+                    [_('On Top - Always Visible'), 4],
                 ],
                 'windowPreviewModule'
             )

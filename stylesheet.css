@@ -139,6 +139,10 @@
 	background-color: rgba(200, 200, 200, 0.16);
 }
 
+.window-caption-top{
+	border-radius: 10px 10px 0px 0px;
+}
+
 /* app grid page indicators */
 .page-indicator-icon {
 	margin: 0px;
