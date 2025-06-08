@@ -185,16 +185,6 @@
 	background-color: rgba(200, 200, 200, 0.1);
 }
 
-.search-entry-om2 {
-	color: white;
-	background-color: rgb(33, 33, 33);
-}
-
-.search-entry-om2:hover,
-.search-entry-om2:focus {
-	background-color: rgb(43, 43, 43);
-}
-
 .search-entry, .search-section-content, .search-entry, .search-statustext, .list-search-result-description {
 	text-shadow: 1px 1px 5px rgba(33, 33, 33, 0.4);
 }
@@ -204,8 +194,7 @@
 }
 
 /* for static ws mode */
-/*.search-section-content-bg,*/
-.search-results-bg-om2 {
+.search-results-bg-dark {
 	border-radius: 20px;
 	border: 1px, rgb(60, 60, 60);
 	padding-top: 72px;
