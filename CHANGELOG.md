@@ -12,6 +12,7 @@
 - Window title readability issue on secondary monitors (#238)
 - `Ctrl + Shift + Del` closed all windows on the workspace instead of just the current monitor
 - Missing default value for the App Grid Brightness in profiles 2-4
+- Search view style glitches
 
 **Changed:**
 - `Tab` key workspace switcher in the Overview now ignores the last empty workspace 
