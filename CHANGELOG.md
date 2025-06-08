@@ -1,5 +1,5 @@
 ## Changelog:
-### v48.9 (not yet released)
+### v48.9 (2025-06-08)
 **Added:**
 - French translation by @p-sage (#236)
 - Keyboard shortcuts in Overview:
