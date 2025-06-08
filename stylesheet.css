@@ -205,18 +205,18 @@
 
 /* for static ws mode */
 /*.search-section-content-bg,*/
-.search-section-content-bg-om2 {
+.search-results-bg-om2 {
 	border-radius: 20px;
 	border: 1px, rgb(60, 60, 60);
 	padding-top: 72px;
 	padding-left: 6px;
 	padding-right: 6px;
-	background-color: rgba(22, 22, 22, 0.98);
+	background-color: rgba(23, 23, 23, 0.98);
 }
 
 /* Reduce edge fading of search results scroll view */
-.vfade { -st-vfade-offset: 0px; }
-.hfade { -st-hfade-offset: 0px; }
+/*.vfade { -st-vfade-offset: 30px; }
+.hfade { -st-hfade-offset: 30px; }*/
 
 StButton#vhandle,
 .search-section-content {
@@ -229,18 +229,9 @@ StButton#vhandle,
 }
 
 /* "no results" / "searching..." text*/
-.search-statustext, .search-statustext-om2 {
-	background-color: rgba(200, 200, 200, 0.08);
-	color: white;
-	margin-top: 100px;
-	padding: 30px;
-	border-radius: 20px;
-	text-shadow: 0px 0px 5px rgb(23, 23, 23);
-}
-
-.search-statustext-om2 {
-	background-color: rgb(40, 40, 40);
-	border: 1px rgba(200, 200, 200, 0.1);
+.search-statustext {
+	margin-top: 42px;
+	margin-bottom: 56px;
 }
 
 #panel:overview, .transparent-panel {
