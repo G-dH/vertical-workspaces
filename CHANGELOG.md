@@ -1,4 +1,10 @@
 ## Changelog:
+### v48.9 (not yet released)
+**Added:**
+- Keyboard shortcuts in Overview:
+  - `Ctrl + Shift + Arrow` to move window directly to an adjacent monitor
+
+
 ### v48.9 (2025-06-08)
 **Added:**
 - French translation by @p-sage (#236)
@@ -33,7 +39,7 @@
 
 ### v48.7 (2025-04-24)
 **Added:**
-- Hotkeys *Shift+Enter* and *Ctrl+Shift+Enter* to move the selected window and all windows of the selected app, respectively, to another monitor (if connected) from the Activities overview. The target monitor is the one with the mouse pointer or the next monitor on the list if the pointer is on the same monitor
+- Hotkeys `Shift+Enter` and `Ctrl+Shift+Enter` to move the selected window and all windows of the selected app, respectively, to another monitor (if connected) from the Activities overview. The target monitor is the one with the mouse pointer or the next monitor on the list if the pointer is on the same monitor
 
 
 ### v48.6 (2025-04-15)
