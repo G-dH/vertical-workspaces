@@ -1,5 +1,5 @@
 ## Changelog:
-### v48.9 (not yet released)
+### v48.10 (not yet released)
 **Added:**
 - Keyboard shortcuts in Overview:
   - `Ctrl + Shift + Arrow` to move window directly to an adjacent monitor
