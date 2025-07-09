@@ -277,7 +277,7 @@ export default class VShell extends Extension.Extension {
         controls._thumbnailsBox.scale_y = 1;
         controls._thumbnailsBox.opacity = 255;
 
-        controls._searchEntry.visible = true;
+        controls._searchEntryBin.visible = true;
         controls._searchController._searchResults.opacity = 255;
         Main.layoutManager.panelBox.translationY = 0;
     }
@@ -592,7 +592,7 @@ export default class VShell extends Extension.Extension {
         else
             Me.Modules.workspaceModule.setWindowPreviewMaxScale(0.95);
 
-        Main.overview.searchEntry.visible = opt.SHOW_SEARCH_ENTRY;
+        Main.overview._overview.controls._searchEntryBin.visible = opt.SHOW_SEARCH_ENTRY;
         Main.overview.searchEntry.opacity = 255;
         St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
 
