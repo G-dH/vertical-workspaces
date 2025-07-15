@@ -170,7 +170,7 @@
 .search-entry{
 	margin: 0;
 	margin-top: 12px;
-	margin-bottom: 6px;
+	/*margin-bottom: 6px;*/
 	background-color: rgba(200, 200, 200, 0.1);
 	color: white;
 	border-color: rgba(160, 160, 160, 0.4);
@@ -189,6 +189,16 @@
 	text-shadow: 1px 1px 5px rgba(33, 33, 33, 0.4);
 }
 
+.search-entry-om2 {
+	color: white;
+	background-color: rgb(040, 40, 40);
+}
+
+.search-entry-om2:hover,
+.search-entry-om2:focus {
+	background-color: rgb(50, 50, 50);
+}
+
 .list-search-result-description {
 	color: rgb(220, 220, 220);
 }
@@ -197,7 +207,7 @@
 .search-results-bg-dark {
 	border-radius: 20px;
 	border: 1px, rgb(60, 60, 60);
-	padding-top: 72px;
+	padding-top: 68px;
 	padding-left: 6px;
 	padding-right: 6px;
 	background-color: rgba(23, 23, 23, 0.98);
