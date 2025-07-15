@@ -474,8 +474,6 @@ export default class VShell extends Extension.Extension {
         if (!Main.sessionMode.isLocked)
             this._sessionLockActive = false;
 
-        if (!reset && !Main.layoutManager._startingUp)
-            Main.overview._overview.controls.setInitialTranslations();
         if (this._sessionLockActive)
             Main.layoutManager.panelBox.translation_y = 0;
     }
