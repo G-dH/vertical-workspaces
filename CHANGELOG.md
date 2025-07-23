@@ -3,6 +3,20 @@
 **Added:**
 - Keyboard shortcuts in Overview:
   - `Ctrl + Shift + Arrow` to move window directly to an adjacent monitor
+  - The search entry is always visible in the app grid view when app grid search mode is enabled
+  - `Super + Arrows` shortcuts to switch workspace
+
+**Fixed:**
+- Gestures for switching workspaces ignored the *Workspace Switcher Mode* > *Current Monitor* option (fixed only for desktop switcher, stil unsupported in overview)
+- Direct overview transition between desktop and app grid included unneccessary transition to window picker state
+- Search view transitions
+- Reduced probability of duplicate GObject class names leading to random errors (#243)
+
+**Changed:**
+- Hotkeys `Super + Tab` always switches workspaces, even when secondary monitor is connected, `Alt + Tab` switches between monitors
+- App icon action *Move App to Current Workspace* now moves the windows to the monitor with the mouse pointer
+- Scaling of adjacent workspace previews during switch animation has been disabled to improve performance
+- Refactored and optimized V-Shell-specific overview transitions
 
 
 ### v48.9 (2025-06-08)
