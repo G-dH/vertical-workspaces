@@ -1,7 +1,59 @@
 ## Changelog:
+### v48.10 (not yet released)
+**Added:**
+- Keyboard shortcuts in Overview:
+  - `Ctrl + Shift + Arrow` to move window directly to an adjacent monitor
+  - The search entry is always visible in the app grid view when app grid search mode is enabled
+  - `Super + Arrows` shortcuts to switch workspace
+
+**Fixed:**
+- Gestures for switching workspaces ignored the *Workspace Switcher Mode* > *Current Monitor* option (fixed only for desktop switcher, stil unsupported in overview)
+- Direct overview transition between desktop and app grid included unneccessary transition to window picker state
+- Search view transitions
+- Reduced probability of duplicate GObject class names leading to random errors (#243)
+
+**Changed:**
+- Hotkeys `Super + Tab` always switches workspaces, even when secondary monitor is connected, `Alt + Tab` switches between monitors
+- App icon action *Move App to Current Workspace* now moves the windows to the monitor with the mouse pointer
+- Scaling of adjacent workspace previews during switch animation has been disabled to improve performance
+- Refactored and optimized V-Shell-specific overview transitions
+
+
+### v48.9 (2025-06-08)
+**Added:**
+- French translation by @p-sage (#236)
+- Keyboard shortcuts in Overview:
+  - `Shift + Arrow` to move a window between workspaces
+  - `Ctrl + Shift + Arrow` to move a window to a new workspace
+- New window preview options: *Window Title Position/ Visibility* > *On Top / On Top - Always Visible* for better navigation between similar looking windows 
+
+**Fixed:**
+- Window preview selection not working after switching workspaces with Page Up/Down
+- Window title readability issue on secondary monitors (#238)
+- `Ctrl + Shift + Del` closed all windows on the workspace instead of just the current monitor
+- Missing default value for the App Grid Brightness in profiles 2-4
+- Search view style glitches
+
+**Changed:**
+- `Tab` key workspace switcher in the Overview now ignores the last empty workspace 
+
+
+### v48.8 (2025-05-07)
+**Added:**
+- A search view style option that allows using the dark background style even outside of static workspace overview mode
+
+**Fixed:**
+- Workspace thumbnails can stuck with 0 vertical scale
+- Tab key navigation inside app grid, including app folders
+- Overview background transition from the search view
+- Default app grid search result sometimes not seleceted
+- Short search entry transition when search results use dark background
+- App Grid icons may overlap the search entry if the *App Grid Page Height Scale* is set above 80 and *Filter App Grid View* search mode is active
+
+
 ### v48.7 (2025-04-24)
 **Added:**
-- Hotkeys *Shift+Enter* and *Ctrl+Shift+Enter* to move the selected window and all windows of the selected app, respectively, to another monitor (if connected) from the Activities overview. The target monitor is the one with the mouse pointer or the next monitor on the list if the pointer is on the same monitor
+- Hotkeys `Shift+Enter` and `Ctrl+Shift+Enter` to move the selected window and all windows of the selected app, respectively, to another monitor (if connected) from the Activities overview. The target monitor is the one with the mouse pointer or the next monitor on the list if the pointer is on the same monitor
 
 
 ### v48.6 (2025-04-15)

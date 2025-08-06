@@ -9,53 +9,54 @@ msgstr ""
 "Project-Id-Version: vertical-workspaces\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-06 19:02+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2025-06-06 19:06+0200\n"
+"Last-Translator: p-sage\n"
+"Language-Team: \n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.6\n"
 
 #: prefs.js:29
 msgid "Profiles"
-msgstr ""
+msgstr "Profils"
 
 #: prefs.js:34 prefs.js:2208
 msgid "Layout"
-msgstr ""
+msgstr "Disposition"
 
 #: prefs.js:39
 msgid "Appearance"
-msgstr ""
+msgstr "Apparence"
 
 #: prefs.js:44
 msgid "Behavior"
-msgstr ""
+msgstr "Comportement"
 
 #: prefs.js:49 prefs.js:348
 msgid "App Grid"
-msgstr ""
+msgstr "Grille d'applications"
 
 #: prefs.js:54
 msgid "Modules"
-msgstr ""
+msgstr "Modules"
 
 #: prefs.js:59
 msgid "Misc"
-msgstr ""
+msgstr "Divers"
 
 #: prefs.js:64
 msgid "About"
-msgstr ""
+msgstr "À propos"
 
 #: prefs.js:106
 msgid "Custom Profiles"
-msgstr ""
+msgstr "Profils personnalisés"
 
 #: prefs.js:111
 msgid "Save your configurations"
-msgstr ""
+msgstr "Sauvegardez vos configurations"
 
 #: prefs.js:112
 msgid ""
@@ -63,94 +64,102 @@ msgid ""
 "configuration and exploring V-Shell's possibilities, can be renamed and "
 "overridden by your own configurations"
 msgstr ""
+"Les ensembles de paramètres prédéfinis, qui peuvent vous aider lors de la "
+"configuration initiale et de l'exploration des possibilités de V-Shell, "
+"peuvent être renommés et remplacés par vos propres configurations."
 
 #: prefs.js:117
 msgid "Profile 1"
-msgstr ""
+msgstr "Profil 1"
 
 #: prefs.js:123
 msgid "Profile 2"
-msgstr ""
+msgstr "Profil 2"
 
 #: prefs.js:129
 msgid "Profile 3"
-msgstr ""
+msgstr "Profil 3"
 
 #: prefs.js:135
 msgid "Profile 4"
-msgstr ""
+msgstr "Profil 4"
 
 #: prefs.js:150 prefs.js:632 prefs.js:1243 prefs.js:2199
 msgid "Dash"
-msgstr ""
+msgstr "Dash"
 
 #: prefs.js:156
 msgid "Dash Position"
-msgstr ""
+msgstr "Position du Dash"
 
 #: prefs.js:161 prefs.js:420
 msgid "Bottom"
-msgstr ""
+msgstr "En bas"
 
 #: prefs.js:162
 msgid "Left"
-msgstr ""
+msgstr "À gauche"
 
 #: prefs.js:163
 msgid "Top"
-msgstr ""
+msgstr "En haut"
 
 #: prefs.js:164
 msgid "Right"
-msgstr ""
+msgstr "À droite"
 
 #: prefs.js:165 prefs.js:208 prefs.js:551 prefs.js:1352
 msgid "Hide"
-msgstr ""
+msgstr "Masquer"
 
 #: prefs.js:173
 msgid "Center Horizontal Dash to Workspace"
-msgstr ""
+msgstr "Centrer le Dash sur l'espace de travail"
 
 #: prefs.js:174
 msgid ""
 "If the Dash Position is set to Top or Bottom, the position will be "
 "recalculated relative to the workspace preview instead of the screen"
 msgstr ""
+"Si la position du Dash est définie en haut ou en bas, la position sera "
+"recalculée par rapport à l'aperçu des espaces de travail au lieu de l'écran."
 
 #: prefs.js:193
 msgid "Fine Tune Dash Position"
-msgstr ""
+msgstr "Régler précisément la position du Dash"
 
 #: prefs.js:194
 msgid ""
 "Adjusts the position of the dash on the axis given by the orientation of the "
 "workspaces"
 msgstr ""
+"Ajuste la position du Dash sur l'axe donné par l'orientation des espaces de "
+"travail."
 
 #: prefs.js:203
 msgid "Show Apps Icon Position"
-msgstr ""
+msgstr "Afficher la position de l'icône des applications"
 
 #: prefs.js:204
 msgid "Sets the position of the \"Show Applications\" icon in the Dash"
 msgstr ""
+"Définit la position de l'icône « Afficher les applications » dans le Dash."
 
 #: prefs.js:209
 msgid "Start"
-msgstr ""
+msgstr "Au début"
 
 #: prefs.js:210
 msgid "End"
-msgstr ""
+msgstr "À la fin"
 
 #: prefs.js:218
 msgid "Workspace Thumbnails / Orientation"
-msgstr ""
+msgstr "Vignettes de l'espace de travail / Orientation"
 
 #: prefs.js:224
 msgid "Thumbnails Position / Workspaces Orientation"
-msgstr ""
+msgstr "Position des vignettes / Orientation des espaces de travail"
 
 #: prefs.js:225
 msgid ""
@@ -159,44 +168,51 @@ msgid ""
 "workspace thumbnails, one sets workspaces to vertical orientation, the "
 "second one to horizontal."
 msgstr ""
+"La position des vignettes de l'espace de travail sur l'écran définit "
+"également l'orientation verticale ou horizontale des espaces de travail. "
+"Vous disposez de deux options pour désactiver les vignettes des espaces de "
+"travail : l'une définit l'orientation verticale des espaces de travail, "
+"l'autre l'orientation horizontale."
 
 #: prefs.js:230
 msgid "Left        \t Vertical Orientation"
-msgstr ""
+msgstr "À gauche        \t Orientation verticale"
 
 #: prefs.js:231
 msgid "Right       \t Vertical Orientation"
-msgstr ""
+msgstr "À droite       \t Orientation verticale"
 
 #: prefs.js:232
 msgid "Hide        \t Vertical Orientation"
-msgstr ""
+msgstr "Masquer       \t Orientation verticale"
 
 #: prefs.js:233
 msgid "Top         \t Horizontal Orientation"
-msgstr ""
+msgstr "En haut       \t Orientation horizontale"
 
 #: prefs.js:234
 msgid "Bottom     \t Horizontal Orientation"
-msgstr ""
+msgstr "En bas       \t Orientation horizontale"
 
 #: prefs.js:235
 msgid "Hide        \t Horizontal Orientation"
-msgstr ""
+msgstr "Masquer       \t Orientation horizontale"
 
 #: prefs.js:251 prefs.js:567
 msgid "Fine Tune Workspace Thumbnails Position"
-msgstr ""
+msgstr "Régler précisément la position des vignettes des espaces de travail"
 
 #: prefs.js:252 prefs.js:568
 msgid ""
 "Adjusts the position of the thumbnails on the axis given by the orientation "
 "of the workspaces"
 msgstr ""
+"Ajuste la position des vignettes sur l'axe donné par l'orientation des "
+"espaces de travail."
 
 #: prefs.js:260
 msgid "Reserve Full Screen Height/Width for Thumbnails"
-msgstr ""
+msgstr "Réserver la hauteur/largeur du plein écran aux vignettes"
 
 #: prefs.js:261
 msgid ""
@@ -204,32 +220,41 @@ msgid ""
 "the expense of space available for Dash (if the Dash is oriented in a "
 "different axis)."
 msgstr ""
+"Toute la hauteur/largeur de l'écran sera réservée aux vignettes des espaces "
+"de travail au détriment de l'espace disponible pour le Dash (si le Dash est "
+"orienté selon un axe différent)."
 
 #: prefs.js:278
 msgid "Workspace Thumbnails Max Scale - Window Picker"
 msgstr ""
+"Échelle maximale des vignettes des espaces de travail - Sélecteur de fenêtre"
 
 #: prefs.js:279
 msgid ""
 "Adjusts the maximum size of the workspace thumbnails in the overview "
 "(percentage relative to display width)"
 msgstr ""
+"Ajuste la taille maximale des vignettes des espaces de travail dans l'aperçu "
+"(pourcentage par rapport à la largeur d'affichage)."
 
 #: prefs.js:296
 msgid "Workspace Thumbnails Max Scale - App View"
 msgstr ""
+"Échelle maximale des vignettes des espaces de travail - Grille d'applications"
 
 #: prefs.js:297
 msgid "Allows you to set different thumbnails scale for the Applications view"
 msgstr ""
+"Permet de définir différentes échelles de vignettes pour la vue Grille "
+"d'applications."
 
 #: prefs.js:305 prefs.js:827 prefs.js:1362
 msgid "Workspace Preview"
-msgstr ""
+msgstr "Aperçu des espaces de travail"
 
 #: prefs.js:320
 msgid "Workspaces Scale"
-msgstr ""
+msgstr "Échelle des espaces de travail"
 
 #: prefs.js:321
 msgid ""
@@ -237,10 +262,14 @@ msgid ""
 "adjacent workspaces on the screen. Default size is calculated to use all "
 "available space with minimal spacing"
 msgstr ""
+"Permet de réduire les aperçus des espaces de travail pour ajuster "
+"l'espacement ou agrandir les espaces adjacents à l'écran. La taille par "
+"défaut est calculée pour utiliser tout l'espace disponible avec un "
+"espacement minimal."
 
 #: prefs.js:338
 msgid "Workspaces Spacing"
-msgstr ""
+msgstr "Espacement des espaces de travail"
 
 #: prefs.js:339
 msgid ""
@@ -251,41 +280,55 @@ msgid ""
 "grid view, which can also save some graphical resources if many windows are "
 "open on other workspaces"
 msgstr ""
+"Ajuste l'espacement en pixels entre les aperçus des espaces de travail, ce "
+"qui vous permet de contrôler le chevauchement des espaces adjacents dans "
+"l'aperçu actuel. Une valeur supérieure à 349 pixels désactive la visibilité "
+"des espaces de travail autres que l'espace actuel lors des transitions vers/"
+"depuis la vue Grille d'applications, ce qui permet également d'économiser "
+"des ressources graphiques si de nombreuses fenêtres sont ouvertes sur "
+"d'autres espaces de travail."
 
 #: prefs.js:354
 msgid "Center App Grid"
-msgstr ""
+msgstr "Centrer la grille d'applications"
 
 #: prefs.js:355
 msgid "Centers the app grid relative to the display instead of available space"
 msgstr ""
+"Centre la grille d'applications par rapport à l'écran plutôt qu'à l'espace "
+"disponible."
 
 #: prefs.js:364
 msgid "Search View"
-msgstr ""
+msgstr "Vue de recherche"
 
 #: prefs.js:370
 msgid "Center Search View"
-msgstr ""
+msgstr "Centrer la vue de recherche"
 
 #: prefs.js:371
 msgid ""
 "Centers the search view relative to the display instead of available space"
 msgstr ""
+"Centre la vue de recherche par rapport à l'affichage plutôt qu'à l'espace "
+"disponible."
 
 #: prefs.js:379
 msgid "Always Show Search Entry"
-msgstr ""
+msgstr "Toujours afficher le champ de saisie"
 
 #: prefs.js:380
 msgid ""
 "If disabled, the search entry field will be hidden when not in use, so the "
 "workspace preview and app grid may take up more space"
 msgstr ""
+"Si cette option est désactivée, le champ de saisie de recherche sera masqué "
+"lorsqu'il n'est pas utilisé, de sorte que l'aperçu des espaces de travail et "
+"la grille d'applications peuvent occuper plus d'espace."
 
 #: prefs.js:397
 msgid "Search Results Width"
-msgstr ""
+msgstr "Largeur des résultats de recherche"
 
 #: prefs.js:398
 msgid ""
@@ -293,50 +336,53 @@ msgid ""
 "default). This allows to fit more (or less) app icons into the app search "
 "result"
 msgstr ""
+"Ajuste la largeur maximale des résultats de recherche (en pourcentage par "
+"rapport à la valeur par défaut). Cela permet d'adapter davantage (ou moins) "
+"d'icônes d'applications aux résultats de recherche."
 
 #: prefs.js:408 prefs.js:936 prefs.js:2244
 msgid "Panel"
-msgstr ""
+msgstr "Panneau"
 
 #: prefs.js:414
 msgid "Main Panel Position"
-msgstr ""
+msgstr "Position du panneau principal"
 
 #: prefs.js:415
 msgid "Allows to place the main panel at the bottom of the primary display"
-msgstr ""
+msgstr "Permet de placer le panneau principal en bas de l'écran principal."
 
 #: prefs.js:419
 msgid "Top (Default)"
-msgstr ""
+msgstr "En haut (par défaut)"
 
 #: prefs.js:428
 msgid "Main Panel Visibility"
-msgstr ""
+msgstr "Visibilité du panneau principal"
 
 #: prefs.js:429
 msgid "Allows to hide main panel when not needed"
-msgstr ""
+msgstr "Permet de masquer le panneau principal lorsqu'il n'est pas nécessaire."
 
 #: prefs.js:433
 msgid "Always Visible (Default)"
-msgstr ""
+msgstr "Toujours visible (par défaut)"
 
 #: prefs.js:434
 msgid "Overview Only"
-msgstr ""
+msgstr "Vue d'ensemble uniquement"
 
 #: prefs.js:435
 msgid "Always Hidden"
-msgstr ""
+msgstr "Toujours masqué"
 
 #: prefs.js:445
 msgid "Workspace Switcher Popup"
-msgstr ""
+msgstr "Popup de changement d'espace de travail"
 
 #: prefs.js:461
 msgid "Horizontal Position (percentage from the left)"
-msgstr ""
+msgstr "Position horizontale (pourcentage à partir de la gauche)"
 
 #: prefs.js:462
 msgid ""
@@ -345,355 +391,387 @@ msgid ""
 "If you want more control over the popup, try the \"Workspace Switcher "
 "Manager\" extension"
 msgstr ""
+"Ce popup s'affiche lorsque vous changez d'espace de travail à l'aide d'un "
+"raccourci clavier ou d'un geste en dehors de la vue d'ensemble. Vous pouvez "
+"la désactiver dans l'onglet « Comportement ». Pour plus de contrôle sur ce "
+"popup, essayez l'extension « Workspace Switcher Manager »."
 
 #: prefs.js:482
 msgid "Vertical Position (percentage from the top)"
-msgstr ""
+msgstr "Position verticale (pourcentage à partir du haut)"
 
 #: prefs.js:493
 msgid "Notifications and OSD"
-msgstr ""
+msgstr "Notifications et OSD"
 
 #: prefs.js:499
 msgid "Notification Banner Position"
-msgstr ""
+msgstr "Position de la bannière de notification"
 
 #: prefs.js:500
 msgid "Choose where the notification banners appear on the screen"
-msgstr ""
+msgstr "Choisissez où les bannières de notification apparaissent sur l'écran."
 
 #: prefs.js:504 prefs.js:523 prefs.js:1208
 msgid "Top Left"
-msgstr ""
+msgstr "En haut, à gauche"
 
 #: prefs.js:505
 msgid "Top Center (Default)"
-msgstr ""
+msgstr "En haut, au centre (par défaut)"
 
 #: prefs.js:506 prefs.js:525 prefs.js:1209
 msgid "Top Right"
-msgstr ""
+msgstr "En haut, à droite"
 
 #: prefs.js:507 prefs.js:527 prefs.js:1210
 msgid "Bottom Left"
-msgstr ""
+msgstr "En bas, à gauche"
 
 #: prefs.js:508
 msgid "Bottom Center"
-msgstr ""
+msgstr "En bas, au centre"
 
 #: prefs.js:509 prefs.js:529 prefs.js:1211
 msgid "Bottom Right"
-msgstr ""
+msgstr "En bas, à droite"
 
 #: prefs.js:517
 msgid "OSD Popup Position"
-msgstr ""
+msgstr "Position du popup OSD"
 
 #: prefs.js:518
 msgid ""
 "Choose where the OSD pop-ups (like sound volume level) appear on the screen"
 msgstr ""
+"Choisissez où les popups OSD (comme le niveau de volume sonore) apparaissent "
+"sur l'écran."
 
 #: prefs.js:522 prefs.js:746 prefs.js:790 prefs.js:1146 prefs.js:1166
 #: prefs.js:1188 prefs.js:1555 prefs.js:1572 prefs.js:1589 prefs.js:1656
 msgid "Disable"
-msgstr ""
+msgstr "Désactiver"
 
 #: prefs.js:524
 msgid "Top Center"
-msgstr ""
+msgstr "En haut, au centre"
 
 #: prefs.js:526
 msgid "Center"
-msgstr ""
+msgstr "Au centre"
 
 #: prefs.js:528
 msgid "Bottom Center (Default)"
-msgstr ""
+msgstr "En bas, au centre (par défaut)"
 
 #: prefs.js:537
 msgid "Secondary Monitors"
-msgstr ""
+msgstr "Écrans secondaires"
 
 #: prefs.js:543
 msgid "Workspace Thumbnails Position"
-msgstr ""
+msgstr "Position des vignettes des espaces de travail"
 
 #: prefs.js:544
 msgid ""
 "Allows to place workspace thumbnails of secondary monitors on the opposite "
 "side than on the primary monitor"
 msgstr ""
+"Permet de placer les vignettes des espaces de travail des moniteurs "
+"secondaires sur le côté opposé à celui du moniteur principal."
 
 #: prefs.js:548
 msgid "Same as Primary"
-msgstr ""
+msgstr "Pareil que l'écran principal"
 
 #: prefs.js:549
 msgid "Left / Top"
-msgstr ""
+msgstr "À gauche / En haut"
 
 #: prefs.js:550
 msgid "Right / Bottom"
-msgstr ""
+msgstr "À droite / En bas"
 
 #: prefs.js:585
 msgid "Workspace Thumbnails Max Scale"
-msgstr ""
+msgstr "Échelle maximale des vignettes des espaces de travail"
 
 #: prefs.js:586
 msgid ""
 "Adjusts maximum size of the workspace thumbnails (percentage relative to the "
 "display width / height) for secondary monitors"
 msgstr ""
+"Ajuste la taille maximale des vignettes des espaces de travail (pourcentage "
+"par rapport à la largeur/hauteur de l'affichage) pour les écrans secondaires."
 
 #: prefs.js:603
 msgid "Workspace Preview Scale"
-msgstr ""
+msgstr "Échelle de l'aperçu des espaces de travail"
 
 #: prefs.js:604
 msgid "Allows to scale down workspace previews on secondary monitors"
 msgstr ""
+"Permet de réduire la taille des aperçus des espaces de travail sur les "
+"moniteurs secondaires."
 
 #: prefs.js:612
 msgid "Shift Overview by Panel Height"
-msgstr ""
+msgstr "Ajuster la position de l’aperçu selon la hauteur du panneau"
 
 #: prefs.js:613
 msgid ""
 "This option can help align the overview of the secondary monitor with the "
 "primary one"
 msgstr ""
+"Cette option peut aider à aligner la vue d'ensemble de l'écran secondaire "
+"avec celle du moniteur principal."
 
 #: prefs.js:638
 msgid "Dash Max Icon Size"
-msgstr ""
+msgstr "Taille maximale des icônes du Dash"
 
 #: prefs.js:639
 msgid ""
 "Maximum size of Dash icons in pixels. Adaptive option switches between "
 "default 64 and 48 for low resolution displays"
 msgstr ""
+"Taille maximale des icônes du Dash en pixels. L'option adaptative bascule "
+"entre 64 et 48 pixels par défaut pour les écrans basse résolution."
 
 #: prefs.js:643 prefs.js:1739 prefs.js:1934
 msgid "Adaptive (Default)"
-msgstr ""
+msgstr "Adaptatif (par défaut)"
 
 #: prefs.js:644 prefs.js:872 prefs.js:1747 prefs.js:1935
 msgid "128"
-msgstr ""
+msgstr "128"
 
 #: prefs.js:645 prefs.js:873 prefs.js:1748 prefs.js:1936
 msgid "112"
-msgstr ""
+msgstr "112"
 
 #: prefs.js:646 prefs.js:1749 prefs.js:1937
 msgid "96"
-msgstr ""
+msgstr "96"
 
 #: prefs.js:647 prefs.js:875 prefs.js:1750 prefs.js:1938
 msgid "80"
-msgstr ""
+msgstr "80"
 
 #: prefs.js:648 prefs.js:876 prefs.js:1751 prefs.js:1939
 msgid "64"
-msgstr ""
+msgstr "64"
 
 #: prefs.js:649 prefs.js:787 prefs.js:877 prefs.js:1752 prefs.js:1940
 msgid "48"
-msgstr ""
+msgstr "48"
 
 #: prefs.js:650 prefs.js:788 prefs.js:878
 msgid "32"
-msgstr ""
+msgstr "32"
 
 #: prefs.js:658
 msgid "Dash Background Style"
-msgstr ""
+msgstr "Style d'arrière-plan du Dash"
 
 #: prefs.js:659
 msgid ""
 "Allows you to change the background color of the dash to match the search "
 "results an app folders"
 msgstr ""
+"Vous permet de modifier la couleur d'arrière-plan du Dash pour qu'elle "
+"corresponde aux résultats de recherche et aux dossiers d'applications."
 
 #: prefs.js:663 prefs.js:1088 prefs.js:1116 prefs.js:1207 prefs.js:1281
 #: prefs.js:1554 prefs.js:1571 prefs.js:1628 prefs.js:1642
 msgid "Default"
-msgstr ""
+msgstr "Par défaut"
 
 #: prefs.js:664
 msgid "Light"
-msgstr ""
+msgstr "Clair"
 
 #: prefs.js:680
 msgid "Dash Background Opacity"
-msgstr ""
+msgstr "Opacité de l'arrière-plan du Dash"
 
 #: prefs.js:681
 msgid "Adjusts the opacity of the Dash background"
-msgstr ""
+msgstr "Ajuste l'opacité de l'arrière-plan du Dash."
 
 #: prefs.js:699
 msgid "Dash Background Radius"
-msgstr ""
+msgstr "Rayon des coins du Dash"
 
 #: prefs.js:700
 msgid ""
 "Adjusts the border radius of the Dash background in pixels. 0 means the "
 "default value given by the current theme style"
 msgstr ""
+"Ajuste le rayon des coins de l'arrière-plan du Dash en pixels. 0 correspond "
+"à la valeur par défaut donnée par le style du thème actuel."
 
 #: prefs.js:710
 msgid "Dash Background GNOME 3 Style"
-msgstr ""
+msgstr "Arrière-plan du Dash style GNOME 3"
 
 #: prefs.js:711
 msgid ""
 "Background of the vertically oriented dash will imitate the GNOME 3 style"
-msgstr ""
+msgstr "L'arrière-plan du Dash orienté verticalement imite le style GNOME 3."
 
 #: prefs.js:721
 msgid "Running App Indicator"
-msgstr ""
+msgstr "Indicateur d'application en cours d'exécution"
 
 #: prefs.js:722
 msgid ""
 "Allows you to change style of the running app indicator under the app icon"
 msgstr ""
+"Vous permet de modifier le style de l'indicateur d'application en cours "
+"d'exécution sous l'icône de l'application."
 
 #: prefs.js:726
 msgid "Dot (Default)"
-msgstr ""
+msgstr "Point (par défaut)"
 
 #: prefs.js:727
 msgid "Line"
-msgstr ""
+msgstr "Ligne"
 
 #: prefs.js:735 prefs.js:1341
 msgid "Workspace Thumbnails"
-msgstr ""
+msgstr "Vignettes des espaces de travail"
 
 #: prefs.js:741
 msgid "Show Workspace Thumbnail Labels"
-msgstr ""
+msgstr "Afficher les étiquettes des vignettes des espaces de travail"
 
 #: prefs.js:742
 msgid ""
 "Each workspace thumbnail can show label with its index and name (if defined "
 "in the system settings) or name/title of its most recently used app/window"
 msgstr ""
+"Chaque vignette d'espace de travail peut afficher une étiquette avec son "
+"index et son nom (si défini dans les paramètres système) ou le nom/titre de "
+"son application/fenêtre la plus récemment utilisée."
 
 #: prefs.js:747
 msgid "Index"
-msgstr ""
+msgstr "Index"
 
 #: prefs.js:748
 msgid "Index + WS Name"
-msgstr ""
+msgstr "Index + nom de l'espace de travail"
 
 #: prefs.js:749
 msgid "Index + App Name"
-msgstr ""
+msgstr "Index + nom de l'application"
 
 #: prefs.js:750
 msgid "Index + Window Title"
-msgstr ""
+msgstr "Index + nom de la fenêtre"
 
 #: prefs.js:757
 msgid "Show WS Thumbnail Label on Hover"
-msgstr ""
+msgstr "Afficher l'étiquette de la vignette de l'espace de travail au survol"
 
 #: prefs.js:758
 msgid "Show the label only when the mouse pointer hovers over the thumbnail"
 msgstr ""
+"Afficher l'étiquette uniquement lorsque le pointeur de la souris survole la "
+"vignette."
 
 #: prefs.js:766
 msgid "Show Wallpaper in Workspace Thumbnails"
-msgstr ""
+msgstr "Afficher le fond d'écran dans les vignettes des espaces de travail"
 
 #: prefs.js:767
 msgid "All workspace thumbnails will include the current desktop background"
 msgstr ""
+"Toutes les vignettes des espaces\n"
+" de travail incluront le fond d'écran actuel du bureau."
 
 #: prefs.js:775 prefs.js:1419
 msgid "Window Preview"
-msgstr ""
+msgstr "Aperçu des fenêtres"
 
 #: prefs.js:781
 msgid "Window Preview App Icon Size"
-msgstr ""
+msgstr "Taille de l'icône de l'application lors de l'aperçu des fenêtres"
 
 #: prefs.js:786
 msgid "64 (Default)"
-msgstr ""
+msgstr "64 (par défaut)"
 
 #: prefs.js:789
 msgid "22"
-msgstr ""
+msgstr "22"
 
 #: prefs.js:798
 msgid "Window Title Position / Visibility"
-msgstr ""
+msgstr "Position/visibilité du titre de la fenêtre"
 
 #: prefs.js:799
 msgid ""
 "Sets the position of the window title that is displayed when the mouse "
 "hovers over the window or can always be visible"
 msgstr ""
+"Définit la position du titre de la fenêtre qui s'affiche lorsque la souris "
+"survole la fenêtre, ou peut toujours être visible."
 
 #: prefs.js:803
 msgid "Below Window (Default)"
-msgstr ""
+msgstr "En dessous de la fenêtre (par défaut)"
 
 #: prefs.js:804
 msgid "Inside Window"
-msgstr ""
+msgstr "À l'intérieur de la fenêtre"
 
 #: prefs.js:805
 msgid "Inside - Always Visible"
-msgstr ""
+msgstr "À l'intérieur - Toujours visible"
 
 #: prefs.js:806
 msgid "On Top"
-msgstr ""
+msgstr "Au-dessus"
 
 #: prefs.js:807
 msgid "On Top - Always Visible"
-msgstr ""
+msgstr "Au-dessus - Toujours visible"
 
 #: prefs.js:815
 msgid "Show Close Window Button"
-msgstr ""
+msgstr "Afficher le bouton de fermeture de la fenêtre"
 
 #: prefs.js:816
 msgid "Allows you to hide close window button"
-msgstr ""
+msgstr "Permet de masquer le bouton de fermeture de la fenêtre."
 
 #: prefs.js:833
 msgid "Show Workspace Preview Background"
-msgstr ""
+msgstr "Afficher l'arrière-plan de l'aperçu des espaces de travail"
 
 #: prefs.js:834
 msgid "Allows to hide the background of the workspace preview"
-msgstr ""
+msgstr "Permet de masquer l'arrière-plan de l'aperçu des espaces de travail."
 
 #: prefs.js:851
 msgid "Workspace Background Corner Radius"
-msgstr ""
+msgstr "Rayon d'angle de l'arrière-plan de l'espace de travail"
 
 #: prefs.js:852
 msgid "Adjusts the corner radius of the workspace preview in the overview"
 msgstr ""
+"Ajuste le rayon d'angle de l'aperçu des espaces de travail dans l'aperçu."
 
 #: prefs.js:860 prefs.js:1483 prefs.js:2253
 msgid "Search"
-msgstr ""
+msgstr "Recherche"
 
 #: prefs.js:866
 msgid "App Search Icon Size"
-msgstr ""
+msgstr "Taille de l'icône de recherche d'applications"
 
 #: prefs.js:867
 msgid ""
@@ -701,28 +779,35 @@ msgid ""
 "fit more results. Adaptive option switches between default 96 and 64 for low "
 "resolution displays"
 msgstr ""
+"Taille des résultats fournis par le moteur de recherche d'applications : une "
+"taille plus petite permet d'afficher davantage de résultats. L'option "
+"adaptative bascule entre 96 et 64 par défaut pour les écrans basse "
+"résolution."
 
 #: prefs.js:871
 msgid "Adaptive"
-msgstr ""
+msgstr "Adaptatif"
 
 #: prefs.js:874
 msgid "96 (Default)"
-msgstr ""
+msgstr "96 (par défaut)"
 
 #: prefs.js:898
 msgid "Max Search Results Rows"
-msgstr ""
+msgstr "Nombre maximal de lignes de résultats de recherche"
 
 #: prefs.js:899
 msgid ""
 "Sets the maximum number of rows for result lists of all search providers "
 "except the window search provider which always lists all results"
 msgstr ""
+"Définit le nombre maximal de lignes pour les listes de résultats de tous les "
+"fournisseurs de recherche, à l'exception du fournisseur de recherche de "
+"fenêtre qui répertorie toujours tous les résultats."
 
 #: prefs.js:909
 msgid "Search Results Style"
-msgstr ""
+msgstr "Style des résultats de recherche"
 
 #: prefs.js:910
 msgid ""
@@ -731,18 +816,22 @@ msgid ""
 "Dark style also ignores the overview background blur and brightness "
 "configured for the search view"
 msgstr ""
+"Définit le style d'arrière-plan des résultats de recherche. Lorsque le mode "
+"Aperçu des espaces de travail statique est activé, le style Sombre est "
+"utilisé malgré cette option. Ce style ignore également le flou et la "
+"luminosité de l'arrière-plan de l'aperçu configurés pour la vue de recherche."
 
 #: prefs.js:914 prefs.js:948
 msgid "Transparent (Default)"
-msgstr ""
+msgstr "Transparent (par défaut)"
 
 #: prefs.js:915
 msgid "Dark"
-msgstr ""
+msgstr "Sombre"
 
 #: prefs.js:922
 msgid "Highlighting"
-msgstr ""
+msgstr "Mise en évidence"
 
 #: prefs.js:923
 msgid ""
@@ -752,38 +841,44 @@ msgid ""
 "search results globally. If you are using other extensions that offer this "
 "option, make sure you set the same setting in all of them."
 msgstr ""
+"Le style de surbrillance par défaut de GNOME (gras) ellipse les chaînes de "
+"caractères de manière aléatoire, ce qui empêche souvent de les visualiser en "
+"entier, même s'il y a suffisamment de place. Le style sélectionné sera "
+"appliqué à tous les résultats de recherche. Si vous utilisez d'autres "
+"extensions proposant cette option, assurez-vous de définir le même paramètre "
+"pour chacune d'elles."
 
 #: prefs.js:927
 msgid "Bold (Default)"
-msgstr ""
+msgstr "Gras (par défaut)"
 
 #: prefs.js:928
 msgid "Underline"
-msgstr ""
+msgstr "Souligner"
 
 #: prefs.js:929
 msgid "None"
-msgstr ""
+msgstr "Aucun"
 
 #: prefs.js:942
 msgid "Overview Panel Style"
-msgstr ""
+msgstr "Style du panneau dans la vue d'ensemble"
 
 #: prefs.js:943
 msgid "Panel background style in overview"
-msgstr ""
+msgstr "Style d'arrière-plan du panneau dans la vue d'ensemble."
 
 #: prefs.js:947
 msgid "Same as Desktop"
-msgstr ""
+msgstr "Identique au bureau"
 
 #: prefs.js:955
 msgid "Overview Background"
-msgstr ""
+msgstr "Arrière-plan de la vue d'esemble"
 
 #: prefs.js:961
 msgid "Show wallpaper"
-msgstr ""
+msgstr "Afficher le fond d'écran"
 
 #: prefs.js:962
 msgid ""
@@ -791,69 +886,79 @@ msgid ""
 "wallpaper. If you have a weak computer or prefer low system load and want to "
 "blur the wallpaper, the \"Fast Blur Transitions\" option is for you"
 msgstr ""
+"Remplace l'arrière-plan gris uni de l'aperçu par le fond d'écran actuel. Si "
+"votre ordinateur est peu performant ou si vous préférez une charge système "
+"réduite et souhaitez flouter le fond d'écran, l'option « Transitions floues "
+"rapides » est faite pour vous."
 
 #: prefs.js:966
 msgid "Disable (Default)"
-msgstr ""
+msgstr "Désactiver (par défaut)"
 
 #: prefs.js:967
 msgid "Enable - Fast Blur Transitions"
-msgstr ""
+msgstr "Activer - Transitions floues rapides"
 
 #: prefs.js:968
 msgid "Enable - Smooth Blur Transitions"
-msgstr ""
+msgstr "Activer - Transitions floues douces"
 
 #: prefs.js:983
 msgid "Brightness - Window Picker"
-msgstr ""
+msgstr "Luminosité - Vue d'ensemble"
 
 #: prefs.js:984
 msgid "Brightness of the background wallpaper in the overview"
-msgstr ""
+msgstr "Luminosité du fond d'écran dans la vue d'ensemble."
 
 #: prefs.js:1002
 msgid "Brightness - App Grid"
-msgstr ""
+msgstr "Luminosité - Grille d'applications"
 
 #: prefs.js:1003
 msgid "Brightness of the background wallpaper in the application menu"
-msgstr ""
+msgstr "Luminosité du fond d'écran dans la grille d'applications."
 
 #: prefs.js:1021
 msgid "Brightness - Search View"
-msgstr ""
+msgstr "Luminosité - Vue de recherche"
 
 #: prefs.js:1022
 msgid ""
 "Allows you to set a lower background brightness for search view where text "
 "visibility is more important"
 msgstr ""
+"Vous permet de définir une luminosité d'arrière-plan plus faible pour la vue "
+"de recherche où la visibilité du texte est plus importante."
 
 #: prefs.js:1040
 msgid "Blur Window Picker Background"
-msgstr ""
+msgstr "Flou d'arrière-plan du sélecteur de fenêtre"
 
 #: prefs.js:1041
 msgid "Sets the amount of background blur in the window picker view"
 msgstr ""
+"Définit la quantité de flou d'arrière-plan dans la vue du sélecteur de "
+"fenêtre."
 
 #: prefs.js:1059
 msgid "Blur App Grid/Search View Background"
-msgstr ""
+msgstr "Flou d'arrière-plan de la grille d'applications/vue de recherche"
 
 #: prefs.js:1060
 msgid ""
 "Sets the amount of background blur in the app grid and search results views"
 msgstr ""
+"Définit la quantité de flou d'arrière-plan dans la grille d'applications et "
+"les résultats de recherche."
 
 #: prefs.js:1077
 msgid "Overview"
-msgstr ""
+msgstr "Vue d'ensemble"
 
 #: prefs.js:1083
 msgid "Overview Mode"
-msgstr ""
+msgstr "Mode de la vue d'ensemble"
 
 #: prefs.js:1084
 msgid ""
@@ -864,38 +969,46 @@ msgid ""
 "workspace and only clicking on an active workspace thumbnail activates the "
 "default overview"
 msgstr ""
+"Le mode « Exposer les fenêtres au survol » n'affiche les fenêtres d'aperçu "
+"des espaces de travail que lorsque le pointeur de la souris survole une "
+"fenêtre.\n"
+"Le mode « Espace de travail statique » maintient l'espace de travail "
+"statique lorsque vous activez la vue d'ensemble. Seuls le Dash, les "
+"vignettes des espaces de travail et le champ de recherche s'affichent sur "
+"l'espace de travail. Un simple clic sur une vignette active la vue "
+"d'ensemble par défaut."
 
 #: prefs.js:1089
 msgid "Expose Windows on Hover"
-msgstr ""
+msgstr "Exposer les fenêtres au survol"
 
 #: prefs.js:1090
 msgid "Static Workspace"
-msgstr ""
+msgstr "Espace de travail statique"
 
 #: prefs.js:1097
 msgid "Startup State"
-msgstr ""
+msgstr "État de démarrage"
 
 #: prefs.js:1098
 msgid "Allows to change the state in which GNOME Shell starts a session"
-msgstr ""
+msgstr "Permet de modifier l'état dans lequel GNOME Shell démarre une session."
 
 #: prefs.js:1102
 msgid "Overview (Default)"
-msgstr ""
+msgstr "Vue d'ensemble (par défaut)"
 
 #: prefs.js:1103
 msgid "Desktop"
-msgstr ""
+msgstr "Bureau"
 
 #: prefs.js:1104 prefs.js:1149 prefs.js:1191
 msgid "Applications"
-msgstr ""
+msgstr "Grille d'applications"
 
 #: prefs.js:1111
 msgid "Escape Key Behavior"
-msgstr ""
+msgstr "Comportement de la touche Échap"
 
 #: prefs.js:1112
 msgid ""
@@ -903,26 +1016,30 @@ msgid ""
 "from the application grid or from search, if the search entry field does not "
 "have focus"
 msgstr ""
+"Permet de sortir de la vue d'ensemble en appuyant sur la touche Échap, même "
+"à partir de la grille d'applications ou de la recherche, si le champ de "
+"saisie de la recherche n'est pas sélectionné."
 
 #: prefs.js:1117
 msgid "Close Overview"
-msgstr ""
+msgstr "Sortir de la vue d'ensemble"
 
 #: prefs.js:1125
 msgid "Click Empty Space To Close"
-msgstr ""
+msgstr "Cliquer sur un espace vide pour sortir"
 
 #: prefs.js:1126
 msgid "Enables clicking on an empty space in the overview to close it"
 msgstr ""
+"Permet de cliquer sur un espace vide de la vue d'ensemble pour y sortir."
 
 #: prefs.js:1135
 msgid "Overlay Key (Super/Windows)"
-msgstr ""
+msgstr "Touche de superposition (Super/Windows)"
 
 #: prefs.js:1141
 msgid "Single-Press Action"
-msgstr ""
+msgstr "Action à simple pression"
 
 #: prefs.js:1142
 msgid ""
@@ -933,30 +1050,38 @@ msgid ""
 "key, set this option to \"Overview - Window Picker (Default)\" and the "
 "\"Double-Press Action\" option to \"Applications (Default)\""
 msgstr ""
+"Désactivez ou modifiez le comportement lorsque vous appuyez et relâchez la "
+"touche Super. L'option « Rechercher parmi les fenêtres » nécessite "
+"l'installation et l'activation de l'extension « WSP (Window Search "
+"Provider) ». Le lien est disponible dans l'onglet Modules des paramètres. Si "
+"vous souhaitez qu'une autre extension (comme AATWS) gère la touche de "
+"superposition, définissez cette option sur « Aperçu - Sélecteur de fenêtres "
+"(par défaut) » et l'option « Action à double pression » sur « Applications "
+"(par défaut) »."
 
 #: prefs.js:1147 prefs.js:1189
 msgid "Follow Global Overview Mode"
-msgstr ""
+msgstr "Suivre le mode de la vue d'ensemble global"
 
 #: prefs.js:1148 prefs.js:1190
 msgid "Overview - Window Picker (Default)"
-msgstr ""
+msgstr "Vue d'ensemble - Sélecteur de fenêtre (par défaut)"
 
 #: prefs.js:1150 prefs.js:1192
 msgid "Overview - Static WS Preview"
-msgstr ""
+msgstr "Vue d'ensemble - Aperçu des espaces de travail statique"
 
 #: prefs.js:1151 prefs.js:1193
 msgid "Overview - Static Workspace"
-msgstr ""
+msgstr "Vue d'ensemble - Espace de travail statique"
 
 #: prefs.js:1152 prefs.js:1168 prefs.js:1194
 msgid "Search Windows (requires WSP extension)"
-msgstr ""
+msgstr "Rechercher parmi les fenêtres (nécessite l'extension WSP)"
 
 #: prefs.js:1161
 msgid "Double-Press Action"
-msgstr ""
+msgstr "Action à double pression"
 
 #: prefs.js:1162
 msgid ""
@@ -967,22 +1092,31 @@ msgid ""
 "you set static workspace (preview) for the single press/release Super key "
 "action"
 msgstr ""
+"Désactivez ou modifiez le comportement lorsque vous appuyez deux fois sur la "
+"touche Super. L'option « Rechercher parmi les fenêtres » nécessite "
+"l'installation et l'activation de l'extension « WSP (Window Search "
+"Provider) ». L'option « Aperçu statique des fenêtres - Exposer les "
+"fenêtres » vous permet de basculer vers la vue d'ensemble par défaut du "
+"sélecteur de fenêtre des activités si vous définissez un espace de travail "
+"statique (aperçu) pour l'action d'appui/relâchement unique de la touche "
+"Super."
 
 #: prefs.js:1167
 msgid "Applications (Default)"
-msgstr ""
+msgstr "Grille d'applications (par défaut)"
 
 #: prefs.js:1169
 msgid "Overview - Window Picker"
-msgstr ""
+msgstr "Vue d'ensemble - Sélecteur de fenêtre"
 
 #: prefs.js:1177
 msgid "Hot Corner (Install Custom Hot Corners - Extended for more options)"
 msgstr ""
+"Coin actif (Installez « Custom Hot Corners - Extended » pour plus d'options)"
 
 #: prefs.js:1183
 msgid "Hot Corner Action"
-msgstr ""
+msgstr "Action du coin actif"
 
 #: prefs.js:1184
 msgid ""
@@ -991,10 +1125,15 @@ msgid ""
 "The \"Search Windows\" option requires the \"WSP (Window Search Provider)\" "
 "extension installed and enabled"
 msgstr ""
+"Désactivez ou modifiez le comportement du coin actif. Maintenez la touche "
+"Ctrl enfoncée tout en cliquant sur le coin actif pour basculer entre la vue "
+"d'ensemble et la grille d'applications. L'option « Rechercher parmi les "
+"fenêtres » nécessite l'installation et l'activation de l'extension « WSP "
+"(Window Search Provider) »."
 
 #: prefs.js:1202
 msgid "Hot Corner Position"
-msgstr ""
+msgstr "Position du coin actif"
 
 #: prefs.js:1203
 msgid ""
@@ -1003,46 +1142,56 @@ msgid ""
 "Dash. The last option extends the hot corner trigger to cover the entire ege "
 "of the monitor where Dash is located"
 msgstr ""
+"Choisissez le coin de vos écrans à activer. Si vous choisissez l'option "
+"« Suivre le Dash », le coin sera placé près du bord gauche ou supérieur du "
+"Dash. La dernière option étend le déclencheur de coin actif à toute la zone "
+"de l'écran où se trouve le Dash."
 
 #: prefs.js:1212
 msgid "Follow Dash"
-msgstr ""
+msgstr "Suivre le Dash"
 
 #: prefs.js:1213
 msgid "Follow Dash - Hot Edge"
-msgstr ""
+msgstr "Suivre le Dash - Bord actif"
 
 #: prefs.js:1221
 msgid "Enable Hot Corner in Full-Screen Mode"
-msgstr ""
+msgstr "Activer le coin actif en mode plein écran"
 
 #: prefs.js:1222
 msgid ""
 "If you often work with full-screen applications and want the hot corner to "
 "be usable"
 msgstr ""
+"Si vous travaillez souvent avec des applications plein écran et que vous "
+"souhaitez que le coin actif soit utilisable."
 
 #: prefs.js:1232
 msgid "Show Ripples Animation"
-msgstr ""
+msgstr "Afficher l'effet d'ondulation"
 
 #: prefs.js:1233
 msgid ""
 "The ripple animation is played when the hot corner is activated. The ripple "
 "size has been reduced to be less distracting"
 msgstr ""
+"L'effet d'ondulation est joué lorsque le coin actif est activé. La taille de "
+"l'ondulation a été réduite pour être moins gênante."
 
 #: prefs.js:1249
 msgid "Isolate Workspaces"
-msgstr ""
+msgstr "Isoler les espaces de travail"
 
 #: prefs.js:1250
 msgid "Dash will only show apps and windows from the current workspace"
 msgstr ""
+"Le Dash affichera uniquement les applications et les fenêtres de l'espace de "
+"travail actuel."
 
 #: prefs.js:1260
 msgid "App Icon - Click Behavior"
-msgstr ""
+msgstr "Icône d'application - Comportement du clic"
 
 #: prefs.js:1261
 msgid ""
@@ -1052,26 +1201,32 @@ msgid ""
 "the middle click to \"Activate\" since its default behavior is to open a new "
 "window"
 msgstr ""
+"Choisissez le comportement que vous préférez lorsque vous cliquez sur une "
+"icône d'application. L'option « Préférer l'espace de travail actuel » ouvre "
+"une nouvelle fenêtre d'application si elle n'est pas présente dans l'espace "
+"de travail actuel. L'option « Ouvrir une nouvelle fenêtre » active également "
+"le comportement du clic du milieu, car son comportement par défaut est "
+"d'ouvrir une nouvelle fenêtre."
 
 #: prefs.js:1265
 msgid "Activate App Immediately"
-msgstr ""
+msgstr "Activer l'application immédiatement"
 
 #: prefs.js:1266
 msgid "First Switch to Workspace"
-msgstr ""
+msgstr "Basculer à l'espace de travail en premier"
 
 #: prefs.js:1267
 msgid "Open New Window (if supported)"
-msgstr ""
+msgstr "Ouvrir une nouvelle fenêtre (si supporté)"
 
 #: prefs.js:1268
 msgid "Prefer Current Workspace"
-msgstr ""
+msgstr "Préférer l'espace de travail actuel"
 
 #: prefs.js:1276
 msgid "App Icon - Scroll Action"
-msgstr ""
+msgstr "Icône d'application - Action du scroll"
 
 #: prefs.js:1277
 msgid ""
@@ -1080,52 +1235,67 @@ msgid ""
 "workspaces. Scrolling up cycles through previously used windows on the same "
 "workspace and then switches to another workspace, if any"
 msgstr ""
+"Choisissez le comportement lors du survol d'une icône d'application. Le "
+"cycleur de fenêtres utilise une liste de fenêtres triées par « Les plus "
+"récemment utilisées » et regroupées par espaces de travail. Le défilement "
+"vers le haut permet de parcourir les fenêtres précédemment utilisées dans le "
+"même espace de travail, puis de passer à un autre espace de travail, le cas "
+"échéant."
 
 #: prefs.js:1282
 msgid "Cycle App Windows - Highlight Selected"
-msgstr ""
+msgstr "Cycler les fenêtres - Mettre en évidence la sélection"
 
 #: prefs.js:1283
 msgid "Cycle App Windows - Highlight App"
-msgstr ""
+msgstr "Cycler les fenêtres - Mettre en évidence l'application"
 
 #: prefs.js:1291
 msgid "App Menu"
-msgstr ""
+msgstr "Menu d'application"
 
 #: prefs.js:1297
 msgid "Add Force Quit"
-msgstr ""
+msgstr "Ajouter « Forcer à quitter »"
 
 #: prefs.js:1298
 msgid ""
 "Adds a \"Force Quit\" menu item to the application menu that appears when "
 "right-clicking an app icon"
 msgstr ""
+"Ajoute un élément de menu « Forcer à quitter » au menu de l'application qui "
+"apparaît lorsque vous cliquez avec le bouton droit sur l'icône d'une "
+"application"
 
 #: prefs.js:1308
 msgid "Add Close Windows on Current Workspace"
-msgstr ""
+msgstr "Ajouter « Fermer la(les) fenêtre(s) de l'espace de travail actuel »"
 
 #: prefs.js:1309
 msgid ""
 "Adds a \"Close Windows on Current Workspace\" menu item to the application "
 "menu that appears when right-clicking an app icon"
 msgstr ""
+"Ajoute un élément de menu « Fermer la(les) fenêtre(s) de l'espace de travail "
+"actuel » au menu de l'application qui apparaît lorsque vous cliquez avec le "
+"bouton droit sur une icône d'application."
 
 #: prefs.js:1319
 msgid "Add Move App to Current Workspace"
-msgstr ""
+msgstr "Ajouter « Déplacer l'application vers l'espace de travail actuel »"
 
 #: prefs.js:1320
 msgid ""
 "Adds a \"Move App to Current Workspace\" menu item to the application menu "
 "that appears when right-clicking an app icon"
 msgstr ""
+"Ajoute un élément de menu « Déplacer l'application vers l'espace de travail "
+"actuel » au menu de l'application qui apparaît lorsque vous cliquez avec le "
+"bouton droit sur l'icône d'une application."
 
 #: prefs.js:1330
 msgid "Add Create Window Thumbnail"
-msgstr ""
+msgstr "Ajouter « Créer une vignette de fenêtre »"
 
 #: prefs.js:1331
 msgid ""
@@ -1133,10 +1303,13 @@ msgid ""
 "Thumbnail\" menu item to the application menu that appears when right-"
 "clicking an app icon"
 msgstr ""
+"Nécessite l'installation et l'activation de l'extension WTMB. Ajoute un "
+"élément de menu « Créer une miniature de fenêtre » au menu de l'application, "
+"qui apparaît lors d'un clic droit sur l'icône d'une application."
 
 #: prefs.js:1347
 msgid "Close Workspace Button"
-msgstr ""
+msgstr "Bouton de fermeture de l'espace de travail"
 
 #: prefs.js:1348
 msgid ""
@@ -1144,22 +1317,26 @@ msgid ""
 "over it and allows you to close all windows on the workspace. You can choose "
 "a \"safety lock\" to prevent accidental use"
 msgstr ""
+"Le bouton « Fermer l'espace de travail » apparaît sur la vignette de "
+"l'espace de travail lorsque vous le survolez et vous permet de fermer toutes "
+"les fenêtres de l'espace de travail. Vous pouvez choisir un « verrou de "
+"sécurité » pour éviter toute utilisation accidentelle."
 
 #: prefs.js:1353 prefs.js:2023
 msgid "Single Click"
-msgstr ""
+msgstr "Simple clic"
 
 #: prefs.js:1354 prefs.js:2024
 msgid "Double Click"
-msgstr ""
+msgstr "Double clic"
 
 #: prefs.js:1355
 msgid "Ctrl Key + Click"
-msgstr ""
+msgstr "Touche Ctrl + clic"
 
 #: prefs.js:1368
 msgid "Sort Windows"
-msgstr ""
+msgstr "Trier les fenêtres"
 
 #: prefs.js:1369
 msgid ""
@@ -1167,48 +1344,53 @@ msgid ""
 "The stable sequence is determined by the order in which the windows were "
 "opened"
 msgstr ""
+"Trier les fenêtres de la vue d'ensemble différemment de leur position par "
+"défaut. La séquence stable est déterminée par l'ordre d'ouverture des "
+"fenêtres."
 
 #: prefs.js:1373
 msgid "Position (Default)"
-msgstr ""
+msgstr "Position (par défaut)"
 
 #: prefs.js:1374
 msgid "Most Recently Used"
-msgstr ""
+msgstr "Les plus récemment utilisées"
 
 #: prefs.js:1375
 msgid "Stable Sequence"
-msgstr ""
+msgstr "Séquence stable"
 
 #: prefs.js:1383
 msgid "Initial Window Selection"
-msgstr ""
+msgstr "Sélection de la fenêtre initiale"
 
 #: prefs.js:1384
 msgid ""
 "Automatically select a window in the overview and ignore the pointer to "
 "speed up keyboard navigation"
 msgstr ""
+"Sélectionnez automatiquement une fenêtre dans la vue d'ensemble et ignorez "
+"le pointeur pour accélérer la navigation au clavier."
 
 #: prefs.js:1388
 msgid "Pointer (Default)"
-msgstr ""
+msgstr "Pointeur (par défaut)"
 
 #: prefs.js:1389
 msgid "First"
-msgstr ""
+msgstr "En premier"
 
 #: prefs.js:1390
 msgid "Currently Focused"
-msgstr ""
+msgstr "Actuellement focalisé"
 
 #: prefs.js:1391
 msgid "Previously Focused"
-msgstr ""
+msgstr "Précédemment focalisé"
 
 #: prefs.js:1408
 msgid "Window Height Compensation"
-msgstr ""
+msgstr "Compensation de la hauteur de la fenêtre"
 
 #: prefs.js:1409
 msgid ""
@@ -1216,52 +1398,62 @@ msgid ""
 "relative to the tallest one. 0 keeps the original scale ratio, while 100 "
 "makes all thumbnails the same height"
 msgstr ""
+"Contrôle la quantité de compensation de hauteur pour les vignettes de "
+"fenêtre plus petites par rapport à la plus haute. 0 conserve le rapport "
+"d'échelle d'origine, tandis que 100 donne à toutes les vignettes la même "
+"hauteur."
 
 #: prefs.js:1425
 msgid "Secondary Button Click Action"
-msgstr ""
+msgstr "Action du clic sur le bouton secondaire"
 
 #: prefs.js:1426
 msgid "Allows you to add a secondary mouse click action to the window preview"
 msgstr ""
+"Vous permet d'ajouter une action de clic de souris secondaire à l'aperçu de "
+"la fenêtre."
 
 #: prefs.js:1430 prefs.js:1446 prefs.js:1462
 msgid "Activate Window (Default)"
-msgstr ""
+msgstr "Activer la fenêtre (par défaut)"
 
 #: prefs.js:1431 prefs.js:1447
 msgid "Close Window"
-msgstr ""
+msgstr "Fermer la fenêtre"
 
 #: prefs.js:1432 prefs.js:1448 prefs.js:1463
 msgid "Search For Same App Windows"
-msgstr ""
+msgstr "Rechercher parmi les fenêtres de la même application"
 
 #: prefs.js:1433 prefs.js:1449 prefs.js:1464
 msgid "Create Window Thumbnail/PiP (requires WTMB extension)"
-msgstr ""
+msgstr "Créer une vignette de fenêtre/PiP (exige l'extension WTMB)"
 
 #: prefs.js:1441
 msgid "Middle Button Click Action"
-msgstr ""
+msgstr "Action du clic de la molette"
 
 #: prefs.js:1442
 msgid "Allows you to add a middle mouse click action to the window preview"
 msgstr ""
+"Vous permet d'ajouter une action du clic de la molette à l'aperçu de la "
+"fenêtre."
 
 #: prefs.js:1457
 msgid "App Icon Click Action"
-msgstr ""
+msgstr "Action du clic sur une icône d'application"
 
 #: prefs.js:1458
 msgid ""
 "Select the action to take when the application icon on the window preview is "
 "clicked"
 msgstr ""
+"Sélectionnez l'action à effectuer lorsque l'icône de l'application dans "
+"l'aperçu de la fenêtre est cliquée."
 
 #: prefs.js:1472
 msgid "Always Activate Selected"
-msgstr ""
+msgstr "Toujours activer la sélection"
 
 #: prefs.js:1473
 msgid ""
@@ -1270,10 +1462,14 @@ msgid ""
 "Overview, place mouse pointer over a window, press Super again to activate "
 "the window"
 msgstr ""
+"Si cette option est activée, la fenêtre sélectionnée sera activée lorsque "
+"vous quitterez la vue d'ensemble, même sans cliquer. Exemple : appuyez sur "
+"Super pour ouvrir la vue d'ensemble, placez le pointeur de la souris sur une "
+"fenêtre, puis appuyez à nouveau sur Super pour l'activer."
 
 #: prefs.js:1489
 msgid "App Grid Search Mode"
-msgstr ""
+msgstr "Mode de recherche de la grille d'applications"
 
 #: prefs.js:1490
 msgid ""
@@ -1281,18 +1477,23 @@ msgid ""
 "The \"Filtered App Grid View\" option shows all resulting app icons sorted "
 "by usage in the app grid view instead of switching to the default search view"
 msgstr ""
+"Sélectionnez le comportement de la recherche lorsqu'elle est lancée depuis "
+"la grille d'applications. L'option « Affichage filtré de la grille "
+"d'applications » affiche toutes les icônes d'applications résultantes triées "
+"par utilisation dans la grille d'applications, au lieu de basculer vers la "
+"vue de recherche par défaut."
 
 #: prefs.js:1494
 msgid "Search View (Default)"
-msgstr ""
+msgstr "Vue de recherche (par défaut)"
 
 #: prefs.js:1495
 msgid "Filtered App Grid View"
-msgstr ""
+msgstr "Affichage filtré de la grille d'applications"
 
 #: prefs.js:1503
 msgid "Enable Fuzzy Match"
-msgstr ""
+msgstr "Activer la correspondance approximative"
 
 #: prefs.js:1504
 msgid ""
@@ -1300,10 +1501,14 @@ msgid ""
 "searching for and find \"Firefox\" even if you type \"ffx\". Works only for "
 "the App, Windows, Extensions and Recent files search providers"
 msgstr ""
+"L'activation de la correspondance approximative vous permet d'ignorer des "
+"lettres du motif recherché et de, par exemple, trouver « Firefox » même en "
+"tapant « ffx ». Fonctionne uniquement pour les moteurs de recherche "
+"d'applications, de fenêtres, d'extensions et de fichiers récents."
 
 #: prefs.js:1514
 msgid "Include Settings Panels in App Results"
-msgstr ""
+msgstr "Inclure les paramètres dans les résultats de recherche"
 
 #: prefs.js:1515
 msgid ""
@@ -1311,24 +1516,29 @@ msgid ""
 "option adds them alongside other apps, allowing you to access individual "
 "settings more quickly"
 msgstr ""
+"L'application Paramètres de GNOME propose des lanceurs pour tous ses "
+"panneaux/sections. Cette option les ajoute aux autres applications, vous "
+"permettant d'accéder plus rapidement à chaque paramètre."
 
 #: prefs.js:1525
 msgid "Animations"
-msgstr ""
+msgstr "Animations"
 
 #: prefs.js:1540
 msgid "Animation Speed"
-msgstr ""
+msgstr "Vitesse des animations"
 
 #: prefs.js:1541
 msgid ""
 "Adjusts the global animation speed in percentage of the default duration - "
 "higher value means slower animation"
 msgstr ""
+"Ajuste la vitesse d'animation globale en pourcentage de la durée par défaut. "
+"Une valeur plus élevée signifie une animation plus lente."
 
 #: prefs.js:1549
 msgid "App Grid Animation"
-msgstr ""
+msgstr "Animation de la grille d'applications"
 
 #: prefs.js:1550
 msgid ""
@@ -1336,26 +1546,30 @@ msgid ""
 "screen. You can choose the direction, keep the Default (direction will be "
 "selected automatically) or disable the animation if you don't like it"
 msgstr ""
+"Lorsque vous accédez à la grille d'applications, celle-ci s'anime depuis le "
+"bord de l'écran. Vous pouvez choisir la direction, conserver la valeur par "
+"défaut (la direction sera automatiquement sélectionnée) ou désactiver "
+"l'animation si elle ne vous convient pas."
 
 #: prefs.js:1556 prefs.js:1573
 msgid "Right to Left"
-msgstr ""
+msgstr "De droite à gauche"
 
 #: prefs.js:1557 prefs.js:1574
 msgid "Left to Right"
-msgstr ""
+msgstr "De gauche à droite"
 
 #: prefs.js:1558 prefs.js:1575
 msgid "Bottom to Top"
-msgstr ""
+msgstr "De bas en haut"
 
 #: prefs.js:1559 prefs.js:1576
 msgid "Top to Bottom"
-msgstr ""
+msgstr "De haut en bas"
 
 #: prefs.js:1566
 msgid "Search View Animation"
-msgstr ""
+msgstr "Animation de la vue de recherche"
 
 #: prefs.js:1567
 msgid ""
@@ -1363,50 +1577,61 @@ msgid ""
 "from the edge of the screen. You can choose the direction, keep the Default "
 "(currently Bottom to Top) or disable the animation if you don't like it."
 msgstr ""
+"Lorsque la recherche est activée, la vue de recherche et les résultats "
+"peuvent s'animer depuis le bord de l'écran. Vous pouvez choisir le sens, "
+"conserver la valeur par défaut (actuellement de bas en haut) ou désactiver "
+"l'animation si elle ne vous convient pas."
 
 #: prefs.js:1584
 msgid "Workspace Preview Animation"
-msgstr ""
+msgstr "Animation de l'aperçu des espaces de travail"
 
 #: prefs.js:1585
 msgid ""
 "When entering or leaving the App Grid, the workspace preview can animate to/"
 "from workspace thumbnails"
 msgstr ""
+"Lors de l'entrée ou de la sortie de la grille d'applications, l'aperçu des "
+"espaces de travail peut s'animer vers/depuis les vignettes des espaces de "
+"travail."
 
 #: prefs.js:1590
 msgid "Active Workspace Only"
-msgstr ""
+msgstr "Espace de travail actif uniquement"
 
 #: prefs.js:1591
 msgid "All Workspaces"
-msgstr ""
+msgstr "Tous les espaces de travail"
 
 #: prefs.js:1599
 msgid "Workspace Switcher"
-msgstr ""
+msgstr "Commutateur d'espace de travail"
 
 #: prefs.js:1605
 msgid "Wraparound"
-msgstr ""
+msgstr "Défilement circulaire"
 
 #: prefs.js:1606
 msgid "Continue from the last workspace to the first and vice versa"
 msgstr ""
+"Continuez le défilement du dernier espace de travail au premier et vice "
+"versa."
 
 #: prefs.js:1614
 msgid "Ignore Last (empty) Workspace"
-msgstr ""
+msgstr "Ignorer le dernier espace de travail (vide)"
 
 #: prefs.js:1615
 msgid ""
 "In Dynamic workspaces mode, there is always one empty workspace at the end. "
 "Switcher can ignore this last workspace"
 msgstr ""
+"En mode Espaces de travail dynamiques, il y a toujours un espace de travail "
+"vide à la fin. Le sélecteur peut ignorer ce dernier espace de travail."
 
 #: prefs.js:1623
 msgid "Workspace Switcher Animation"
-msgstr ""
+msgstr "Animation du commutateur d'espace de travail"
 
 #: prefs.js:1624
 msgid ""
@@ -1414,14 +1639,18 @@ msgid ""
 "switcher animation outside of the overview. The Static Background mode also "
 "keeps Conky and desktop icons on their place during switching."
 msgstr ""
+"Permet de désactiver le mouvement de l'arrière-plan du bureau lors du "
+"changement d'espace de travail en dehors de la vue d'ensemble. Le mode "
+"Arrière-plan statique maintient également les icônes Conky et du bureau à "
+"leur place lors du changement."
 
 #: prefs.js:1629
 msgid "Static Background"
-msgstr ""
+msgstr "Arrière-plan statique"
 
 #: prefs.js:1637
 msgid "Workspace Switcher Mode (Isolate Monitors)"
-msgstr ""
+msgstr "Mode de commutation de l'espace de travail (isoler les écrans)"
 
 #: prefs.js:1638
 msgid ""
@@ -1431,14 +1660,21 @@ msgid ""
 "on secondary monitors in order to simulate independent behavior. The current "
 "monitor is determined by the position of the mouse pointer"
 msgstr ""
+"Notez qu'il s'agit d'une solution de contournement, et non d'une "
+"fonctionnalité complète. GNOME Shell ne prend pas en charge les espaces de "
+"travail distincts pour chaque écran. V-Shell change donc d'espace de travail "
+"uniquement sur le moniteur principal et déplace les fenêtres d'un espace de "
+"travail à l'autre sur les écrans secondaires afin de simuler un comportement "
+"indépendant. Le moniteur actuel est déterminé par la position du pointeur de "
+"la souris."
 
 #: prefs.js:1643
 msgid "Current Monitor"
-msgstr ""
+msgstr "Écran actuel"
 
 #: prefs.js:1651
 msgid "Workspace Switcher Popup Mode"
-msgstr ""
+msgstr "Visibilité du popup du commutateur d'espace de travail"
 
 #: prefs.js:1652
 msgid ""
@@ -1447,22 +1683,26 @@ msgid ""
 "show it on the current monitor (the one with mouse pointer) instead of the "
 "primary."
 msgstr ""
+"Ce popup s'affiche lorsque vous changez d'espace de travail à l'aide d'un "
+"raccourci clavier ou d'un geste en dehors de la vue d'ensemble. Vous pouvez "
+"désactiver le popup ou l'afficher sur l'écran actuel (celui avec le pointeur "
+"de la souris) au lieu de l'écran principal."
 
 #: prefs.js:1657
 msgid "Show on Primary Monitor (Default)"
-msgstr ""
+msgstr "Afficher sur l'écran principal (par défaut)"
 
 #: prefs.js:1658
 msgid "Show on Current Monitor"
-msgstr ""
+msgstr "Afficher sur l'écran actuel"
 
 #: prefs.js:1666
 msgid "Notifications"
-msgstr ""
+msgstr "Notifications"
 
 #: prefs.js:1672
 msgid "Window Attention Handler"
-msgstr ""
+msgstr "Gestionnaire d'attention de fenêtre"
 
 #: prefs.js:1673
 msgid ""
@@ -1471,142 +1711,158 @@ msgid ""
 "(notification will be pushed into the message tray silently) or focus the "
 "source window immediately instead"
 msgstr ""
+"Lorsqu'une fenêtre requiert votre attention (souvent une nouvelle fenêtre), "
+"GNOME Shell affiche une notification. Vous pouvez désactiver l'affichage de "
+"ces messages (la notification sera automatiquement placée dans la barre des "
+"messages) ou focaliser immédiatement la fenêtre source."
 
 #: prefs.js:1677 prefs.js:1692
 msgid "Show Notifications (Default)"
-msgstr ""
+msgstr "Afficher les notifications (par défaut)"
 
 #: prefs.js:1678
 msgid "Disable Notification Popups"
-msgstr ""
+msgstr "Désactiver les notifications"
 
 #: prefs.js:1679
 msgid "Immediately Focus Window"
-msgstr ""
+msgstr "Basculer immédiatement sur la fenêtre"
 
 #: prefs.js:1687
 msgid "Favorites"
-msgstr ""
+msgstr "Favoris"
 
 #: prefs.js:1688
 msgid "Disable pin/unpin app notifications"
-msgstr ""
+msgstr "Désactiver les notifications d'applications épinglées/désépinglées."
 
 #: prefs.js:1693
 msgid "Disable Notifications"
-msgstr ""
+msgstr "Désactiver les notifications"
 
 #: prefs.js:1711
 msgid "Main App Grid"
-msgstr ""
+msgstr "Grille d'applications principale"
 
 #: prefs.js:1717
 msgid "Apps Sorting"
-msgstr ""
+msgstr "Tri des applications"
 
 #: prefs.js:1718
 msgid ""
 "Choose sorting method for the app grid. Note that sorting by usage ignores "
 "folders"
 msgstr ""
+"Choisissez la méthode de tri pour la grille d'applications. Notez que le tri "
+"par utilisation ignore les dossiers."
 
 #: prefs.js:1722 prefs.js:1892
 msgid "Custom (Default)"
-msgstr ""
+msgstr "Personnalisé (par défaut)"
 
 #: prefs.js:1723 prefs.js:1893
 msgid "Alphabet"
-msgstr ""
+msgstr "Par ordre alphabétique"
 
 #: prefs.js:1724
 msgid "Alphabet - Folders First"
-msgstr ""
+msgstr "Par ordre alphabétique - Dossiers en premier"
 
 #: prefs.js:1725
 msgid "Alphabet - Folders Last"
-msgstr ""
+msgstr "Par ordre alphabétique - Dossiers en dernier"
 
 #: prefs.js:1726
 msgid "Usage - No Folders"
-msgstr ""
+msgstr "Par utilisation - Pas de dossiers"
 
 #: prefs.js:1734
 msgid "Icon Size"
-msgstr ""
+msgstr "Taille des icônes"
 
 #: prefs.js:1735
 msgid ""
 "Allows to set a fixed app grid icon size and bypass the default adaptive "
 "algorithm"
 msgstr ""
+"Permet de définir une taille d'icône de la grille d'applications fixe et de "
+"contourner l'algorithme adaptatif par défaut."
 
 #: prefs.js:1740
 msgid "256"
-msgstr ""
+msgstr "256"
 
 #: prefs.js:1741
 msgid "224"
-msgstr ""
+msgstr "224"
 
 #: prefs.js:1742
 msgid "208"
-msgstr ""
+msgstr "208"
 
 #: prefs.js:1743
 msgid "192"
-msgstr ""
+msgstr "192"
 
 #: prefs.js:1744
 msgid "176"
-msgstr ""
+msgstr "176"
 
 #: prefs.js:1745
 msgid "160"
-msgstr ""
+msgstr "160"
 
 #: prefs.js:1746
 msgid "144"
-msgstr ""
+msgstr "144"
 
 #: prefs.js:1768
 msgid "Columns per Page (0 for adaptive grid)"
-msgstr ""
+msgstr "Colonnes par page (0 pour la grille adaptative)"
 
 #: prefs.js:1769
 msgid ""
 "Number of columns in the application grid. If set to 0, the number will be "
 "set automatically to fit the available width"
 msgstr ""
+"Nombre de colonnes dans la grille d'application. Si ce paramètre est défini "
+"sur 0, le nombre sera automatiquement ajusté à la largeur disponible."
 
 #: prefs.js:1785
 msgid "Rows per Page (0 for adaptive grid)"
-msgstr ""
+msgstr "Lignes par page (0 pour la grille adaptative)"
 
 #: prefs.js:1786
 msgid ""
 "Number of rows in the application grid. If set to 0, the number will be set "
 "automatically to fit the available height"
 msgstr ""
+"Nombre de lignes dans la grille d'applications. Si la valeur est 0, le "
+"nombre sera automatiquement ajusté à la hauteur disponible."
 
 #: prefs.js:1814
 msgid "App Grid Page Width Scale"
-msgstr ""
+msgstr "Échelle de largeur de page de la grille d'applications"
 
 #: prefs.js:1815
 msgid "Adjusts maximum app grid page width relative to the available space"
 msgstr ""
+"Ajuste la largeur maximale de la page de la grille de l'applications par "
+"rapport à l'espace disponible."
 
 #: prefs.js:1837
 msgid "App Grid Page Height Scale"
-msgstr ""
+msgstr "Échelle de hauteur de page de la grille d'applications"
 
 #: prefs.js:1838
 msgid "Adjusts maximum app grid page height relative to the available space"
 msgstr ""
+"Ajuste la hauteur maximale de la page de la grille d'applications par "
+"rapport à l'espace disponible."
 
 #: prefs.js:1857
 msgid "Grid Spacing"
-msgstr ""
+msgstr "Espacement de la grille"
 
 #: prefs.js:1858
 msgid ""
@@ -1614,10 +1870,14 @@ msgid ""
 "However, the main grid automatically adjusts the spacing based on the grid "
 "and available space"
 msgstr ""
+"V-Shell utilise cette valeur pour calculer les dimensions de la grille pour "
+"les options adaptatives. Cependant, la grille principale ajuste "
+"automatiquement l'espacement en fonction de la grille et de l'espace "
+"disponible."
 
 #: prefs.js:1868
 msgid "Allow Incomplete Pages"
-msgstr ""
+msgstr "Autoriser les pages incomplètes"
 
 #: prefs.js:1869
 msgid ""
@@ -1625,26 +1885,30 @@ msgid ""
 "fill any empty slot left after an icon was (re)moved (to a folder for "
 "example)"
 msgstr ""
+"Si cette option est désactivée, les icônes de la page suivante (le cas "
+"échéant) sont automatiquement déplacées pour remplir tout emplacement vide "
+"laissé après qu'une icône ait été déplacée ou retirée (vers un dossier par "
+"exemple)."
 
 #: prefs.js:1881
 msgid "App Folders"
-msgstr ""
+msgstr "Dossiers d'applications"
 
 #: prefs.js:1887
 msgid "Folder Apps Sorting"
-msgstr ""
+msgstr "Tri des dossiers d'applications"
 
 #: prefs.js:1888
 msgid "Choose sorting method for app folders"
-msgstr ""
+msgstr "Choisissez la méthode de tri pour les dossiers d'applications"
 
 #: prefs.js:1894
 msgid "Usage"
-msgstr ""
+msgstr "Utilisation"
 
 #: prefs.js:1902
 msgid "Active Icons in Folder Preview"
-msgstr ""
+msgstr "Icônes cliquables dans l'aperçu du dossier"
 
 #: prefs.js:1903
 msgid ""
@@ -1652,10 +1916,15 @@ msgid ""
 "activate or even drag them directly, without having to open the folder "
 "first. This option also affects the app grid default icon size"
 msgstr ""
+"Si cette option est activée, les icônes de l'aperçu du dossier se comportent "
+"comme des icônes normales. Vous pouvez cliquer dessus ou même les faire "
+"glisser directement, sans avoir à ouvrir le dossier au préalable. Cette "
+"option affecte également la taille par défaut des icônes de la grille "
+"d'applications."
 
 #: prefs.js:1914
 msgid "App Folder Preview Grid Size"
-msgstr ""
+msgstr "Taille de la grille d'aperçu du dossier d'applications"
 
 #: prefs.js:1915
 msgid ""
@@ -1663,32 +1932,37 @@ msgid ""
 "automatically switches between 2x2 and 3x3 grid depending on the number of "
 "icons in the folder"
 msgstr ""
+"Définit une taille de grille (nombre d'icônes) dans l'aperçu des icônes du "
+"dossier. Les options 3x3 basculent automatiquement entre la grille 2x2 et "
+"3x3 en fonction du nombre d'icônes dans le dossier."
 
 #: prefs.js:1919
 msgid "2x2 (Default)"
-msgstr ""
+msgstr "2x2 (par défaut)"
 
 #: prefs.js:1920
 msgid "3x3 for 5+ apps"
-msgstr ""
+msgstr "3x3 pour 5 applications ou plus"
 
 #: prefs.js:1921
 msgid "3x3 for 9+ apps"
-msgstr ""
+msgstr "3x3 pour 9 applications ou plus"
 
 #: prefs.js:1929
 msgid "Folder Icon Size"
-msgstr ""
+msgstr "Taille des icônes du dossier"
 
 #: prefs.js:1930
 msgid ""
 "Allows to set a fixed icon size and bypass the default adaptive algorithm in "
 "the open folder dialog"
 msgstr ""
+"Permet de définir une taille d'icône fixe et de contourner l'algorithme "
+"adaptatif par défaut dans la boîte de dialogue d'ouverture de dossier."
 
 #: prefs.js:1948
 msgid "Maximum Number Of Columns (0 for automatic)"
-msgstr ""
+msgstr "Nombre maximal de colonnes (0 pour automatique)"
 
 #: prefs.js:1949
 msgid ""
@@ -1697,10 +1971,15 @@ msgid ""
 "on available space. The actual folder grid dimensions will be determined by "
 "the number of items within the set limits"
 msgstr ""
+"Spécifie le nombre maximal de colonnes par page dans les grilles de "
+"dossiers. Si vous laissez la valeur à 0, le nombre maximal de colonnes sera "
+"calculé en fonction de l'espace disponible. Les dimensions réelles de la "
+"grille de dossiers seront déterminées par le nombre d'éléments dans les "
+"limites définies."
 
 #: prefs.js:1965
 msgid "Maximum Number Of Rows (0 for automatic)"
-msgstr ""
+msgstr "Nombre maximal de lignes (0 pour automatique)"
 
 #: prefs.js:1966
 msgid ""
@@ -1709,28 +1988,35 @@ msgid ""
 "available space. The actual folder grid dimensions will be determined by the "
 "number of items within the set limits"
 msgstr ""
+"Spécifie le nombre maximal de lignes par page dans les grilles de dossiers. "
+"Si vous laissez la valeur à 0, le nombre maximal de lignes sera calculé en "
+"fonction de l'espace disponible. Les dimensions réelles de la grille de "
+"dossiers seront déterminées par le nombre d'éléments dans les limites "
+"définies."
 
 #: prefs.js:1984
 msgid "Folder Grid Spacing"
-msgstr ""
+msgstr "Espacement de la grille des dossiers"
 
 #: prefs.js:1985
 msgid "Adjusts the spacing between icons in a folder grid"
-msgstr ""
+msgstr "Ajuste l'espacement entre les icônes dans une grille de dossiers."
 
 #: prefs.js:1995
 msgid "Center Open Folders"
-msgstr ""
+msgstr "Centrer les dossiers ouverts"
 
 #: prefs.js:1996
 msgid ""
 "App folders may open in the center of the screen or be centered on the "
 "folder's source icon"
 msgstr ""
+"Les dossiers d'applications peuvent s'ouvrir au centre de l'écran ou être "
+"centrés sur l'icône source du dossier."
 
 #: prefs.js:2006
 msgid "Show Close Folder Button"
-msgstr ""
+msgstr "Afficher un bouton pour fermer le dossier"
 
 #: prefs.js:2007
 msgid ""
@@ -1738,28 +2024,34 @@ msgid ""
 "clicking outside of it. However, in some situations, the close button can be "
 "useful"
 msgstr ""
+"Le dossier peut être fermé par un clic droit sur la boîte de dialogue ou par "
+"un clic gauche en dehors de celle-ci. Cependant, dans certaines situations, "
+"le bouton Fermer peut s'avérer utile."
 
 #: prefs.js:2017
 msgid "Remove Folder Button"
-msgstr ""
+msgstr "Bouton pour supprimer le dossier"
 
 #: prefs.js:2018
 msgid ""
 "The Remove Folder button lets you move all icons from the folder to the main "
 "app grid and delete the folder at once"
 msgstr ""
+"Le bouton Supprimer le dossier vous permet de déplacer toutes les icônes du "
+"dossier vers la grille principale de l'application et de supprimer le "
+"dossier en une seule fois."
 
 #: prefs.js:2022
 msgid "Hide (Default)"
-msgstr ""
+msgstr "Masquer (par défaut)"
 
 #: prefs.js:2034
 msgid "Content and Behavior"
-msgstr ""
+msgstr "Contenu et comportement"
 
 #: prefs.js:2040
 msgid "App Grid Content"
-msgstr ""
+msgstr "Contenu de la grille d'applications"
 
 #: prefs.js:2041
 msgid ""
@@ -1767,50 +2059,55 @@ msgid ""
 "them in the grid or remove also running applications. Option \"Favorites and "
 "Running First\" only works with the Alphabet and Usage sorting"
 msgstr ""
+"Le Shell par défaut supprime les applications favorites. Cette option permet "
+"de les dupliquer dans la grille ou de supprimer également les applications "
+"en cours d'exécution. L'option « Favoris et applications en cours "
+"d'exécution en premier » fonctionne uniquement avec les tris par ordre "
+"alphabétique et par utilisation."
 
 #: prefs.js:2045
 msgid "Include All"
-msgstr ""
+msgstr "Tout inclure"
 
 #: prefs.js:2046
 msgid "Include All - Favorites and Running First"
-msgstr ""
+msgstr "Tout inclure - Favoris et applications en cours d'exécution en premier"
 
 #: prefs.js:2047
 msgid "Exclude Favorites (Default)"
-msgstr ""
+msgstr "Exclure les favoris (par défaut)"
 
 #: prefs.js:2048
 msgid "Exclude Running"
-msgstr ""
+msgstr "Exclure les applications en cours d'exécution"
 
 #: prefs.js:2049
 msgid "Exclude Favorites and Running"
-msgstr ""
+msgstr "Exclure les favoris et les applications en cours d'exécution"
 
 #: prefs.js:2057
 msgid "App Labels Behavior"
-msgstr ""
+msgstr "Comportement des étiquettes d'application"
 
 #: prefs.js:2058
 msgid "Choose how and when to display app names"
-msgstr ""
+msgstr "Choisissez comment et quand afficher le nom des applications."
 
 #: prefs.js:2062
 msgid "Ellipsized - Expand Selected (Default)"
-msgstr ""
+msgstr "Ellipsé - Développer la sélection (par défaut)"
 
 #: prefs.js:2063
 msgid "Always Expanded"
-msgstr ""
+msgstr "Toujours développé"
 
 #: prefs.js:2064
 msgid "Hidden - Show Selected Only"
-msgstr ""
+msgstr "Masqué - Afficher uniquement la sélection"
 
 #: prefs.js:2072
 msgid "Show Page Navigation Buttons"
-msgstr ""
+msgstr "Afficher les boutons de navigation de la page"
 
 #: prefs.js:2073
 msgid ""
@@ -1818,24 +2115,30 @@ msgid ""
 "get more space for icons. The buttons are hidden automatically when there is "
 "only one page in the app grid"
 msgstr ""
+"Vous pouvez masquer les boutons de navigation si vous n'en avez pas besoin "
+"ou si vous souhaitez libérer de l'espace pour les icônes. Les boutons sont "
+"automatiquement masqués lorsqu'il n'y a qu'une seule page dans la grille "
+"d'applications."
 
 #: prefs.js:2083
 msgid "Remember Page"
-msgstr ""
+msgstr "Mémoriser la page"
 
 #: prefs.js:2084
 msgid ""
 "Disables the default behavior in which app grid and folders always open on "
 "the first page"
 msgstr ""
+"Désactive le comportement par défaut dans lequel la grille d'applications et "
+"les dossiers s'ouvrent toujours sur la première page."
 
 #: prefs.js:2097
 msgid "Performance"
-msgstr ""
+msgstr "Performances"
 
 #: prefs.js:2103
 msgid "Smooth App Grid Animations"
-msgstr ""
+msgstr "Animations de la grille d'applications fluides"
 
 #: prefs.js:2104
 msgid ""
@@ -1844,38 +2147,50 @@ msgid ""
 "the first time. If enabled, the session startup needs a little bit more time "
 "to finish and necessary memory will be allocated at this time"
 msgstr ""
+"Cette option permet à V-Shell de pré-créer la grille et les dossiers "
+"d'applications au démarrage de la session afin d'éviter les animations "
+"saccadées lors de leur première utilisation. Si elle est activée, le "
+"démarrage de la session prend un peu plus de temps et la mémoire nécessaire "
+"est allouée à ce moment-là."
 
 #: prefs.js:2114
 msgid "Reset"
-msgstr ""
+msgstr "Réinitialiser"
 
 #: prefs.js:2119
 msgid "Reset App Grid Layout"
-msgstr ""
+msgstr "Réinitialiser la disposition de la grille d'applications"
 
 #: prefs.js:2120
 msgid ""
 "Removes all stored app grid positions, after reset icons will be sorted "
 "alphabetically, except folder contents"
 msgstr ""
+"Supprime toutes les positions de la grille d'applications enregistrées. "
+"Après la réinitialisation, les icônes seront triées par ordre alphabétique, "
+"à l'exception du contenu des dossiers."
 
 #: prefs.js:2128
 msgid "Remove App Grid Folders"
-msgstr ""
+msgstr "Supprimer les dossiers de la grille d'applications"
 
 #: prefs.js:2129
 msgid "Removes all folders, folder apps will move to the root grid"
 msgstr ""
+"Supprime tous les dossiers, les applications de dossier seront déplacées "
+"vers la grille racine"
 
 #: prefs.js:2145
 msgid "Optional Modules"
-msgstr ""
+msgstr "Modules optionnels"
 
 #: prefs.js:2151
 msgid ""
 "Windows Search Provider - Moved from V-Shell to the standalone \"WSP\" "
 "extension"
 msgstr ""
+"Windows Search Provider  - Déplacé de V-Shell vers l'extension autonome "
+"« WSP »"
 
 #: prefs.js:2152
 msgid ""
@@ -1888,12 +2203,23 @@ msgid ""
 "pressing the Space hotkey in the overview, or clicking dash icon) to "
 "suppress results from other search providers"
 msgstr ""
+"REMARQUE : Ce module est une extension autonome dotée de nouvelles "
+"fonctionnalités. Cliquez pour en savoir plus. Les options V-Shell associées "
+"restent disponibles si vous installez l'extension WSP.\n"
+"\n"
+"WSP ajoute des fenêtres ouvertes aux résultats de recherche. Vous pouvez "
+"rechercher des noms d'applications et des titres de fenêtres. Vous pouvez "
+"également utiliser « wq// » ou un préfixe personnalisé (en appuyant sur la "
+"barre d'espace dans la vue d'ensemble ou en cliquant sur l'icône du Dash) "
+"pour masquer les résultats d'autres moteurs de recherche."
 
 #: prefs.js:2159
 msgid ""
 "Extensions Search Provider - Moved from V-Shell to the standalone \"ESP\" "
 "extension"
 msgstr ""
+"Extensions Search Provider  - Déplacé de V-Shell vers l'extension autonome "
+"« ESP »"
 
 #: prefs.js:2160
 msgid ""
@@ -1906,12 +2232,22 @@ msgid ""
 "overview, or clicking dash icon) to suppress results from other search "
 "providers"
 msgstr ""
+"REMARQUE : Ce module est une extension autonome avec de nouvelles "
+"fonctionnalités. Cliquez pour en savoir plus. Les options V-Shell associées "
+"restent disponibles si vous installez l'extension ESP.\n"
+"\n"
+"ESP ajoute des extensions aux résultats de recherche. Vous pouvez également "
+"utiliser « eq// » ou un préfixe personnalisé (en appuyant sur Ctrl + Maj + "
+"Espace dans la vue d'ensemble ou en cliquant sur l'icône du Dash) pour "
+"masquer les résultats d'autres moteurs de recherche."
 
 #: prefs.js:2167
 msgid ""
 "Window Thumbnails (PiP) - Moved from V-Shell to the standalone \"WTMB\" "
 "extension"
 msgstr ""
+"Window Thumbnails (PiP) - Déplacé de V-Shell vers l'extension autonome "
+"« WTMB »"
 
 #: prefs.js:2168
 msgid ""
@@ -1922,105 +2258,120 @@ msgid ""
 "WTMB allows the creation of Picture-in-Picture like window thumbnails that "
 "you can use for monitoring of windows on another workspace"
 msgstr ""
+"REMARQUE : Ce module est une extension autonome dotée de nouvelles "
+"fonctionnalités. Cliquez pour en savoir plus. Les options V-Shell associées "
+"restent disponibles si vous installez l'extension WTMB.\n"
+"\n"
+"WTMB permet de créer des vignettes de fenêtres de type « Picture-in-"
+"Picture » ​​(image dans l'image) pour surveiller les fenêtres d'un autre "
+"espace de travail."
 
 #: prefs.js:2175
 msgid ""
 "Built-in Modules (allows to disable modules that conflict with another "
 "extension)"
 msgstr ""
+"Modules intégrés (permet de désactiver les modules qui entrent en conflit "
+"avec une autre extension)"
 
 #: prefs.js:2181
 msgid "AppDisplay / IconGrid"
-msgstr ""
+msgstr "AppDisplay/IconGrid"
 
 #: prefs.js:2182
 msgid "App grid customization and options"
-msgstr ""
+msgstr "Personnalisation et options de la grille d'applications."
 
 #: prefs.js:2190
 msgid "AppFavorites"
-msgstr ""
+msgstr "AppFavorites"
 
 #: prefs.js:2191
 msgid "Pin/unpin app notification options"
-msgstr ""
+msgstr "Options de notification d'application pour épingler/désépingler."
 
 #: prefs.js:2200
 msgid "Dash customization and options, support for vertical orientation"
 msgstr ""
+"Personnalisation et options du Dash, prise en charge de l'orientation "
+"verticale."
 
 #: prefs.js:2209
 msgid "Hot corner options"
-msgstr ""
+msgstr "Options de coin actif."
 
 #: prefs.js:2217
 msgid "MessageTray"
-msgstr ""
+msgstr "MessageTray"
 
 #: prefs.js:2218
 msgid "Notification position options"
-msgstr ""
+msgstr "Options de position des notifications."
 
 #: prefs.js:2226
 msgid "OsdWindow"
-msgstr ""
+msgstr "OsdWindow"
 
 #: prefs.js:2227
 msgid "OSD position options"
-msgstr ""
+msgstr "Options de position du popup OSD."
 
 #: prefs.js:2235
 msgid "OverlayKey"
-msgstr ""
+msgstr "OverlayKey"
 
 #: prefs.js:2236
 msgid "Overlay (Super/Window) key options"
-msgstr ""
+msgstr "Options de la touche de superposition (Super/Windows)."
 
 #: prefs.js:2245
 msgid "Panel options"
-msgstr ""
+msgstr "Options du panneau."
 
 #: prefs.js:2254
 msgid "Search view and app search provider customization and options"
 msgstr ""
+"Personnalisation et options de la vue de recherche et du fournisseur de "
+"recherche d'applications."
 
 #: prefs.js:2262
 msgid "SearchController"
-msgstr ""
+msgstr "SearchController"
 
 #: prefs.js:2263
 msgid "Escape key behavior options in the overview"
-msgstr ""
+msgstr "Options du comportement de la touche Échap dans la vue d'ensemble."
 
 #: prefs.js:2271
 msgid "SwipeTracker"
-msgstr ""
+msgstr "SwipeTracker"
 
 #: prefs.js:2272
 msgid "Gestures for vertical workspace orientation"
-msgstr ""
+msgstr "Gestes pour l'orientation verticale des espaces de travail."
 
 #: prefs.js:2280
 msgid "WindowAttentionHandler"
-msgstr ""
+msgstr "WindowAttentionHandler"
 
 #: prefs.js:2281
 msgid "Window attention handler options"
-msgstr ""
+msgstr "Options du gestionnaire d'attention de fenêtre."
 
 #: prefs.js:2289
 msgid "WindowManager"
-msgstr ""
+msgstr "WindowManager"
 
 #: prefs.js:2290
 msgid ""
 "Fixes an upstream bug in the minimization animation of a full-screen window"
 msgstr ""
+"Corrige un bug en amont dans l'animation de minimisation d'une fenêtre en "
+"plein écran."
 
 #: prefs.js:2298
 msgid "WindowPreview"
-msgstr ""
+msgstr "WindowPreview"
 
 #: prefs.js:2299
 msgid ""
@@ -2028,40 +2379,49 @@ msgid ""
 "errors when you close a window from the overview or exit the overview with a "
 "gesture when any window is selected"
 msgstr ""
+"Options d'aperçu de la fenêtre, corrige un bug en amont qui remplit le "
+"journal système d'erreurs lorsque vous fermez une fenêtre à partir de la vue "
+"d'ensemble ou quittez la vue d'ensemble avec un geste lorsqu'une fenêtre est "
+"sélectionnée."
 
 #: prefs.js:2307
 msgid "Workspace"
-msgstr ""
+msgstr "Espaces de travail"
 
 #: prefs.js:2308
 msgid ""
 "Fixes workspace preview allocations for vertical workspaces orientation and "
 "window scaling in static overview modes"
 msgstr ""
+"Corrige les allocations d'aperçu de l'espace de travail pour l'orientation "
+"des espaces de travail verticaux et la mise à l'échelle des fenêtres dans "
+"les modes d'aperçu statiques."
 
 #: prefs.js:2316
 msgid "WorkspaceAnimation"
-msgstr ""
+msgstr "WorkspaceAnimation"
 
 #: prefs.js:2317
 msgid "Static workspace animation option"
-msgstr ""
+msgstr "Option d'animation de l'espace de travail statique."
 
 #: prefs.js:2325
 msgid "WorkspaceSwitcherPopup"
-msgstr ""
+msgstr "WorkspaceSwitcherPopup"
 
 #: prefs.js:2326
 msgid "Workspace switcher popup orientation and position options"
 msgstr ""
+"Options d'orientation et de position du popup du commutateur d'espace de "
+"travail."
 
 #: prefs.js:2342
 msgid "Keyboard"
-msgstr ""
+msgstr "Clavier"
 
 #: prefs.js:2348
 msgid "Override Page Up/Down Shortcuts"
-msgstr ""
+msgstr "Remplacer les raccourcis page précédente/page suivante."
 
 #: prefs.js:2349
 msgid ""
@@ -2069,14 +2429,17 @@ msgid ""
 "keyboard shortcuts for the current workspace orientation. If you encounter "
 "any issues, check the configuration in the dconf editor"
 msgstr ""
+"Cette option remplace automatiquement les raccourcis clavier (Maj + Super + "
+"Page précédente/suivante) pour l'orientation actuelle de l'espace de "
+"travail. En cas de problème, vérifiez la configuration dans l'Éditeur dconf."
 
 #: prefs.js:2357
 msgid "Workarounds / Hacks"
-msgstr ""
+msgstr "Solutions de contournement/Hacks"
 
 #: prefs.js:2363
 msgid "Delay at Startup"
-msgstr ""
+msgstr "Retarder au démarrage"
 
 #: prefs.js:2364
 msgid ""
@@ -2086,20 +2449,30 @@ msgid ""
 "is complete. It will activate automatically when Dash to Dock, Ubuntu Dock "
 "or Dash to Panel extensions are detected."
 msgstr ""
+"Si vous rencontrez des problèmes au démarrage de GNOME Shell après la "
+"connexion, pouvant être dus à une incompatibilité de V-Shell avec une autre "
+"extension, essayez d'activer cette option. Lorsqu'elle est activée, V-Shell "
+"est activé une fois le démarrage terminé. Elle s'active automatiquement "
+"lorsque les extensions Dash to Dock, Ubuntu Dock ou Dash to Panel sont "
+"détectées."
 
 #: prefs.js:2372
 msgid "Fix New Window Not In Focus"
-msgstr ""
+msgstr "Réparer les nouvelles fenêtres non focalisées"
 
 #: prefs.js:2373
 msgid ""
 "If you often find that the app window you open from the Activities overview "
 "does not get focus, try enabling this option."
 msgstr ""
+"Si vous constatez souvent que la fenêtre de l’application que vous ouvrez à "
+"partir de la vue d'ensemble des Activités n’est pas focalisée, essayez "
+"d’activer cette option."
 
 #: prefs.js:2381
 msgid "Fix New Window Not On Current Monitor (experimental)"
 msgstr ""
+"Correction des nouvelles fenêtres absentes de l'écran actuel (expérimental)"
 
 #: prefs.js:2382
 msgid ""
@@ -2109,121 +2482,130 @@ msgid ""
 "pointer. However, this is a workaround, and some windows may override it, "
 "moving the window back to the previous monitor during initialization"
 msgstr ""
+"Si vous utilisez plusieurs écrans, vous risquez de rencontrer le problème de "
+"l'ouverture de nouvelles fenêtres sur un écran différent de celui prévu. "
+"Cette option déplace ces fenêtres vers l'écran actuel, déterminé par la "
+"position du pointeur de la souris. Cependant, il s'agit d'une solution de "
+"contournement, et certaines fenêtres peuvent ignorer cette option, replaçant "
+"la fenêtre sur l'écran précédent lors de l'initialisation."
 
 #: prefs.js:2405
 msgid "Version"
-msgstr ""
+msgstr "Version"
 
 #: prefs.js:2411
 msgid "Reset all options"
-msgstr ""
+msgstr "Réinitialiser toutes les options"
 
 #: prefs.js:2412
 msgid "Reset all options to their default values"
-msgstr ""
+msgstr "Réinitialiser toutes les options à leurs valeurs par défaut."
 
 #: prefs.js:2418
 msgid "Links"
-msgstr ""
+msgstr "Liens"
 
 #: prefs.js:2422
 msgid "Homepage"
-msgstr ""
+msgstr "Page d'accueil"
 
 #: prefs.js:2423
 msgid "Source code and more info about this extension"
-msgstr ""
+msgstr "Code source et plus d'informations sur cette extension."
 
 #: prefs.js:2428
 msgid "Changelog"
-msgstr ""
+msgstr "Journal des modifications"
 
 #: prefs.js:2429
 msgid "See what's changed."
-msgstr ""
+msgstr "Voyez ce qui a changé."
 
 #: prefs.js:2434
 msgid "GNOME Extensions"
-msgstr ""
+msgstr "Extensions GNOME"
 
 #: prefs.js:2435
 msgid "Rate and comment V-Shell on the GNOME Extensions site"
-msgstr ""
+msgstr "Notez et commentez V-Shell sur le site Extensions GNOME."
 
 #: prefs.js:2440
 msgid "Report a bug or suggest new feature"
-msgstr ""
+msgstr "Signaler un bug ou suggérer une nouvelle fonctionnalité"
 
 #: prefs.js:2441
 msgid "Help me to help you!"
-msgstr ""
+msgstr "Aidez-moi à vous aider !"
 
 #: prefs.js:2446
 msgid "Buy Me a Coffee"
-msgstr ""
+msgstr "Achetez moi un café"
 
 #: prefs.js:2447
 msgid "Enjoying V-Shell? Consider supporting it by buying me a coffee!"
-msgstr ""
+msgstr "Vous appréciez V-Shell ? Soutenez-la en m'offrant un café !"
 
 #: extension.js:567
 #, javascript-format
 msgid "Profile %d has been updated"
-msgstr ""
+msgstr "Le profil %d a été mis à jour"
 
 #: lib/dash.js:1002
 msgid "Force Quit"
-msgstr ""
+msgstr "Forcer à quitter"
 
 #: lib/dash.js:1011
 #, javascript-format
 msgid "Close %d Windows on Current Workspace"
-msgstr ""
+msgstr "Fermer %d fenêtre(s) de l'espace de travail actuel"
 
 #: lib/dash.js:1030
 msgid "Move App to Current Workspace [Shift + Click]"
-msgstr ""
+msgstr "Déplacer l'application vers l'espace de travail actuel [Shift + clic]"
 
 #: lib/dash.js:1040
 msgid "Create Window Thumbnail (PiP)"
-msgstr ""
+msgstr "Créer une vignette de fenêtre (PiP)"
 
 #: lib/util.js:723
 msgid "Updating V-Shell"
-msgstr ""
+msgstr "Mise à jour de V-Shell"
 
 #: lib/search.js:372
 msgid "Searching…"
-msgstr ""
+msgstr "Recherche..."
 
 #: lib/search.js:374
 msgid "No results."
-msgstr ""
+msgstr "Aucun résultat"
 
 #: lib/optionsFactory.js:297
 msgid "Reset profile to defaults"
-msgstr ""
+msgstr "Réinitialiser le profil aux valeurs par défaut"
 
 #: lib/optionsFactory.js:305
 msgid "GNOME 3 Layout (Vertical WS)"
-msgstr ""
+msgstr "Disposition GNOME 3 (espaces de travail verticaux)"
 
 #: lib/optionsFactory.js:306
 msgid "GNOME 4x Layout, Bottom Hot Edge (Horizontal WS)"
 msgstr ""
+"Disposition GNOME 4x, bord inférieur actif (espaces de travail horizontaux)"
 
 #: lib/optionsFactory.js:307
 msgid "Top Left Hot Corner Centric (Vertical WS)"
-msgstr ""
+msgstr "Coin actif supérieur gauche centré (espaces de travail verticaux)"
 
 #: lib/optionsFactory.js:308
 msgid "Dock-Like Overview, Bottom Hot Edge (Horizontal WS)"
 msgstr ""
+"Vue d'ensemble de type Dock, bord actif inférieur (espaces de travail "
+"horizontaux)"
 
 #: lib/optionsFactory.js:330
 msgid "Load profile"
-msgstr ""
+msgstr "Charger le profil"
 
 #: lib/optionsFactory.js:339
 msgid "Save current settings into this profile"
-msgstr ""
+msgstr "Enregistrer les paramètres actuels dans ce profil"
