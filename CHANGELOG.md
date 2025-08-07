@@ -11,11 +11,11 @@
 - Direct overview transition between desktop and app grid included unneccessary transition to window picker state
 - Search view transitions
 - Reduced probability of duplicate GObject class names leading to random errors (#243)
+- Performance isues in overview when option *Sort Windows* by *Most Recently Used* was enabled
 
 **Changed:**
 - Hotkeys `Super + Tab` always switches workspaces, even when secondary monitor is connected, `Alt + Tab` switches between monitors
 - App icon action *Move App to Current Workspace* now moves the windows to the monitor with the mouse pointer
-- Scaling of adjacent workspace previews during switch animation has been disabled to improve performance
 - Refactored and optimized V-Shell-specific overview transitions
 
 
