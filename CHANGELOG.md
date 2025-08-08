@@ -9,9 +9,10 @@
 **Fixed:**
 - Gestures for switching workspaces ignored the *Workspace Switcher Mode* > *Current Monitor* option (fixed only for desktop switcher, stil unsupported in overview)
 - Direct overview transition between desktop and app grid included unneccessary transition to window picker state
-- Search view transitions
+- Search view transitions and visibility
 - Reduced probability of duplicate GObject class names leading to random errors (#243)
 - Performance isues in overview when option *Sort Windows* by *Most Recently Used* was enabled
+- Settings window not updating options sensitivity on module state changed
 
 **Changed:**
 - Hotkeys `Super + Tab` always switches workspaces, even when secondary monitor is connected, `Alt + Tab` switches between monitors
