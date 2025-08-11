@@ -1,5 +1,5 @@
 ## Changelog:
-### v48.10 (not yet released)
+### v48.10 / 49.0 (not yet released)
 **Added:**
 - Keyboard shortcuts in Overview:
   - `Ctrl + Shift + Arrow` to move window directly to an adjacent monitor
@@ -13,6 +13,7 @@
 - Reduced probability of duplicate GObject class names leading to random errors (#243)
 - Performance isues in overview when option *Sort Windows* by *Most Recently Used* was enabled
 - Settings window not updating options sensitivity on module state changed
+- Multi-line app grid icon name in the bottom row can be clipped
 
 **Changed:**
 - Hotkeys `Super + Tab` always switches workspaces, even when secondary monitor is connected, `Alt + Tab` switches between monitors
