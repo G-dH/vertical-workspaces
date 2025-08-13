@@ -642,6 +642,7 @@ export default class VShell extends Extension.Extension {
             this._updateOverrides();
             break;
         case 'workspace-switcher-animation':
+        case 'ws-switcher-mode':
             Me.Modules.workspaceAnimationModule.update();
             break;
         case 'search-width-scale':
@@ -664,9 +665,6 @@ export default class VShell extends Extension.Extension {
             break;
         case 'always-activate-selected-window':
             Me.Modules.windowPreviewModule.update();
-            break;
-        case 'ws-switcher-mode':
-            Me.Modules.windowManagerModule.update();
             break;
         case 'new-window-monitor-fix':
             this._updateNewWindowConnection();
