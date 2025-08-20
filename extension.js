@@ -277,7 +277,7 @@ export default class VShell extends Extension.Extension {
         controls._thumbnailsBox.scale_y = 1;
         controls._thumbnailsBox.opacity = 255;
 
-        controls._searchEntry.visible = true;
+        controls._searchEntryBin.visible = true;
         controls._searchController._searchResults.opacity = 255;
         Main.layoutManager.panelBox.translationY = 0;
     }
@@ -474,8 +474,6 @@ export default class VShell extends Extension.Extension {
         if (!Main.sessionMode.isLocked)
             this._sessionLockActive = false;
 
-        if (!reset && !Main.layoutManager._startingUp)
-            Main.overview._overview.controls.setInitialTranslations();
         if (this._sessionLockActive)
             Main.layoutManager.panelBox.translation_y = 0;
     }
@@ -592,7 +590,7 @@ export default class VShell extends Extension.Extension {
         else
             Me.Modules.workspaceModule.setWindowPreviewMaxScale(0.95);
 
-        Main.overview.searchEntry.visible = opt.SHOW_SEARCH_ENTRY;
+        Main.overview._overview.controls._searchEntryBin.visible = opt.SHOW_SEARCH_ENTRY;
         Main.overview.searchEntry.opacity = 255;
         St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
 
@@ -644,6 +642,7 @@ export default class VShell extends Extension.Extension {
             this._updateOverrides();
             break;
         case 'workspace-switcher-animation':
+        case 'ws-switcher-mode':
             Me.Modules.workspaceAnimationModule.update();
             break;
         case 'search-width-scale':
@@ -666,9 +665,6 @@ export default class VShell extends Extension.Extension {
             break;
         case 'always-activate-selected-window':
             Me.Modules.windowPreviewModule.update();
-            break;
-        case 'ws-switcher-mode':
-            Me.Modules.windowManagerModule.update();
             break;
         case 'new-window-monitor-fix':
             this._updateNewWindowConnection();

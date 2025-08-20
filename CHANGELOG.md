@@ -1,5 +1,27 @@
 ## Changelog:
-### v48.9 (not yet released)
+### v48.10 / 49.0 (not yet released)
+**Added:**
+- Keyboard shortcuts in Overview:
+  - `Ctrl + Shift + Arrow` to move window directly to an adjacent monitor
+  - The search entry is always visible in the app grid view when app grid search mode is enabled
+  - `Super + Arrows` shortcuts to switch workspace
+
+**Fixed:**
+- Gestures for switching workspaces ignored the *Workspace Switcher Mode* > *Current Monitor* option (fixed only for desktop switcher, stil unsupported in overview)
+- Direct overview transition between desktop and app grid included unneccessary transition to window picker state
+- Search view transitions and visibility
+- Reduced probability of duplicate GObject class names leading to random errors (#243)
+- Performance isues in overview when option *Sort Windows* by *Most Recently Used* was enabled
+- Settings window not updating options sensitivity on module state changed
+- Multi-line app grid icon name in the bottom row can be clipped
+
+**Changed:**
+- Hotkeys `Super + Tab` always switches workspaces, even when secondary monitor is connected, `Alt + Tab` switches between monitors
+- App icon action *Move App to Current Workspace* now moves the windows to the monitor with the mouse pointer
+- Refactored and optimized V-Shell-specific overview transitions
+
+
+### v48.9 (2025-06-08)
 **Added:**
 - French translation by @p-sage (#236)
 - Keyboard shortcuts in Overview:
@@ -12,6 +34,7 @@
 - Window title readability issue on secondary monitors (#238)
 - `Ctrl + Shift + Del` closed all windows on the workspace instead of just the current monitor
 - Missing default value for the App Grid Brightness in profiles 2-4
+- Search view style glitches
 
 **Changed:**
 - `Tab` key workspace switcher in the Overview now ignores the last empty workspace 
@@ -32,7 +55,7 @@
 
 ### v48.7 (2025-04-24)
 **Added:**
-- Hotkeys *Shift+Enter* and *Ctrl+Shift+Enter* to move the selected window and all windows of the selected app, respectively, to another monitor (if connected) from the Activities overview. The target monitor is the one with the mouse pointer or the next monitor on the list if the pointer is on the same monitor
+- Hotkeys `Shift+Enter` and `Ctrl+Shift+Enter` to move the selected window and all windows of the selected app, respectively, to another monitor (if connected) from the Activities overview. The target monitor is the one with the mouse pointer or the next monitor on the list if the pointer is on the same monitor
 
 
 ### v48.6 (2025-04-15)

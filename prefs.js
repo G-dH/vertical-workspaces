@@ -1654,7 +1654,7 @@ export default class VShell extends ExtensionPreferences {
                 'wsSwPopupMode',
                 [
                     [_('Disable'), 0],
-                    [_('Show on Primary Monitor (Default)'), 1],
+                    [_('Show on All Monitors (Default)'), 1],
                     [_('Show on Current Monitor'), 2],
                 ],
                 'workspaceSwitcherPopupModule'
