@@ -874,7 +874,7 @@ msgstr "Identique au bureau"
 
 #: prefs.js:955
 msgid "Overview Background"
-msgstr "Arrière-plan de la vue d'esemble"
+msgstr "Arrière-plan de la vue d'ensemble"
 
 #: prefs.js:961
 msgid "Show wallpaper"
