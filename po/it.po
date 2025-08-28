@@ -1,14 +1,15 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# JIMMY SCIONTI <JIMMY.SCIONTI@GMAIL.COM>, 2024.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 13:57+0200\n"
+"POT-Creation-Date: 2024-11-03 12:56+0100\n"
+"PO-Revision-Date: 2024-11-03 15:26+0100\n"
 "Last-Translator: Jimmy Scionti\n"
 "Language-Team: \n"
 "Language: it_IT\n"
