@@ -104,7 +104,7 @@
 
 /* add shadow to the app grid app label to be readable if it overlaps light icon below */
 .overview-icon-with-label, .folder-name-label {
-    text-shadow: 1px 1px 3px rgba(33, 33, 33, 0.5);
+    text-shadow: 1px 1px 5px rgba(33, 33, 33, 0.7);
 }
 
 /* adjustment for the vertical ws switcher indicator popup */
@@ -139,6 +139,10 @@
 	background-color: rgba(200, 200, 200, 0.16);
 }
 
+.window-caption-top{
+	border-radius: 10px 10px 0px 0px;
+}
+
 /* app grid page indicators */
 .page-indicator-icon {
 	margin: 0px;
@@ -166,7 +170,7 @@
 .search-entry{
 	margin: 0;
 	margin-top: 12px;
-	margin-bottom: 6px;
+	/*margin-bottom: 6px;*/
 	background-color: rgba(200, 200, 200, 0.1);
 	color: white;
 	border-color: rgba(160, 160, 160, 0.4);
@@ -181,28 +185,37 @@
 	background-color: rgba(200, 200, 200, 0.1);
 }
 
+.search-entry, .search-section-content, .search-entry, .search-statustext, .list-search-result-description {
+	text-shadow: 1px 1px 5px rgba(33, 33, 33, 0.4);
+}
+
 .search-entry-om2 {
 	color: white;
-	background-color: rgba(40, 40, 40, 1);
+	background-color: rgb(040, 40, 40);
 }
 
 .search-entry-om2:hover,
 .search-entry-om2:focus {
-	background-color: rgba(50, 50, 50, 1);
+	background-color: rgb(50, 50, 50);
+}
+
+.list-search-result-description {
+	color: rgb(220, 220, 220);
 }
 
 /* for static ws mode */
-/*.search-section-content-bg,*/
-.search-section-content-bg-om2 {
-	border-radius: 26px;
+.search-results-bg-dark {
+	border-radius: 20px;
 	border: 1px, rgb(60, 60, 60);
-	padding-top: 15px;
-	background-color: rgb(40, 40, 40);
+	padding-top: 68px;
+	padding-left: 6px;
+	padding-right: 6px;
+	background-color: rgba(23, 23, 23, 0.98);
 }
 
 /* Reduce edge fading of search results scroll view */
-.vfade { -st-vfade-offset: 34px; }
-.hfade { -st-hfade-offset: 34px; }
+/*.vfade { -st-vfade-offset: 30px; }
+.hfade { -st-hfade-offset: 30px; }*/
 
 StButton#vhandle,
 .search-section-content {
@@ -215,18 +228,9 @@ StButton#vhandle,
 }
 
 /* "no results" / "searching..." text*/
-.search-statustext, .search-statustext-om2 {
-	background-color: rgba(200, 200, 200, 0.08);
-	color: white;
-	margin-top: 50px;
-	padding: 30px;
-	border-radius: 20px;
-	text-shadow: 0px 0px 5px rgb(23, 23, 23);
-}
-
-.search-statustext-om2 {
-	background-color: rgb(40, 40, 40);
-	border: 1px rgba(200, 200, 200, 0.1);
+.search-statustext {
+	margin-top: 42px;
+	margin-bottom: 56px;
 }
 
 #panel:overview, .transparent-panel {
@@ -315,8 +319,13 @@ StButton#vhandle,
 #dash.dash-46 .show-apps,
 #dash.dash-46 .overview-tile,
 #dash.dash-46 .overview-icon,
-.app-folder-45 .overview-icon, /* 45 only */
-.app-folder-46 .overview-icon,
+/*#dash .overview-tile:hover,
+#dash .overview-tile:focus,
+#dash .overview-tile:selected,*/
+#app-display .app-folder .overview-icon,
+/*#app-display .overview-tile:hover,
+#app-display .overview-tile:focus,
+#app-display .overview-tile:selected,*/
 .page-navigation-arrow,
 .search-provider-icon,
 .list-search-result,
@@ -325,19 +334,17 @@ StButton#vhandle,
 	 background-color: transparent;
 }
 
-/* GS 47 removed the top margin that V-Shell needs */
+/* GS 47 removed the top margin that V-Shell expects */
 #dash.dash-46 {
 	 margin-top: 12px;
 }
 
-/* Needed only for 46+, but doesn't hurt 45 */
 #dash.dash-46 .overview-tile:hover .overview-icon,
 #dash.dash-46 .overview-tile:focus .overview-icon,
 #dash.dash-46 .overview-tile:selected .overview-icon,
 #dash.dash-46 .show-apps:hover .overview-icon,
 #dash.dash-46 .show-apps:focus .overview-icon,
 #dash.dash-46 .show-apps:selected .overview-icon,
-.edit-folder-button:hover,
 .page-navigation-arrow:hover,
 .search-provider-icon:hover,
 .search-provider-icon:focus,
@@ -345,34 +352,32 @@ StButton#vhandle,
 .list-search-result:hover,
 .list-search-result:focus,
 .list-search-result:selected,
-.app-display-46 .overview-tile:hover,
-.app-display-46 .overview-tile:focus,
-.app-display-46 .overview-tile:selected,
-.app-folder-46:hover,
-.app-folder-45:hover .overview-icon,
-.app-folder-45:focus .overview-icon,
 #searchResults .overview-tile:hover,
 #searchResults .overview-tile:focus,
 #searchResults .overview-tile:selected,
-.grid-search-result-46:hover,
-.grid-search-result-46:focus,
-.grid-search-result-46:selected,
+.grid-search-result:hover,
+.grid-search-result:focus,
+.grid-search-result:selected,
+#app-display .overview-tile:hover,
+#app-display .overview-tile:focus,
+#app-display .overview-tile:selected,
+#app-display .app-folder:hover,
+#app-display .app-folder:focus,
+#app-display .app-folder:selected,
 .app-folder-dialog .overview-tile:hover,
 .app-folder-dialog .overview-tile:focus,
 .app-folder-dialog .overview-tile:selected,
-.overview-icon:hover,
-.overview-icon:focus,
-.overview-icon:selected {
+.edit-folder-button:hover {
 	background-color: rgba(200, 200, 200, 0.15);
- }
+}
 
 .overview-tile:drop, /* 46 needs to add color so the highlighting style is visible on the app folder preview */
-.app-folder-dialog,
+.app-folder-dialog-translucent,
 .edit-folder-button,
 .folder-name-entry,
-.app-folder-46,
-.app-folder-46 .overview-tile,
-.app-folder-45 .overview-icon,
+#app-display .app-folder,
+#app-display .app-folder,
+#app-display .app-folder .overview-tile,
 .edit-folder-button,
 .folder-name-entry {
 	background-color: rgba(200, 200, 200, 0.08);

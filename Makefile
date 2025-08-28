@@ -11,10 +11,11 @@ UI_FILES       = $(shell find -type f -and \( -name "*.ui" \))
 #RESOURCE_FILES = $(shell find resources -mindepth 2 -type f)
 LOCALES_PO     = $(wildcard po/*.po)
 LOCALES_MO     = $(patsubst po/%.po,locale/%/LC_MESSAGES/$(NAME).mo,$(LOCALES_PO))
+SCHEMA_XML     = $(wildcard schemas/*.xml)
 
 # These files will be included in the extension zip file.
 ZIP_CONTENT = $(JS_FILES) $(LOCALES_MO) \
-              schemas/* schemas/gschemas.compiled metadata.json LICENSE stylesheet.css
+              $(SCHEMA_XML) schemas/gschemas.compiled metadata.json LICENSE stylesheet.css
 
 # These six recipes can be invoked by the user.
 .PHONY: all zip install uninstall pot clean

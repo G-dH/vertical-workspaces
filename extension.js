@@ -3,7 +3,7 @@
  * extension.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022 - 2024
+ * @copyright  2022 - 2025
  * @license    GPL-3.0
  *
  */
@@ -158,9 +158,6 @@ export default class VShell extends Extension.Extension {
     }
 
     _disposeModules() {
-        Me.opt.destroy();
-        Me.opt = null;
-
         for (let module of this._getModuleList()) {
             if (!Me.Modules[module].moduleEnabled)
                 Me.Modules[module].cleanGlobals();
@@ -168,6 +165,8 @@ export default class VShell extends Extension.Extension {
 
         Me.Util.cleanGlobals();
         Me.Modules = null;
+        Me.opt.destroy();
+        Me.opt = null;
     }
 
     _activateVShell() {
@@ -214,14 +213,13 @@ export default class VShell extends Extension.Extension {
         // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
         this._setInitialWsIndex();
 
-        this._resetShellProperties();
+        // this._resetShellProperties();
     }
 
     removeVShell() {
         // Rebasing V-Shell when overview is open causes problems
         // also if Dash to Dock is enabled, disabling V-Shell can result in a broken overview
         this._ensureOverviewIsHidden();
-        this._resetShellProperties();
 
         this._enabled = false;
 
@@ -231,8 +229,10 @@ export default class VShell extends Extension.Extension {
         this._removeConnections();
         Main.overview._overview.controls._setBackground(reset);
 
-        // remove changes mede by VShell modules
+        // remove changes made by VShell modules
         this._updateOverrides(reset);
+
+        this._resetShellProperties();
 
         // switch PageUp/PageDown workspace switcher shortcuts
         this._switchPageShortcuts();
@@ -262,7 +262,6 @@ export default class VShell extends Extension.Extension {
         const dash = controls.layoutManager._dash;
         // Restore default dash background style
         dash._background.set_style('');
-
         dash.translation_x = 0;
         dash.translation_y = 0;
         controls._thumbnailsBox.translation_x = 0;
@@ -270,6 +269,7 @@ export default class VShell extends Extension.Extension {
         controls._searchEntryBin.translation_y = 0;
         controls._workspacesDisplay.scale_x = 1;
         controls.set_child_above_sibling(controls._workspacesDisplay, null);
+        delete controls._dashIsAbove;
 
         // following properties may be reduced if extensions are rebased while the overview is open
         controls._thumbnailsBox.remove_all_transitions();
@@ -277,7 +277,9 @@ export default class VShell extends Extension.Extension {
         controls._thumbnailsBox.scale_y = 1;
         controls._thumbnailsBox.opacity = 255;
 
+        controls._searchEntryBin.visible = true;
         controls._searchController._searchResults.opacity = 255;
+        Main.layoutManager.panelBox.translationY = 0;
     }
 
     _removeTimeouts() {
@@ -316,8 +318,11 @@ export default class VShell extends Extension.Extension {
     }
 
     _updateConnections() {
-        if (!this._monitorsChangedConId)
-            this._monitorsChangedConId = Main.layoutManager.connect('monitors-changed', () => this._adaptToSystemChange());
+        if (!this._monitorsChangedConId) {
+            this._monitorsChangedConId = Main.layoutManager.connect(
+                'monitors-changed', () => Main.overview._overview.controls._setBackground()
+            );
+        }
 
         if (!this._showingOverviewConId)
             this._showingOverviewConId = Main.overview.connect('showing', this._onShowingOverview.bind(this));
@@ -338,7 +343,6 @@ export default class VShell extends Extension.Extension {
                 } else if (session.currentMode === 'unlock-dialog') {
                     Me.Modules.panelModule.update();
                     Main.layoutManager.panelBox.translation_y = 0;
-                    Main.panel.opacity = 255;
                 }
             });
         }
@@ -470,12 +474,8 @@ export default class VShell extends Extension.Extension {
         if (!Main.sessionMode.isLocked)
             this._sessionLockActive = false;
 
-        if (!reset && !Main.layoutManager._startingUp)
-            Main.overview._overview.controls.setInitialTranslations();
-        if (this._sessionLockActive) {
+        if (this._sessionLockActive)
             Main.layoutManager.panelBox.translation_y = 0;
-            Main.panel.opacity = 255;
-        }
     }
 
     _onShowingOverview() {
@@ -540,6 +540,7 @@ export default class VShell extends Extension.Extension {
     _updateSettings(settings, key) {
         // update settings cache and option variables
         opt._updateSettings();
+        this._resetShellProperties();
 
         // avoid overload while loading profile - update only once
         // delayed gsettings writes are processed alphabetically
@@ -561,7 +562,7 @@ export default class VShell extends Extension.Extension {
 
         if (key?.includes('profile-data')) {
             const index = key.replace('profile-data-', '');
-            Main.notify(`${Me.metadata.name}`, `Profile ${index} has been updated`);
+            Main.notify(`${Me.metadata.name}`, _('Profile %d has been updated').format(index));
         }
 
         opt.WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
@@ -589,21 +590,24 @@ export default class VShell extends Extension.Extension {
         else
             Me.Modules.workspaceModule.setWindowPreviewMaxScale(0.95);
 
-        Main.overview.searchEntry.visible = opt.SHOW_SEARCH_ENTRY;
+        Main.overview._overview.controls._searchEntryBin.visible = opt.SHOW_SEARCH_ENTRY;
         Main.overview.searchEntry.opacity = 255;
         St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
 
         // Options for workspace switcher, apply custom function only if needed
-        if (opt.WS_WRAPAROUND || opt.WS_IGNORE_LAST)
-            Meta.Workspace.prototype.get_neighbor = this._getNeighbor;
-        else
-            Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;
+        /* if (opt.WS_WRAPAROUND || opt.WS_IGNORE_LAST)*/
+        Meta.Workspace.prototype.get_neighbor = this._getNeighbor;
+        /* else
+            Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;*/
 
         // delay search so it doesn't make the search view transition stuttering
         // 150 is the default value in GNOME Shell, but the search feels laggy
         // Of course there is some overload for fast keyboard typist
         if (opt.SEARCH_VIEW_ANIMATION)
             opt.SEARCH_DELAY = 150;
+
+        if (Main.overview._overview.controls._setBackground)
+            Main.overview._overview.controls._setBackground();
 
         if (settings)
             this._applySettings(key);
@@ -638,6 +642,7 @@ export default class VShell extends Extension.Extension {
             this._updateOverrides();
             break;
         case 'workspace-switcher-animation':
+        case 'ws-switcher-mode':
             Me.Modules.workspaceAnimationModule.update();
             break;
         case 'search-width-scale':
@@ -660,9 +665,6 @@ export default class VShell extends Extension.Extension {
             break;
         case 'always-activate-selected-window':
             Me.Modules.windowPreviewModule.update();
-            break;
-        case 'ws-switcher-mode':
-            Me.Modules.windowManagerModule.update();
             break;
         case 'new-window-monitor-fix':
             this._updateNewWindowConnection();
@@ -766,7 +768,7 @@ export default class VShell extends Extension.Extension {
     _getNeighbor(direction) {
         // workspace matrix is supported
         const activeIndex = this.index();
-        const ignoreLast = opt.WS_IGNORE_LAST && Meta.prefs_get_dynamic_workspaces() && !Main.overview._shown ? 1 : 0;
+        const ignoreLast = Meta.prefs_get_dynamic_workspaces() && ((opt.WS_IGNORE_LAST && !Main.overview._shown) || opt.forceIgnoreLast) ? 1 : 0;
         const wraparound = opt.WS_WRAPAROUND;
         const nWorkspaces = global.workspace_manager.n_workspaces;
         const lastIndex = nWorkspaces - 1 - ignoreLast;

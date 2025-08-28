@@ -1,11 +1,13 @@
 {
-  "name": "V-Shell (Vertical Workspaces)",
+  "name": "V-Shell",
   "uuid": "vertical-workspaces@G-dH.github.com",
   "description": "Customize your GNOME Shell UX to suit your workflow, whether you like horizontally or vertically stacked workspaces.",
   "shell-version": [
     "45",
     "46",
-    "47"
+    "47",
+    "48",
+    "49"
   ],
   "session-modes": [
     "user",
@@ -17,6 +19,6 @@
   },
   "gettext-domain": "vertical-workspaces",
   "settings-schema": "org.gnome.shell.extensions.vertical-workspaces",
-  "version-name": "47.0"
+  "version-name": "48.10"
 }
 

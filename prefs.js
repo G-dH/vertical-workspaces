@@ -3,7 +3,7 @@
  * prefs.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022 - 2024
+ * @copyright  2022 - 2025
  * @license    GPL-3.0
  */
 
@@ -194,8 +194,7 @@ export default class VShell extends ExtensionPreferences {
                 _('Adjusts the position of the dash on the axis given by the orientation of the workspaces'),
                 dashPositionScale,
                 'dashPositionAdjust',
-                null,
-                'dashModule'
+                null
             )
         );
 
@@ -801,9 +800,11 @@ export default class VShell extends ExtensionPreferences {
                 itemFactory.newDropDown(),
                 'winTitlePosition',
                 [
-                    [_('Inside Window'), 0],
-                    [_('Inside Window Always Visible'), 1],
                     [_('Below Window (Default)'), 2],
+                    [_('Inside Window'), 0],
+                    [_('Inside - Always Visible'), 1],
+                    [_('On Top'), 3],
+                    [_('On Top - Always Visible'), 4],
                 ],
                 'windowPreviewModule'
             )
@@ -882,7 +883,7 @@ export default class VShell extends ExtensionPreferences {
 
         const maxSearchResultsAdjustment = new Gtk.Adjustment({
             upper: 50,
-            lower: 5,
+            lower: 1,
             step_increment: 1,
             page_increment: 5,
         });
@@ -905,6 +906,19 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
+                _('Search Results Style'),
+                _('Sets style of the search results background. When the Static Workspace Overview Mode is active, the Dark style is used despite this option. The Dark style also ignores the overview background blur and brightness configured for the search view'),
+                itemFactory.newDropDown(),
+                'searchResultsBgStyle',
+                [
+                    [_('Transparent (Default)'), 0],
+                    [_('Dark'), 1],
+                ]
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
                 _('Highlighting'),
                 _('The GNOME default highlighting style (bold) causes strings to be "randomly" ellipsized, often preventing you from seeing the whole string, even if there is space for it. The selected style will be applied to all search results globally. If you are using other extensions that offer this option, make sure you set the same setting in all of them.'),
                 itemFactory.newDropDown(),
@@ -917,6 +931,24 @@ export default class VShell extends ExtensionPreferences {
             )
         );
 
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Panel')
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Overview Panel Style'),
+                _('Panel background style in overview'),
+                itemFactory.newDropDown(),
+                'panelOverviewStyle',
+                [
+                    [_('Same as Desktop'), 0],
+                    [_('Transparent (Default)'), 1],
+                ]
+            )
+        );
 
         optionList.push(
             itemFactory.getRowWidget(
@@ -926,10 +958,15 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Show Wallpaper'),
-                _('Replaces the solid grey background in the overview with the current desktop wallpaper'),
-                itemFactory.newSwitch(),
-                'showBgInOverview'
+                _('Show wallpaper'),
+                _('Replaces the solid grey background in the overview with the current desktop wallpaper. If you have a weak computer or prefer low system load and want to blur the wallpaper, the "Fast Blur Transitions" option is for you'),
+                itemFactory.newDropDown(),
+                'showOverviewBackground',
+                [
+                    [_('Disable (Default)'), 0],
+                    [_('Enable - Fast Blur Transitions'), 1],
+                    [_('Enable - Smooth Blur Transitions'), 2],
+                ]
             )
         );
 
@@ -943,10 +980,31 @@ export default class VShell extends ExtensionPreferences {
         const bgBrightnessScale = itemFactory.newScale(brightnessBgAdjustment);
         optionList.push(
             itemFactory.getRowWidget(
-                _('Brightness'),
+                _('Brightness - Window Picker'),
                 _('Brightness of the background wallpaper in the overview'),
                 bgBrightnessScale,
-                'overviewBgBrightness'
+                'overviewBgBrightness',
+                null,
+                'showOverviewBackground'
+            )
+        );
+
+        const appGridBrightnessBgAdjustment = new Gtk.Adjustment({
+            upper: 100,
+            lower: 0,
+            step_increment: 1,
+            page_increment: 10,
+        });
+
+        const appGridBrightnessScale = itemFactory.newScale(appGridBrightnessBgAdjustment);
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Brightness - App Grid'),
+                _('Brightness of the background wallpaper in the application menu'),
+                appGridBrightnessScale,
+                'appGridBgBrightness',
+                null,
+                'showOverviewBackground'
             )
         );
 
@@ -960,15 +1018,17 @@ export default class VShell extends ExtensionPreferences {
         const searchBgBrightnessScale = itemFactory.newScale(searchBrightnessBgAdjustment);
         optionList.push(
             itemFactory.getRowWidget(
-                _('Brightness for Search View'),
-                _('Allows you to set a lower background brightness for search view mode where text visibility is more important'),
+                _('Brightness - Search View'),
+                _('Allows you to set a lower background brightness for search view where text visibility is more important'),
                 searchBgBrightnessScale,
-                'searchBgBrightness'
+                'searchBgBrightness',
+                null,
+                'showOverviewBackground'
             )
         );
 
         const blurBgAdjustment = new Gtk.Adjustment({
-            upper: 100,
+            upper: 300,
             lower: 0,
             step_increment: 1,
             page_increment: 10,
@@ -980,12 +1040,14 @@ export default class VShell extends ExtensionPreferences {
                 _('Blur Window Picker Background'),
                 _('Sets the amount of background blur in the window picker view'),
                 bgBlurScale,
-                'overviewBgBlurSigma'
+                'overviewBgBlurSigma',
+                null,
+                'showOverviewBackground'
             )
         );
 
         const blurAppBgAdjustment = new Gtk.Adjustment({
-            upper: 100,
+            upper: 300,
             lower: 0,
             step_increment: 1,
             page_increment: 10,
@@ -997,16 +1059,9 @@ export default class VShell extends ExtensionPreferences {
                 _('Blur App Grid/Search View Background'),
                 _('Sets the amount of background blur in the app grid and search results views'),
                 bgAppBlurScale,
-                'appGridBgBlurSigma'
-            )
-        );
-
-        optionList.push(
-            itemFactory.getRowWidget(
-                _('Smooth Blur Transitions'),
-                _('Allows for smoother blur transitions, but can affect the overall smoothness of overview animations on weak hardware'),
-                itemFactory.newSwitch(),
-                'smoothBlurTransitions'
+                'appGridBgBlurSigma',
+                null,
+                'showOverviewBackground'
             )
         );
 
@@ -1112,7 +1167,6 @@ export default class VShell extends ExtensionPreferences {
                     [_('Applications (Default)'), 1],
                     [_('Search Windows (requires WSP extension)'), 2],
                     [_('Overview - Window Picker'), 3],
-                // [_('Search Recent Files'), 4],
                 ],
                 'overlayKeyModule'
             )
@@ -1234,6 +1288,56 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
+                _('App Menu')
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Add Force Quit'),
+                _('Adds a "Force Quit" menu item to the application menu that appears when right-clicking an app icon'),
+                itemFactory.newSwitch(),
+                'appMenuForceQuit',
+                null,
+                'dashModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Add Close Windows on Current Workspace'),
+                _('Adds a "Close Windows on Current Workspace" menu item to the application menu that appears when right-clicking an app icon'),
+                itemFactory.newSwitch(),
+                'appMenuCloseWinsWs',
+                null,
+                'dashModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Add Move App to Current Workspace'),
+                _('Adds a "Move App to Current Workspace" menu item to the application menu that appears when right-clicking an app icon'),
+                itemFactory.newSwitch(),
+                'appMenuMoveApp',
+                null,
+                'dashModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Add Create Window Thumbnail'),
+                _('Requires WTMB extension installed and enabled. Adds a "Create Window Thumbnail" menu item to the application menu that appears when right-clicking an app icon'),
+                itemFactory.newSwitch(),
+                'appMenuWindowTmb',
+                null,
+                'dashModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
                 _('Workspace Thumbnails')
             )
         );
@@ -1245,11 +1349,68 @@ export default class VShell extends ExtensionPreferences {
                 itemFactory.newDropDown(),
                 'closeWsButtonMode',
                 [
-                    [_('Disable'), 0],
+                    [_('Hide'), 0],
                     [_('Single Click'), 1],
                     [_('Double Click'), 2],
                     [_('Ctrl Key + Click'), 3],
                 ]
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Workspace Preview')
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Sort Windows'),
+                _('Sort windows in the overview differently from the default screen position. The stable sequence is determined by the order in which the windows were opened'),
+                itemFactory.newDropDown(),
+                'overviewSortWindows',
+                [
+                    [_('Position (Default)'), 0],
+                    [_('Most Recently Used'), 1],
+                    [_('Stable Sequence'), 2],
+                ],
+                'windowPreviewModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Initial Window Selection'),
+                _('Automatically select a window in the overview and ignore the pointer to speed up keyboard navigation'),
+                itemFactory.newDropDown(),
+                'overviewSelectWindow',
+                [
+                    [_('Pointer (Default)'), 0],
+                    [_('First'), 1],
+                    [_('Currently Focused'), 2],
+                    [_('Previously Focused'), 3],
+                ]
+            )
+        );
+
+        const winHeightCompAdjustment = new Gtk.Adjustment({
+            upper: 100,
+            lower: 0,
+            step_increment: 10,
+            page_increment: 10,
+        });
+
+        const winHeightCompScale = itemFactory.newScale(winHeightCompAdjustment);
+        winHeightCompScale.add_mark(50, Gtk.PositionType.TOP, null);
+        winHeightCompScale.add_mark(100, Gtk.PositionType.TOP, null);
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Window Height Compensation'),
+                _('Controls the amount of height compensation for smaller window thumbnails relative to the tallest one. 0 keeps the original scale ratio, while 100 makes all thumbnails the same height'),
+                winHeightCompScale,
+                'winPreviewHeightCompensation',
+                null,
+                'workspaceModule'
             )
         );
 
@@ -1342,7 +1503,20 @@ export default class VShell extends ExtensionPreferences {
                 _('Enable Fuzzy Match'),
                 _('Enabling the fuzzy match allows you to skip letters in the pattern you are searching for and find "Firefox" even if you type "ffx". Works only for the App, Windows, Extensions and Recent files search providers'),
                 itemFactory.newSwitch(),
-                'searchFuzzy'
+                'searchFuzzy',
+                null,
+                'searchModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Include Settings Panels in App Results'),
+                _('The GNOME Settings app provides launchers for all its panels/sections. This option adds them alongside other apps, allowing you to access individual settings more quickly'),
+                itemFactory.newSwitch(),
+                'searchIncludeSettings',
+                null,
+                'searchModule'
             )
         );
 
@@ -1408,12 +1582,13 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Workspace Preview Animation'),
-                _('When entering / leaving the App Grid / Search view, the workspace preview can animate to/from workspace thumbnail.'),
+                _('When entering or leaving the App Grid, the workspace preview can animate to/from workspace thumbnails'),
                 itemFactory.newDropDown(),
                 'workspaceAnimation',
                 [
                     [_('Disable'), 0],
-                    [_('Enable'), 1],
+                    [_('Active Workspace Only'), 1],
+                    [_('All Workspaces'), 2],
                 ]
             )
         );
@@ -1479,7 +1654,7 @@ export default class VShell extends ExtensionPreferences {
                 'wsSwPopupMode',
                 [
                     [_('Disable'), 0],
-                    [_('Show on Primary Monitor (Default)'), 1],
+                    [_('Show on All Monitors (Default)'), 1],
                     [_('Show on Current Monitor'), 2],
                 ],
                 'workspaceSwitcherPopupModule'
@@ -1826,11 +2001,37 @@ export default class VShell extends ExtensionPreferences {
             )
         );
 
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Show Close Folder Button'),
+                _('The folder can be closed by right-clicking on the folder dialog or by left-clicking outside of it. However, in some situations, the close button can be useful'),
+                itemFactory.newSwitch(),
+                'appFolderCloseButton',
+                null,
+                'appDisplayModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Remove Folder Button'),
+                _('The Remove Folder button lets you move all icons from the folder to the main app grid and delete the folder at once'),
+                itemFactory.newDropDown(),
+                'appFolderRemoveButton',
+                [
+                    [_('Hide (Default)'), 0],
+                    [_('Single Click'), 1],
+                    [_('Double Click'), 2],
+                ],
+                'appDisplayModule'
+            )
+        );
+
         // --------------------------------------------------------------------------------------
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Content')
+                _('Content and Behavior')
             )
         );
 
@@ -1872,6 +2073,17 @@ export default class VShell extends ExtensionPreferences {
                 _("You can hide the page navigation buttons if you don't need them or want to get more space for icons. The buttons are hidden automatically when there is only one page in the app grid"),
                 itemFactory.newSwitch(),
                 'appGridShowPageArrows',
+                null,
+                'appDisplayModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Remember Page'),
+                _('Disables the default behavior in which app grid and folders always open on the first page'),
+                itemFactory.newSwitch(),
+                'appGridRememberPage',
                 null,
                 'appDisplayModule'
             )

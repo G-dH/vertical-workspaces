@@ -106,16 +106,19 @@
     <key type="i" name="ws-preview-bg-radius">
       <default>30</default>
     </key>
-    <key type="b" name="show-bg-in-overview">
-      <default>true</default>
+    <key type="i" name="show-overview-background">
+      <default>1</default>
     </key>
     <key type="i" name="overview-bg-blur-sigma">
-      <default>30</default>
+      <default>100</default>
     </key>
     <key type="i" name="app-grid-bg-blur-sigma">
-      <default>40</default>
+      <default>100</default>
     </key>
     <key type="i" name="overview-bg-brightness">
+      <default>60</default>
+    </key>
+    <key type="i" name="app-grid-bg-brightness">
       <default>60</default>
     </key>
     <key type="i" name="search-bg-brightness">
@@ -208,6 +211,12 @@
     <key type="b" name="app-grid-folder-center">
       <default>false</default>
     </key>
+    <key type="i" name="app-folder-remove-button">
+      <default>1</default>
+    </key>
+    <key type="b" name="app-folder-close-button">
+      <default>true</default>
+    </key>
     <key type="i" name="app-grid-page-width-scale">
       <default>90</default>
     </key>
@@ -217,6 +226,9 @@
     <key type="b" name="app-grid-show-page-arrows">
       <default>true</default>
     </key>
+    <key type="b" name="app-grid-remember-page">
+      <default>false</default>
+    </key>
     <key type="i" name="dash-show-windows-before-activation">
       <default>1</default>
     </key>
@@ -225,6 +237,18 @@
     </key>
     <key type="b" name="dash-isolate-workspaces">
       <default>false</default>
+    </key>
+    <key type="b" name="app-menu-force-quit">
+      <default>true</default>
+    </key>
+    <key type="b" name="app-menu-close-wins-ws">
+      <default>true</default>
+    </key>
+    <key type="b" name="app-menu-move-app">
+      <default>true</default>
+    </key>
+    <key type="b" name="app-menu-window-tmb">
+      <default>true</default>
     </key>
     <key type="i" name="search-windows-icon-scroll">
       <default>1</default>
@@ -242,6 +266,12 @@
       <default>5</default>
     </key>
     <key type="i" name="search-app-grid-mode">
+      <default>1</default>
+    </key>
+    <key type="b" name="search-include-settings">
+      <default>true</default>
+    </key>
+    <key type="i" name="search-results-bg-style">
       <default>0</default>
     </key>
     <key type="i" name="panel-visibility">
@@ -249,6 +279,9 @@
     </key>
     <key type="i" name="panel-position">
       <default>0</default>
+    </key>
+    <key type="i" name="panel-overview-style">
+      <default>1</default>
     </key>
     <key type="i" name="window-attention-mode">
       <default>0</default>
@@ -304,6 +337,9 @@
     <key type="i" name="window-icon-click-action">
       <default>1</default>
     </key>
+    <key type="i" name="win-preview-height-compensation">
+      <default>50</default>
+    </key>
     <key type="i" name="overlay-key-primary">
       <default>1</default>
     </key>
@@ -315,6 +351,12 @@
     </key>
     <key type="b" name="click-empty-close">
       <default>false</default>
+    </key>
+    <key type="i" name="overview-sort-windows">
+      <default>0</default>
+    </key>
+    <key type="i" name="overview-select-window">
+      <default>0</default>
     </key>
     <key type="b" name="new-window-focus-fix">
       <default>false</default>
@@ -427,11 +469,11 @@
         'showWsSwitcherBg': 'true',
         'showWsPreviewBg': 'false',
         'wsPreviewBgRadius': '30',
-        'showBgInOverview': 'true',
         'overviewBgBrightness': '30',
+        'appGridBgBrightness': '30',
         'searchBgBrightness': '30',
         'overviewBgBlurSigma': '0',
-        'appGridBgBlurSigma': '40',
+        'appGridBgBlurSigma': '100',
         'smoothBlurTransitions': 'false',
         'appGridAnimation': '4',
         'searchViewAnimation': '0',
@@ -467,7 +509,7 @@
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
-        'searchAppGridMode': '0',
+        'searchAppGridMode': '1',
         'dashShowWindowsBeforeActivation': '1',
         'dashIconScroll': '1',
         'dashIsolateWorkspaces': 'false',
@@ -552,14 +594,14 @@
         'dashBgRadius': '0',
         'dashBgGS3Style': 'false',
         'runningDotStyle': '1',
-        'showWsSwitcherBg': 'false',
+        'showWsSwitcherBg': 'true',
         'showWsPreviewBg': 'true',
         'wsPreviewBgRadius': '30',
-        'showBgInOverview': 'true',
         'overviewBgBrightness': '50',
+        'appGridBgBrightness': '50',
         'searchBgBrightness': '30',
         'overviewBgBlurSigma': '50',
-        'appGridBgBlurSigma': '40',
+        'appGridBgBlurSigma': '100',
         'smoothBlurTransitions': 'false',
         'appGridAnimation': '4',
         'searchViewAnimation': '0',
@@ -595,7 +637,7 @@
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
-        'searchAppGridMode': '0',
+        'searchAppGridMode': '1',
         'dashShowWindowsBeforeActivation': '1',
         'dashIconScroll': '1',
         'dashIsolateWorkspaces': 'false',
@@ -683,11 +725,11 @@
         'showWsSwitcherBg': 'false',
         'showWsPreviewBg': 'true',
         'wsPreviewBgRadius': '30',
-        'showBgInOverview': 'true',
         'overviewBgBrightness': '60',
+        'appGridBgBrightness': '60',
         'searchBgBrightness': '30',
         'overviewBgBlurSigma': '30',
-        'appGridBgBlurSigma': '80',
+        'appGridBgBlurSigma': '100',
         'smoothBlurTransitions': 'false',
         'appGridAnimation': '4',
         'searchViewAnimation': '0',
@@ -723,7 +765,7 @@
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
-        'searchAppGridMode': '0',
+        'searchAppGridMode': '1',
         'dashShowWindowsBeforeActivation': '1',
         'dashIconScroll': '1',
         'dashIsolateWorkspaces': 'false',
@@ -811,11 +853,11 @@
         'showWsSwitcherBg': 'true',
         'showWsPreviewBg': 'true',
         'wsPreviewBgRadius': '30',
-        'showBgInOverview': 'true',
         'overviewBgBrightness': '60',
+        'appGridBgBrightness': '60',
         'searchBgBrightness': '30',
         'overviewBgBlurSigma': '80',
-        'appGridBgBlurSigma': '80',
+        'appGridBgBlurSigma': '100',
         'smoothBlurTransitions': 'false',
         'appGridAnimation': '4',
         'searchViewAnimation': '3',
@@ -851,7 +893,7 @@
         'searchWindowsOrder': '1',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
-        'searchAppGridMode': '0',
+        'searchAppGridMode': '1',
         'dashShowWindowsBeforeActivation': '1',
         'dashIconScroll': '1',
         'dashIsolateWorkspaces': 'false',

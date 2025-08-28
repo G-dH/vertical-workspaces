@@ -1,9 +1,217 @@
 ## Changelog:
-### v47.0
+### v48.10 / 49.0 (not yet released)
 **Added:**
-GNOME 47 support
+- Keyboard shortcuts in Overview:
+  - `Ctrl + Shift + Arrow` to move window directly to an adjacent monitor
+  - The search entry is always visible in the app grid view when app grid search mode is enabled
+  - `Super + Arrows` shortcuts to switch workspace
 
-### v46.4 for GNOME 45.2+ (), v44.14 for GNOME 42-44 (not yet released)
+**Fixed:**
+- Gestures for switching workspaces ignored the *Workspace Switcher Mode* > *Current Monitor* option (fixed only for desktop switcher, stil unsupported in overview)
+- Direct overview transition between desktop and app grid included unneccessary transition to window picker state
+- Search view transitions and visibility
+- Reduced probability of duplicate GObject class names leading to random errors (#243)
+- Performance isues in overview when option *Sort Windows* by *Most Recently Used* was enabled
+- Settings window not updating options sensitivity on module state changed
+- Multi-line app grid icon name in the bottom row can be clipped
+
+**Changed:**
+- Hotkeys `Super + Tab` always switches workspaces, even when secondary monitor is connected, `Alt + Tab` switches between monitors
+- App icon action *Move App to Current Workspace* now moves the windows to the monitor with the mouse pointer
+- Refactored and optimized V-Shell-specific overview transitions
+
+
+### v48.9 (2025-06-08)
+**Added:**
+- French translation by @p-sage (#236)
+- Keyboard shortcuts in Overview:
+  - `Shift + Arrow` to move a window between workspaces
+  - `Ctrl + Shift + Arrow` to move a window to a new workspace
+- New window preview options: *Window Title Position/ Visibility* > *On Top / On Top - Always Visible* for better navigation between similar looking windows 
+
+**Fixed:**
+- Window preview selection not working after switching workspaces with Page Up/Down
+- Window title readability issue on secondary monitors (#238)
+- `Ctrl + Shift + Del` closed all windows on the workspace instead of just the current monitor
+- Missing default value for the App Grid Brightness in profiles 2-4
+- Search view style glitches
+
+**Changed:**
+- `Tab` key workspace switcher in the Overview now ignores the last empty workspace 
+
+
+### v48.8 (2025-05-07)
+**Added:**
+- A search view style option that allows using the dark background style even outside of static workspace overview mode
+
+**Fixed:**
+- Workspace thumbnails can stuck with 0 vertical scale
+- Tab key navigation inside app grid, including app folders
+- Overview background transition from the search view
+- Default app grid search result sometimes not seleceted
+- Short search entry transition when search results use dark background
+- App Grid icons may overlap the search entry if the *App Grid Page Height Scale* is set above 80 and *Filter App Grid View* search mode is active
+
+
+### v48.7 (2025-04-24)
+**Added:**
+- Hotkeys `Shift+Enter` and `Ctrl+Shift+Enter` to move the selected window and all windows of the selected app, respectively, to another monitor (if connected) from the Activities overview. The target monitor is the one with the mouse pointer or the next monitor on the list if the pointer is on the same monitor
+
+
+### v48.6 (2025-04-15)
+**Added:**  
+- Options to sort and automatically select window previews in the overview — *Behavior → Workspace Preview → Sort Windows / Select Window*
+- Support for searching apps by package type (Snap, Flatpak, AppImage)
+- Text shadows for search results to improve readability on light backgrounds
+- *Window Height Compensation* option in the *Behavior* tab’s *Workspace Preview* section, which controls the amount of height compensation for smaller window previews (#227)
+- The *Show Wallpaper* option now has two choices: *Enable – Fast Blur Transition* and *Enable – Smooth Blur Transition*. Both are actually smooth, but the fast method uses an opacity transition between two layers, while the latter directly controls the blur effect radius during the transition, which has higher hardware performance requirements
+- Separate background brightness option for the App Grid
+- Workspace thumbnail animation when reordering workspaces (using Shift+Page Up/Down or Shift+Scroll Up/Down in the overview)
+- Launch animation when a folder icon is dropped on a workspace thumbnail
+- Option *Include Settings Panels in App Results* in the *Search* section of the *Behavior* tab, allowing you to access GNOME Settings panels more quickly from the app search results
+- *Delete* hotkey for closing windows from the Overview
+- *Super+Tab* hotkey can now be used in the Overview to cycle keyboard focus through monitors on multi-monitor systems, or through workspaces on single-monitor systems
+- App search provider: Double-dot `..` prefix to the search query allows you to isolate system actions (*Power Off*, *Log Out*, etc.)
+
+**Fixed:**  
+- Workspace preview scaling after reordering workspaces
+- App Grid page navigation arrows not being vertically centered in app folders
+- Inconsistent spacing between the title and icon grid in app folder dialogs
+- Overview background transition glitch when static overview mode is active
+- Overview background blur not updating immediately when the wallpaper is changed (#223)
+- Overview glitching after changing configuration settings
+- Potential incorrect window preview scaling when *Expose Windows on Hover* mode is active
+- Overview background blur and brightness configuration breaking after a wallpaper image change
+- Workspace thumbnails' background covering windows after a wallpaper image change
+- The *Always Activate Selected* option overriding window activation from the dash
+- The *Click Empty Space to Close* option interfering with window preview click actions
+
+**Changed:**  
+- Removed the vignette effect (darkened edges) from the overview background, allowing the same brightness for both the desktop and the overview
+- Search view style for the *Static Workspace* overview mode, making the search entry part of the search results panel
+
+
+### v48.5 (2025-03-12)
+**Fixed:**
+- Workspace preview in the overview not responding to clicks
+
+
+### v48.4 (2025-03-10)
+**Added:**
+- App Grid option "Remember Page", which allows you to open the app grid and app folders on the last page you left instead of always opening on the first one
+
+**Fixed:**
+- *App Grid Search Mode* focus navigation - now the keyboard navigation follows the default search view behavior and allows seamless navigation between the search entry and app grid icons using the Tab and Arrow keys
+- Dash can be below workspace in the overview
+- Tab key navigation between windows in the overview doesnt work (upstream bug [5345](https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/5345) introduced in GNOME 40, fixed by implementing merge request [2591](https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/2591))
+- Double-press Super key action is hard to activate when animation time is set too short
+- Minor glitches
+
+
+### v48.3 (2025-03-02)
+**Added:**
+- Options to hide the *Close* button and configure the *Remove folder* button in the app folder dialog
+
+**Fixed:**
+- Possible overview background glitching when related settings were changed during a session
+- Panel visibility transitions and glitching at startup
+- App folder opens last used page instead of the first one (upstream bug)
+- Dash is not always on top in the overview
+ 
+
+### v48.2 (2025-02-18)
+**Fixed:**
+- Compatibility with GNOME 48.beta
+- Glitching blurred background on secondary monitor
+- Poor performance when transitioning to a blurred background
+- App folder dialog padding
+- Errors after opening overview when workspaces are disabled on secondary monitors
+- Errors when reconnecting monitors
+- Overview transitions when using multiple overview modes
+- Refactored Panel module; fixed issue where hidden panel was visible on adjacent monitor
+- Spacing in switch workspace animation
+
+
+### v48.1 (2025-02-07)
+**Fixed:**
+- *Workspace Switcher Mode* > *Current Monitor* buggy in GNOME 48
+
+### v48.0 (2025-02-02)
+**Added:**
+- GNOME 48 support
+- Panel overview style option
+
+**Fixed:**
+- Panel not being visible when set to *Overview Only* and *Static Workspace* overview mode is activated while the global overview mode configuration differs
+
+
+### v47.5 (2025-01-27)
+**Added:**
+- The maximum number of search results can now be set to less than 5
+- New workspace animation options: *All Workspaces* and *Active Workspace Only*. Previously, V-Shell only supported the *Active Workspace Only* animation
+
+**Fixed:**
+- Search results lose focus when the overview animation finishes
+- App grid becomes invisible when *Filtered App Grid View* search is activated during the overview animation
+- When static workspace mode is enabled, changing the workspace mode (using *arrow* or *Tab* keys) during the overview animation is not possible
+- *Show WS Thumbnail Label on Hover* option causes thumbnails to crash
+- Default search result is not selected when *WSP* extension is activated from V-Shell
+- Secondary monitor workspace thumbnails animation ends (and begins) before reaching the edge of the monitor
+- Search entry style switching in Static Overview mode
+
+**Changed:**
+- Search view transitions have been refactored and improved
+- WS 40+ profile overview transitions have been adjusted to behave more similarly to the default GNOME Shell
+
+
+### v47.4 (2025-01-14)
+**Added:**
+- Options to control added app menu items (#210)
+
+**Fixed:**
+- Workspace thumbnails may change size when searching for apps in the app grid with *Filtered App Grid View* option enabled 
+
+
+### v47.3 (2025-01-10 e.g.o)
+**Fixed:**
+- Dash: Overview closes after moving app windows to the current workspace using Shift+Click
+- Dash: Unexpected behavior when clicking an app icon with Isolate workspace or Click action > Prefer workspace options enabled
+
+
+### v47.2 (2025-01-08 e.g.o)
+**Fixed:**
+- Overview background transition in Static Workspace mode
+- Overview and app folder animations not starting from the beginning
+- Workspace thumbnails changing size at the end of a trackpad gesture
+- Dash app label spacing when GNOME Shell 3.x style is disabled in vertical orientation
+- Sorting of search results in the app grid view when the *Filtered App Grid View* option is enabled
+- Secondary monitor workspace preview position when *Shift Overview by Panel Height* enabled
+- Secondary button click on app folder icon closes overview when *Click Emty Space to Close* option enabled
+- Clicking on workspace thumbnails closes overview when *Click Empty Space to Close* option is enabled
+- Clicking on the last workspace thumbnail in static workspace mode not exposing windows
+- Window preview middle button action set to *Create Window Thumbnail* only works when the secondary button is set the same
+
+**Added**
+- Activate current window after entering overview
+
+**Changed:**
+- Removed spacing between workspaces in workspace switcher animation
+
+
+### v47.1 (2024-11-21)
+**Added:**
+- Italian translation
+- Czech translation
+
+**Fixed:**
+- Visual glitch in dash icons
+- Spacing in the Profie page of the Settings window 
+
+### v47.0 (2024-09-27)
+**Added:**
+- GNOME 47 support
+
+### v46.4 for GNOME 45.2+ (moved to 47.0), v44.14 for GNOME 42-44 (not yet released)
 **Fixed:**
 - App grid: Inconsistent grid size on the same monitor when switching monitors (#160)
 - App grid: The grid layout manager's current page being out of sync with the grid's current page causes page shifts while dragging app icons and incorrect page navigation controls (#160, upstream bug)
@@ -430,4 +638,3 @@ GNOME 47 support
 - Workspace and App Grid animation options.
 - Option to automatically switch `(Shift +) Super + Page Up/Down` keyboard shortcuts for the current workspace orientation.
 - Option to expand workspace thumbnails to entire height of the work area at the expense of Dash width.
-
