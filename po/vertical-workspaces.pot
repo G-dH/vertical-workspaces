@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vertical-workspaces\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-06 19:02+0200\n"
+"POT-Creation-Date: 2025-08-29 12:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1449,7 +1449,7 @@ msgid ""
 msgstr ""
 
 #: prefs.js:1657
-msgid "Show on Primary Monitor (Default)"
+msgid "Show on All Monitors (Default)"
 msgstr ""
 
 #: prefs.js:1658
@@ -2166,37 +2166,37 @@ msgstr ""
 msgid "Enjoying V-Shell? Consider supporting it by buying me a coffee!"
 msgstr ""
 
-#: extension.js:567
+#: extension.js:565
 #, javascript-format
 msgid "Profile %d has been updated"
 msgstr ""
 
-#: lib/dash.js:1002
+#: lib/dash.js:1011
 msgid "Force Quit"
 msgstr ""
 
-#: lib/dash.js:1011
+#: lib/dash.js:1020
 #, javascript-format
 msgid "Close %d Windows on Current Workspace"
 msgstr ""
 
-#: lib/dash.js:1030
+#: lib/dash.js:1039
 msgid "Move App to Current Workspace [Shift + Click]"
 msgstr ""
 
-#: lib/dash.js:1040
+#: lib/dash.js:1049
 msgid "Create Window Thumbnail (PiP)"
 msgstr ""
 
-#: lib/util.js:723
+#: lib/util.js:775
 msgid "Updating V-Shell"
 msgstr ""
 
-#: lib/search.js:372
+#: lib/search.js:383
 msgid "Searching…"
 msgstr ""
 
-#: lib/search.js:374
+#: lib/search.js:386
 msgid "No results."
 msgstr ""
 
