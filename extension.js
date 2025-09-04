@@ -212,8 +212,6 @@ export default class VShell extends Extension.Extension {
 
         // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
         this._setInitialWsIndex();
-
-        // this._resetShellProperties();
     }
 
     removeVShell() {
@@ -262,11 +260,6 @@ export default class VShell extends Extension.Extension {
         const dash = controls.layoutManager._dash;
         // Restore default dash background style
         dash._background.set_style('');
-        dash.translation_x = 0;
-        dash.translation_y = 0;
-        controls._thumbnailsBox.translation_x = 0;
-        controls._thumbnailsBox.translation_y = 0;
-        controls._searchEntryBin.translation_y = 0;
         controls._workspacesDisplay.scale_x = 1;
         controls.set_child_above_sibling(controls._workspacesDisplay, null);
         delete controls._dashIsAbove;
@@ -279,7 +272,7 @@ export default class VShell extends Extension.Extension {
 
         controls._searchEntryBin.visible = true;
         controls._searchController._searchResults.opacity = 255;
-        Main.layoutManager.panelBox.translationY = 0;
+        Main.layoutManager.panelBox.translation_y = 0;
     }
 
     _removeTimeouts() {
@@ -590,7 +583,6 @@ export default class VShell extends Extension.Extension {
         else
             Me.Modules.workspaceModule.setWindowPreviewMaxScale(0.95);
 
-        Main.overview._overview.controls._searchEntryBin.visible = opt.SHOW_SEARCH_ENTRY;
         Main.overview.searchEntry.opacity = 255;
         St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
 

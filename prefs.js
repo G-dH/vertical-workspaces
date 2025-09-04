@@ -1649,7 +1649,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Workspace Switcher Popup Mode'),
-                _('This popup shows up when you switch workspace using a keyboard shortcut or gesture outside of the overview. You can to disable the popup at all, or show it on the current monitor (the one with mouse pointer) instead of the primary.'),
+                _('This popup shows up when you switch workspace using a keyboard shortcut or gesture outside of the overview. You can disable the popup at all, or show it on the current monitor (the one with mouse pointer) instead of the primary.'),
                 itemFactory.newDropDown(),
                 'wsSwPopupMode',
                 [
