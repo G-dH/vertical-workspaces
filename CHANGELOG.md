@@ -1,25 +1,36 @@
 ## Changelog:
 ### v49.0 (not yet released)
-**Added:**
-- Keyboard shortcuts in Overview:
-  - `Ctrl + Shift + Arrow` to move window directly to an adjacent monitor
-  - The search entry is always visible in the app grid view when app grid search mode is enabled
-  - `Super + Arrows` shortcuts to switch workspace
+**Added**
 
-**Fixed:**
-- Gestures for switching workspaces ignored the *Workspace Switcher Mode* > *Current Monitor* option (fixed only for desktop switcher, stil unsupported in overview)
-- Direct overview transition between desktop and app grid included unneccessary transition to window picker state
-- Search view transitions and visibility
-- Reduced probability of duplicate GObject class names leading to random errors (#243)
-- Performance isues in overview when option *Sort Windows* by *Most Recently Used* was enabled
-- Settings window not updating options sensitivity on module state changed
-- Multi-line app grid icon name in the bottom row can be clipped
-- Window title position set to _Below Window_ placed the title _Inside Window_
+* **Keyboard shortcuts in Overview**:
 
-**Changed:**
-- Hotkeys `Super + Tab` always switches workspaces, even when secondary monitor is connected, `Alt + Tab` switches between monitors
-- App icon action *Move App to Current Workspace* now moves the windows to the monitor with the mouse pointer
-- Refactored and optimized V-Shell-specific overview transitions
+  * `Ctrl + Shift + Arrow` — Move a window directly to an adjacent monitor
+  * `Super + Arrow` — Switch workspace
+  * The search entry is now always visible in the app grid view when *App Grid Search Mode* is enabled
+* New *Dark* Dash style option
+
+**Fixed**
+
+* Workspace switch gestures now respect *Workspace Switcher Mode > Current Monitor* (only for desktop switcher; still unsupported in overview)
+* Direct transitions between desktop and app grid no longer include an unnecessary step through the window picker
+* Search view transitions and visibility issues
+* Reduced risk of duplicate GObject class names causing random errors (#243)
+* Performance issues in overview when *Sort Windows by Most Recently Used* was enabled
+* Settings window now properly updates option sensitivity when module state changes
+* Multi-line app grid icon names in the bottom row are no longer clipped
+* *Window Title Position: Below Window* no longer incorrectly places the title inside the window
+* Workspace switcher *Static Background* animation option no longer causes windows without `wm_class` to disappear (#259)
+* Improved compatibility with *DING* and *Conky* when using workspace switcher *Static Background* animation
+* Overview background now correctly updates after canceling a search started from the App Grid (#258)
+* *App Grid Search Mode* option no longer breaks search from App Grid when the *Search* module is disabled
+
+**Other Changes**
+
+* `Super + Tab` in overview always switches workspaces (even with a secondary monitor connected); `Alt + Tab` switches between monitors
+* App icon action **Move App to Current Workspace** now moves windows to the monitor with the mouse pointer
+* Refactored and optimized V-Shell-specific overview transitions
+* Updated Italian translation
+* Updated French translation
 
 
 ### v48.9 (2025-06-08)
