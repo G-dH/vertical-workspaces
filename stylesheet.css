@@ -90,7 +90,14 @@
 
 .dash-background-light {
 	background-color: rgb(200, 200, 200);
-	border-color: rgba(150, 150, 150, 0.4);
+	border-color: rgb(150, 150, 150);
+	border: solid 1px;
+}
+
+.dash-background-dark {
+	background-color: rgb(20, 20, 20);
+	border-color: rgb(50, 50, 50);
+	border: solid 1px;
 }
 
 .app-grid-running-dot-custom {
@@ -141,6 +148,7 @@
 
 .window-caption-top{
 	border-radius: 10px 10px 0px 0px;
+	background-color: rgb(20,20,20);;
 }
 
 /* app grid page indicators */

@@ -662,6 +662,7 @@ export default class VShell extends ExtensionPreferences {
                 [
                     [_('Default'), 0],
                     [_('Light'), 1],
+                    [_('Dark'), 2],
                 ],
                 'dashModule'
             )
