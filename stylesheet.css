@@ -175,7 +175,7 @@
 	margin-right: 10px;
 }
 
-.search-entry{
+.search-entry-mod{
 	margin: 0;
 	margin-top: 12px;
 	/*margin-bottom: 6px;*/
@@ -184,16 +184,16 @@
 	border-color: rgba(160, 160, 160, 0.4);
 }
 
-.search-entry StLabel.hint-text {
-	color: rgba(200, 200, 200, 0.5);
+.search-entry-mod StLabel.hint-text {
+	color: rgba(255, 255, 255, 0.7);
 }
 
-.search-entry:hover,
-.search-entry:focus {
+.search-entry-mod:hover,
+.search-entry-mod:focus {
 	background-color: rgba(200, 200, 200, 0.1);
 }
 
-.search-entry, .search-section-content, .search-entry, .search-statustext, .list-search-result-description {
+.search-entry-mod, .search-section-content, .search-statustext, .list-search-result-description {
 	text-shadow: 1px 1px 5px rgba(33, 33, 33, 0.4);
 }
 
