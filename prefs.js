@@ -109,7 +109,7 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(itemFactory.getRowWidget(
             _('Save your configurations'),
-            _("The predefined sets of settings, which can help you with the initial configuration and exploring V-Shell's possibilities, can be renamed and overridden by your own configurations"),
+            _('Predefined sets of settings that may help you with the initial setup and exploration of V-Shell options can be overridden by your own configurations'),
             itemFactory.newLabel()
         ));
 
