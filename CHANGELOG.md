@@ -1,5 +1,5 @@
 ## Changelog:
-### v49.0 (not yet released)
+### v49.0 (2025-09-19)
 **Added**
 
 * **Keyboard shortcuts in Overview**:
