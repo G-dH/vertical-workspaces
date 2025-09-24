@@ -343,8 +343,8 @@ StButton#vhandle,
 }
 
 /* GS 47 removed the top margin that V-Shell expects */
-#dash.dash-46 {
-	 margin-top: 12px;
+#dash {
+	margin-top: 12px;
 }
 
 #dash.dash-46 .overview-tile:hover .overview-icon,
