@@ -1,7 +1,16 @@
 ## Changelog:
+### v49.2 (not yet released)
+**Fixed**
+* The *Click Empty Space to Close* overview option on GNOME 49 caused any click in the overview to close it, making its elements unusable ([#264](https://github.com/G-dH/vertical-workspaces/issues/264))
+* Window preview *App Icon Click Action* option was ignored
+
+### v49.1 (2025-09-26)
+**Fixed**
+* Dark Dash style not removed on disable
+* Missing Dash's top margin when Dash module was disabled
+
 ### v49.0 (2025-09-19)
 **Added**
-
 * **Keyboard shortcuts in Overview**:
 
   * `Ctrl + Shift + Arrow` — Move a window directly to an adjacent monitor
@@ -10,7 +19,6 @@
 * New *Dark* Dash style option
 
 **Fixed**
-
 * Workspace switch gestures now respect *Workspace Switcher Mode > Current Monitor* (only for desktop switcher; still unsupported in overview)
 * Direct transitions between desktop and app grid no longer include an unnecessary step through the window picker
 * Search view transitions and visibility issues
