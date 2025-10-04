@@ -1,5 +1,5 @@
 ## Changelog:
-### v49.2 (not yet released)
+### v49.2 (2025-10-04)
 **Fixed**
 * The *Click Empty Space to Close* overview option on GNOME 49 caused any click in the overview to close it, making its elements unusable ([#264](https://github.com/G-dH/vertical-workspaces/issues/264))
 * Window preview *App Icon Click Action* option was ignored
