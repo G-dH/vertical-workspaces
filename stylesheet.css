@@ -391,7 +391,6 @@ StButton#vhandle,
 	background-color: rgba(200, 200, 200, 0.08);
 }
 
-
 #dash.vertical-46 {
 	margin: 0px;
 	padding: 0px;
@@ -421,6 +420,11 @@ StButton#vhandle,
 	margin-left: 2px;
 	margin-top: 4px;
 	margin-bottom: 4px;
+}
+
+/* compensate dot offset by 1px compared to default 2*$base_padding*/
+#dash .app-grid-running-dot-offset {
+	offset-y: -13px;
 }
 
 #dash.vertical-46 .app-grid-running-dot {
