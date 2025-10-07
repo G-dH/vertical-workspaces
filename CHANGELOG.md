@@ -1,13 +1,21 @@
 ## Changelog:
+### v49.3 (not yet released)
+**Fixed**
+- Secondary monitors workspace clipping when App Grid is open ([#247](https://github.com/G-dH/vertical-workspaces/issues/247))
+- Running dot 1px off with custom dash background ([#262](https://github.com/G-dH/vertical-workspaces/issues/262))
+
+
 ### v49.2 (2025-10-04)
 **Fixed**
 * The *Click Empty Space to Close* overview option on GNOME 49 caused any click in the overview to close it, making its elements unusable ([#264](https://github.com/G-dH/vertical-workspaces/issues/264))
 * Window preview *App Icon Click Action* option was ignored
 
+
 ### v49.1 (2025-09-26)
 **Fixed**
 * Dark Dash style not removed on disable
 * Missing Dash's top margin when Dash module was disabled
+
 
 ### v49.0 (2025-09-19)
 **Added**
