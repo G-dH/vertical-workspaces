@@ -3,6 +3,7 @@
 **Fixed**
 - Secondary monitors workspace clipping when App Grid is open ([#247](https://github.com/G-dH/vertical-workspaces/issues/247))
 - Running dot 1px off with custom dash background ([#262](https://github.com/G-dH/vertical-workspaces/issues/262))
+- Glitching of workspace tumbnails on secondary monitors when using 3 finger gestures 
 
 
 ### v49.2 (2025-10-04)
