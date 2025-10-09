@@ -760,7 +760,7 @@ export default class VShell extends Extension.Extension {
     _getNeighbor(direction) {
         // workspace matrix is supported
         const activeIndex = this.index();
-        const ignoreLast = Meta.prefs_get_dynamic_workspaces() && ((opt.WS_IGNORE_LAST && !Main.overview._shown) || opt.forceIgnoreLast) ? 1 : 0;
+        const ignoreLast = Meta.prefs_get_dynamic_workspaces() && (opt.WS_IGNORE_LAST && !Main.overview._shown) ? 1 : 0;
         const wraparound = opt.WS_WRAPAROUND;
         const nWorkspaces = global.workspace_manager.n_workspaces;
         const lastIndex = nWorkspaces - 1 - ignoreLast;
