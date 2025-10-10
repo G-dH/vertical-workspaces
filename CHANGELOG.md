@@ -1,4 +1,10 @@
 ## Changelog:
+### v49.4 (not yet released)
+**Fixed**
+- Search results' scroll bar style
+- Window title could appear under the dash if set to *Below Window*
+
+
 ### v49.3 (2025-10-10)
 **Fixed**
 - Secondary monitors workspace clipping when App Grid is open ([#247](https://github.com/G-dH/vertical-workspaces/issues/247))
