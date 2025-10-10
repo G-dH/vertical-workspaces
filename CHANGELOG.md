@@ -1,5 +1,5 @@
 ## Changelog:
-### v49.3 (not yet released)
+### v49.3 (2025-10-10)
 **Fixed**
 - Secondary monitors workspace clipping when App Grid is open ([#247](https://github.com/G-dH/vertical-workspaces/issues/247))
 - Running dot 1px off with custom dash background ([#262](https://github.com/G-dH/vertical-workspaces/issues/262))
