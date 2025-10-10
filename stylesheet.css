@@ -225,7 +225,7 @@
 /*.vfade { -st-vfade-offset: 30px; }
 .hfade { -st-hfade-offset: 30px; }*/
 
-StButton#vhandle,
+StButton#vhandle, StWidget .vhandle,
 .search-section-content {
 	background-color: rgba(200, 200, 200, 0.08);
 	border: solid 1px rgba(150, 150, 150, 0.3);
