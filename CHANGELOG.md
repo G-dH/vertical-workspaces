@@ -1,6 +1,7 @@
 ## Changelog:
 ### v49.4 (not yet released)
 **Fixed**
+- Overview transitions when search was triggered before the overview show animation finished
 - Search results' scroll bar style
 - Window title could appear under the dash if set to *Below Window*
 
