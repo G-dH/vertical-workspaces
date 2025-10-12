@@ -1,5 +1,5 @@
 ## Changelog:
-### v49.4 (not yet released)
+### v49.4 (2025-10-12)
 **Fixed**
 - Overview transitions when search was triggered before the overview show animation finished
 - Search results' scroll bar style
