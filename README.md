@@ -50,6 +50,8 @@ V-Shell fixes the Tab key navigation and adds more hotkeys to control windows an
 |`Ctrl + Tab`                                        | Focus Dash|
 |`Shift + click (activate)` app icon                 | Move all windows of the application to the current workspace. Works in Dash, Search and App Grid, you can use mouse click or *Enter* and *Space* keys to activate the icon|
 |`Shift + Page Up/Down`, `Shift + Scroll`            | Reorder current workspace|
+|`Shift + Arrow`                                     | Move window to an adjacent workspace in the arrow dirrection|
+|`Ctrl + Shift + Arrow`                              | Move window to a new workspace created next to the current one in the arrow dirrection|
 |`Shift + Enter`                                     | Move selected window to the next monitor|
 |`Ctrl + Shift + Enter`                              | Move all windows of the selected application from the current monitor to the next monitor|
 |`Super + Shift + Arrow`                             | Move window to the adjecent monitor in the `Arrow` key direction|
