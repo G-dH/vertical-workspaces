@@ -1,4 +1,16 @@
 ## Changelog:
+### v49.5 (not yet released)
+**Fixed**
+- Cliping of workspace n primary monitor if *Workspace Preview Animation* is disabled
+- Dash icom *Scroll action* > *Cycle App Windows* could fail on multi-monitor system
+
+**Added**
+- Search: *--* prefix to restrict the overview search to the *GNOME Settings* panels
+
+**Other Changes**
+- Updated predefined configuration Profiles
+
+
 ### v49.4 (2025-10-12)
 **Fixed**
 - Overview transitions when search was triggered before the overview show animation finished
