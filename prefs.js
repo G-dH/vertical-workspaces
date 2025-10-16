@@ -137,6 +137,12 @@ export default class VShell extends ExtensionPreferences {
             itemFactory.newPresetButton(this.opt, 4)
         ));
 
+        optionList.push(itemFactory.getRowWidget(
+            _('Profile 5'),
+            null,
+            itemFactory.newPresetButton(this.opt, 5)
+        ));
+
         return optionList;
     }
 
@@ -1430,7 +1436,7 @@ export default class VShell extends ExtensionPreferences {
                 [
                     [_('Activate Window (Default)'), 0],
                     [_('Close Window'), 1],
-                    [_('Search For Same App Windows'), 2],
+                    [_('Search For Same App Windows'), 2],  
                     [_('Create Window Thumbnail/PiP (requires WTMB extension)'), 3],
                 ],
                 'windowPreviewModule'
