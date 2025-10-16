@@ -31,15 +31,6 @@
     <key type="i" name="show-app-icon-position">
       <default>0</default>
     </key>
-    <key type="i" name="dash-show-windows-icon">
-      <default>1</default>
-    </key>
-    <key type="i" name="dash-show-recent-files-icon">
-      <default>1</default>
-    </key>
-    <key type="i" name="dash-show-extensions-icon">
-      <default>1</default>
-    </key>
     <key type="i" name="wst-position-adjust">
       <default>-100</default>
     </key>
@@ -123,9 +114,6 @@
     </key>
     <key type="i" name="search-bg-brightness">
       <default>30</default>
-    </key>
-    <key type="b" name="smooth-blur-transitions">
-      <default>false</default>
     </key>
     <key type="i" name="app-grid-animation">
       <default>4</default>
@@ -424,9 +412,6 @@
     </key>
     <key type="b" name="app-favorites-module">
       <default>true</default>
-    </key>
-    <key type="b" name="recent-files-search-provider-module">
-      <default>false</default>
     </key>
 
     <key type="b" name="aaa-loading-profile">
