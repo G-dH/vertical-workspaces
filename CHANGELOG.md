@@ -6,6 +6,7 @@
 
 **Added**
 - Search: *--* prefix to restrict the overview search to the *GNOME Settings* panels
+- Profile 5 with configuration as close to Vanilla GNOME as currently possible
 
 **Other Changes**
 - Updated predefined configuration Profiles
