@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vertical-workspaces\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-16 14:17+0200\n"
+"POT-Creation-Date: 2025-10-18 22:38+0200\n"
 "PO-Revision-Date: 2023-05-04 14:03+0200\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: \n"
@@ -280,10 +280,7 @@ msgstr "Ruimte tussen werkbladen"
 msgid ""
 "Adjusts spacing in pixels between workspace previews, allowing you to "
 "control how much the adjacent workspaces overlap in the current workspace "
-"overview. Setting the value above 349 pixels disables the visibility of "
-"workspaces other than the current one during transitions to/from the app "
-"grid view, which can also save some graphical resources if many windows are "
-"open on other workspaces"
+"overview"
 msgstr ""
 "Pas de ruimte tussen werkbladvoorvertoningen aan zodat u zelf kunt bepalen "
 "hoeveel werkbladen mogen overlappen. De standaardwaarde ligt buiten het "
@@ -1397,7 +1394,7 @@ msgid "Close Window"
 msgstr "Geopende vensters"
 
 #: prefs.js:1439 prefs.js:1455 prefs.js:1470
-msgid "Search For Same App Windows"
+msgid "Search For Same App Windows (requires WSP extension)"
 msgstr ""
 
 #: prefs.js:1440 prefs.js:1456 prefs.js:1471
@@ -2447,25 +2444,25 @@ msgstr ""
 msgid "Profile %d has been updated"
 msgstr ""
 
-#: lib/dash.js:1017
+#: lib/dash.js:1019
 msgid "Force Quit"
 msgstr "Toepassing gedwongen afsluiten"
 
-#: lib/dash.js:1026
+#: lib/dash.js:1028
 #, javascript-format
 msgid "Close %d Windows on Current Workspace"
 msgstr ""
 
-#: lib/dash.js:1045
+#: lib/dash.js:1047
 #, fuzzy
 msgid "Move App to Current Workspace [Shift + Click]"
 msgstr "Toepassing verplaatsen naar huidig werkblad (Shift+muisklik)"
 
-#: lib/dash.js:1055
+#: lib/dash.js:1057
 msgid "Create Window Thumbnail (PiP)"
 msgstr ""
 
-#: lib/util.js:773
+#: lib/util.js:777
 msgid "Updating V-Shell"
 msgstr ""
 

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vertical-workspaces\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-16 14:17+0200\n"
-"PO-Revision-Date: 2025-10-16 14:20+0200\n"
+"POT-Creation-Date: 2025-10-18 22:38+0200\n"
+"PO-Revision-Date: 2025-10-18 22:40+0200\n"
 "Last-Translator: p-sage\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -278,18 +278,11 @@ msgstr "Espacement des espaces de travail"
 msgid ""
 "Adjusts spacing in pixels between workspace previews, allowing you to "
 "control how much the adjacent workspaces overlap in the current workspace "
-"overview. Setting the value above 349 pixels disables the visibility of "
-"workspaces other than the current one during transitions to/from the app "
-"grid view, which can also save some graphical resources if many windows are "
-"open on other workspaces"
+"overview"
 msgstr ""
-"Ajuste l'espacement en pixels entre les aperçus des espaces de travail, ce "
-"qui vous permet de contrôler le chevauchement des espaces adjacents dans "
-"l'aperçu actuel. Une valeur supérieure à 349 pixels désactive la visibilité "
-"des espaces de travail autres que l'espace actuel lors des transitions vers/"
-"depuis la vue Grille d'applications, ce qui permet également d'économiser "
-"des ressources graphiques si de nombreuses fenêtres sont ouvertes sur "
-"d'autres espaces de travail"
+"Ajuste l'espacement en pixels entre les aperçus des espaces de travail, vous "
+"permettant de contrôler le chevauchement des espaces de travail adjacents "
+"dans l'aperçu de l'espace de travail actuel"
 
 #: prefs.js:360
 msgid "Center App Grid"
@@ -1424,8 +1417,8 @@ msgid "Close Window"
 msgstr "Fermer la fenêtre"
 
 #: prefs.js:1439 prefs.js:1455 prefs.js:1470
-msgid "Search For Same App Windows"
-msgstr "Rechercher parmi les fenêtres de la même application"
+msgid "Search For Same App Windows (requires WSP extension)"
+msgstr "Rechercher la même fenêtre d'application (nécessite l'extension WSP)"
 
 #: prefs.js:1440 prefs.js:1456 prefs.js:1471
 msgid "Create Window Thumbnail/PiP (requires WTMB extension)"
@@ -2551,24 +2544,24 @@ msgstr "Vous appréciez V-Shell ? Soutenez-la en m'offrant un café !"
 msgid "Profile %d has been updated"
 msgstr "Le profil %d a été mis à jour"
 
-#: lib/dash.js:1017
+#: lib/dash.js:1019
 msgid "Force Quit"
 msgstr "Forcer à quitter"
 
-#: lib/dash.js:1026
+#: lib/dash.js:1028
 #, javascript-format
 msgid "Close %d Windows on Current Workspace"
 msgstr "Fermer %d fenêtre(s) de l'espace de travail actuel"
 
-#: lib/dash.js:1045
+#: lib/dash.js:1047
 msgid "Move App to Current Workspace [Shift + Click]"
 msgstr "Déplacer l'application vers l'espace de travail actuel [Shift + clic]"
 
-#: lib/dash.js:1055
+#: lib/dash.js:1057
 msgid "Create Window Thumbnail (PiP)"
 msgstr "Créer une vignette de fenêtre (PiP)"
 
-#: lib/util.js:773
+#: lib/util.js:777
 msgid "Updating V-Shell"
 msgstr "Mise à jour de V-Shell"
 
@@ -2614,3 +2607,22 @@ msgstr "Charger le profil"
 #: lib/optionsFactory.js:340
 msgid "Save current settings into this profile"
 msgstr "Enregistrer les paramètres actuels dans ce profil"
+
+#~ msgid ""
+#~ "Adjusts spacing in pixels between workspace previews, allowing you to "
+#~ "control how much the adjacent workspaces overlap in the current workspace "
+#~ "overview. Setting the value above 349 pixels disables the visibility of "
+#~ "workspaces other than the current one during transitions to/from the app "
+#~ "grid view, which can also save some graphical resources if many windows "
+#~ "are open on other workspaces"
+#~ msgstr ""
+#~ "Ajuste l'espacement en pixels entre les aperçus des espaces de travail, "
+#~ "ce qui vous permet de contrôler le chevauchement des espaces adjacents "
+#~ "dans l'aperçu actuel. Une valeur supérieure à 349 pixels désactive la "
+#~ "visibilité des espaces de travail autres que l'espace actuel lors des "
+#~ "transitions vers/depuis la vue Grille d'applications, ce qui permet "
+#~ "également d'économiser des ressources graphiques si de nombreuses "
+#~ "fenêtres sont ouvertes sur d'autres espaces de travail"
+
+#~ msgid "Search For Same App Windows"
+#~ msgstr "Rechercher parmi les fenêtres de la même application"
