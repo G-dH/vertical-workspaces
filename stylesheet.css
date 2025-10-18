@@ -343,7 +343,7 @@ StButton#vhandle, StWidget .vhandle,
 }
 
 /* GS 47 removed the top margin that V-Shell expects */
-#dash {
+.dash-top-margin {
 	margin-top: 12px;
 }
 
