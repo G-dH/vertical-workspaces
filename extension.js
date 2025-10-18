@@ -206,7 +206,7 @@ export default class VShell extends Extension.Extension {
         // update overview background wallpaper if enabled, but don't set it too early on session startup
         // because it crashes wayland
         if (!Main.layoutManager._startingUp || Meta.is_restart())
-            Main.overview._overview.controls._setBackground();
+            Main.overview._overview.controls._setBackground?.bind(Main.overview._overview.controls)();
 
         this._updateSettingsConnection();
 
@@ -225,7 +225,7 @@ export default class VShell extends Extension.Extension {
         this._removeTimeouts();
 
         this._removeConnections();
-        Main.overview._overview.controls._setBackground(reset);
+        Main.overview._overview.controls._setBackground?.bind(Main.overview._overview.controls)(reset);
 
         // remove changes made by VShell modules
         this._updateOverrides(reset);
@@ -313,7 +313,7 @@ export default class VShell extends Extension.Extension {
     _updateConnections() {
         if (!this._monitorsChangedConId) {
             this._monitorsChangedConId = Main.layoutManager.connect(
-                'monitors-changed', () => Main.overview._overview.controls._setBackground()
+                'monitors-changed', () => Main.overview._overview.controls._setBackground?.bind(Main.overview._overview.controls)()
             );
         }
 
@@ -527,7 +527,7 @@ export default class VShell extends Extension.Extension {
         Me.Modules.panelModule.update();
         Me.Modules.dashModule.update();
         this._updateSettings();
-        Main.overview._overview.controls._setBackground();
+        Main.overview._overview.controls._setBackground?.bind(Main.overview._overview.controls)();
     }
 
     _updateSettings(settings, key) {
@@ -598,8 +598,7 @@ export default class VShell extends Extension.Extension {
         if (opt.SEARCH_VIEW_ANIMATION)
             opt.SEARCH_DELAY = 150;
 
-        if (Main.overview._overview.controls._setBackground)
-            Main.overview._overview.controls._setBackground();
+        Main.overview._overview.controls._setBackground?.bind(Main.overview._overview.controls)();
 
         if (settings)
             this._applySettings(key);
