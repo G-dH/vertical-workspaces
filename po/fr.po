@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: vertical-workspaces\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-18 22:38+0200\n"
-"PO-Revision-Date: 2025-10-18 22:40+0200\n"
+"PO-Revision-Date: 2025-10-18 22:49+0200\n"
 "Last-Translator: p-sage\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -1418,7 +1418,9 @@ msgstr "Fermer la fenêtre"
 
 #: prefs.js:1439 prefs.js:1455 prefs.js:1470
 msgid "Search For Same App Windows (requires WSP extension)"
-msgstr "Rechercher la même fenêtre d'application (nécessite l'extension WSP)"
+msgstr ""
+"Rechercher parmi les fenêtres de la même application (nécessite l'extension "
+"WSP)"
 
 #: prefs.js:1440 prefs.js:1456 prefs.js:1471
 msgid "Create Window Thumbnail/PiP (requires WTMB extension)"
