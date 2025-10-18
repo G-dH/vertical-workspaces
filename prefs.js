@@ -342,7 +342,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Workspaces Spacing'),
-                _('Adjusts spacing in pixels between workspace previews, allowing you to control how much the adjacent workspaces overlap in the current workspace overview. Setting the value above 349 pixels disables the visibility of workspaces other than the current one during transitions to/from the app grid view, which can also save some graphical resources if many windows are open on other workspaces'),
+                _('Adjusts spacing in pixels between workspace previews, allowing you to control how much the adjacent workspaces overlap in the current workspace overview'),
                 wsSpacingScale,
                 'wsMaxSpacing'
             )
@@ -1436,7 +1436,7 @@ export default class VShell extends ExtensionPreferences {
                 [
                     [_('Activate Window (Default)'), 0],
                     [_('Close Window'), 1],
-                    [_('Search For Same App Windows'), 2],  
+                    [_('Search For Same App Windows (requires WSP extension)'), 2],
                     [_('Create Window Thumbnail/PiP (requires WTMB extension)'), 3],
                 ],
                 'windowPreviewModule'
@@ -1452,7 +1452,7 @@ export default class VShell extends ExtensionPreferences {
                 [
                     [_('Activate Window (Default)'), 0],
                     [_('Close Window'), 1],
-                    [_('Search For Same App Windows'), 2],
+                    [_('Search For Same App Windows (requires WSP extension)'), 2],
                     [_('Create Window Thumbnail/PiP (requires WTMB extension)'), 3],
                 ],
                 'windowPreviewModule'
@@ -1467,7 +1467,7 @@ export default class VShell extends ExtensionPreferences {
                 'windowIconClickAction',
                 [
                     [_('Activate Window (Default)'), 0],
-                    [_('Search For Same App Windows'), 1],
+                    [_('Search For Same App Windows (requires WSP extension)'), 1],
                     [_('Create Window Thumbnail/PiP (requires WTMB extension)'), 2],
                 ],
                 'windowPreviewModule'
