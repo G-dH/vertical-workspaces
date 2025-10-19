@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vertical-workspaces\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-18 22:38+0200\n"
-"PO-Revision-Date: 2025-10-18 22:49+0200\n"
+"POT-Creation-Date: 2025-10-19 11:43+0200\n"
+"PO-Revision-Date: 2025-10-19 11:44+0200\n"
 "Last-Translator: p-sage\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -2589,10 +2589,8 @@ msgid "Top Left Hot Corner Centric (Vertical WS)"
 msgstr "Coin actif supérieur gauche centré (espaces de travail verticaux)"
 
 #: lib/optionsFactory.js:307
-msgid "Dock-Like Overview, Bottom Hot Edge (Horizontal WS)"
-msgstr ""
-"Vue d'ensemble de type Dock, bord actif inférieur (espaces de travail "
-"horizontaux)"
+msgid "Static Super, Bottom Hot Edge (Horizontal WS)"
+msgstr "Super statique, bord actif inférieur (espaces de travail horizontaux)"
 
 #: lib/optionsFactory.js:308
 msgid "GNOME 4x as close to vanilla as currently possible"

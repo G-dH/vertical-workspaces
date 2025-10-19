@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vertical-workspaces\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-18 22:38+0200\n"
+"POT-Creation-Date: 2025-10-19 11:43+0200\n"
 "PO-Revision-Date: 2025-08-06 12:18+0200\n"
 "Last-Translator: Ludek Vydra <lvtran@u.k2.cz>\n"
 "Language-Team: \n"
@@ -2503,7 +2503,8 @@ msgid "Top Left Hot Corner Centric (Vertical WS)"
 msgstr "Levý horní roh (vertikální plochy)"
 
 #: lib/optionsFactory.js:307
-msgid "Dock-Like Overview, Bottom Hot Edge (Horizontal WS)"
+#, fuzzy
+msgid "Static Super, Bottom Hot Edge (Horizontal WS)"
 msgstr "Přehled podobný doku, aktivní spodní okraj, horizontální plochy"
 
 #: lib/optionsFactory.js:308

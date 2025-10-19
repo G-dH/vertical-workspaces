@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-18 22:38+0200\n"
+"POT-Creation-Date: 2025-10-19 11:43+0200\n"
 "PO-Revision-Date: 2025-08-29 11:36+0200\n"
 "Last-Translator: Jimmy Scionti\n"
 "Language-Team: \n"
@@ -2561,7 +2561,8 @@ msgstr ""
 "Centrato sull'angolo attivo in alto a sinistra (disposizione verticale)"
 
 #: lib/optionsFactory.js:307
-msgid "Dock-Like Overview, Bottom Hot Edge (Horizontal WS)"
+#, fuzzy
+msgid "Static Super, Bottom Hot Edge (Horizontal WS)"
 msgstr ""
 "Panoramica tipo dock, bordo inferiore attivo (disposizione orizzontale)"
 
