@@ -249,23 +249,23 @@ export default class VShell extends Extension.Extension {
     }
 
     _resetShellProperties() {
-        const controls = Main.overview._overview.controls;
+        const controlsManager = Main.overview._overview.controls;
         // layoutManager._dash retains reference to the default dash even when DtD is enabled
-        const dash = controls.layoutManager._dash;
+        const dash = controlsManager.layoutManager._dash;
         // Restore default dash background style
         dash._background.set_style('');
-        controls._workspacesDisplay.scale_x = 1;
-        controls.set_child_above_sibling(controls._workspacesDisplay, null);
-        delete controls._dashIsAbove;
+        controlsManager._workspacesDisplay.scale_x = 1;
+        controlsManager.set_child_above_sibling(controlsManager._workspacesDisplay, null);
+        delete controlsManager._dashIsAbove;
 
         // following properties may be reduced if extensions are rebased while the overview is open
-        controls._thumbnailsBox.remove_all_transitions();
-        controls._thumbnailsBox.scale_x = 1;
-        controls._thumbnailsBox.scale_y = 1;
-        controls._thumbnailsBox.opacity = 255;
+        controlsManager._thumbnailsBox.remove_all_transitions();
+        controlsManager._thumbnailsBox.scale_x = 1;
+        controlsManager._thumbnailsBox.scale_y = 1;
+        controlsManager._thumbnailsBox.opacity = 255;
 
-        controls._searchEntryBin.visible = true;
-        controls._searchController._searchResults.opacity = 255;
+        controlsManager._searchEntryBin.visible = true;
+        controlsManager._searchController._searchResults.opacity = 255;
         Main.layoutManager.panelBox.translation_y = 0;
     }
 
@@ -513,6 +513,8 @@ export default class VShell extends Extension.Extension {
     }
 
     _updateSettings(settings, key) {
+        const controlsManager = Main.overview._overview.controls;
+        const searchEntry = Main.overview.searchEntry;
         // update settings cache and option variables
         opt._updateSettings();
         this._resetShellProperties();
@@ -540,7 +542,7 @@ export default class VShell extends Extension.Extension {
             Main.notify(`${Me.metadata.name}`, _('Profile %d has been updated').format(index));
         }
 
-        opt.WORKSPACE_MIN_SPACING = Main.overview._overview.controls._thumbnailsBox.get_theme_node().get_length('spacing');
+        opt.WORKSPACE_MIN_SPACING = controlsManager._thumbnailsBox.get_theme_node().get_length('spacing');
         // update variables that cannot be processed within settings
         const dash = Main.overview.dash;
         if (Me.Util.dashIsDashToDock()) {
@@ -556,16 +558,16 @@ export default class VShell extends Extension.Extension {
 
         // adjust search entry style for OM2
         if (opt.OVERVIEW_MODE2)
-            Main.overview.searchEntry.add_style_class_name('search-entry-om2');
+            searchEntry.add_style_class_name('search-entry-om2');
         else
-            Main.overview.searchEntry.remove_style_class_name('search-entry-om2');
+            searchEntry.remove_style_class_name('search-entry-om2');
 
         if (opt.OVERVIEW_MODE === 1)
             Me.Modules.workspaceModule.setWindowPreviewMaxScale(0.1);
         else
             Me.Modules.workspaceModule.setWindowPreviewMaxScale(0.95);
 
-        Main.overview.searchEntry.opacity = 255;
+        searchEntry.opacity = 255;
         St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
 
         // Options for workspace switcher, apply custom function only if needed
@@ -580,7 +582,7 @@ export default class VShell extends Extension.Extension {
         if (opt.SEARCH_VIEW_ANIMATION)
             opt.SEARCH_DELAY = 150;
 
-        Main.overview._overview.controls._setBackground?.bind(Main.overview._overview.controls)();
+        controlsManager._setBackground?.bind(controlsManager)();
 
         if (settings)
             this._applySettings(key);
