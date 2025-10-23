@@ -1,15 +1,20 @@
 ## Changelog:
 ### v49.5 (not yet released)
 **Fixed**
-- Cliping of workspace n primary monitor if *Workspace Preview Animation* is disabled
-- Dash icom *Scroll action* > *Cycle App Windows* could fail on multi-monitor system
+- Performance of workspace thumbnails transitions
+- Clipping of workspace on primary monitor if Workspace Preview Animation is disabled
+- Dash icon *Scroll Action* → *Cycle App Windows* could fail on multi-monitor systems
+- Three-finger horizontal gestures in GNOME 49 for vertical workspace orientation
 
 **Added**
-- Search: *--* prefix to restrict the overview search to the *GNOME Settings* panels
-- Profile 5 with configuration as close to Vanilla GNOME as currently possible
+- Vanilla fade-out effect for workspace thumbnails when transitioning to the app grid with *Workspace Preview Animation* set to *All Workspaces*
+- Search: *--* prefix to restrict overview search to GNOME Settings panels
+- Profile 5 with configuration as close to vanilla GNOME as currently possible
+- Slight blur effect to workspace thumbnails if they’re transparent and the blur makes sense
 
 **Other Changes**
-- Updated predefined configuration Profiles
+- Updated predefined configuration profiles
+- Increased the corner radius of the search results background for the *Dark* style
 
 
 ### v49.4 (2025-10-12)
