@@ -203,11 +203,6 @@ export default class VShell extends Extension.Extension {
         // if Dash to Dock detected force enable "Fix for DtD" option
         this._updateFixDashToDockOption();
 
-        // update overview background wallpaper if enabled, but don't set it too early on session startup
-        // because it crashes wayland
-        if (!Main.layoutManager._startingUp || Meta.is_restart())
-            Main.overview._overview.controls._setBackground?.bind(Main.overview._overview.controls)();
-
         this._updateSettingsConnection();
 
         // workaround for upstream bug - overview always shows workspace 1 instead of the active one after restart
@@ -225,7 +220,6 @@ export default class VShell extends Extension.Extension {
         this._removeTimeouts();
 
         this._removeConnections();
-        Main.overview._overview.controls._setBackground?.bind(Main.overview._overview.controls)(reset);
 
         // remove changes made by VShell modules
         this._updateOverrides(reset);
@@ -311,12 +305,6 @@ export default class VShell extends Extension.Extension {
     }
 
     _updateConnections() {
-        if (!this._monitorsChangedConId) {
-            this._monitorsChangedConId = Main.layoutManager.connect(
-                'monitors-changed', () => Main.overview._overview.controls._setBackground?.bind(Main.overview._overview.controls)()
-            );
-        }
-
         if (!this._showingOverviewConId)
             this._showingOverviewConId = Main.overview.connect('showing', this._onShowingOverview.bind(this));
 
@@ -407,11 +395,6 @@ export default class VShell extends Extension.Extension {
     }
 
     _removeConnections() {
-        if (this._monitorsChangedConId) {
-            Main.layoutManager.disconnect(this._monitorsChangedConId);
-            this._monitorsChangedConId = 0;
-        }
-
         if (this._showingOverviewConId) {
             Main.overview.disconnect(this._showingOverviewConId);
             this._showingOverviewConId = 0;
@@ -527,7 +510,6 @@ export default class VShell extends Extension.Extension {
         Me.Modules.panelModule.update();
         Me.Modules.dashModule.update();
         this._updateSettings();
-        Main.overview._overview.controls._setBackground?.bind(Main.overview._overview.controls)();
     }
 
     _updateSettings(settings, key) {
@@ -558,7 +540,7 @@ export default class VShell extends Extension.Extension {
             Main.notify(`${Me.metadata.name}`, _('Profile %d has been updated').format(index));
         }
 
-        opt.WORKSPACE_MIN_SPACING = Main.overview._overview._controls._thumbnailsBox.get_theme_node().get_length('spacing');
+        opt.WORKSPACE_MIN_SPACING = Main.overview._overview.controls._thumbnailsBox.get_theme_node().get_length('spacing');
         // update variables that cannot be processed within settings
         const dash = Main.overview.dash;
         if (Me.Util.dashIsDashToDock()) {
