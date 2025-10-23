@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vertical-workspaces\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-19 11:43+0200\n"
+"POT-Creation-Date: 2025-10-23 12:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2213,7 +2213,7 @@ msgid "Top Left Hot Corner Centric (Vertical WS)"
 msgstr ""
 
 #: lib/optionsFactory.js:307
-msgid "Static Super, Bottom Hot Edge (Horizontal WS)"
+msgid "Static Overview, Bottom Hot Edge (Horizontal WS)"
 msgstr ""
 
 #: lib/optionsFactory.js:308
