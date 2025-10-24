@@ -1,16 +1,20 @@
 ## Changelog:
-### v49.5 (not yet released)
+### v49.5 (2025-10-24)
 **Fixed**
 - Performance of workspace thumbnails transitions
 - Clipping of workspace on primary monitor if Workspace Preview Animation is disabled
 - Dash icon *Scroll Action* → *Cycle App Windows* could fail on multi-monitor systems
+- The initial selection of the focused window did not work for modal windows ([#268](https://github.com/G-dH/vertical-workspaces/issues/268))
 - Three-finger horizontal gestures in GNOME 49 for vertical workspace orientation
+- Unexpected spacing between top panel and vertically oriented *Dash to Dock* ([#269](https://github.com/G-dH/vertical-workspaces/issues/269))
+- The App Grid occasionally remained empty after updating the appDisplay content
+- The *Click Empty Space to Close* didn't work on secondary monitors 
 
 **Added**
 - Vanilla fade-out effect for workspace thumbnails when transitioning to the app grid with *Workspace Preview Animation* set to *All Workspaces*
 - Search: *--* prefix to restrict overview search to GNOME Settings panels
 - Profile 5 with configuration as close to vanilla GNOME as currently possible
-- Slight blur effect to workspace thumbnails if they’re transparent and the blur makes sense
+- Slight blur effect to workspace thumbnails if they’re transparent and the blur makes sense ([#270](https://github.com/G-dH/vertical-workspaces/issues/270))
 
 **Other Changes**
 - Updated predefined configuration profiles
