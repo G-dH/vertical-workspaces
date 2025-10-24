@@ -56,6 +56,8 @@ let opt;
 export default class VShell extends Extension.Extension {
     _init() {
         Me = {};
+        // Place for runtime variables
+        Me.run = {};
 
         Me.getSettings = this.getSettings.bind(this);
         Me.shellVersion = parseFloat(Config.PACKAGE_VERSION);
@@ -122,8 +124,10 @@ export default class VShell extends Extension.Extension {
         this._disposeModules();
 
         console.debug(`${Me.metadata.name}: disabled`);
+
         Me.updateMessageDialog.destroy();
         Me.updateMessageDialog = null;
+        Me.run = null;
         this._cleanGlobals();
     }
 
@@ -292,8 +296,8 @@ export default class VShell extends Extension.Extension {
     }
 
     _updateSettingsConnection() {
-        if (!opt._extensionUpdateId)
-            opt._extensionUpdateId = opt.connect('changed', this._updateSettings.bind(this));
+        if (!Me.run.extensionUpdateId)
+            Me.run.extensionUpdateId = opt.connect('changed', this._updateSettings.bind(this));
     }
 
     _updateFixDashToDockOption() {
