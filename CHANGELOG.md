@@ -1,4 +1,14 @@
 ## Changelog:
+### v49.6 (not yet released)
+**Fixed**
+- Dragging an app icon while the app search filter was active could break the app grid
+- The app grid's _Allow Incomplete Pages_ option broke the sorting of search results
+- The _Settings_ app icon was not focused as the first result in the filtered app grid
+- App grid page indicators appeared even when drag and drop within the app grid was not allowed
+- The app grid could remain on a non-first page when the app search filter was initiated or updated
+- The workspace thumbnail scale transition between search results and the app grid
+
+
 ### v49.5 (2025-10-24)
 **Fixed**
 - Performance of workspace thumbnails transitions
