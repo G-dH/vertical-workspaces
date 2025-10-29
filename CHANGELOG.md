@@ -8,6 +8,9 @@
 - The app grid could remain on a non-first page when the app search filter was initiated or updated
 - The workspace thumbnail scale transition between search results and the app grid
 
+**Added**
+- Swipe gesture for transitioning from the Static Workspace overview to the Window Picker overview.
+
 
 ### v49.5 (2025-10-24)
 **Fixed**
