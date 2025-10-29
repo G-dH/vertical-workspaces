@@ -221,6 +221,11 @@
 	background-color: rgba(23, 23, 23, 0.98);
 }
 
+.search-statusbox {
+	padding-top: 30px;
+	padding-bottom: 0px;
+}
+
 /* Reduce edge fading of search results scroll view */
 /*.vfade { -st-vfade-offset: 30px; }
 .hfade { -st-hfade-offset: 30px; }*/
