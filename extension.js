@@ -3,7 +3,7 @@
  * extension.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022 - 2024
+ * @copyright  2022 - 2025
  * @license    GPL-3.0
  *
  */
@@ -320,6 +320,7 @@ class Extension {
                         () => {
                             Me.Modules.panelModule.update();
                             Me.Modules.overviewControlsModule.update();
+                            Me.Modules.messageTrayModule.update();
 
                             this._timeouts.unlock = 0;
                             return GLib.SOURCE_REMOVE;
