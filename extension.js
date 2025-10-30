@@ -320,6 +320,7 @@ export default class VShell extends Extension.Extension {
                         () => {
                             Me.Modules.panelModule.update();
                             Me.Modules.overviewControlsModule.update();
+                            Me.Modules.messageTrayModule.update();
 
                             this._timeouts.unlock = 0;
                             return GLib.SOURCE_REMOVE;
