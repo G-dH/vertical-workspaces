@@ -3,9 +3,10 @@
 **Fixed**
 - Dragging an app icon while the app search filter was active could break the app grid
 - The app grid's _Allow Incomplete Pages_ option broke the sorting of search results
-- The _Settings_ app icon was not focused as the first result in the filtered app grid
+- App grid Tab key navigation focus chain issues when searching apps or when the user reorders apps in Custom mode
 - App grid page indicators appeared even when drag and drop within the app grid was not allowed
 - The app grid could remain on a non-first page when the app search filter was initiated or updated
+- The _Settings_ app icon was not focused as the first result in the filtered app grid
 - The workspace thumbnail scale transition between search results and the app grid
 - Nnotification banner position resetting to default after using screen lock
 
