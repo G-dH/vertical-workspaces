@@ -7,6 +7,7 @@
 - App grid page indicators appeared even when drag and drop within the app grid was not allowed
 - The app grid could remain on a non-first page when the app search filter was initiated or updated
 - The workspace thumbnail scale transition between search results and the app grid
+- Nnotification banner position resetting to default after using screen lock
 
 **Added**
 - Swipe gesture for transitioning from the Static Workspace overview to the Window Picker overview.
