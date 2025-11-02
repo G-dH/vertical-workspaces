@@ -6,12 +6,19 @@
 - App grid Tab key navigation focus chain issues when searching apps or when the user reorders apps in Custom mode
 - App grid page indicators appeared even when drag and drop within the app grid was not allowed
 - The app grid could remain on a non-first page when the app search filter was initiated or updated
+- App folders ignored the *App Grid Page Width Scale* option
 - The _Settings_ app icon was not focused as the first result in the filtered app grid
-- The workspace thumbnail scale transition between search results and the app grid
+- The workspace thumbnail scale transition between search results and the app grid was delaed
 - Nnotification banner position resetting to default after using screen lock
+- The blur effect broke transparent workspace thumbnails on older GNOME versions and was glitching on the supported once
+- The *Static Workspace* overview mode didn't follow the *Worksace Switcher > Static Baground* option
+- Overview background wallpaper transitions didn't work as expected when *Window Picker* and *App Grid* blur radius were equal
 
 **Added**
-- Swipe gesture for transitioning from the Static Workspace overview to the Window Picker overview.
+- Swipe gesture for transitioning from the *Static Workspace* overview to the *Window Picker* overview.
+
+**Other Changes**
+- Adjusted configuration *Profiles*
 
 
 ### v49.5 (2025-10-24)
