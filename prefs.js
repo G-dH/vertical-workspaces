@@ -1130,7 +1130,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Click Empty Space To Close'),
-                _('Enables clicking on an empty space in the overview to close it'),
+                _('Enables closing the overview by clicking on an empty area. In the app grid, only the secondary (right) mouse button can be used to prevent accidental closing while interacting with icons or page controls'),
                 itemFactory.newSwitch(),
                 'clickEmptyClose',
                 null
