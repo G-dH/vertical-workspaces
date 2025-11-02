@@ -1,5 +1,5 @@
 ## Changelog:
-### v49.6 (not yet released)
+### v49.6 (2025-11-02)
 **Fixed**
 - Dragging an app icon while the app search filter was active could break the app grid
 - The app grid's _Allow Incomplete Pages_ option broke the sorting of search results
