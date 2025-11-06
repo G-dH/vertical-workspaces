@@ -1,4 +1,9 @@
 ## Changelog:
+### v49.6.1 (2025-11-6)
+**Fixed**
+- Glitches in overview transitions specific for cartain configurations
+
+
 ### v49.6 (2025-11-02)
 **Fixed**
 - Dragging an app icon while the app search filter was active could break the app grid
