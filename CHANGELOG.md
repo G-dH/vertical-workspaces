@@ -1,7 +1,7 @@
 ## Changelog:
-### v49.6.1 (2025-11-6)
+### v49.6.1 (2025-11-06)
 **Fixed**
-- Glitches in overview transitions specific for cartain configurations
+- Glitches in overview transitions specific to certain configurations
 
 
 ### v49.6 (2025-11-02)
