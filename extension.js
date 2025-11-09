@@ -181,7 +181,8 @@ export default class VShell extends Extension.Extension {
             this._delayedStartup = false;
         }
 
-        this._originalGetNeighbor = Meta.Workspace.prototype.get_neighbor;
+        if (!this._originalGetNeighbor)
+            this._originalGetNeighbor = Meta.Workspace.prototype.get_neighbor;
 
         this._removeTimeouts();
         this._timeouts = {};
