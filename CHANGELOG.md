@@ -1,4 +1,12 @@
 ## Changelog:
+### v49.7 (not yet released)
+**Fixed**
+- Dynamically added workspaces were not automatically removed when the _Workspace Switcher Popup Mode_ option was set to _Disable_ ([#278](https://github.com/G-dH/vertical-workspaces/issues/278))
+- Error messages appeared when dragging window previews from one workspace to another
+- Switching workspaces using the keyboard did not work after disabling the _V-Shell_ extension
+- The _Show Apps_ icon in the dash did not indicate when it was toggled to show apps
+
+
 ### v49.6.1 (2025-11-06)
 **Fixed**
 - Glitches in overview transitions specific to certain configurations
