@@ -2,6 +2,7 @@
 ### v49.8 (not yet released)
 **Fixed**
 - Startup animations when a secondary monitor is connected
+- Wallpaper alignment in workspace thumbnails on secondary monitors
 
 **Other Changes**
 - Overview background controller moved to the separate module
