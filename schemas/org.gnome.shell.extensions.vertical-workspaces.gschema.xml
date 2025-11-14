@@ -993,8 +993,8 @@
       <default>{
         'workspaceThumbnailsPosition': '5',
         'wsMaxSpacing': '20',
-        'wsPreviewScale': '99',
-        'secWsPreviewScale': '99',
+        'wsPreviewScale': '95',
+        'secWsPreviewScale': '90',
         'secWsPreviewShift': 'false',
         'wsThumbnailsFull': 'false',
         'secWsThumbnailsPosition': '2',
