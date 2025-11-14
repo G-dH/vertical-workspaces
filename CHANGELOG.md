@@ -1,5 +1,14 @@
 ## Changelog:
-### v49.7 (not yet released)
+### v49.8 (not yet released)
+**Fixed**
+- Startup animations when a secondary monitor is connected
+
+**Other Changes**
+- Overview background controller moved to the separate module
+- Refactored startup animation
+
+
+### v49.7 (2025-11-12)
 **Fixed**
 - Dynamically added workspaces were not automatically removed when the _Workspace Switcher Popup Mode_ option was set to _Disable_ ([#278](https://github.com/G-dH/vertical-workspaces/issues/278))
 - Error messages appeared when dragging window previews from one workspace to another
