@@ -3,6 +3,7 @@
 **Fixed**
 - Startup animations when a secondary monitor is connected
 - Wallpaper alignment in workspace thumbnails on secondary monitors
+- Area for app folders was smaller than it should be
 
 **Other Changes**
 - Overview background controller moved to the separate module
