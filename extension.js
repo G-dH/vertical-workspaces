@@ -270,6 +270,7 @@ export default class VShell extends Extension.Extension {
         controlsManager._thumbnailsBox.scale_x = 1;
         controlsManager._thumbnailsBox.scale_y = 1;
         controlsManager._thumbnailsBox.opacity = 255;
+        controlsManager._thumbnailsBox.translation_y = 0;
 
         controlsManager._searchEntryBin.visible = true;
         controlsManager._searchController._searchResults.opacity = 255;
