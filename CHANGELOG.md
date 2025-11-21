@@ -1,5 +1,5 @@
 ## Changelog:
-### v49.8 (not yet released)
+### v49.8 (2025-11-21)
 **Fixed**
 - Startup animations when a secondary monitor is connected
 - Wallpaper alignment in workspace thumbnails on secondary monitors
