@@ -525,6 +525,10 @@ export default class VShell extends Extension.Extension {
     }
 
     _updateSettings(settings, key) {
+        // Prevent V-Shell from updating when GSettings emits false or redundant events
+        if (key && !opt.valueChanged(key))
+            return;
+
         const controlsManager = Main.overview._overview.controls;
         // update settings cache and option variables
         opt._updateSettings();
