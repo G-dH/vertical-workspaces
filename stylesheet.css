@@ -3,24 +3,91 @@
 * stylesheet.css
 */
 
-/* General dash */
+/* GS 46 changes the default bg color from transparent
+   to the solid color blending with widget background */
+#dash .show-apps,
+#dash .overview-tile,
+#dash .overview-icon,
+#app-display .app-folder .overview-icon,
+.page-navigation-arrow,
+.search-provider-icon,
+.list-search-result,
+.grid-search-result,
+.overview-tile {
+	 background-color: transparent;
+}
+
+/* GS 47 removed the top margin that V-Shell expects */
+.dash-top-margin {
+	margin-top: 12px;
+}
+
+/* GS 45 */
+#dash .app-well-app:hover .overview-icon,
+#dash .app-well-app:focus .overview-icon,
+#dash .app-well-app:selected .overview-icon,
+/* GS 46+ */
+#dash .overview-tile:hover .overview-icon,
+#dash .overview-tile:focus .overview-icon,
+#dash .overview-tile:selected .overview-icon,
+
+#dash .show-apps:hover .overview-icon,
+#dash .show-apps:focus .overview-icon,
+#dash .show-apps:selected .overview-icon,
+.page-navigation-arrow:hover,
+.search-provider-icon:hover,
+.search-provider-icon:focus,
+.search-provider-icon:selected,
+.list-search-result:hover,
+.list-search-result:focus,
+.list-search-result:selected,
+#searchResults .overview-tile:hover,
+#searchResults .overview-tile:focus,
+#searchResults .overview-tile:selected,
+.grid-search-result:hover,
+.grid-search-result:focus,
+.grid-search-result:selected,
+#app-display .overview-tile:hover,
+#app-display .overview-tile:focus,
+#app-display .overview-tile:selected,
+#app-display .app-folder:hover,
+#app-display .app-folder:focus,
+#app-display .app-folder:selected,
+.app-folder-dialog .overview-tile:hover,
+.app-folder-dialog .overview-tile:focus,
+.app-folder-dialog .overview-tile:selected,
+.edit-folder-button:hover {
+	background-color: rgba(200, 200, 200, 0.15);
+}
+
+.overview-tile:drop, /* GS 46+ needs to add color so the highlighting style is visible on the app folder preview */
+.app-folder-dialog-translucent,
+.edit-folder-button,
+.folder-name-entry,
+#app-display .app-folder,
+#app-display .app-folder,
+#app-display .app-folder .overview-tile,
+.edit-folder-button,
+.folder-name-entry {
+	background-color: rgba(200, 200, 200, 0.08);
+}
+
 #dash.vertical {
 	margin: 0px;
 	padding: 0px;
 }
 
-#dash.vertical .app-well-app,
-#dash.vertical .show-apps {
-	/* left/right padding exceeds dash bg by 6px
-	 to cover the spacing between dash and the edge of the screen
-	 so the icons will be selectable even at the edge
-	 this spacing must be accounted for in overview allocate() */
-	padding-right: 24px;
-	padding-left: 24px;
+#dash.vertical .overview-tile,
+#dash.vertical .show-apps,
+/* GS 45 */
+#dash.vertical .app-well-app {
+	margin: 0px;
+	background-color: transparent;
+	/* this padding should keep the dash 6px from the screen edge */
+	padding: 0, 24px;
 	/*spacing between icons*/
 	padding-top: 1px;
 	padding-bottom: 1px;
-	margin: 0px;
 }
 
 #dash.vertical .dash-separator {
@@ -31,61 +98,70 @@
 	margin-bottom: 4px;
 }
 
-#dash.vertical .overview-icon {
-	padding: 5px 0;
+#dash.vertical .app-grid-running-dot {
+	margin: 0px;
+	offset-y: 0;
 }
 
+/* GS 45 */
 #dash.vertical .app-well-app-running-dot {
 	margin: 4px 0px;
 }
 
 #dash.vertical .app-grid-running-dot-custom {
-	margin: 4px 0px;
+	margin: 0px;
 	width: 2px;
 	height: 16px;
+	offset-y: 0;
+}
+
+.app-grid-running-dot-custom {
+	width: 16px;
+	height: 2px;
+}
+
+/* compensate dot offset by 1px compared to default 2*$base_padding */
+#dash .app-grid-running-dot-offset {
+	offset-y: -13px;
 }
 
 #dash.vertical .dash-background {
-	margin: 0px;
+	padding: 12px;
+	margin: 0;
 }
 
 #dash.vertical-gs3-left .dash-background {
 	border-radius: 0 18px 18px 0;
 	border-left: 0px;
-	padding: 8px 12px 8px 4px;
-	margin-left: 0;
 }
 
 #dash.vertical-gs3-right .dash-background {
 	border-radius: 18px 0 0 18px;
 	border-right: 0px;
-	padding: 8px 4px 8px 12px;
-	margin-right: 0;
 }
 
 #dash.vertical-gs3-left {
-	margin-right: 12px;
 	margin-left: 0px;
-	padding: 0px;
+	margin-right: 12px;
 }
 
 #dash.vertical-gs3-right {
 	margin-right: 0px;
 	margin-left: 12px;
-	padding: 0px;
 }
 
+/* GS 45 */
 #dash.vertical-gs3-left .app-well-app,
-#dash.vertical-gs3-left .show-apps,
 #dash.vertical-gs3-right .app-well-app,
+/* GS 46+ */
+#dash.vertical-gs3-left .overview-tile,
+#dash.vertical-gs3-right .overview-tile,
+
+#dash.vertical-gs3-left .show-apps,
 #dash.vertical-gs3-right .show-apps {
-	/* left/right padding exceeds dash bg by 6px to
-	 cover spacing between dash icons and the edge of the screen
-	 so the icons will be selectable even at the edge
-	 this spacing must be accounted for in overview allocate() */
-	padding: 0;
-	padding-right: 9px;
-	padding-left: 9px;
+	/* this padding should extend the icon tile to the edge of the dash background */
+	padding-left: 12px;
+	padding-right: 12px;
 }
 
 .dash-background-light {
@@ -98,11 +174,6 @@
 	background-color: rgb(20, 20, 20);
 	border-color: rgb(50, 50, 50);
 	border: solid 1px;
-}
-
-.app-grid-running-dot-custom {
-	width: 16px;
-	height: 2px;
 }
 
 .dash-label {
@@ -178,7 +249,6 @@
 .search-entry-mod{
 	margin: 0;
 	margin-top: 12px;
-	/*margin-bottom: 6px;*/
 	background-color: rgba(200, 200, 200, 0.1);
 	color: white;
 	border-color: rgba(160, 160, 160, 0.4);
@@ -223,10 +293,6 @@
 	padding-bottom: 0px;
 }
 
-/* Reduce edge fading of search results scroll view */
-/*.vfade { -st-vfade-offset: 30px; }
-.hfade { -st-hfade-offset: 30px; }*/
-
 StButton#vhandle, StWidget .vhandle,
 .search-section-content {
 	background-color: rgba(200, 200, 200, 0.08);
@@ -243,10 +309,6 @@ StButton#vhandle, StWidget .vhandle,
 	margin-bottom: 56px;
 }
 
-#panel:overview, .transparent-panel {
-	background-color: transparent;
-}
-
 /* reduce spacing between app icons in search results */
 .grid-search-results {
 	spacing: 8px;
@@ -254,14 +316,12 @@ StButton#vhandle, StWidget .vhandle,
 	margin-right: 12px;
 }
 
-.show-apps-icon-horizontal-hide {
-	width: 0;
-    margin: 0;
-    spacing: 0;
+#panel:overview, .transparent-panel {
+	background-color: transparent;
 }
 
-.show-apps-icon-vertical-hide {
-	height: 0;
+.show-apps-icon-hide {
+	width: 0;
     margin: 0;
     spacing: 0;
 }
@@ -323,149 +383,6 @@ StButton#vhandle, StWidget .vhandle,
 
 .folder-name-container {
 	spacing: 12px;
-}
-
-/* 46 changes the default bg color from transparent to the solid color blending with widget background */
-#dash.dash-46 .show-apps,
-#dash.dash-46 .overview-tile,
-#dash.dash-46 .overview-icon,
-/*#dash .overview-tile:hover,
-#dash .overview-tile:focus,
-#dash .overview-tile:selected,*/
-#app-display .app-folder .overview-icon,
-/*#app-display .overview-tile:hover,
-#app-display .overview-tile:focus,
-#app-display .overview-tile:selected,*/
-.page-navigation-arrow,
-.search-provider-icon,
-.list-search-result,
-.grid-search-result,
-.overview-tile {
-	 background-color: transparent;
-}
-
-/* GS 47 removed the top margin that V-Shell expects */
-.dash-top-margin {
-	margin-top: 12px;
-}
-
-#dash.dash-46 .overview-tile:hover .overview-icon,
-#dash.dash-46 .overview-tile:focus .overview-icon,
-#dash.dash-46 .overview-tile:selected .overview-icon,
-#dash.dash-46 .show-apps:hover .overview-icon,
-#dash.dash-46 .show-apps:focus .overview-icon,
-#dash.dash-46 .show-apps:selected .overview-icon,
-#dash.dash-46 .show-apps:checked .overview-icon,
-.page-navigation-arrow:hover,
-.search-provider-icon:hover,
-.search-provider-icon:focus,
-.search-provider-icon:selected,
-.list-search-result:hover,
-.list-search-result:focus,
-.list-search-result:selected,
-#searchResults .overview-tile:hover,
-#searchResults .overview-tile:focus,
-#searchResults .overview-tile:selected,
-.grid-search-result:hover,
-.grid-search-result:focus,
-.grid-search-result:selected,
-#app-display .overview-tile:hover,
-#app-display .overview-tile:focus,
-#app-display .overview-tile:selected,
-#app-display .app-folder:hover,
-#app-display .app-folder:focus,
-#app-display .app-folder:selected,
-.app-folder-dialog .overview-tile:hover,
-.app-folder-dialog .overview-tile:focus,
-.app-folder-dialog .overview-tile:selected,
-.edit-folder-button:hover {
-	background-color: rgba(200, 200, 200, 0.15);
-}
-
-.overview-tile:drop, /* 46 needs to add color so the highlighting style is visible on the app folder preview */
-.app-folder-dialog-translucent,
-.edit-folder-button,
-.folder-name-entry,
-#app-display .app-folder,
-#app-display .app-folder,
-#app-display .app-folder .overview-tile,
-.edit-folder-button,
-.folder-name-entry {
-	background-color: rgba(200, 200, 200, 0.08);
-}
-
-#dash.vertical-46 {
-	margin: 0px;
-	padding: 0px;
-}
-
-#dash.vertical-46-gs3-left {
-	margin-left: 0px;
-	margin-right: 12px;
-}
-
-#dash.vertical-46-gs3-right {
-	margin-right: 0px;
-	margin-left: 12px;
-}
-
-#dash.vertical-46 .overview-tile,
-#dash.vertical-46 .show-apps {
-	margin: 0px;
-	background-color: transparent;
-	/* this padding should keep the dash 6px from the screen edge */
-	padding: 0, 24px;
-}
-
-#dash.vertical-46 .dash-separator {
-	height: 1px;
-	margin-right: 2px;
-	margin-left: 2px;
-	margin-top: 4px;
-	margin-bottom: 4px;
-}
-
-/* compensate dot offset by 1px compared to default 2*$base_padding*/
-#dash .app-grid-running-dot-offset {
-	offset-y: -13px;
-}
-
-#dash.vertical-46 .app-grid-running-dot {
-	margin: 0px;
-	offset-y: 0;
-}
-
-#dash.vertical-46 .app-grid-running-dot-custom {
-	margin: 0px;
-	width: 2px;
-	height: 16px;
-	offset-y: 0;
-}
-
-#dash.vertical-46 .dash-background {
-	padding: 12px;
-	margin: 0;
-}
-
-#dash.vertical-46-gs3-left .overview-tile,
-#dash.vertical-46-gs3-left .show-apps {
-	/* this padding should extend the icon tile to the edge of the dash background */
-	padding: 0, 12px;
-}
-
-#dash.vertical-46-gs3-right .overview-tile,
-#dash.vertical-46-gs3-right .show-apps {
-	padding: 0, 12px;
-}
-
-#dash.vertical-46-gs3-left .dash-background {
-	border-radius: 0 18px 18px 0;
-	border-left: 0px;
-}
-
-#dash.vertical-46-gs3-right .dash-background {
-	border-radius: 18px 0 0 18px;
-	border-right: 0px;
 }
 
 /* reverse padding */
