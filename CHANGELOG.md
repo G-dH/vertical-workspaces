@@ -1,4 +1,14 @@
 ## Changelog:
+### v49.8 (2025-11-27)
+**Fixed**
+- V-Shell could freeze the GNOME interface for a while when handling fake gSettings events
+- The overview background wallpaper was always visible, even when disabled, if *Overview Mode* was set to *Static Workspace* and *Workspace Switcher Animation* was set to *Static Background*
+- Closing a window with a modal dialog in the overview using the *Close Window* action could lead to a hidden workspace preview while its window remained open ([#281](https://github.com/G-dH/vertical-workspaces/issues/281)).
+
+**Other Changes**
+- Stylesheet cleanup.
+
+
 ### v49.8 (2025-11-21)
 **Fixed**
 - Startup animations when a secondary monitor is connected
