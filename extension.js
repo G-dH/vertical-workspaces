@@ -525,17 +525,16 @@ export default class VShell extends Extension.Extension {
     }
 
     _updateSettings(settings, key) {
-        // Prevent V-Shell from updating when GSettings emits false or redundant events
-        if (key && !opt.valueChanged(key))
+        // Prevent V-Shell from updating when loading profile
+        // or GSettings emits false or redundant events
+        const loadingProfile = !!this._timeouts.loadingProfile;
+        const updateNotNeeded  = key && key !== 'aaa-loading-profile' && !opt.valueChanged(key);
+        if (loadingProfile || updateNotNeeded)
             return;
 
-        const controlsManager = Main.overview._overview.controls;
-        // update settings cache and option variables
-        opt._updateSettings();
-        this._resetShellProperties();
-
-        // avoid overload while loading profile - update only once
-        // delayed gsettings writes are processed alphabetically
+        // Prevent overload while loading the profile - update only once.
+        // Delayed gsettings writes are processed alphabetically,
+        // so the trigger key needs to be named accordingly to be the first.
         if (key === 'aaa-loading-profile') {
             if (this._timeouts.loadingProfile)
                 GLib.source_remove(this._timeouts.loadingProfile);
@@ -548,14 +547,20 @@ export default class VShell extends Extension.Extension {
                 }
             );
             Me.updateMessageDialog.showMessage();
-        }
-        if (this._timeouts.loadingProfile)
+
             return;
+        }
 
         if (key?.includes('profile-data')) {
             const index = key.replace('profile-data-', '');
             Main.notify(`${Me.metadata.name}`, _('Profile %d has been updated').format(index));
+            return;
         }
+
+        const controlsManager = Main.overview._overview.controls;
+        // Update settings cache and option variables
+        opt._updateSettings();
+        this._resetShellProperties();
 
         opt.WORKSPACE_MIN_SPACING = controlsManager._thumbnailsBox.get_theme_node().get_length('spacing');
         // update variables that cannot be processed within settings
@@ -571,7 +576,6 @@ export default class VShell extends Extension.Extension {
 
         opt.DASH_VISIBLE = opt.DASH_VISIBLE && !Me.Util.getEnabledExtensions('dash-to-panel@jderose9.github.com').length;
 
-
         if (opt.OVERVIEW_MODE === 1)
             Me.Modules.workspaceModule.setWindowPreviewMaxScale(0.1);
         else
@@ -579,35 +583,19 @@ export default class VShell extends Extension.Extension {
 
         St.Settings.get().slow_down_factor = opt.ANIMATION_TIME_FACTOR;
 
-        // Options for workspace switcher, apply custom function only if needed
-        /* if (opt.WS_WRAPAROUND || opt.WS_IGNORE_LAST)*/
+        // Options for workspace switcher
         Meta.Workspace.prototype.get_neighbor = this._getNeighbor;
-        /* else
-            Meta.Workspace.prototype.get_neighbor = this._originalGetNeighbor;*/
 
-        // delay search so it doesn't make the search view transition stuttering
+        // Delay search so it doesn't make the search view transition stuttering
         // 150 is the default value in GNOME Shell, but the search feels laggy
         // Of course there is some overload for fast keyboard typist
         if (opt.SEARCH_VIEW_ANIMATION)
             opt.SEARCH_DELAY = 150;
 
-        if (settings)
-            this._applySettings(key);
-    }
-
-    _applySettings(key) {
-        if (key?.endsWith('-module')) {
-            for (let module of this._getModuleList()) {
-                if (opt.options[module] && key === opt.options[module][1]) {
-                    Me.Modules[module].update();
-                    break;
-                }
-            }
+        if (settings) {
+            this._updateOverrides();
+            this._switchPageShortcuts();
         }
-
-        this._switchPageShortcuts();
-
-        this._updateOverrides();
     }
 
     _switchPageShortcuts() {
