@@ -1,5 +1,5 @@
 ## Changelog:
-### v49.8 (2025-11-28)
+### v49.9 (2025-11-28)
 **Fixed**
 - V-Shell could freeze the GNOME interface for a while when handling fake gSettings events
 - The overview background wallpaper was always visible, even when disabled, if *Overview Mode* was set to *Static Workspace* and *Workspace Switcher Animation* was set to *Static Background*
