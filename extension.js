@@ -397,7 +397,7 @@ export default class VShell extends Extension.Extension {
                     _moveWinToMonitor();
                 }
             });
-        } else if ((nMonitors.length === 1 || !opt.FIX_NEW_WINDOW_MONITOR) && this._newWindowCreatedConId) {
+        } else if ((nMonitors === 1 || !opt.FIX_NEW_WINDOW_MONITOR) && this._newWindowCreatedConId) {
             global.display.disconnect(this._newWindowCreatedConId);
             this._newWindowCreatedConId = 0;
         }
