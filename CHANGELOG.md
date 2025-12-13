@@ -1,4 +1,9 @@
 ## Changelog:
+### v49.10 (not yet relased)
+**Fixed**
+- Glitching workspace thumbnails reorder animation
+
+
 ### v49.9 (2025-11-28)
 **Fixed**
 - V-Shell could freeze the GNOME interface for a while when handling fake gSettings events
