@@ -1,4 +1,9 @@
 ## Changelog:
+### v49.11 (not yet released)
+**Added**
+- *App Grid Orientation* - an option that lets you set the app grid orientation independently of the workspace orientation
+
+
 ### v49.10 (2025-12-14)
 **Fixed**
 - Glitching in the workspace thumbnail reorder animation

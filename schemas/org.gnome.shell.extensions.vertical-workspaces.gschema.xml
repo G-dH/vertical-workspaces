@@ -151,6 +151,9 @@
     <key type="i" name="search-width-scale">
       <default>100</default>
     </key>
+    <key type="i" name="app-grid-orientation">
+      <default>-0</default>
+    </key>
     <key type="i" name="app-grid-icon-size">
       <default>-1</default>
     </key>
@@ -474,6 +477,7 @@
         'wsSwitcherMode': '0',
         'searchIconSize': '0',
         'searchViewScale': '100',
+        'appGridOrientation': '0',
         'appGridIconSize': '-1',
         'appGridColumns': '0',
         'appGridRows': '0',
@@ -616,6 +620,7 @@
         'wsSwitcherMode': '0',
         'searchIconSize': '0',
         'searchViewScale': '100',
+        'appGridOrientation': '0',
         'appGridIconSize': '-1',
         'appGridColumns': '0',
         'appGridRows': '0',
@@ -758,6 +763,7 @@
         'wsSwitcherMode': '0',
         'searchIconSize': '0',
         'searchViewScale': '100',
+        'appGridOrientation': '0',
         'appGridIconSize': '-1',
         'appGridColumns': '0',
         'appGridRows': '0',
@@ -900,6 +906,7 @@
         'wsSwitcherMode': '0',
         'searchIconSize': '0',
         'searchViewScale': '100',
+        'appGridOrientation': '0',
         'appGridIconSize': '-1',
         'appGridColumns': '0',
         'appGridRows': '0',
@@ -1042,6 +1049,7 @@
         'wsSwitcherMode': '0',
         'searchIconSize': '0',
         'searchViewScale': '100',
+        'appGridOrientation': '0',
         'appGridIconSize': '-1',
         'appGridColumns': '0',
         'appGridRows': '0',

@@ -2044,6 +2044,21 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
+                _('App Grid Orientation'),
+                _('The orientation in which app grid pages are organized'),
+                itemFactory.newDropDown(),
+                'appGridOrientation',
+                [
+                    [_('Follow Workspaces'), 0],
+                    [_('Horizontal'), 1],
+                    [_('Vertical'), 2],
+                ],
+                'appDisplayModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
                 _('App Grid Content'),
                 _('The default Shell removes favorite apps, this option allows to duplicate them in the grid or remove also running applications. Option "Favorites and Running First" only works with the Alphabet and Usage sorting'),
                 itemFactory.newDropDown(),
