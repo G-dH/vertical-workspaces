@@ -2,6 +2,7 @@
 ### v49.10 (not yet relased)
 **Fixed**
 - Glitching workspace thumbnails reorder animation
+- Using double-Super to open App Grid could break overview
 
 
 ### v49.9 (2025-11-28)
