@@ -1,8 +1,9 @@
 ## Changelog:
-### v49.10 (not yet relased)
+### v49.10 (2025-12-14)
 **Fixed**
-- Glitching workspace thumbnails reorder animation
+- Glitching in the workspace thumbnail reorder animation
 - Using double-Super to open App Grid could break overview
+- WSP and ESP Search provider hotkeys were active when searching AppGrid
 
 
 ### v49.9 (2025-11-28)
