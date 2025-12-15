@@ -233,16 +233,15 @@
 
 .page-indicators {
 	spacing: 20px;
-	margin: 0;
 }
 
 .page-indicators-horizontal {
-	margin-top: 0px;
+	margin: 0px;
 	margin-bottom: 10px;
 }
 
 .page-indicators-vertical {
-	margin-left: 0px;
+	margin: 0px;
 	margin-right: 10px;
 }
 
