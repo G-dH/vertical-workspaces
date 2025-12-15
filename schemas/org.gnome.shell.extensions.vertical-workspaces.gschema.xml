@@ -217,6 +217,9 @@
     <key type="b" name="app-grid-show-page-arrows">
       <default>true</default>
     </key>
+    <key type="b" name="app-grid-show-page-indicators">
+      <default>true</default>
+    </key>
     <key type="b" name="app-grid-remember-page">
       <default>false</default>
     </key>
@@ -500,6 +503,7 @@
         'appFolderRemoveButton': '1',
         'appFolderCloseButton': 'true',
         'appGridShowPageArrows': 'false',
+        'appGridShowPageIndicators': 'true',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
         'searchAppGridMode': '1',
@@ -643,6 +647,7 @@
         'appFolderRemoveButton': '1',
         'appFolderCloseButton': 'true',
         'appGridShowPageArrows': 'true',
+        'appGridShowPageIndicators': 'true',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
         'searchAppGridMode': '1',
@@ -786,6 +791,7 @@
         'appFolderRemoveButton': '1',
         'appFolderCloseButton': 'true',
         'appGridShowPageArrows': 'false',
+        'appGridShowPageIndicators': 'true',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
         'searchAppGridMode': '1',
@@ -929,6 +935,7 @@
         'appFolderRemoveButton': '1',
         'appFolderCloseButton': 'true',
         'appGridShowPageArrows': 'true',
+        'appGridShowPageIndicators': 'true',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
         'searchAppGridMode': '1',
@@ -1072,6 +1079,7 @@
         'appFolderRemoveButton': '0',
         'appFolderCloseButton': 'false',
         'appGridShowPageArrows': 'true',
+        'appGridShowPageIndicators': 'true',
         'searchFuzzy': 'false',
         'searchMaxResultsRows': '5',
         'searchAppGridMode': '0',

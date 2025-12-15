@@ -2102,6 +2102,17 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
+                _('Show Page Indicators'),
+                _('You can hide the page indicator dots. The indicators are hidden automatically when there is only one page in the app grid'),
+                itemFactory.newSwitch(),
+                'appGridShowPageIndicators',
+                null,
+                'appDisplayModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
                 _('Remember Page'),
                 _('Disables the default behavior in which app grid and folders always open on the first page'),
                 itemFactory.newSwitch(),
