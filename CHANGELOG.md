@@ -1,5 +1,5 @@
 ## Changelog:
-### v49.11 (not yet released)
+### v49.11 (2025-12-17)
 **Added**
 - *App Grid Orientation* - an App Grid option that lets you set the app grid orientation independently of the workspace orientation
 - *Show Page Indicators* - an App Grid option that lets you hide the dot page indicators
