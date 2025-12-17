@@ -5,7 +5,8 @@
 - *Show Page Indicators* - an App Grid option that lets you hide the dot page indicators
 
 **Fixed**
-- Transition from the *Static Workspace* overview to the full overview after clicking a Dash icon of an app with more than one winow  when *App Icon Click Behavior* - *First Switch to Workspace* option was enabled 
+- Transition from the *Static Workspace* overview to the full overview after clicking a Dash icon of an app with more than one winow  when *App - Icon Click Behavior* - *First Switch to Workspace* option was enabled
+- Workspace preview could get below Dash when transitioning between HIDDEN and APP_GRID overview states
 
 ### v49.10 (2025-12-14)
 **Fixed**
