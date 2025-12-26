@@ -1,5 +1,8 @@
 ## Changelog:
 ### v49.12 (not yet released)
+**Added**
+- Middle-clicking the Activities button spreads windows in Static Workspace overview mode
+
 **Fixed**
 - Dash icon click behavior in the *Static Workspace* overview mode when the *First Switch to Workspace* option is enabled: Spread windows if the app has focus, activate the app without closing overview if not
 - Czech translation
