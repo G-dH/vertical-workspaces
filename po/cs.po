@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vertical-workspaces\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-23 12:26+0200\n"
-"PO-Revision-Date: 2025-08-06 12:18+0200\n"
+"POT-Creation-Date: 2025-12-17 15:46+0100\n"
+"PO-Revision-Date: 2025-12-26 17:57+0100\n"
 "Last-Translator: Ludek Vydra <lvtran@u.k2.cz>\n"
 "Language-Team: \n"
 "Language: cs\n"
@@ -15,15 +15,81 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.8\n"
+
+#: lib/optionsFactory.js:304
+msgid "GNOME 3 Layout (Vertical WS)"
+msgstr "GNOME 3 rozvržení (vertikální plochy)"
+
+#: lib/optionsFactory.js:305
+msgid "GNOME 4x Layout, Bottom Hot Edge (Horizontal WS)"
+msgstr "GNOME 4x rozvržení, citlivý spodní okraj (horizontální plochy)"
+
+#: lib/optionsFactory.js:306
+msgid "Top Left Hot Corner Centric (Vertical WS)"
+msgstr "Orientováno na levý horní citlivý roh (vertikální plochy)"
+
+#: lib/optionsFactory.js:307
+msgid "Static Overview, Bottom Hot Edge (Horizontal WS)"
+msgstr "Statický přehled, citlivý spodní okraj (horizontální plochy)"
+
+#: lib/optionsFactory.js:308
+msgid "GNOME 4x as close to vanilla as currently possible"
+msgstr "GNOME 4x co nejblíž originálu"
+
+#: lib/optionsFactory.js:315
+msgid "Reset profile to defaults"
+msgstr "Resetovat profil na výchozí hodnoty"
+
+#: lib/optionsFactory.js:331
+msgid "Load profile"
+msgstr "Načíst profil"
+
+#: lib/optionsFactory.js:340
+msgid "Save current settings into this profile"
+msgstr "Uložit současné nastavení do tohoto profilu"
+
+#: lib/search.js:426
+msgid "Searching…"
+msgstr "Hledám…"
+
+#: lib/search.js:429
+msgid "No results."
+msgstr "Žádné výsledky."
+
+#: lib/util.js:781
+msgid "Updating V-Shell"
+msgstr "Aktualizuji V-Shell"
+
+#: lib/dash.js:999
+msgid "Force Quit"
+msgstr "Vynutit ukončení"
+
+#: lib/dash.js:1008
+#, javascript-format
+msgid "Close %d Windows on Current Workspace"
+msgstr "Zavřít %d oken na aktuální pracovní ploše"
+
+#: lib/dash.js:1027
+msgid "Move App to Current Workspace [Shift + Click]"
+msgstr "Přesunout aplikaci na aktuální pracovní plochu [Shift + klik]"
+
+#: lib/dash.js:1037
+msgid "Create Window Thumbnail (PiP)"
+msgstr "Vytvořit miniaturu okna (PiP)"
+
+#: extension.js:556
+#, javascript-format
+msgid "Profile %d has been updated"
+msgstr "Profil %d byl aktualizován"
 
 #: prefs.js:29
 msgid "Profiles"
 msgstr "Profily"
 
-#: prefs.js:34 prefs.js:2215
+#: prefs.js:34 prefs.js:2241
 msgid "Layout"
-msgstr "Rozložení"
+msgstr "Rozvržení"
 
 #: prefs.js:39
 msgid "Appearance"
@@ -31,7 +97,7 @@ msgstr "Vzhled"
 
 #: prefs.js:44
 msgid "Behavior"
-msgstr "Vlastnosti"
+msgstr "Chování"
 
 #: prefs.js:49 prefs.js:354
 msgid "App Grid"
@@ -47,7 +113,7 @@ msgstr "Různé"
 
 #: prefs.js:64
 msgid "About"
-msgstr "O aplikaci"
+msgstr "O rozšíření"
 
 #: prefs.js:106
 msgid "Custom Profiles"
@@ -55,10 +121,9 @@ msgstr "Uživatelské profily"
 
 #: prefs.js:111
 msgid "Save your configurations"
-msgstr "Ulož svou konfiguraci"
+msgstr "Ulož své konfigurace"
 
 #: prefs.js:112
-#, fuzzy
 msgid ""
 "Predefined sets of settings that may help you with the initial setup and "
 "exploration of V-Shell options can be overridden by your own configurations"
@@ -84,17 +149,16 @@ msgid "Profile 4"
 msgstr "Profil 4"
 
 #: prefs.js:141
-#, fuzzy
 msgid "Profile 5"
-msgstr "Profil 1"
+msgstr "Profil 5"
 
-#: prefs.js:156 prefs.js:638 prefs.js:1250 prefs.js:2206
+#: prefs.js:156 prefs.js:638 prefs.js:1250 prefs.js:2232
 msgid "Dash"
-msgstr "Dash"
+msgstr "Panel aplikací (Dash)"
 
 #: prefs.js:162
 msgid "Dash Position"
-msgstr "Pozice Dashe"
+msgstr "Pozice panelu aplikací"
 
 #: prefs.js:167 prefs.js:426
 msgid "Bottom"
@@ -118,33 +182,33 @@ msgstr "Skrýt"
 
 #: prefs.js:179
 msgid "Center Horizontal Dash to Workspace"
-msgstr "Vycentrovat Dash vůči náhledu pracovní plochy"
+msgstr "Vycentrovat panel aplikací vůči náhledu pracovní plochy"
 
 #: prefs.js:180
 msgid ""
 "If the Dash Position is set to Top or Bottom, the position will be "
 "recalculated relative to the workspace preview instead of the screen"
 msgstr ""
-"Pokud je pozice Dashe nastavena na Nahoře nebo Dole, pozice se přepočítá "
-"vzhledem k náhledu pracovní plochy namísto obrazovky"
+"Pokud je pozice panelu aplikací nastavena na Nahoře nebo Dole, pozice se "
+"přepočítá vzhledem k náhledu pracovní plochy namísto obrazovky"
 
 #: prefs.js:199
 msgid "Fine Tune Dash Position"
-msgstr "Upravit pozici Dashe"
+msgstr "Upravit pozici panelu aplikací"
 
 #: prefs.js:200
 msgid ""
 "Adjusts the position of the dash on the axis given by the orientation of the "
 "workspaces"
-msgstr "Upraví polohu Dashe na dané ose podle orientace pracovních ploch"
+msgstr "Upraví polohu panelu aplikací v ose dané orientací pracovních ploch"
 
 #: prefs.js:209
 msgid "Show Apps Icon Position"
-msgstr "Nastavit pozici ikony aplikací"
+msgstr "Pozice ikony aplikací"
 
 #: prefs.js:210
 msgid "Sets the position of the \"Show Applications\" icon in the Dash"
-msgstr "Nastavuje pozici ikony \"Zobrazit aplikace\" v Dashi"
+msgstr "Nastavuje pozici ikony \"Zobrazit aplikace\" v panelu aplikací"
 
 #: prefs.js:215
 msgid "Start"
@@ -169,10 +233,10 @@ msgid ""
 "workspace thumbnails, one sets workspaces to vertical orientation, the "
 "second one to horizontal."
 msgstr ""
-"Umístění miniatur pracovních ploch na obrazovce také nastavuje orientaci "
+"Umístění miniatur pracovních ploch na obrazovce současně nastavuje orientaci "
 "pracovních ploch na vertikální nebo horizontální. Máte dvě možnosti jak "
-"zakázat miniatury pracovních ploch, jedna nastaví orientaci pracovní plochy "
-"na vertikální , druhá na horizontální."
+"zakázat miniatury pracovních ploch, jedna nastaví orientaci pracovních ploch "
+"na vertikální, druhá na horizontální."
 
 #: prefs.js:236
 msgid "Left        \t Vertical Orientation"
@@ -184,7 +248,7 @@ msgstr "Vpravo       \t Vertikální orientace"
 
 #: prefs.js:238
 msgid "Hide        \t Vertical Orientation"
-msgstr "Skryj        \t Vertikální orientace"
+msgstr "Skrýt        \t Vertikální orientace"
 
 #: prefs.js:239
 msgid "Top         \t Horizontal Orientation"
@@ -196,11 +260,11 @@ msgstr "Dole       \t Horizontální orientace"
 
 #: prefs.js:241
 msgid "Hide        \t Horizontal Orientation"
-msgstr "Skryj        \t Horizontální orientace"
+msgstr "Skýt        \t Horizontální orientace"
 
 #: prefs.js:257 prefs.js:573
 msgid "Fine Tune Workspace Thumbnails Position"
-msgstr "Doladit pozici miniatur pracovního prostoru"
+msgstr "Doladit pozici miniatur pracovních ploch"
 
 #: prefs.js:258 prefs.js:574
 msgid ""
@@ -210,7 +274,7 @@ msgstr "Upraví polohu miniatur na ose dané orientací pracovních ploch"
 
 #: prefs.js:266
 msgid "Reserve Full Screen Height/Width for Thumbnails"
-msgstr "Vyhradit výšku/šířku celé obrazovky pro miniatury"
+msgstr "Vyhradit výšku/šířku celé obrazovky pro miniatury ploch"
 
 #: prefs.js:267
 msgid ""
@@ -219,28 +283,28 @@ msgid ""
 "different axis)."
 msgstr ""
 "Celá výška/šířka obrazovky bude vyhrazena pro miniatury pracovního prostoru "
-"na úkor místa dostupného pro Dash (pokud je Dash orientován v jiné ose)."
+"na úkor místa dostupného pro panel aplikací (pokud je orientován v jiné ose)."
 
 #: prefs.js:284
 msgid "Workspace Thumbnails Max Scale - Window Picker"
-msgstr "Maximální měřítko miniatur pracovních ploch - Výběr okna"
+msgstr "Maximální měřítko miniatur pracovních ploch v přehledu aktivit"
 
 #: prefs.js:285
 msgid ""
 "Adjusts the maximum size of the workspace thumbnails in the overview "
 "(percentage relative to display width)"
 msgstr ""
-"Upraví maximální velikost miniatur pracovních prostorů v procentech vzhledem "
-"k šířce obrazovky"
+"Upraví maximální velikost miniatur pracovních prostorů (v procentech "
+"vzhledem k velikosti obrazovky)"
 
 #: prefs.js:302
 msgid "Workspace Thumbnails Max Scale - App View"
-msgstr "Maximální měřítko miniatur pracovních ploch - nabídka aplikací"
+msgstr "Maximální měřítko miniatur pracovních ploch v přehledu aplikací"
 
 #: prefs.js:303
 msgid "Allows you to set different thumbnails scale for the Applications view"
 msgstr ""
-"Umožňuje nastavit jinou velikost miniatur pro zobrazení nabídky aplikací"
+"Umožňuje nastavit jinou velikost miniatur pro zobrazení přehledu aplikací"
 
 #: prefs.js:311 prefs.js:834 prefs.js:1369
 msgid "Workspace Preview"
@@ -256,35 +320,33 @@ msgid ""
 "adjacent workspaces on the screen. Default size is calculated to use all "
 "available space with minimal spacing"
 msgstr ""
-"Umožňuje zmenšit náhledy pracovních ploch, aby se upravily rozestupy nebo "
-"aby se na obrazovku vešlo více ze sousedních pracovních ploch. Výchozí "
-"velikost je vypočtena tak, aby se využil veškerý dostupný prostor s "
-"minimálními mezerami"
+"Umožňuje zmenšit náhledy pracovních ploch pro nastavení rozestupů, nebo aby "
+"se na obrazovku vešlo více ze sousedních pracovních ploch. Výchozí velikost "
+"je vypočtena tak, aby se využil veškerý dostupný prostor s minimálními "
+"rozestupy."
 
 #: prefs.js:344
 msgid "Workspaces Spacing"
-msgstr "Rozestupy pracovních prostorů"
+msgstr "Rozestupy pracovních ploch"
 
 #: prefs.js:345
-#, fuzzy
 msgid ""
 "Adjusts spacing in pixels between workspace previews, allowing you to "
 "control how much the adjacent workspaces overlap in the current workspace "
 "overview"
 msgstr ""
-"Upravuje rozestupy mezi náhledy pracovních ploch, tedy můžete ovlivnit, jak "
-"moc se sousední pracovní plochy překrývají s aktuálním přehledem pracovních "
-"ploch. Výchozí hodnota by měla nastavit sousední pracovní plochy mimo "
-"obrazovku."
+"Upravuje rozestupy mezi náhledy pracovních ploch, což umožňuje nastavit "
+"kolik ze sousedních ploch bude vidět v přehledu"
 
 #: prefs.js:360
 msgid "Center App Grid"
-msgstr "Vycentrovat mřížku aplikace"
+msgstr "Vycentrovat přehled aplikací"
 
 #: prefs.js:361
 msgid "Centers the app grid relative to the display instead of available space"
 msgstr ""
-"Zobrazení vyhledávání bude vystředěno na displej namísto dostupného místa"
+"Zobrazení přehledu aplikací bude vystředěno vzhledem k obrazovce místo "
+"vzhledem k dostupnému místu"
 
 #: prefs.js:370
 msgid "Search View"
@@ -303,19 +365,19 @@ msgstr ""
 
 #: prefs.js:385
 msgid "Always Show Search Entry"
-msgstr "Vždy zobrazit pole vyhledávání"
+msgstr "Vždy zobrazit vyhledávac pole"
 
 #: prefs.js:386
 msgid ""
 "If disabled, the search entry field will be hidden when not in use, so the "
 "workspace preview and app grid may take up more space"
 msgstr ""
-"Je-li je zakázáno, pole pro vyhledávání bude skryto, tedy náhled pracovního "
-"prostoru a mřížka aplikace mohou zabírat více místa"
+"Vyhledávací pole může být skryto a náhled pracovního prostoru s přehledem "
+"aplikací mohou zabírat více místa"
 
 #: prefs.js:403
 msgid "Search Results Width"
-msgstr "Šířka výsledků hledání"
+msgstr "Šířka výsledků vyhledávání"
 
 #: prefs.js:404
 msgid ""
@@ -324,20 +386,20 @@ msgid ""
 "result"
 msgstr ""
 "Upraví maximální šířku zobrazení výsledků vyhledávání (v procentech vzhledem "
-"k výchozímu nastavení). To vám umožní umístit více či méně ikon aplikací do "
+"k výchozímu nastavení). To umožní umístit více (či méně) ikon aplikací z "
 "výsledku vyhledávání aplikací"
 
-#: prefs.js:414 prefs.js:943 prefs.js:2251
+#: prefs.js:414 prefs.js:943 prefs.js:2277
 msgid "Panel"
-msgstr "Panel"
+msgstr "Horní lišta"
 
 #: prefs.js:420
 msgid "Main Panel Position"
-msgstr "Umístění hlavního panelu"
+msgstr "Umístění horní lišty"
 
 #: prefs.js:421
 msgid "Allows to place the main panel at the bottom of the primary display"
-msgstr "Umožňuje umístit hlavní panel do spodní části primárního displeje"
+msgstr "Umožňuje umístit horní lištu do spodní části hlavního displeje"
 
 #: prefs.js:425
 msgid "Top (Default)"
@@ -345,31 +407,31 @@ msgstr "Nahoře (výchozí)"
 
 #: prefs.js:434
 msgid "Main Panel Visibility"
-msgstr "Viditelnost hlavního panelu"
+msgstr "Viditelnost horní lišty"
 
 #: prefs.js:435
 msgid "Allows to hide main panel when not needed"
-msgstr "Umožňuje skrýt hlavní panel anebo jej zobrazit jen v přehledu"
+msgstr "Umožňuje skrýt horní lištu, pokud není potřeba"
 
 #: prefs.js:439
 msgid "Always Visible (Default)"
-msgstr "Vždy viditelný (výchozí)"
+msgstr "Vždy viditelná (výchozí)"
 
 #: prefs.js:440
 msgid "Overview Only"
-msgstr "Pouze přehled"
+msgstr "Pouze v přehledu činností"
 
 #: prefs.js:441
 msgid "Always Hidden"
-msgstr "Vždy skrytý"
+msgstr "Vždy skrytá"
 
 #: prefs.js:451
 msgid "Workspace Switcher Popup"
-msgstr "Přepínač pracovního prostoru - vyskakovací okno"
+msgstr "Vyskakovací indikátor pracovní plochy"
 
 #: prefs.js:467
 msgid "Horizontal Position (percentage from the left)"
-msgstr "Horizontální poloha (procent zleva)"
+msgstr "Horizontální poloha (v procentech zleva)"
 
 #: prefs.js:468
 msgid ""
@@ -378,14 +440,14 @@ msgid ""
 "If you want more control over the popup, try the \"Workspace Switcher "
 "Manager\" extension"
 msgstr ""
-"Toto vyskakovací okno se zobrazí, když přepnete pracovní prostor pomocí "
-"klávesové zkratky nebo gesta mimo přehled. Můžete jej zakázat na kartě "
-"Vlastnosti. Pro větší kontrolu nad vyskakovacím oknem, vyzkoušejte rozšíření "
-"\"Workspace Switcher Manager\""
+"Toto vyskakovací okno se zobrazí tehdy, když přepnete pracovní plochu pomocí "
+"klávesové zkratky nebo gesta mimo přehled činností. Můžete jej zakázat na "
+"kartě \"Chování\". Pro větší kontrolu nad vyskakovacím oknem, vyzkoušejte "
+"rozšíření \"Workspace Switcher Manager\"."
 
 #: prefs.js:488
 msgid "Vertical Position (percentage from the top)"
-msgstr "Vertikální pozice (procent shora)"
+msgstr "Vertikální poloha (v procentech shora)"
 
 #: prefs.js:499
 msgid "Notifications and OSD"
@@ -401,27 +463,27 @@ msgstr "Vyberte, kde se na obrazovce zobrazí oznamovací bannery"
 
 #: prefs.js:510 prefs.js:529 prefs.js:1215
 msgid "Top Left"
-msgstr "Nahoře vlevo"
+msgstr "Vlevo nahoře"
 
 #: prefs.js:511
 msgid "Top Center (Default)"
-msgstr "Nahoře Střed (výchozí)"
+msgstr "Nahoře uprostřed (výchozí)"
 
 #: prefs.js:512 prefs.js:531 prefs.js:1216
 msgid "Top Right"
-msgstr "Nahoře Vpravo"
+msgstr "Vpravo nahoře"
 
 #: prefs.js:513 prefs.js:533 prefs.js:1217
 msgid "Bottom Left"
-msgstr "Dole vlevo"
+msgstr "Vlevo dole"
 
 #: prefs.js:514
 msgid "Bottom Center"
-msgstr "Dole Vlevo"
+msgstr "Dole uprostřed"
 
 #: prefs.js:515 prefs.js:535 prefs.js:1218
 msgid "Bottom Right"
-msgstr "Dole vpravo"
+msgstr "Vpravo dole"
 
 #: prefs.js:523
 msgid "OSD Popup Position"
@@ -430,7 +492,9 @@ msgstr "Pozice OSD"
 #: prefs.js:524
 msgid ""
 "Choose where the OSD pop-ups (like sound volume level) appear on the screen"
-msgstr "Vyberte, kde se na obrazovce zobrazí OSD (například nastavení zvuku)"
+msgstr ""
+"Vyberte, kde se na obrazovce zobrazí OSD indikátory (například při "
+"nastavování hlasitosti)"
 
 #: prefs.js:528 prefs.js:753 prefs.js:797 prefs.js:1153 prefs.js:1173
 #: prefs.js:1195 prefs.js:1562 prefs.js:1579 prefs.js:1596 prefs.js:1663
@@ -439,15 +503,15 @@ msgstr "Zakázat"
 
 #: prefs.js:530
 msgid "Top Center"
-msgstr "Nahoře vlevo"
+msgstr "Vlevo nahoře"
 
 #: prefs.js:532
 msgid "Center"
-msgstr "Střed"
+msgstr "Uprostřed"
 
 #: prefs.js:534
 msgid "Bottom Center (Default)"
-msgstr "Dole Střed (výchozí)"
+msgstr "Dole uprostřed (výchozí)"
 
 #: prefs.js:543
 msgid "Secondary Monitors"
@@ -455,19 +519,19 @@ msgstr "Sekundární monitory"
 
 #: prefs.js:549
 msgid "Workspace Thumbnails Position"
-msgstr "Pozice miniatur pracovního prostoru"
+msgstr "Pozice miniatur pracovních ploch"
 
 #: prefs.js:550
 msgid ""
 "Allows to place workspace thumbnails of secondary monitors on the opposite "
 "side than on the primary monitor"
 msgstr ""
-"Umožňuje umístit miniatury pracovního prostoru sekundárních monitorů na "
-"opačnou stranu než na primárním monitoru"
+"Umožňuje umístit miniatury pracovních ploch sekundárních monitorů na opačnou "
+"stranu než na primárním monitoru"
 
 #: prefs.js:554
 msgid "Same as Primary"
-msgstr "Stejné jako primární"
+msgstr "Stejně jako primární"
 
 #: prefs.js:555
 msgid "Left / Top"
@@ -479,47 +543,48 @@ msgstr "Vpravo / Dole"
 
 #: prefs.js:591
 msgid "Workspace Thumbnails Max Scale"
-msgstr "Miniatury pracovního prostoru Maximální měřítko"
+msgstr "Maximální měřítko miniatur pracovních ploch"
 
 #: prefs.js:592
 msgid ""
 "Adjusts maximum size of the workspace thumbnails (percentage relative to the "
 "display width / height) for secondary monitors"
 msgstr ""
-"Upravuje maximální velikost miniatur pracovního prostoru (v procentech "
-"vzhledem k šířce / výšce zobrazení) pro sekundární monitory"
+"Upravuje maximální velikost miniatur pracovních ploch (v procentech vzhledem "
+"k šířce, či výšce obrazovky) pro sekundární monitory"
 
 #: prefs.js:609
 msgid "Workspace Preview Scale"
-msgstr "Měřítko náhledu pracovního prostoru"
+msgstr "Měřítko náhledu pracovní plochy"
 
 #: prefs.js:610
 msgid "Allows to scale down workspace previews on secondary monitors"
-msgstr "Zmenšuje náhledy pracovního prostoru na sekundárních monitorech"
+msgstr "Umožňuje zmenšit náhled pracovní plochy na sekundárních monitorech"
 
 #: prefs.js:618
 msgid "Shift Overview by Panel Height"
-msgstr "Posuň náhled pracovního prostoru podle výšky panelu"
+msgstr "Posunout náhled pracovní plochy o výšku horní lišty"
 
 #: prefs.js:619
 msgid ""
 "This option can help align the overview of the secondary monitor with the "
 "primary one"
 msgstr ""
-"Tato možnost může pomoci zarovnat přehled sekundárního monitoru s primárním "
-"monitorem"
+"Tato možnost může pomoci zarovnat přehled činností sekundárního monitoru s "
+"primárním monitorem"
 
 #: prefs.js:644
 msgid "Dash Max Icon Size"
-msgstr "Maximální velikost ikon"
+msgstr "Velikost ikon panelu aplikací"
 
 #: prefs.js:645
 msgid ""
 "Maximum size of Dash icons in pixels. Adaptive option switches between "
 "default 64 and 48 for low resolution displays"
 msgstr ""
-"Maximální velikost ikon Dash v pixelech. Možnost Adaptive přepíná mezi "
-"výchozími hodnotami 64 a 48 pro displeje s nízkým rozlišením"
+"Maximální velikost ikon panelu aplikací (Dash) v pixelech. Možnost "
+"\"Adaptivní\" přepíná mezi výchozími hodnotami 64 a 48 pro displeje s nízkým "
+"rozlišením"
 
 #: prefs.js:649 prefs.js:1746 prefs.js:1941
 msgid "Adaptive (Default)"
@@ -527,43 +592,43 @@ msgstr "Adaptivní (výchozí)"
 
 #: prefs.js:650 prefs.js:879 prefs.js:1754 prefs.js:1942
 msgid "128"
-msgstr "128"
+msgstr ""
 
 #: prefs.js:651 prefs.js:880 prefs.js:1755 prefs.js:1943
 msgid "112"
-msgstr "112"
+msgstr ""
 
 #: prefs.js:652 prefs.js:1756 prefs.js:1944
 msgid "96"
-msgstr "96"
+msgstr ""
 
 #: prefs.js:653 prefs.js:882 prefs.js:1757 prefs.js:1945
 msgid "80"
-msgstr "80"
+msgstr ""
 
 #: prefs.js:654 prefs.js:883 prefs.js:1758 prefs.js:1946
 msgid "64"
-msgstr "64"
+msgstr ""
 
 #: prefs.js:655 prefs.js:794 prefs.js:884 prefs.js:1759 prefs.js:1947
 msgid "48"
-msgstr "48"
+msgstr ""
 
 #: prefs.js:656 prefs.js:795 prefs.js:885
 msgid "32"
-msgstr "32"
+msgstr ""
 
 #: prefs.js:664
 msgid "Dash Background Style"
-msgstr "Dash styl pozadí"
+msgstr "Styl pozadí panelu aplikací"
 
 #: prefs.js:665
 msgid ""
 "Allows you to change the background color of the dash to match the search "
 "results an app folders"
 msgstr ""
-"Umožňuje změnit barvu pozadí Dash tak, aby odpovídala výsledkům vyhledávání "
-"ve složkách aplikace"
+"Umožňuje změnit barvu pozadí panelu aplikací tak, aby ladila s barvou pozadí "
+"výsledků vyhledávání a složek aplikací"
 
 #: prefs.js:669 prefs.js:1095 prefs.js:1123 prefs.js:1214 prefs.js:1288
 #: prefs.js:1561 prefs.js:1578 prefs.js:1635 prefs.js:1649
@@ -572,49 +637,50 @@ msgstr "Výchozí"
 
 #: prefs.js:670
 msgid "Light"
-msgstr "Lehké"
+msgstr "Světlé"
 
 #: prefs.js:671 prefs.js:922
 msgid "Dark"
-msgstr "Tmavý"
+msgstr "Tmavé"
 
 #: prefs.js:687
 msgid "Dash Background Opacity"
-msgstr "Neprůhlednost pozadí"
+msgstr "Průhlednost pozadí"
 
 #: prefs.js:688
 msgid "Adjusts the opacity of the Dash background"
-msgstr "Upraví průhlednost pozadí Dash"
+msgstr "Upraví průhlednost pozadí panelu aplikací"
 
 #: prefs.js:706
 msgid "Dash Background Radius"
-msgstr "Poloměr pozadí"
+msgstr "Poloměr zaoblení pozadí panelu aplikací"
 
 #: prefs.js:707
 msgid ""
 "Adjusts the border radius of the Dash background in pixels. 0 means the "
 "default value given by the current theme style"
 msgstr ""
-"Upraví poloměr okraje pozadí Dash v pixelech. 0 znamená výchozí hodnotu dle "
-"stylu tématu"
+"Upraví poloměr zaoblení hran pozadí panelu aplikací v bodech. Nula znamená "
+"výchozí hodnotu danou stylem tématu."
 
 #: prefs.js:717
 msgid "Dash Background GNOME 3 Style"
-msgstr "Dash pozadí stylu GNOME 3"
+msgstr "GNOME 3 styl panelu aplikací"
 
 #: prefs.js:718
 msgid ""
 "Background of the vertically oriented dash will imitate the GNOME 3 style"
-msgstr "Pozadí vertikálně orientovaného Dash napodobí styl prostředí GNOME 3"
+msgstr ""
+"Pozadí vertikálně orientovaného panelu aplikací bude napodobovat styl GNOME 3"
 
 #: prefs.js:728
 msgid "Running App Indicator"
-msgstr "Běžící aplikační indikátor"
+msgstr "Indikátor spuštěné aplikace"
 
 #: prefs.js:729
 msgid ""
 "Allows you to change style of the running app indicator under the app icon"
-msgstr "Umožňuje změnit styl indikátoru spuštěné aplikace pod ikonou aplikace"
+msgstr "Umožňuje změnit styl indikátoru spuštěné aplikace pod její ikonou"
 
 #: prefs.js:733
 msgid "Dot (Default)"
@@ -626,20 +692,20 @@ msgstr "Linka"
 
 #: prefs.js:742 prefs.js:1348
 msgid "Workspace Thumbnails"
-msgstr "Miniatury pracovního prostoru"
+msgstr "Miniatury pracovních ploch"
 
 #: prefs.js:748
 msgid "Show Workspace Thumbnail Labels"
-msgstr "Zobrazit štítky miniatur pracovního prostoru"
+msgstr "Zobrazit popisky miniatur pracovních ploch"
 
 #: prefs.js:749
 msgid ""
 "Each workspace thumbnail can show label with its index and name (if defined "
 "in the system settings) or name/title of its most recently used app/window"
 msgstr ""
-"Každá miniatura pracovního prostoru může zobrazovat svůj index a název "
-"(pokud je definován v nastavení systému) nebo jméno/název naposledy použité "
-"aplikace/okna"
+"Každá miniatura pracovní plochy může zobrazovat svůj index a jméno (pokud je "
+"definováno v nastavení systému), nebo jméno naposledy použité aplikace, či "
+"titulek okna"
 
 #: prefs.js:754
 msgid "Index"
@@ -647,32 +713,35 @@ msgstr "Index"
 
 #: prefs.js:755
 msgid "Index + WS Name"
-msgstr "Index + Název plochy"
+msgstr "Index + Jméno plochy"
 
 #: prefs.js:756
 msgid "Index + App Name"
-msgstr "Index + Název aplikace"
+msgstr "Index + Jméno aplikace"
 
 #: prefs.js:757
 msgid "Index + Window Title"
-msgstr "Rejstřík + Název okna"
+msgstr "Index + Titulek okna"
 
 #: prefs.js:764
 msgid "Show WS Thumbnail Label on Hover"
-msgstr "Zobrazit štítek miniatur ploch při umístění kurzoru myši"
+msgstr "Zobrazit popisek plochy po najetí myši"
 
 #: prefs.js:765
 msgid "Show the label only when the mouse pointer hovers over the thumbnail"
-msgstr "Zobrazit popisek pouze tehdy, když ukazatel myši najede na miniaturu"
+msgstr ""
+"Zobrazit popisek plochy pouze tehdy, když ukazatel myši najede na miniaturu "
+"pracovní plochy"
 
 #: prefs.js:773
 msgid "Show Wallpaper in Workspace Thumbnails"
-msgstr "Zobrazit tapetu v miniaturách pracovního prostoru"
+msgstr "Zobrazit tapetu v miniaturách pracovních ploch"
 
 #: prefs.js:774
 msgid "All workspace thumbnails will include the current desktop background"
 msgstr ""
-"Všechny miniatury pracovního prostoru budou obsahovat aktuální pozadí plochy"
+"Všechny miniatury pracovních ploch budou obsahovat aktuální pozadí (tapetu) "
+"plochy"
 
 #: prefs.js:782 prefs.js:1426
 msgid "Window Preview"
@@ -688,19 +757,19 @@ msgstr "64 (výchozí)"
 
 #: prefs.js:796
 msgid "22"
-msgstr "22"
+msgstr ""
 
 #: prefs.js:805
 msgid "Window Title Position / Visibility"
-msgstr "Pozice názvu okna / viditelnost"
+msgstr "Pozice a viditelnost titulku okna"
 
 #: prefs.js:806
 msgid ""
 "Sets the position of the window title that is displayed when the mouse "
 "hovers over the window or can always be visible"
 msgstr ""
-"Nastavuje pozici názvu okna zobrazeného při najetí myší na okno nebo může "
-"být viditelný vždy"
+"Nastavuje pozici titulku okna zobrazeného pro aktuálně vybrané okno, nebo "
+"všechna okna"
 
 #: prefs.js:810
 msgid "Below Window (Default)"
@@ -712,23 +781,23 @@ msgstr "Uvnitř okna"
 
 #: prefs.js:812
 msgid "Inside - Always Visible"
-msgstr "Uvnitř - vždy viditelné"
+msgstr "Uvnitř - vždy viditelný"
 
 #: prefs.js:813
 msgid "On Top"
-msgstr "Na vrcholu"
+msgstr "Nahoře"
 
 #: prefs.js:814
 msgid "On Top - Always Visible"
-msgstr "Nahoře - vždy viditelné"
+msgstr "Nahoře - vždy viditelný"
 
 #: prefs.js:822
 msgid "Show Close Window Button"
-msgstr "Zobraz tlačítko Zavři okno"
+msgstr "Zobrazit tlačítko pro zavření okna"
 
 #: prefs.js:823
 msgid "Allows you to hide close window button"
-msgstr "Umožňuje skrýt tlačítko zavření okna"
+msgstr "Umožňuje skrýt tlačítko pro zavření okna"
 
 #: prefs.js:840
 msgid "Show Workspace Preview Background"
@@ -740,19 +809,20 @@ msgstr "Umožňuje skrýt pozadí náhledu pracovní plochy"
 
 #: prefs.js:858
 msgid "Workspace Background Corner Radius"
-msgstr "Poloměr rohu pozadí pracovní plochy"
+msgstr "Poloměr zaoblení pozadí náhledu pracovní plochy"
 
 #: prefs.js:859
 msgid "Adjusts the corner radius of the workspace preview in the overview"
-msgstr "Nastaví poloměr rohu náhledu pracovní plochy v přehledu"
+msgstr ""
+"Nastaví poloměr zaoblení rohů náhledu pracovní plochy v přehledu činností"
 
-#: prefs.js:867 prefs.js:1490 prefs.js:2260
+#: prefs.js:867 prefs.js:1490 prefs.js:2286
 msgid "Search"
 msgstr "Vyhledávání"
 
 #: prefs.js:873
 msgid "App Search Icon Size"
-msgstr "Velikost ikony vyhledávání aplikací"
+msgstr "Velikost ikon vyhledávání aplikací"
 
 #: prefs.js:874
 msgid ""
@@ -760,9 +830,9 @@ msgid ""
 "fit more results. Adaptive option switches between default 96 and 64 for low "
 "resolution displays"
 msgstr ""
-"Velikost ikon aplikací ve výsledcích hledání. Menší velikost - více "
-"zobrazených výsledků. Adaptivní přepíná mezi výchozími hodnotami 96 a 64 pro "
-"displeje s nízkým rozlišením"
+"Velikost ikon ve výsledcích vyhledávání aplikací. Menší velikost umožní "
+"zobrazit více výsledků. Adaptivní volba přepíná mezi výchozími hodnotami 96 "
+"a 64 bodů pro displeje s nízkým rozlišením"
 
 #: prefs.js:878
 msgid "Adaptive"
@@ -782,12 +852,11 @@ msgid ""
 "except the window search provider which always lists all results"
 msgstr ""
 "Nastaví maximální počet řádků pro seznamy výsledků všech poskytovatelů "
-"vyhledávání vyhledávání s výjimkou zprostředkovatele vyhledávání v okně jenž "
-"vždy zobrazuje všechny výsledky"
+"vyhledávání"
 
 #: prefs.js:916
 msgid "Search Results Style"
-msgstr "Styl výsledků hledání"
+msgstr "Styl výsledků vyhledávání"
 
 #: prefs.js:917
 msgid ""
@@ -796,10 +865,9 @@ msgid ""
 "Dark style also ignores the overview background blur and brightness "
 "configured for the search view"
 msgstr ""
-"Nastaví styl pozadí výsledků vyhledávání. Pokud je aktivní režim statického "
-"přehledu pracovní plochy, použije se vždy styl Tmavý. Tmavý styl také "
-"ignoruje rozmazání a jas pozadí přehledu nakonfigurované pro zobrazení "
-"vyhledávání"
+"Nastaví styl pozadí výsledků vyhledávání. Pokud je aktivní statický režim "
+"přehledu činností, použije se vždy styl Tmavý. Tmavý styl také ignoruje "
+"nastavení rozmazání a jas pozadí přehledu pro zobrazení vyhledávání."
 
 #: prefs.js:921 prefs.js:955
 msgid "Transparent (Default)"
@@ -807,7 +875,7 @@ msgstr "Průhledný (výchozí)"
 
 #: prefs.js:929
 msgid "Highlighting"
-msgstr "Podtržení"
+msgstr "Zvýraznění"
 
 #: prefs.js:930
 msgid ""
@@ -817,11 +885,11 @@ msgid ""
 "search results globally. If you are using other extensions that offer this "
 "option, make sure you set the same setting in all of them."
 msgstr ""
-"Výchozí styl zvýraznění GNOME (tučné) způsobuje náhodné zkreslení a často "
-"brání zobrazení celého řetězce, i když je pro něj místo. Vybraný styl se "
-"použije na všechny výsledky vyhledávání globálně. Pokud používáte jiná "
-"rozšíření, která tuto možnost nabízejí, ujistěte se, že ve všech nastavíte "
-"stejné nastavení."
+"Výchozí styl zvýrazňování GNOME (tučné) způsobuje \"náhodné\" zkracování "
+"řetězců a často brání zobrazení celých popisků, i když je pro ně místo. "
+"Vybraný styl je použit na všechny výsledky vyhledávání globálně. Pokud "
+"používáte jiná rozšíření, která tuto možnost nabízejí, ujistěte se, ž máte "
+"ve všech nastaven stejný styl."
 
 #: prefs.js:934
 msgid "Bold (Default)"
@@ -833,23 +901,23 @@ msgstr "Podtržení"
 
 #: prefs.js:936
 msgid "None"
-msgstr "Nic"
+msgstr "Žádné"
 
 #: prefs.js:949
 msgid "Overview Panel Style"
-msgstr "Styl panelů v náhledu"
+msgstr "Styl horní lišty v přehledu"
 
 #: prefs.js:950
 msgid "Panel background style in overview"
-msgstr "Pozadí panelu v náhledu"
+msgstr "Styl pozadí horní lišty v přehledu činností"
 
 #: prefs.js:954
 msgid "Same as Desktop"
-msgstr "Stejný jako desktop"
+msgstr "Stejný jako na ploše"
 
 #: prefs.js:962
 msgid "Overview Background"
-msgstr "Přehled - pozadí"
+msgstr "Pozadí v přehledu činností"
 
 #: prefs.js:968
 msgid "Show wallpaper"
@@ -861,9 +929,9 @@ msgid ""
 "wallpaper. If you have a weak computer or prefer low system load and want to "
 "blur the wallpaper, the \"Fast Blur Transitions\" option is for you"
 msgstr ""
-"Nahradí jednolité šedé pozadí v přehledu aktuální tapetou plochy. Pokud máte "
-"slabý počítač nebo dáváte přednost nízkému zatížení systému a chcete tapetu "
-"rozmazat, použijte „Rychlé přechody rozostření“"
+"Nahradí jednolité šedé pozadí v přehledu činností aktuální tapetou plochy. "
+"Pokud máte slabý počítač nebo dáváte přednost nízkému zatížení systému a "
+"chcete tapetu rozmazat, použijte „Rychlé přechody rozostření“"
 
 #: prefs.js:973
 msgid "Disable (Default)"
@@ -883,19 +951,19 @@ msgstr "Jas - výběr okna"
 
 #: prefs.js:991
 msgid "Brightness of the background wallpaper in the overview"
-msgstr "Jas tapety na pozadí v přehledu"
+msgstr "Jas tapety na pozadí v přehledu aktivit"
 
 #: prefs.js:1009
 msgid "Brightness - App Grid"
-msgstr "Jas - mřížka aplikací"
+msgstr "Jas - přehled aplikací"
 
 #: prefs.js:1010
 msgid "Brightness of the background wallpaper in the application menu"
-msgstr "Jas tapety na pozadí v menu aplikace"
+msgstr "Jas tapety na pozadí v zobrazení přehledu aplikací"
 
 #: prefs.js:1028
 msgid "Brightness - Search View"
-msgstr "Jas - zobrazení hledání"
+msgstr "Jas - zobrazení vyhledávání"
 
 #: prefs.js:1029
 msgid ""
@@ -903,7 +971,7 @@ msgid ""
 "visibility is more important"
 msgstr ""
 "Umožňuje nastavit nižší jas pozadí pro režim zobrazení vyhledávání pro lepší "
-"viditelnost textu"
+"čitelnost textu"
 
 #: prefs.js:1047
 msgid "Blur Window Picker Background"
@@ -911,22 +979,22 @@ msgstr "Rozostření pozadí výběru okna"
 
 #: prefs.js:1048
 msgid "Sets the amount of background blur in the window picker view"
-msgstr "Rozostření tapety na pozadí ve výběru oken"
+msgstr "Rozostření tapety na pozadí přehledu činností"
 
 #: prefs.js:1066
 msgid "Blur App Grid/Search View Background"
-msgstr "Rozostření pozadí v mřížce aplikací/hledání"
+msgstr "Rozostření pozadí v přehledu aplikací a vyhledávání"
 
 #: prefs.js:1067
 msgid ""
 "Sets the amount of background blur in the app grid and search results views"
 msgstr ""
-"Nastavení hodnoty rozostření tapety na pozadí v mřížce aplikace a zobrazení "
-"výsledků vyhledávání"
+"Nastavení hodnoty rozostření tapety na pozadí v zobrazení přehledu aplikací "
+"a výsledků vyhledávání"
 
 #: prefs.js:1084
 msgid "Overview"
-msgstr "Přehled"
+msgstr "Přehled činností"
 
 #: prefs.js:1090
 msgid "Overview Mode"
@@ -941,15 +1009,17 @@ msgid ""
 "workspace and only clicking on an active workspace thumbnail activates the "
 "default overview"
 msgstr ""
-"Režim Zobrazit okna při módu najetí myší neodkryje okna náhledu pracovního "
-"prostoru, dokud ukazatel myši nenajede do jakéhokoli okna.\n"
-"Režim Statická pracovní plocha ji zachová statickou při náhledu, zobrazuje "
-"jen Dash, miniatury pracovní plochy a vyhledávání. Jen kliknutím na aktivní "
-"miniaturu pracovní plochy se aktivuje výchozí přehled"
+"Režim \"Rozprostřít okna po najetí myší\" nerozprostře okna náhledu pracovní "
+"plochy, dokud kurzor myši nenajede nad nějaký náhled okna.\n"
+"Režim \"Statická pracovní plocha\" ponechá pracovní plochu statickou "
+"(nepřechází do klasického náhledu), zatímco, ostatní součásti přehledu "
+"činností se zobrazí nad ní. Kiknutím na aktivní miniaturu pracovní plochy, "
+"nebo klávesami Tab, či šipkami, přejdete do standardního režimu přehledu s "
+"rozprostřenými okny."
 
 #: prefs.js:1096
 msgid "Expose Windows on Hover"
-msgstr "Zobrazit okna při najetí myší"
+msgstr "Rozprostřít okna po najetí myši"
 
 #: prefs.js:1097
 msgid "Static Workspace"
@@ -957,23 +1027,23 @@ msgstr "Statická pracovní plocha"
 
 #: prefs.js:1104
 msgid "Startup State"
-msgstr "Stav spuštění"
+msgstr "Stav po spuštění"
 
 #: prefs.js:1105
 msgid "Allows to change the state in which GNOME Shell starts a session"
-msgstr "Umožňuje změnit stav ve kterém GNOME Shell zahajuje relaci"
+msgstr "Umožňuje změnit režim zobrazení, ve kterém GNOME Shell zahájí relaci"
 
 #: prefs.js:1109
 msgid "Overview (Default)"
-msgstr "Přehled (výchozí)"
+msgstr "Přehled činností (výchozí)"
 
 #: prefs.js:1110
 msgid "Desktop"
-msgstr "Desktop"
+msgstr "Plocha"
 
 #: prefs.js:1111 prefs.js:1156 prefs.js:1198
 msgid "Applications"
-msgstr "Aplikace"
+msgstr "Přehled aplikací"
 
 #: prefs.js:1118
 msgid "Escape Key Behavior"
@@ -985,28 +1055,35 @@ msgid ""
 "from the application grid or from search, if the search entry field does not "
 "have focus"
 msgstr ""
-"Umožňuje zavřít přehled jediným stisknutím klávesy Escape, a to i z mřížky "
-"aplikace nebo z vyhledávání, pokud pole pro zadání vyhledávání není aktivní"
+"Umožňuje zavřít přehled jediným stisknutím klávesy Escape, a to i z přehledu "
+"aplikací, nebo vyhledávání, pokud není aktivní vyhledávací pole"
 
 #: prefs.js:1124
 msgid "Close Overview"
-msgstr "Zavři Přehled"
+msgstr "Zavřít přehled činností"
 
 #: prefs.js:1132
 msgid "Click Empty Space To Close"
-msgstr "Klikni prázdné místo pro zavření"
+msgstr "Kliknutí na prázdné místo pro zavření"
 
 #: prefs.js:1133
-msgid "Enables clicking on an empty space in the overview to close it"
-msgstr "Povolí kliknutí na prázdné místo v přehledu pro jeho zavření"
+msgid ""
+"Enables closing the overview by clicking on an empty area. In the app grid, "
+"only the secondary (right) mouse button can be used to prevent accidental "
+"closing while interacting with icons or page controls"
+msgstr ""
+"Umožňuje zavřít přehled činností kliknutím na prázdné místo v přehledu "
+"aktivit. V přehledu aplikací je třeba použít sekundární (většinou pravé) "
+"tlačítko myši, aby nedocházelo k nechtěným zavřením při ovládání jeho "
+"tlačítek."
 
 #: prefs.js:1142
 msgid "Overlay Key (Super/Windows)"
-msgstr "Překryvná klávesa (Super/Windows)"
+msgstr "Klávesa přehledu (Super/Windows)"
 
 #: prefs.js:1148
 msgid "Single-Press Action"
-msgstr "Akce jedním tlačítkem"
+msgstr "Akce pro jeden stisk"
 
 #: prefs.js:1149
 msgid ""
@@ -1017,12 +1094,12 @@ msgid ""
 "key, set this option to \"Overview - Window Picker (Default)\" and the "
 "\"Double-Press Action\" option to \"Applications (Default)\""
 msgstr ""
-"Zakáže nebo změní chování při stisknutí a uvolnění klávesy Super. Možnosti "
-"\"Hledat ve Windows\" vyžaduje nainstalované a povolené rozšíření \"WSP "
-"(Window Search Provider)\". Odkaz je k dispozici na kartě Moduly v "
-"Nastavení. Pokud chcete, aby se o překryvnou klávesu staralo jiné rozšíření "
-"(například AATWS), nastavte tuto možnost na \"Přehled - výběr oken (výchozí)"
-"\" a možnost \"Akce při dvojitém stisknutí\" na \"Aplikace (výchozí)\"."
+"Zakáže nebo změní chování při stisknutí a uvolnění klávesy přehledu (Super). "
+"Možnosti \"Hledat okna\" vyžaduje nainstalované a povolené rozšíření \"WSP "
+"(Windows Search Provider)\". Odkaz je k dispozici na kartě Moduly. Pokud "
+"chcete, aby se o klávesu přehledu staralo jiné rozšíření (například AATWS), "
+"nastavte tuto možnost na \"Přehled - výběr okna (výchozí)\" a možnost \"Akce "
+"při dvojitém stisknutí\" na \"Aplikace (výchozí)\"."
 
 #: prefs.js:1154 prefs.js:1196
 msgid "Follow Global Overview Mode"
@@ -1030,11 +1107,11 @@ msgstr "Podle globálního nastavení"
 
 #: prefs.js:1155 prefs.js:1197
 msgid "Overview - Window Picker (Default)"
-msgstr "Přehled - Okno pro výběr (Výchozí)"
+msgstr "Přehled - výběr okna (Výchozí)"
 
 #: prefs.js:1157 prefs.js:1199
 msgid "Overview - Static WS Preview"
-msgstr "Přehled - Statický náhled ploch"
+msgstr "Přehled - Statický náhled plochy"
 
 #: prefs.js:1158 prefs.js:1200
 msgid "Overview - Static Workspace"
@@ -1046,7 +1123,7 @@ msgstr "Vyhledávání oken (vyžaduje rozšíření WSP)"
 
 #: prefs.js:1168
 msgid "Double-Press Action"
-msgstr "Akce dvojitého stisknutí"
+msgstr "Akce pro dvojitý stisk"
 
 #: prefs.js:1169
 msgid ""
@@ -1057,30 +1134,30 @@ msgid ""
 "you set static workspace (preview) for the single press/release Super key "
 "action"
 msgstr ""
-"Zakázat nebo změnit chování při dvojitém stisknutí klávesy Super. Volba "
-"„Hledat v oknech“ vyžaduje, aby bylo aktivováno rozšíření "
-"\"WindowSearchProvider\". Volba \"Statický přehled ploch - vystavit okna“ "
-"umožňuje přepnout na výchozí zobrazení výběru oken Přehledu činností. Pokud "
-"nastavíte statický pracovní prostor (náhled) pro akci jediného stisknutí / "
-"uvolnění klávesy Super"
+"Zakáže, nebo změní chování při dvojitém stisku klávesy přehledu (Super). "
+"Volba „Hledat okna“ vyžaduje, aby bylo nainstalováno a aktivováno rozšíření "
+"\"WSP (Windows Search Provider)\". Volba \"Statický přehled - rozprostřít "
+"okna“ umožňuje přepnout na výchozí zobrazení výběru oken přehledu činností, "
+"pokud nastavíte statický pracovní prostor (náhled) pro akci jediného "
+"stisknutí klávesy přehledu."
 
 #: prefs.js:1174
 msgid "Applications (Default)"
-msgstr "Aplikace (výchozí)"
+msgstr "Přehled aplikací (výchozí)"
 
 #: prefs.js:1176
 msgid "Overview - Window Picker"
-msgstr "Přehled - Okno pro výběr"
+msgstr "Přehled - výběr okna"
 
 #: prefs.js:1184
 msgid "Hot Corner (Install Custom Hot Corners - Extended for more options)"
 msgstr ""
-"Hot Corner (pro více možností nainstalujte rozšíření \"Custom Hot Corners - "
+"Citlivý roh (pro více možností nainstalujte rozšíření \"Custom Hot Corners - "
 "Extended\")"
 
 #: prefs.js:1190
 msgid "Hot Corner Action"
-msgstr "Hot Corner Akce"
+msgstr "Akce citlivého rohu"
 
 #: prefs.js:1191
 msgid ""
@@ -1089,13 +1166,14 @@ msgid ""
 "The \"Search Windows\" option requires the \"WSP (Window Search Provider)\" "
 "extension installed and enabled"
 msgstr ""
-"Zakázat nebo změnit chování Hot Corner. Podržením klávesy Ctrl při najetí na "
-"Hot Corner přepnete mezi akcemi Přehled/Aplikace. Možnost \"Hleta v oknech\" "
-"vyžaduje nainstalované a povolené rozšíření \"WSP (Window Search Provider)\""
+"Zakáže, nebo změní chování citlivého rohu. Podržením klávesy Ctrl při najetí "
+"na cotlivý roh přepnete mezi akcemi Přehled/Aplikace. Možnost \"Hledat "
+"okna\" vyžaduje nainstalované a povolené rozšíření \"WSP (Windows Search "
+"Provider)\""
 
 #: prefs.js:1209
 msgid "Hot Corner Position"
-msgstr "Hot Corner pozice"
+msgstr "Umísění citlivého rohu"
 
 #: prefs.js:1210
 msgid ""
@@ -1105,29 +1183,29 @@ msgid ""
 "of the monitor where Dash is located"
 msgstr ""
 "Vyberte, který roh monitorů bude aktivní. Pokud zvolíte možnost „Následuj "
-"Dash“, bude umístěn v blízkosti okraje panelu Dash. „Následuj Dash - Okraj“ "
-"rozšiřuje aktivní roh tak, aby pokrýval celý okraj monitoru, na kterém je "
-"umístěn panel Dash"
+"panel aplikací“ (Dash), bude citlivý roh umístěn v blízkosti okraje panelu "
+"aplikací. Možnost „Následuj panel aplikací - Okraj“ udělá z citlivého rohu "
+"citlivou celou hranu displeje hned vedle panelu aplikací."
 
 #: prefs.js:1219
 msgid "Follow Dash"
-msgstr "Následuj Dash"
+msgstr "Následuj panel aplikací"
 
 #: prefs.js:1220
 msgid "Follow Dash - Hot Edge"
-msgstr "Následuj Dash - Okraj"
+msgstr "Následuj panel apliací - Okraj"
 
 #: prefs.js:1228
 msgid "Enable Hot Corner in Full-Screen Mode"
-msgstr "Hot Corner aktivovat v režimu celé obrazovky"
+msgstr "Povolit citlivý roh v režimu celé obrazovky"
 
 #: prefs.js:1229
 msgid ""
 "If you often work with full-screen applications and want the hot corner to "
 "be usable"
 msgstr ""
-"Pokud často pracujete s celoobrazovkovými aplikacemi a chcete, aby byl Hot "
-"Corner použitelný"
+"Pokud často pracujete s celoobrazovkovými aplikacemi a chcete, aby byl "
+"citlivý roh fungoval i v tomto režimu"
 
 #: prefs.js:1239
 msgid "Show Ripples Animation"
@@ -1138,8 +1216,8 @@ msgid ""
 "The ripple animation is played when the hot corner is activated. The ripple "
 "size has been reduced to be less distracting"
 msgstr ""
-"Při aktivaci rohu se přehraje animace vlnění. Velikost vlnění byla zmenšena, "
-"aby méně odváděla pozornost"
+"Při aktivaci citlivého rohu se přehraje animace s s vlnkami. Velikost vlnění "
+"byla zmenšena, aby méně rušila"
 
 #: prefs.js:1256
 msgid "Isolate Workspaces"
@@ -1147,11 +1225,13 @@ msgstr "Izolovat pracovní plochy"
 
 #: prefs.js:1257
 msgid "Dash will only show apps and windows from the current workspace"
-msgstr "Dash zobrazí pouze aplikace a okna z aktuální pracovní plochy"
+msgstr ""
+"Panel aplikací (Dash) zobrazí pouze aplikace a okna z aktuální pracovní "
+"plochy"
 
 #: prefs.js:1267
 msgid "App Icon - Click Behavior"
-msgstr "Aplikační ikony - chování při kliknutí"
+msgstr "Ikona aplikace - chování při kliknutí"
 
 #: prefs.js:1268
 msgid ""
@@ -1169,23 +1249,23 @@ msgstr ""
 
 #: prefs.js:1272
 msgid "Activate App Immediately"
-msgstr "Okamžitě aktivuje aplikace"
+msgstr "Okamžitě aktivovat aplikaci"
 
 #: prefs.js:1273
 msgid "First Switch to Workspace"
-msgstr "První přepnutí do pracovního prostoru"
+msgstr "Nejprve přepnout pracovní plochu"
 
 #: prefs.js:1274
 msgid "Open New Window (if supported)"
-msgstr "Otevři nové okno (je-li podporováno)"
+msgstr "Otevřít nové okno (je-li podporováno)"
 
 #: prefs.js:1275
 msgid "Prefer Current Workspace"
-msgstr "Preferuj aktuální pracovní plochu"
+msgstr "Preferovat aktuální pracovní plochu"
 
 #: prefs.js:1283
 msgid "App Icon - Scroll Action"
-msgstr "Aplikační ikony - Akce posunu"
+msgstr "Ikona aplikace- Akce po otočení kolečka"
 
 #: prefs.js:1284
 msgid ""
@@ -1194,63 +1274,64 @@ msgid ""
 "workspaces. Scrolling up cycles through previously used windows on the same "
 "workspace and then switches to another workspace, if any"
 msgstr ""
-"Výběr chování při posouvání přes ikonu aplikace. Algoritmus cyklení oken "
-"pracuje se seznamem oken seřazených podle „Nejnověji použitých“ a "
-"seskupených podle pracovních ploch. Posouvání nahoru cykluje dříve použitá "
-"okna na stejné pracovní ploše a poté se přepne na jinou pracovní plochu, "
-"pokud nějaká existuje"
+"Nastavte chování při posunu kolečkem myši nad ikonou aplikace. Při přepínání "
+"oken aplikace jsou okna řazena podle posledně použitých a seskupené podle "
+"pracovních ploch. Posouvání nahoru cykluje od posledně použitých oken na "
+"stejné pracovní ploše a poté přepne na další pracovní plochu, pokud nějaká "
+"existuje."
 
 #: prefs.js:1289
 msgid "Cycle App Windows - Highlight Selected"
-msgstr "Cykluj aplikační okna - zvýrazni vybrané"
+msgstr "Přepínat okna aplikace - zvýraznit vybrané"
 
 #: prefs.js:1290
 msgid "Cycle App Windows - Highlight App"
-msgstr "Cykluj aplikační okna - zvýrazni aplikaci"
+msgstr "Přepínat okna aplikace - zvýrazni aplikaci"
 
 #: prefs.js:1298
 msgid "App Menu"
-msgstr "Aplikační menu"
+msgstr "Kontextová nabídka aplikace"
 
 #: prefs.js:1304
 msgid "Add Force Quit"
-msgstr "Přidej Vynutit vypnutí"
+msgstr "Přidat Vynutit ukončení"
 
 #: prefs.js:1305
 msgid ""
 "Adds a \"Force Quit\" menu item to the application menu that appears when "
 "right-clicking an app icon"
 msgstr ""
-"Přidá \"Vynutit ukončení“ do nabídky aplikací zobrazující se po kliknutí "
-"pravým tlačítkem myši na ikonu aplikace"
+"Přidá položku \"Vynutit ukončení“ do kontextové nabídky, která se zobrazí po "
+"kliknutí pravým tlačítkem myši na ikonu aplikace"
 
 #: prefs.js:1315
 msgid "Add Close Windows on Current Workspace"
-msgstr "Přidej Zavřít okno na současné pracovní ploše"
+msgstr "Přidat Zavřít okna na aktuální pracovní ploše"
 
 #: prefs.js:1316
 msgid ""
 "Adds a \"Close Windows on Current Workspace\" menu item to the application "
 "menu that appears when right-clicking an app icon"
 msgstr ""
-"Přidá \"Zavřít okna na aktuální pracovní ploše“ do nabídky aplikací "
-"zobrazující se po kliknutí pravým tlačítkem myši na ikonu aplikace"
+"Přidá položku \"Zavřít okna na aktuální pracovní ploše“ do kontextové "
+"nabídky, která se zobrazí po kliknutí pravým tlačítkem myši na ikonu aplikace"
 
 #: prefs.js:1326
 msgid "Add Move App to Current Workspace"
-msgstr "Přidej Přesunout aplikaci na současnou pracovní plochu"
+msgstr "Přidat Přesunout aplikaci na současnou pracovní plochu"
 
 #: prefs.js:1327
 msgid ""
 "Adds a \"Move App to Current Workspace\" menu item to the application menu "
 "that appears when right-clicking an app icon"
 msgstr ""
-"Přidá \"Přesunout aplikaci do aktuální pracovní plochy“ do nabídky aplikací "
-"zobrazující se po kliknutí pravým tlačítkem myši na ikonu aplikace"
+"Přidá položku \"Přesunout aplikaci do aktuální pracovní plochy“ do "
+"kontextové nabídky, která se zobrazí po kliknutí pravým tlačítkem myši na "
+"ikonu aplikace"
 
 #: prefs.js:1337
 msgid "Add Create Window Thumbnail"
-msgstr "Přidej Vytvoř miniaturu okna"
+msgstr "Přidat Vytvořit miniaturu okna"
 
 #: prefs.js:1338
 msgid ""
@@ -1258,9 +1339,9 @@ msgid ""
 "Thumbnail\" menu item to the application menu that appears when right-"
 "clicking an app icon"
 msgstr ""
-"Vyžaduje nainstalované a povolené rozšíření WTMB. Přidá položku nabídky "
-"\"Vytvořit miniaturu okna“ do nabídky aplikace zobrazující se po kliknutí "
-"pravým tlačítkem myši na ikonu aplikace"
+"Vyžaduje nainstalované a povolené rozšíření WTMB. Přidá položku \"Vytvořit "
+"miniaturu okna“ do kontextové nabídky, která se zobrazí po kliknutí pravým "
+"tlačítkem myši na ikonu aplikace"
 
 #: prefs.js:1354
 msgid "Close Workspace Button"
@@ -1272,9 +1353,10 @@ msgid ""
 "over it and allows you to close all windows on the workspace. You can choose "
 "a \"safety lock\" to prevent accidental use"
 msgstr ""
-"Tlačítko Zavřít pracovní plochu se objeví na miniatuře pracovní plochy, když "
-"na ni umístíte ukazatel myši a umožní vám zavřít všechna okna na pracovní "
-"ploše. Můžete si vybrat bezpečnostní zámek, který zabrání náhodnému použití"
+"Tlačítko pro zavření pracovní plochy se objeví na miniatuře pracovní plochy, "
+"když na ni umístíte kurzor myši a umožní vám zavřít všechna okna na dané "
+"pracovní ploše, pokud nejsou ve stavu, který okamžité zavření neumožňuje. "
+"Můžete si vybrat bezpečnostní pojistku, která zabrání náhodnému použití."
 
 #: prefs.js:1360 prefs.js:2030
 msgid "Single Click"
@@ -1282,7 +1364,7 @@ msgstr "Jedno kliknutí"
 
 #: prefs.js:1361 prefs.js:2031
 msgid "Double Click"
-msgstr "Dvojité kliknutí"
+msgstr "Dvojklik"
 
 #: prefs.js:1362
 msgid "Ctrl Key + Click"
@@ -1290,7 +1372,7 @@ msgstr "Klávesa Ctrl + kliknutí"
 
 #: prefs.js:1375
 msgid "Sort Windows"
-msgstr "Třídit okna"
+msgstr "Řazení oken"
 
 #: prefs.js:1376
 msgid ""
@@ -1298,8 +1380,8 @@ msgid ""
 "The stable sequence is determined by the order in which the windows were "
 "opened"
 msgstr ""
-"Řazení oken v přehledu jinak než ve výchozí pozici na obrazovce. Stabilní "
-"pořadí je určeno pořadím, ve kterém byla okna otevřena"
+"Řaďte okna v přehledu jinak než podle pozice na displeji. Stabilní pořadí je "
+"určeno pořadím, ve kterém byla okna otevřena"
 
 #: prefs.js:1380
 msgid "Position (Default)"
@@ -1307,7 +1389,7 @@ msgstr "Pozice (výchozí)"
 
 #: prefs.js:1381
 msgid "Most Recently Used"
-msgstr "Nejpoužívanější (MRU)"
+msgstr "Naposledy použitá (MRU)"
 
 #: prefs.js:1382
 msgid "Stable Sequence"
@@ -1315,19 +1397,19 @@ msgstr "Stabilní pořadí"
 
 #: prefs.js:1390
 msgid "Initial Window Selection"
-msgstr "Výběr počátečního okna"
+msgstr "Počáteční výběr okna"
 
 #: prefs.js:1391
 msgid ""
 "Automatically select a window in the overview and ignore the pointer to "
 "speed up keyboard navigation"
 msgstr ""
-"Automatický výběr okna v přehledu a ignorování ukazatele pro urychlení "
-"navigace pomocí klávesnice"
+"Automaticky vyvere okno v přehledu místo kurzoru myši pro urychlení navigace "
+"pomocí klávesnice"
 
 #: prefs.js:1395
 msgid "Pointer (Default)"
-msgstr "Ukazatel (výchozí)"
+msgstr "Kurzor (výchozí)"
 
 #: prefs.js:1396
 msgid "First"
@@ -1351,9 +1433,9 @@ msgid ""
 "relative to the tallest one. 0 keeps the original scale ratio, while 100 "
 "makes all thumbnails the same height"
 msgstr ""
-"Ovládá míru kompenzace výšky menších miniatur oken vzhledem k nejvyšší. 0 "
-"zachovává původní poměr měřítka, zatímco 100 způsobí, že všechny miniatury "
-"budou stejně vysoké"
+"Ovládá míru kompenzace výšky menších náhledů oken vzhledem k nejvyšší. 0 "
+"zachovává původní poměr měřítka, zatímco 100 udělá všechny miniatury stejně "
+"vysoké."
 
 #: prefs.js:1432
 msgid "Secondary Button Click Action"
@@ -1361,33 +1443,34 @@ msgstr "Akce druhého tlačítka myši"
 
 #: prefs.js:1433
 msgid "Allows you to add a secondary mouse click action to the window preview"
-msgstr "Umožňuje přidat do náhledu okna akci na kliknutí druhého tlačítka myši"
+msgstr ""
+"Umožňuje nastavit akci pro kliknutí sekundárního (pravého) tlačítka myši na "
+"náhled okna"
 
 #: prefs.js:1437 prefs.js:1453 prefs.js:1469
 msgid "Activate Window (Default)"
-msgstr "Aktivuj okno (výchozí)"
+msgstr "Aktivovat okno (výchozí)"
 
 #: prefs.js:1438 prefs.js:1454
 msgid "Close Window"
-msgstr "Zavři okno"
+msgstr "Zavřít okno"
 
 #: prefs.js:1439 prefs.js:1455 prefs.js:1470
-#, fuzzy
 msgid "Search For Same App Windows (requires WSP extension)"
 msgstr "Vyhledávání oken (vyžaduje rozšíření WSP)"
 
 #: prefs.js:1440 prefs.js:1456 prefs.js:1471
 msgid "Create Window Thumbnail/PiP (requires WTMB extension)"
-msgstr "Vytvoření náhledu okna - PIP (vyžaduje WTMB rozšíření)"
+msgstr "Vytvořit miniaturu okna - PiP (vyžaduje rozšíření WTMB)"
 
 #: prefs.js:1448
 msgid "Middle Button Click Action"
-msgstr "Akce kliknutí prostředního tlačítka"
+msgstr "Akce prostředního tlačítka myši"
 
 #: prefs.js:1449
 msgid "Allows you to add a middle mouse click action to the window preview"
 msgstr ""
-"Umožňuje přidat do náhledu okna akci na kliknutí prostředního tlačítka myši"
+"Umožňuje nastavit akci pro kliknutí prostředního tlačítka myši na náhled okna"
 
 #: prefs.js:1464
 msgid "App Icon Click Action"
@@ -1403,7 +1486,7 @@ msgstr ""
 
 #: prefs.js:1479
 msgid "Always Activate Selected"
-msgstr "Vždy aktivovat vybrané"
+msgstr "Vždy aktivovat vybrané okno"
 
 #: prefs.js:1480
 msgid ""
@@ -1412,14 +1495,14 @@ msgid ""
 "Overview, place mouse pointer over a window, press Super again to activate "
 "the window"
 msgstr ""
-"Je-li povoleno, aktuálně vybrané okno se aktivuje při opuštění Přehledu i "
-"bez kliknutí. Příklad použití: stisknutím tlačítka Super otevřete Přehled, "
-"umístěte ukazatel myši nad okno, opětovným stisknutím tlačítka Super okno "
-"aktivujte"
+"Je-li povoleno, aktuálně vybrané okno se aktivuje při opuštění přehledu i "
+"bez kliknutí. Příklad použití: stisknutím tlačítka Super otevřete přehled "
+"činností, umístíte ukazatel myši nad okno a opětovným stisknutím tlačítka "
+"Super okno aktivujte"
 
 #: prefs.js:1496
 msgid "App Grid Search Mode"
-msgstr "Režim vyhledávání v mřížce aplikací"
+msgstr "Režim vyhledávání v přehledu aplikací"
 
 #: prefs.js:1497
 msgid ""
@@ -1427,18 +1510,18 @@ msgid ""
 "The \"Filtered App Grid View\" option shows all resulting app icons sorted "
 "by usage in the app grid view instead of switching to the default search view"
 msgstr ""
-"Vyberte, jak se má vyhledávání chovat při spuštění ze zobrazení mřížky "
-"aplikace. Možnost „Filtrované zobrazení mřížky aplikací“ zobrazuje všechny "
-"výsledné ikony aplikací seřazené podle použití v zobrazení mřížky aplikací "
-"namísto přepnutí do výchozího zobrazení vyhledávání"
+"Vyberte, jak se má vyhledávání chovat při aktivaci ze zobrazení přehledu "
+"aplikací. Možnost „Filtrovat přehled aplikací“ zobrazí všechny výsledky "
+"přímo v přehledu aplikací, seřazené podle použití, místo přepnutí do "
+"výchozího zobrazení vyhledávání."
 
 #: prefs.js:1501
 msgid "Search View (Default)"
-msgstr "Zobrazení hledání (výchozí)"
+msgstr "Výchozí vyhledávání"
 
 #: prefs.js:1502
 msgid "Filtered App Grid View"
-msgstr "Filtrované zobrazení mřížky aplikací"
+msgstr "Filtrovat přehled aplikací"
 
 #: prefs.js:1510
 msgid "Enable Fuzzy Match"
@@ -1450,13 +1533,13 @@ msgid ""
 "searching for and find \"Firefox\" even if you type \"ffx\". Works only for "
 "the App, Windows, Extensions and Recent files search providers"
 msgstr ""
-"Povolení přibližné shody umožní přeskočit písmena v řetězci, který hledáte "
-"(najde \"Firefox\" i jen zadáním \"ffx\"). Funguje pouze pro poskytovatele "
-"vyhledávání aplikací, oken a posledních souborů"
+"Povolení přibližné shody umožní vynechat písmena v hledanám řetězci (najde "
+"\"Firefox\" i jen zadáním \"ffx\"). Funguje pouze pro poskytovatele "
+"vyhledávání aplikací."
 
 #: prefs.js:1521
 msgid "Include Settings Panels in App Results"
-msgstr "Zahrnutí panelů nastavení do výsledků aplikací"
+msgstr "Zahrnout panely Nastavení do výsledků aplikací"
 
 #: prefs.js:1522
 msgid ""
@@ -1465,8 +1548,8 @@ msgid ""
 "settings more quickly"
 msgstr ""
 "Aplikace Nastavení GNOME poskytuje spouštěče pro všechny své panely/sekce. "
-"Tato možnost je přidá vedle ostatních aplikací, což umožní rychlejší přístup "
-"k jednotlivým nastavením"
+"Tato volba přidá panely k ostatním aplikacím, což umožní rychlejší přístup k "
+"jednotlivým nastavením z vyhledávání"
 
 #: prefs.js:1532
 msgid "Animations"
@@ -1481,12 +1564,12 @@ msgid ""
 "Adjusts the global animation speed in percentage of the default duration - "
 "higher value means slower animation"
 msgstr ""
-"Upraví globální rychlost animace v procentech výchozí doby trvání. Vyšší "
-"hodnota znamená pomalejší animaci"
+"Upraví globální rychlost animací v procentech výchozí doby trvání. Vyšší "
+"hodnota znamená pomalejší animaci."
 
 #: prefs.js:1556
 msgid "App Grid Animation"
-msgstr "Animace mřížky aplikací"
+msgstr "Animace přehledu aplikací"
 
 #: prefs.js:1557
 msgid ""
@@ -1494,8 +1577,9 @@ msgid ""
 "screen. You can choose the direction, keep the Default (direction will be "
 "selected automatically) or disable the animation if you don't like it"
 msgstr ""
-"Mřížka aplikací se animuje od okraje obrazovky. Můžete si vybrat směr, "
-"ponechat výchozí (směr bude vybrán automaticky) nebo vypnout animaci"
+"Při přechodu do přehledu aplikací animuje mřížka od okraje obrazovky "
+"vybraným směrem. Volba \"Výchozí\" vybere směr automaticky podle umístění "
+"miniatur ploch, volba \"Zakázat\" aktivuje přechod pomocí průhlednosti."
 
 #: prefs.js:1563 prefs.js:1580
 msgid "Right to Left"
@@ -1515,7 +1599,7 @@ msgstr "Zhora dolů"
 
 #: prefs.js:1573
 msgid "Search View Animation"
-msgstr "Animace zobrazení vyhledávání"
+msgstr "Animace výsledků vyhledávání"
 
 #: prefs.js:1574
 msgid ""
@@ -1523,21 +1607,21 @@ msgid ""
 "from the edge of the screen. You can choose the direction, keep the Default "
 "(currently Bottom to Top) or disable the animation if you don't like it."
 msgstr ""
-"Je-li aktivováno vyhledávání, zobrazení vyhledávání s výsledky vyhledávání "
-"se může animovat od okraje obrazovky. Můžete si vybrat směr, ponechat "
-"výchozí (aktuálně zdola nahoru) nebo zakázat animaci."
+"Je-li aktivováno vyhledávání, výsledky vyhledávání mohou \"přijet\" od "
+"okraje obrazovky. Volba \"Výchozí\" vybere směr automaticky (zdola nahoru), "
+"volba \"Zakázat\" aktivuje přechod pomocí průhlednosti."
 
 #: prefs.js:1591
 msgid "Workspace Preview Animation"
-msgstr "Animace náhledu pracovního prostoru"
+msgstr "Animace náhledů pracovních ploch"
 
 #: prefs.js:1592
 msgid ""
 "When entering or leaving the App Grid, the workspace preview can animate to/"
 "from workspace thumbnails"
 msgstr ""
-"Při vstupu/opuštění mřížky aplikací se náhled pracovního prostoru může "
-"animovat do/z miniatury pracovní plochy"
+"Při vstupu/opuštění přehledu aplikací může býct náhled pracovních ploch "
+"animován do/z miniatur pracovních ploch"
 
 #: prefs.js:1597
 msgid "Active Workspace Only"
@@ -1549,7 +1633,7 @@ msgstr "Všechny pracovní plochy"
 
 #: prefs.js:1606
 msgid "Workspace Switcher"
-msgstr "Přepínač pracovního prostoru"
+msgstr "Přepínač pracovních ploch"
 
 #: prefs.js:1612
 msgid "Wraparound"
@@ -1557,23 +1641,23 @@ msgstr "Dokola"
 
 #: prefs.js:1613
 msgid "Continue from the last workspace to the first and vice versa"
-msgstr "Pokračování z posledního pracovního prostoru do prvního a naopak"
+msgstr "Pokračovat z posledního pracovní plochy na první a naopak"
 
 #: prefs.js:1621
 msgid "Ignore Last (empty) Workspace"
-msgstr "Ignoruj poslední (prázdný) pracovní prostor"
+msgstr "Ignorovat poslední (prázdnou) pracovní plochu"
 
 #: prefs.js:1622
 msgid ""
 "In Dynamic workspaces mode, there is always one empty workspace at the end. "
 "Switcher can ignore this last workspace"
 msgstr ""
-"V režimu dynamických pracovních prostorů je na konci vždy jeden prázdný "
-"pracovní prostor. Přepínač může tento poslední pracovní prostor ignorovat"
+"V režimu dynamických pracovních ploch je na konci vždy jedna prázdná. "
+"Přepínač může tuto poslední plochu ignorovat."
 
 #: prefs.js:1630
 msgid "Workspace Switcher Animation"
-msgstr "Animace"
+msgstr "Animace přepínače ploch"
 
 #: prefs.js:1631
 msgid ""
@@ -1581,9 +1665,9 @@ msgid ""
 "switcher animation outside of the overview. The Static Background mode also "
 "keeps Conky and desktop icons on their place during switching."
 msgstr ""
-"Umožňuje zakázat pohyb pozadí plochy během animace přepínače pracovního "
-"prostoru mimo přehled. Režim Statické pozadí také udržuje ikony Conky a "
-"plochy na svém místě během přepínání."
+"Umožňuje zakázat pohyb pozadí plochy během animace přepínače pracovních "
+"ploch. Režim statického pozadí také udržuje ikony plochy a Conky na svém "
+"místě během během přepínání ploch."
 
 #: prefs.js:1636
 msgid "Static Background"
@@ -1591,7 +1675,7 @@ msgstr "Statické pozadí"
 
 #: prefs.js:1644
 msgid "Workspace Switcher Mode (Isolate Monitors)"
-msgstr "Režim přepínače pracovní plochy (izolované monitory)"
+msgstr "Režim přepínače pracovní plochy (izolace monitorů)"
 
 #: prefs.js:1645
 msgid ""
@@ -1601,11 +1685,11 @@ msgid ""
 "on secondary monitors in order to simulate independent behavior. The current "
 "monitor is determined by the position of the mouse pointer"
 msgstr ""
-"Poznámka: jedná se o řešení, nikoli o plnohodnotnou funkci. GNOME Shell "
-"nepodporuje samostatné pracovní prostory pro každý monitor, takže V-Shell "
-"přepíná pracovní prostory pouze na primárním monitoru a na sekundárních "
-"monitorech přesouvá okna mezi pracovními prostory tak, aby simuloval "
-"nezávislé chování. Aktuální monitor je určen polohou ukazatele myši"
+"Poznámka: jedná se o obcházení problému, nikoli o plnohodnotnou "
+"implementaci. GNOME Shell nepodporuje nezávislé pracovní plochy pro každý "
+"monitor, takže V-Shell přepíná pracovní plochy pouze na primárním monitoru a "
+"na sekundárních monitorech přesouvá okna mezi pracovními plochami tak, aby "
+"simuloval nezávislé chování. Aktuální monitor je určen polohou ukazatele myši"
 
 #: prefs.js:1650
 msgid "Current Monitor"
@@ -1613,25 +1697,23 @@ msgstr "Aktuální monitor"
 
 #: prefs.js:1658
 msgid "Workspace Switcher Popup Mode"
-msgstr "Vyskakovací režim přepínače pracovní plochy"
+msgstr "Mód vyskakovacího indikátoru pracovní plochy"
 
 #: prefs.js:1659
-#, fuzzy
 msgid ""
 "This popup shows up when you switch workspace using a keyboard shortcut or "
 "gesture outside of the overview. You can disable the popup at all, or show "
 "it on the current monitor (the one with mouse pointer) instead of the "
 "primary."
 msgstr ""
-"Toto vyskakovací okno se zobrazí, když přepnete pracovní prostor pomocí "
-"klávesové zkratky nebo gesta mimo přehled. Vyskakovací okno můžete úplně "
-"zakázat nebo jej zobrazit na aktuálním monitoru (na tom s ukazatelem myši) "
-"místo na primárním."
+"Tento  vyskakovací indikátor se zobrazí, když přepnete pracovní plochu "
+"pomocí klávesové zkratky nebo gesta mimo přehled Aktivit. Indikátor můžete "
+"úplně zakázat nebo jej zobrazit pouze na aktuálním monitoru (na tom s "
+"ukazatelem myši)."
 
 #: prefs.js:1664
-#, fuzzy
 msgid "Show on All Monitors (Default)"
-msgstr "Zobrazit na primárním monitoru (výchozí)"
+msgstr "Zobrazit na všech moitorech (výchozí)"
 
 #: prefs.js:1665
 msgid "Show on Current Monitor"
@@ -1643,7 +1725,7 @@ msgstr "Oznámení"
 
 #: prefs.js:1679
 msgid "Window Attention Handler"
-msgstr "Okno - vyžádání pozornosti"
+msgstr "Obsluha žádosti o pozornost okna"
 
 #: prefs.js:1680
 msgid ""
@@ -1652,10 +1734,10 @@ msgid ""
 "(notification will be pushed into the message tray silently) or focus the "
 "source window immediately instead"
 msgstr ""
-"Když okno vyžaduje pozornost (často nové okno), GNOME Shell vám o tom "
+"Pokud okno vyžaduje pozornost (často nové okno), GNOME Shell vám o tom "
 "zobrazí upozornění. Můžete deaktivovat vyskakovací okna těchto zpráv "
-"(oznámení bude do panelu zpráv vloženo tiše) nebo nechat okamžitě zaktivnit "
-"zdrojové okno"
+"(oznámení bude do panelu zpráv vloženo tiše) nebo nechat zdrojové okno "
+"okamžitě aktivovat"
 
 #: prefs.js:1684 prefs.js:1699
 msgid "Show Notifications (Default)"
@@ -1663,11 +1745,11 @@ msgstr "Zobrazit oznámení (výchozí)"
 
 #: prefs.js:1685
 msgid "Disable Notification Popups"
-msgstr "Zakázat vyskakovací okna s upozorněním"
+msgstr "Zakázat vyskakovací oznámení"
 
 #: prefs.js:1686
 msgid "Immediately Focus Window"
-msgstr "Okamžitě zaktivnit okno"
+msgstr "Okamžitě aktivovat okno"
 
 #: prefs.js:1694
 msgid "Favorites"
@@ -1675,7 +1757,7 @@ msgstr "Oblíbené"
 
 #: prefs.js:1695
 msgid "Disable pin/unpin app notifications"
-msgstr "Zakázat upozornění aplikací připnout/odepnout"
+msgstr "Zakázat oznámení o připnutí a odepnutí aplikace"
 
 #: prefs.js:1700
 msgid "Disable Notifications"
@@ -1683,7 +1765,7 @@ msgstr "Zakázat oznámení"
 
 #: prefs.js:1718
 msgid "Main App Grid"
-msgstr "Moje mřížka aplikací"
+msgstr "Hlavní mřížka aplikací"
 
 #: prefs.js:1724
 msgid "Apps Sorting"
@@ -1730,78 +1812,77 @@ msgstr ""
 
 #: prefs.js:1747
 msgid "256"
-msgstr "256"
+msgstr ""
 
 #: prefs.js:1748
 msgid "224"
-msgstr "224"
+msgstr ""
 
 #: prefs.js:1749
 msgid "208"
-msgstr "208"
+msgstr ""
 
 #: prefs.js:1750
 msgid "192"
-msgstr "192"
+msgstr ""
 
 #: prefs.js:1751
 msgid "176"
-msgstr "176"
+msgstr ""
 
 #: prefs.js:1752
 msgid "160"
-msgstr "160"
+msgstr ""
 
 #: prefs.js:1753
 msgid "144"
-msgstr "144"
+msgstr ""
 
 #: prefs.js:1775
 msgid "Columns per Page (0 for adaptive grid)"
-msgstr "Počet sloupců na stránku (0 pro adaptivní mřížku)"
+msgstr "Počet sloupců na stránku (0 pro automatický)"
 
 #: prefs.js:1776
 msgid ""
 "Number of columns in the application grid. If set to 0, the number will be "
 "set automatically to fit the available width"
 msgstr ""
-"Počet sloupců v mřížce aplikace. Je-li nastaveno na 0, číslo se nastaví "
-"automaticky tak, aby odpovídalo dostupné šířce"
+"Počet sloupců v přehledu aplikací. Je-li nastaven na 0, počet se nastaví "
+"automaticky tak, aby odpovídal dostupné šířce."
 
 #: prefs.js:1792
 msgid "Rows per Page (0 for adaptive grid)"
-msgstr "Počet řádků na stránku (0 pro adaptivní mřížku)"
+msgstr "Počet řádků na stránku (0 pro automatický)"
 
 #: prefs.js:1793
 msgid ""
 "Number of rows in the application grid. If set to 0, the number will be set "
 "automatically to fit the available height"
 msgstr ""
-"Počet řádků v mřížce aplikace. Je-li nastaveno na 0, číslo se nastaví "
-"automaticky tak, aby odpovídalo dostupné výšce"
+"Počet řádků v přehledu aplikací. Je-li nastaven na 0, počet se nastaví "
+"automaticky tak, aby odpovídal dostupné výšce"
 
 #: prefs.js:1821
 msgid "App Grid Page Width Scale"
-msgstr "Měřítko šířky stránky mřížky aplikací"
+msgstr "Měřítko šířky stránky přehledu aplikací"
 
 #: prefs.js:1822
 msgid "Adjusts maximum app grid page width relative to the available space"
 msgstr ""
-"Upraví maximální šířku stránky mřížky aplikací vzhledem k dostupnému prostoru"
+"Upraví maximální šířku stránky přehledu aplikací vzhledem k dostupnému místu"
 
 #: prefs.js:1844
 msgid "App Grid Page Height Scale"
-msgstr "Měřítko výšky stránky mřížky aplikací"
+msgstr "Měřítko výšky stránky přehledu aplikací"
 
 #: prefs.js:1845
 msgid "Adjusts maximum app grid page height relative to the available space"
 msgstr ""
-"Nastaví maximální výšku stránky mřížky aplikací vzhledem k dostupnému "
-"prostoru"
+"Nastaví maximální výšku stránky přehedu aplikací vzhledem k dostupnému místu"
 
 #: prefs.js:1864
 msgid "Grid Spacing"
-msgstr "Rozestupy mřížky"
+msgstr "Rozestupy ikon"
 
 #: prefs.js:1865
 msgid ""
@@ -1810,8 +1891,8 @@ msgid ""
 "and available space"
 msgstr ""
 "V-Shell tuto hodnotu používá k výpočtu rozměrů mřížky pro adaptivní "
-"možnosti. Hlavní mřížka však automaticky upravuje rozteč na základě mřížky a "
-"dostupného prostoru"
+"možnosti. Přehled však následně automaticky upravuje rozteč na základě "
+"mřížky a dostupného prostoru, takže výsledek se může troch lišit."
 
 #: prefs.js:1875
 msgid "Allow Incomplete Pages"
@@ -1824,20 +1905,20 @@ msgid ""
 "example)"
 msgstr ""
 "Je-li zakázáno, ikony z další stránky (jsou-li) se automaticky přesunou tak, "
-"aby zaplnily jakýkoli prázdný slot, který zbyl přesunutím/vymazáním ikony/"
-"složky"
+"aby zaplnily jakýkoli prázdný slot, který zbyl po přesunutí ikony do složky, "
+"či odebrání aplikace"
 
 #: prefs.js:1888
 msgid "App Folders"
-msgstr "Aplikační složky"
+msgstr "Složky aplikací"
 
 #: prefs.js:1894
 msgid "Folder Apps Sorting"
-msgstr "Třídění aplikací složek"
+msgstr "Řazení aplikací složek"
 
 #: prefs.js:1895
 msgid "Choose sorting method for app folders"
-msgstr "Vyber metodu třídění aplikačních složek"
+msgstr "Vyberte metodu řazení aplikací ve složkách"
 
 #: prefs.js:1901
 msgid "Usage"
@@ -1853,13 +1934,13 @@ msgid ""
 "activate or even drag them directly, without having to open the folder "
 "first. This option also affects the app grid default icon size"
 msgstr ""
-"Je-li povoleno, pak se ikony v přehledu složek chovají jako běžné ikony. "
-"Můžete je aktivovat nebo dokonce přímo přetáhnout bez otevření složky. Toto "
-"nastavení také ovlivňuje výchozí velikost ikon"
+"Je-li povoleno, ikony v náhledu složek se chovají jako běžné ikony. Můžete "
+"je aktivovat nebo dokonce přímo přetáhnout bez otevření složky. Toto "
+"nastavení také ovlivňuje výchozí velikost ikon."
 
 #: prefs.js:1921
 msgid "App Folder Preview Grid Size"
-msgstr "Velikost složek aplikací v mřížce náhledu"
+msgstr "Velikost mřížky náhledu složky"
 
 #: prefs.js:1922
 msgid ""
@@ -1867,8 +1948,8 @@ msgid ""
 "automatically switches between 2x2 and 3x3 grid depending on the number of "
 "icons in the folder"
 msgstr ""
-"Nastaví velikost mřížky (počet ikon) v náhledu složky. Možnost 3x3 "
-"automaticky přepíná mezi mřížkou 2x2 a 3x3 v závislosti na počtu ikon ve "
+"Nastaví velikost mřížky (počet ikon) v náhledu složky. Možnosti 3x3 "
+"automaticky přepínají mezi mřížkou 2x2 a 3x3 v závislosti na počtu ikon ve "
 "složce"
 
 #: prefs.js:1926
@@ -1893,11 +1974,11 @@ msgid ""
 "the open folder dialog"
 msgstr ""
 "Umožňuje nastavit pevnou velikost ikony a obejít výchozí adaptivní "
-"algoritmus v dialogu otevření složky"
+"algoritmus pro dialog otevřené složky"
 
 #: prefs.js:1955
 msgid "Maximum Number Of Columns (0 for automatic)"
-msgstr "Maximální počet sloupců (0 pro automatický režim)"
+msgstr "Maximální počet sloupců (0 pro automatický)"
 
 #: prefs.js:1956
 msgid ""
@@ -1906,13 +1987,14 @@ msgid ""
 "on available space. The actual folder grid dimensions will be determined by "
 "the number of items within the set limits"
 msgstr ""
-"Maximální počet sloupců na stránku v mřížkách složek. Pro 0 se maximální "
-"počet sloupců se vypočítá na základě dostupného místa. Skutečné rozměry "
-"mřížky složek budou určeny počtem položek v rámci nastavených limitů"
+"Maximální počet sloupců na stránku v dialozích složek. Pokud necháte hodnotu "
+"na 0, bude maximální počet sloupců vypočítán na základě dostupného místa. "
+"Skutečné rozměry mřížky složek budou určeny počtem položek v rámci "
+"nastavených limitů."
 
 #: prefs.js:1972
 msgid "Maximum Number Of Rows (0 for automatic)"
-msgstr "Maximální počet řádků (0 pro automatický režim)"
+msgstr "Maximální počet řádků (0 pro automatický)"
 
 #: prefs.js:1973
 msgid ""
@@ -1921,17 +2003,17 @@ msgid ""
 "available space. The actual folder grid dimensions will be determined by the "
 "number of items within the set limits"
 msgstr ""
-"Maximální počet řádků v mřížce složek. Pro 0 se maximální počet sloupců se "
-"vypočítá na základě dostupného místa. Skutečné rozměry mřížky složek budou "
-"určeny počtem položek v rámci nastavených limitů"
+"Maximální počet řádků v mřížce složek. Pokud necháte hodnotu na 0, bude "
+"maximální počet řádků vypočítán na základě dostupného místa. Skutečné "
+"rozměry mřížky složek budou určeny počtem položek v rámci nastavených limitů."
 
 #: prefs.js:1991
 msgid "Folder Grid Spacing"
-msgstr "Rozestupy mřížky pro složky"
+msgstr "Rozestupy ikon ve složce"
 
 #: prefs.js:1992
 msgid "Adjusts the spacing between icons in a folder grid"
-msgstr "Nastavuje rozestupy mezi ikonami ve složkách"
+msgstr "Nastavuje rozestupy mezi ikonami ve složce"
 
 #: prefs.js:2002
 msgid "Center Open Folders"
@@ -1942,12 +2024,12 @@ msgid ""
 "App folders may open in the center of the screen or be centered on the "
 "folder's source icon"
 msgstr ""
-"Složky aplikací se mohou otevřít ve středu obrazovky nebo centrovat nad "
-"ikonou zdrojové složky (volby vypnuto)"
+"Složky aplikací se mohou otevřít ve středu obrazovky nebo nad ikonou "
+"zdrojové složky"
 
 #: prefs.js:2013
 msgid "Show Close Folder Button"
-msgstr "Zobraz tlačítko Zavři okno"
+msgstr "Zobrazit tlačítko pro zavření okna"
 
 #: prefs.js:2014
 msgid ""
@@ -1955,90 +2037,111 @@ msgid ""
 "clicking outside of it. However, in some situations, the close button can be "
 "useful"
 msgstr ""
-"Složku lze zavřít kliknutím pravým tlačítkem myši na dialogové okno složky "
-"nebo kliknutím levým tlačítkem myši mimo něj. Někdy může být tlačítko Zavřít "
-"užitečné"
+"Složku lze zavřít kliknutím pravým tlačítkem myši na dialogové okno složky, "
+"nebo kliknutím levým tlačítkem myši mimo něj. Nebo můžete použít klasické "
+"tlačítkov rohu okna, pokud tuto volbu povolíte."
 
 #: prefs.js:2024
 msgid "Remove Folder Button"
-msgstr "Odebrat tlačítko složky"
+msgstr "Tlačítko pro odebrání složky"
 
 #: prefs.js:2025
 msgid ""
 "The Remove Folder button lets you move all icons from the folder to the main "
 "app grid and delete the folder at once"
 msgstr ""
-"Tlačítko Odebrat složku umožňuje přesunout všechny ikony ze složky do hlavní "
-"mřížky aplikace a složku najednou odstranit"
+"Tlačítko pro odebrání složky umožňuje jedním klkem přesunout všechny ikony "
+"ze složky do hlavního přehledu a složku tak odstranit"
 
 #: prefs.js:2029
 msgid "Hide (Default)"
-msgstr "Skryj (výchozí)"
+msgstr "Skýt (výchozí)"
 
 #: prefs.js:2041
 msgid "Content and Behavior"
 msgstr "Obsah a chování"
 
 #: prefs.js:2047
-msgid "App Grid Content"
-msgstr "Obsah mřížky aplikací"
+msgid "App Grid Orientation"
+msgstr "Orientace přehledu aplikací"
 
 #: prefs.js:2048
+msgid "The orientation in which app grid pages are organized"
+msgstr "Orientace, ve které budou organizovány stránky přehledu aplikací"
+
+#: prefs.js:2052
+msgid "Follow Workspaces"
+msgstr "Stejná jako orientace ploch"
+
+#: prefs.js:2053
+msgid "Horizontal"
+msgstr "Horizontální"
+
+#: prefs.js:2054
+msgid "Vertical"
+msgstr "Vertikálnmí"
+
+#: prefs.js:2062
+msgid "App Grid Content"
+msgstr "Obsah přehledu aplikací"
+
+#: prefs.js:2063
 msgid ""
 "The default Shell removes favorite apps, this option allows to duplicate "
 "them in the grid or remove also running applications. Option \"Favorites and "
 "Running First\" only works with the Alphabet and Usage sorting"
 msgstr ""
-"Výchozí prostředí Shell odebere oblíbené aplikace. Tato možnost vám umožňuje "
-"duplikovat je v mřížce nebo odebrat také spuštěné aplikace. Možnost "
-"„Oblíbené a spuštěné jako první“ funguje pouze s řazením podle použití a "
-"abecedy"
+"Výchozí Shell z přehledu vynechává oblíbené aplikace připnuté na panel "
+"aplikací (Dash). Tato možnost vám umožňuje duplikovat je v přehledu, nebo "
+"odebrat také spuštěné aplikace. Možnost „Oblíbené a spuštěné jako první“ "
+"funguje pouze s řazením podle použití a abecedy."
 
-#: prefs.js:2052
+#: prefs.js:2067
 msgid "Include All"
 msgstr "Zahrnout vše"
 
-#: prefs.js:2053
+#: prefs.js:2068
 msgid "Include All - Favorites and Running First"
 msgstr "Zahrnout vše – Oblíbené a Spuštěné jako první"
 
-#: prefs.js:2054
-msgid "Exclude Favorites (Default)"
-msgstr "Vyloučit oblíbené (výchozí)"
-
-#: prefs.js:2055
-msgid "Exclude Running"
-msgstr "Vyloučit spuštěné"
-
-#: prefs.js:2056
-msgid "Exclude Favorites and Running"
-msgstr "Vyloučit Oblíbené a spuštěné"
-
-#: prefs.js:2064
-msgid "App Labels Behavior"
-msgstr "Chování štítků aplikací"
-
-#: prefs.js:2065
-msgid "Choose how and when to display app names"
-msgstr "Vyberte jak a kdy se mají zobrazovat názvy aplikací"
-
 #: prefs.js:2069
-msgid "Ellipsized - Expand Selected (Default)"
-msgstr "Zkrácené – rozbalit vybrané (výchozí)"
+msgid "Exclude Favorites (Default)"
+msgstr "Vynechat oblíbené (výchozí)"
 
 #: prefs.js:2070
-msgid "Always Expanded"
-msgstr "Vždy rozbalené"
+msgid "Exclude Running"
+msgstr "Vynechat spuštěné"
 
 #: prefs.js:2071
-msgid "Hidden - Show Selected Only"
-msgstr "Skryté - zobrazit pouze vybrané"
+msgid "Exclude Favorites and Running"
+msgstr "Vynechat oblíbené a spuštěné"
 
 #: prefs.js:2079
+msgid "App Labels Behavior"
+msgstr "Chování popisků aplikací"
+
+#: prefs.js:2080
+msgid "Choose how and when to display app names"
+msgstr ""
+"Vyberte jak a kdy se má zobrazovat popisek s názvem aplikace pod ikonou"
+
+#: prefs.js:2084
+msgid "Ellipsized - Expand Selected (Default)"
+msgstr "Zkracovat – rozbalit vybraný (výchozí)"
+
+#: prefs.js:2085
+msgid "Always Expanded"
+msgstr "Nikdy nezkracovat"
+
+#: prefs.js:2086
+msgid "Hidden - Show Selected Only"
+msgstr "Skrýt - zobrazit pouze vybraný"
+
+#: prefs.js:2094
 msgid "Show Page Navigation Buttons"
 msgstr "Zobrazit navigační tlačítka stránky"
 
-#: prefs.js:2080
+#: prefs.js:2095
 msgid ""
 "You can hide the page navigation buttons if you don't need them or want to "
 "get more space for icons. The buttons are hidden automatically when there is "
@@ -2046,70 +2149,82 @@ msgid ""
 msgstr ""
 "Pokud navigační tlačítka na stránce nepotřebujete nebo chcete získat více "
 "místa pro ikony, můžete je skrýt. Tlačítka se skryjí automaticky, je-li v "
-"mřížce aplikace pouze jedna stránka"
+"přehledu pouze jedna stránka."
 
-#: prefs.js:2090
+#: prefs.js:2105
+msgid "Show Page Indicators"
+msgstr "Zobrazit indikátory stránek"
+
+#: prefs.js:2106
+msgid ""
+"You can hide the page indicator dots. The indicators are hidden "
+"automatically when there is only one page in the app grid"
+msgstr ""
+"Můžete skrýt tečky indikující počet a stav stránek přehledu aplikací. "
+"Indikátor je schován automaticky, pokud je stránka pouze jedna."
+
+#: prefs.js:2116
 msgid "Remember Page"
-msgstr "Zapamatuj stránku"
+msgstr "Pamatovat si stránku"
 
-#: prefs.js:2091
+#: prefs.js:2117
 msgid ""
 "Disables the default behavior in which app grid and folders always open on "
 "the first page"
 msgstr ""
-"Zakáže výchozí chování kdy se mřížka aplikací a složky vždy otevírají na "
+"Zakáže výchozí chování, kdy se přhled aplikací a složky vždy otevírají na "
 "první stránce"
 
-#: prefs.js:2104
+#: prefs.js:2130
 msgid "Performance"
 msgstr "Výkon"
 
-#: prefs.js:2110
+#: prefs.js:2136
 msgid "Smooth App Grid Animations"
-msgstr "Jemná animace mřížky aplikací"
+msgstr "Plynulá animace přehledu aplikací"
 
-#: prefs.js:2111
+#: prefs.js:2137
 msgid ""
 "This option allows V-Shell to pre-realize app grid and app folders during "
 "session startup in order to avoid stuttering animations when using them for "
 "the first time. If enabled, the session startup needs a little bit more time "
 "to finish and necessary memory will be allocated at this time"
 msgstr ""
-"Tato volba umožňuje prostředí V-Shell při spuštění relace předpřipravit "
-"mřížku aplikací a složky aplikací, aby se zabránilo zadrhávání animací při "
-"jejich prvním použití. Pokud je tato možnost povolena, spuštění relace "
-"potřebuje o něco více času na dokončení a v této době bude alokována "
-"potřebná paměť"
+"Tato volba povolí V-Shellu při spuštění relace předpřipravit přehled a "
+"složky aplikací, aby se zabránilo zadrhávání animací při jejich prvním "
+"použití. Pokud je tato možnost povolena, spuštění relace potřebuje o něco "
+"více času na dokončení a v této době bude také alokována potřebná paměť"
 
-#: prefs.js:2121
+#: prefs.js:2147
 msgid "Reset"
 msgstr "Reset"
 
-#: prefs.js:2126
+#: prefs.js:2152
 msgid "Reset App Grid Layout"
-msgstr "Resetovat rozložení mřížky aplikace"
+msgstr "Obnovit rozvžení v přehledu aplikací"
 
-#: prefs.js:2127
+#: prefs.js:2153
 msgid ""
 "Removes all stored app grid positions, after reset icons will be sorted "
 "alphabetically, except folder contents"
 msgstr ""
-"Odebere všechny uložené pozice mřížky aplikací, po resetu budou ikony "
-"seřazeny podle abecedy kromě obsahu složek"
+"Odebere všechny uložené pozice přehledu aplikací. Po obnovení budou ikony "
+"hlavní mřížky seřazeny podle abecedy, složky zůstanou nedotčeny."
 
-#: prefs.js:2135
+#: prefs.js:2161
 msgid "Remove App Grid Folders"
-msgstr "Odebrat složky mřížky aplikace"
+msgstr "Odebrat složky přehledu aplikací"
 
-#: prefs.js:2136
+#: prefs.js:2162
 msgid "Removes all folders, folder apps will move to the root grid"
-msgstr "Odebere všechny složky, aplikace složek se přesunou do kořenové mřížky"
+msgstr ""
+"Odebere všechny složky, aplikace složek se přesunou do hlavního přehledu"
 
-#: prefs.js:2152
+#: prefs.js:2178
 msgid "Optional Modules"
-msgstr "Doplňkové moduly"
+msgstr "Volitelné moduly"
 
-#: prefs.js:2158
+#: prefs.js:2184
 msgid ""
 "Windows Search Provider - Moved from V-Shell to the standalone \"WSP\" "
 "extension"
@@ -2117,7 +2232,7 @@ msgstr ""
 "Zprostředkovatel vyhledávání oken - přesunut z V-Shell do samostatného "
 "rozšíření \"WSP\""
 
-#: prefs.js:2159
+#: prefs.js:2185
 msgid ""
 "NOTE: This module has been released as a standalone extension with new "
 "features, click to learn more. Related V-Shell options are still available "
@@ -2137,7 +2252,7 @@ msgstr ""
 "(také stisknutím klávesové zkratky Space v přehledu nebo kliknutím na ikonu "
 "pomlčky) pro potlačení výsledků od jiných poskytovatelů vyhledávání"
 
-#: prefs.js:2166
+#: prefs.js:2192
 msgid ""
 "Extensions Search Provider - Moved from V-Shell to the standalone \"ESP\" "
 "extension"
@@ -2145,7 +2260,7 @@ msgstr ""
 "Zprostředkovatel vyhledávání rozšíření - přesunut z V-Shell do samostatného "
 "rozšíření \"ESP\""
 
-#: prefs.js:2167
+#: prefs.js:2193
 msgid ""
 "NOTE: This module has been released as a standalone extension with new "
 "features, click to learn more. Related V-Shell options are still available "
@@ -2165,14 +2280,14 @@ msgstr ""
 "Mezerník v přehledu nebo kliknutím na ikonu pomlčky) pro potlačení výsledků "
 "od jiných poskytovatelů vyhledávání"
 
-#: prefs.js:2174
+#: prefs.js:2200
 msgid ""
 "Window Thumbnails (PiP) - Moved from V-Shell to the standalone \"WTMB\" "
 "extension"
 msgstr ""
 "Miniatury oken (PiP) - Přesunut z V-Shell do samostatného rozšíření \"WTMB\""
 
-#: prefs.js:2175
+#: prefs.js:2201
 msgid ""
 "NOTE: This module has been released as a standalone extension with new "
 "features, click to learn more. Related V-Shell options are still available "
@@ -2188,7 +2303,7 @@ msgstr ""
 "WTMB umožňuje vytvářet miniatury oken podobné obrázku v obrázku, které "
 "můžete použít pro sledování oken na jiném pracovním prostoru"
 
-#: prefs.js:2182
+#: prefs.js:2208
 msgid ""
 "Built-in Modules (allows to disable modules that conflict with another "
 "extension)"
@@ -2196,102 +2311,101 @@ msgstr ""
 "Vestavěné moduly (umožňuje zakázat moduly, které jsou v konfliktu s jiným "
 "rozšířením)"
 
-#: prefs.js:2188
+#: prefs.js:2214
 msgid "AppDisplay / IconGrid"
-msgstr "Zobrazení aplikací / mřížka ikon"
+msgstr ""
 
-#: prefs.js:2189
+#: prefs.js:2215
 msgid "App grid customization and options"
-msgstr "Přizpůsobení a nastavení mřížky aplikace"
+msgstr "Přizpůsobení a nastavení přehledu aplikací"
 
-#: prefs.js:2197
+#: prefs.js:2223
 msgid "AppFavorites"
-msgstr "Oblíbené aplikace"
-
-#: prefs.js:2198
-msgid "Pin/unpin app notification options"
-msgstr "Nastavení připnutí/odepnutí oznámení aplikace"
-
-#: prefs.js:2207
-msgid "Dash customization and options, support for vertical orientation"
-msgstr "Nastavení konfigurace Dash a podpora vertikální orientace"
-
-#: prefs.js:2216
-msgid "Hot corner options"
-msgstr "Hot Corner nastavení"
+msgstr ""
 
 #: prefs.js:2224
-msgid "MessageTray"
-msgstr "Panel zpráv"
+msgid "Pin/unpin app notification options"
+msgstr "Nastavení oznámení o připnutí a odepnutí aplikace"
 
-#: prefs.js:2225
+#: prefs.js:2233
+msgid "Dash customization and options, support for vertical orientation"
+msgstr ""
+"Nastavení konfigurace panelu aplikací (Dash) a podpora vertikální orientace"
+
+#: prefs.js:2242
+msgid "Hot corner options"
+msgstr "Nastavení citlivého rohu"
+
+#: prefs.js:2250
+msgid "MessageTray"
+msgstr ""
+
+#: prefs.js:2251
 msgid "Notification position options"
 msgstr "Nastavení umístění oznámení"
 
-#: prefs.js:2233
+#: prefs.js:2259
 msgid "OsdWindow"
-msgstr "OSD okno"
-
-#: prefs.js:2234
-msgid "OSD position options"
-msgstr "OSD nastavení pozice"
-
-#: prefs.js:2242
-msgid "OverlayKey"
-msgstr "Překryvná klávesa"
-
-#: prefs.js:2243
-msgid "Overlay (Super/Window) key options"
-msgstr "Nastavení překryvných kláves (Super/Window)"
-
-#: prefs.js:2252
-msgid "Panel options"
-msgstr "Nastavení panelu"
-
-#: prefs.js:2261
-msgid "Search view and app search provider customization and options"
 msgstr ""
-"Zobrazení vyhledávání a přizpůsobení a nastavení poskytovatele vyhledávání "
-"aplikací"
+
+#: prefs.js:2260
+msgid "OSD position options"
+msgstr "Nastavení pozice OSD (indikátory událostí typu nastavení hlasitosti)"
+
+#: prefs.js:2268
+msgid "OverlayKey"
+msgstr ""
 
 #: prefs.js:2269
-msgid "SearchController"
-msgstr "Ovladač vyhledávání"
-
-#: prefs.js:2270
-msgid "Escape key behavior options in the overview"
-msgstr "Přehled možností chování klávesy Escape"
+msgid "Overlay (Super/Window) key options"
+msgstr "Nastavení klávesy přehledu (Super/Windows)"
 
 #: prefs.js:2278
-msgid "SwipeTracker"
-msgstr "Sledování gest"
+msgid "Panel options"
+msgstr "Nastavení horní lišty"
 
-#: prefs.js:2279
+#: prefs.js:2287
+msgid "Search view and app search provider customization and options"
+msgstr "Přizpůsobení zobrazení vyhledávání a vyhledávání aplikací"
+
+#: prefs.js:2295
+msgid "SearchController"
+msgstr ""
+
+#: prefs.js:2296
+msgid "Escape key behavior options in the overview"
+msgstr "Chování klávesy Escape v přehledu aktivit"
+
+#: prefs.js:2304
+msgid "SwipeTracker"
+msgstr ""
+
+#: prefs.js:2305
 msgid "Gestures for vertical workspace orientation"
 msgstr "Gesta pro vertikální orientaci pracovního prostoru"
 
-#: prefs.js:2287
+#: prefs.js:2313
 msgid "WindowAttentionHandler"
-msgstr "Okno - vyžádání pozornosti"
+msgstr ""
 
-#: prefs.js:2288
+#: prefs.js:2314
 msgid "Window attention handler options"
-msgstr "Nastavení obsluhy oken"
+msgstr "Nastavení obsluhy oken vyžadujících pozornost"
 
-#: prefs.js:2296
+#: prefs.js:2322
 msgid "WindowManager"
-msgstr "Správce oken"
+msgstr ""
 
-#: prefs.js:2297
+#: prefs.js:2323
 msgid ""
 "Fixes an upstream bug in the minimization animation of a full-screen window"
-msgstr "Opravuje chybu v animaci minimalizace okna na celou obrazovku"
+msgstr "Opravuje chybu v animaci minimalizace okna v režimu celé obrazovky"
 
-#: prefs.js:2305
+#: prefs.js:2331
 msgid "WindowPreview"
-msgstr "Náhled okna"
+msgstr ""
 
-#: prefs.js:2306
+#: prefs.js:2332
 msgid ""
 "Window preview options, fixes an upstream bug that fills the system log with "
 "errors when you close a window from the overview or exit the overview with a "
@@ -2301,43 +2415,43 @@ msgstr ""
 "chybami, když zavřete okno z přehledu nebo opustíte přehled gestem, je-li "
 "vybráno jakékoli okno"
 
-#: prefs.js:2314
+#: prefs.js:2340
 msgid "Workspace"
-msgstr "Pracovní plocha"
+msgstr ""
 
-#: prefs.js:2315
+#: prefs.js:2341
 msgid ""
 "Fixes workspace preview allocations for vertical workspaces orientation and "
 "window scaling in static overview modes"
 msgstr ""
-"Opravuje přidělení náhledu pracovního prostoru pro vertikální orientaci "
-"pracovních prostorů a měřítko okna v režimech statického přehledu"
-
-#: prefs.js:2323
-msgid "WorkspaceAnimation"
-msgstr "Animace pracovní plochy"
-
-#: prefs.js:2324
-msgid "Static workspace animation option"
-msgstr "Možnost animace statické pracovní plochy"
-
-#: prefs.js:2332
-msgid "WorkspaceSwitcherPopup"
-msgstr "Vyskakovací přepínač pracovní plochy"
-
-#: prefs.js:2333
-msgid "Workspace switcher popup orientation and position options"
-msgstr "Nastavení pozice a orientace vyskakovacího přepínače pracovní plochy"
+"Opravuje alokace náhledu pracovních ploch pro vertikální orientaci a "
+"škálování náhledů oken v statických režimech přehledu"
 
 #: prefs.js:2349
+msgid "WorkspaceAnimation"
+msgstr ""
+
+#: prefs.js:2350
+msgid "Static workspace animation option"
+msgstr "Volba animace přepínání pracovní plochy se statickým pozadím"
+
+#: prefs.js:2358
+msgid "WorkspaceSwitcherPopup"
+msgstr ""
+
+#: prefs.js:2359
+msgid "Workspace switcher popup orientation and position options"
+msgstr "Nastavení pozice a orientace vyskakovacího indikátoru pracovní plochy"
+
+#: prefs.js:2375
 msgid "Keyboard"
 msgstr "Klávesnice"
 
-#: prefs.js:2355
+#: prefs.js:2381
 msgid "Override Page Up/Down Shortcuts"
-msgstr "Přepsat zkratky Page Up / Page Down"
+msgstr "Přepsat zkratky Page Up/Down"
 
-#: prefs.js:2356
+#: prefs.js:2382
 msgid ""
 "This option automatically overrides the (Shift +) Super + Page Up/Down "
 "keyboard shortcuts for the current workspace orientation. If you encounter "
@@ -2345,17 +2459,17 @@ msgid ""
 msgstr ""
 "Tato možnost automaticky přepíše klávesové zkratky (Shift +) Super + Page Up/"
 "Down pro aktuální orientaci pracovního prostoru. Pokud narazíte na nějaké "
-"problémy, zkontrolujte konfiguraci v editoru dconf"
+"problémy, zkontrolujte konfiguraci v dconf editoru"
 
-#: prefs.js:2364
+#: prefs.js:2390
 msgid "Workarounds / Hacks"
-msgstr "Workarounds / Hacky"
+msgstr "Obcházení problémů"
 
-#: prefs.js:2370
+#: prefs.js:2396
 msgid "Delay at Startup"
-msgstr "Zpožděné spuštění"
+msgstr "Zpozdit při spuštění"
 
-#: prefs.js:2371
+#: prefs.js:2397
 msgid ""
 "If you encounter issues during GNOME Shell startup after logging in, which "
 "could be caused by V-Shell's incompatibility with another extension, try "
@@ -2364,17 +2478,17 @@ msgid ""
 "or Dash to Panel extensions are detected."
 msgstr ""
 "Pokud se během spouštění prostředí GNOME Shell po přihlášení vyskytnou "
-"problémy, které mohou být způsobeny nekompatibilitou prostředí V-Shell s "
-"jiným rozšířením, zkuste tuto možnost povolit. Je-li tato možnost povolena, "
-"bude prostředí V-Shell aktivováno po dokončení spuštění. Aktivuje se "
-"automaticky při zjištění rozšíření Dash to Dock, Ubuntu Dock nebo Dash to "
+"problémy, které mohou být způsobeny nekompatibilitou V-Shell s jiným "
+"rozšířením, zkuste tuto možnost povolit. Je-li tato možnost povolena, bude V-"
+"Shell aktivován až po dokončení spuštění. Tato volba se aktivuje automaticky "
+"při zjištění aktivních rozšíření Dash to Dock, Ubuntu Dock nebo Dash to "
 "Panel."
 
-#: prefs.js:2379
+#: prefs.js:2405
 msgid "Fix New Window Not In Focus"
-msgstr "Oprava: nové okno není aktivní (focus)"
+msgstr "Opravit nové okno není aktivní"
 
-#: prefs.js:2380
+#: prefs.js:2406
 msgid ""
 "If you often find that the app window you open from the Activities overview "
 "does not get focus, try enabling this option."
@@ -2382,11 +2496,11 @@ msgstr ""
 "Pokud často zjišťujete, že okno aplikace, které otevřete z přehledu aktivit, "
 "není aktivní, zkuste tuto možnost povolit."
 
-#: prefs.js:2388
+#: prefs.js:2414
 msgid "Fix New Window Not On Current Monitor (experimental)"
-msgstr "Oprava: nové okno není na aktuálním monitoru (experimentální)"
+msgstr "Opravit nové okno není na aktuálním monitoru (experimentální)"
 
-#: prefs.js:2389
+#: prefs.js:2415
 msgid ""
 "If you use multiple monitors, you may encounter the issue of new windows "
 "opening on a different monitor than expected. This option moves those "
@@ -2396,132 +2510,69 @@ msgid ""
 msgstr ""
 "Pokud používáte více monitorů, mohou se nová okna otevírat na jiném "
 "monitoru, než jste očekávali. Tato volba přesune nová okna na aktuální "
-"monitor určený polohou ukazatele myši. Jedná se však o jen obcházení "
-"problému a může se stát, že některá okna toto chování mohou zrušit a během "
-"inicializace přesunou okno zpět na předchozí monitor"
+"monitor určený polohou kurzoru myši. Jedná se však jen o obcházení problému "
+"a může se stát, že některá okna toto chování mohou zrušit a během "
+"inicializace přesunou okno zpět na předchozí monitor, nebo dokonce shodí "
+"celou relaci."
 
-#: prefs.js:2412
+#: prefs.js:2438
 msgid "Version"
 msgstr "Verze"
 
-#: prefs.js:2418
+#: prefs.js:2444
 msgid "Reset all options"
-msgstr "Obnovit všechny nastavení"
+msgstr "Obnovit všechna nastavení"
 
-#: prefs.js:2419
+#: prefs.js:2445
 msgid "Reset all options to their default values"
-msgstr "Nastavte všechny nastavení na výchozí hodnoty"
+msgstr "Nastaví všechny volby na výchozí hodnoty"
 
-#: prefs.js:2425
+#: prefs.js:2451
 msgid "Links"
 msgstr "Odkazy"
 
-#: prefs.js:2429
+#: prefs.js:2455
 msgid "Homepage"
 msgstr "Domovská stránka"
 
-#: prefs.js:2430
+#: prefs.js:2456
 msgid "Source code and more info about this extension"
 msgstr "Zdrojový kód a další informace o tomto rozšíření"
 
-#: prefs.js:2435
+#: prefs.js:2461
 msgid "Changelog"
 msgstr "Seznam změn"
 
-#: prefs.js:2436
+#: prefs.js:2462
 msgid "See what's changed."
 msgstr "Podívejte se, co se změnilo."
 
-#: prefs.js:2441
+#: prefs.js:2467
 msgid "GNOME Extensions"
 msgstr "Rozšíření GNOME"
 
-#: prefs.js:2442
+#: prefs.js:2468
 msgid "Rate and comment V-Shell on the GNOME Extensions site"
 msgstr "Ohodnoťte a okomentujte V-Shell na webu GNOME Extensions"
 
-#: prefs.js:2447
+#: prefs.js:2473
 msgid "Report a bug or suggest new feature"
 msgstr "Nahlaste chybu nebo navrhněte novou funkci"
 
-#: prefs.js:2448
+#: prefs.js:2474
 msgid "Help me to help you!"
 msgstr "Pomozte mi, abych vám pomohl!"
 
-#: prefs.js:2453
+#: prefs.js:2479
 msgid "Buy Me a Coffee"
 msgstr "Kupte mi kávu"
 
-#: prefs.js:2454
+#: prefs.js:2480
 msgid "Enjoying V-Shell? Consider supporting it by buying me a coffee!"
-msgstr "Užíváte si V-Shell? Podpořte ho tím, že mi koupíte kávu!"
+msgstr "Je pro vás V-Shell užitečný? Podpořte ho tím, že mi koupíte kávu!"
 
-#: extension.js:558
-#, javascript-format
-msgid "Profile %d has been updated"
-msgstr "Profil %d byl aktualizován"
-
-#: lib/dash.js:1019
-msgid "Force Quit"
-msgstr "Vynutit vypnutí"
-
-#: lib/dash.js:1028
-#, javascript-format
-msgid "Close %d Windows on Current Workspace"
-msgstr "Zavři okno %d na současné pracovní ploše"
-
-#: lib/dash.js:1047
-msgid "Move App to Current Workspace [Shift + Click]"
-msgstr "Přesuň aplikaci do aktuální pracovní plochy [Shift + kliknutí]"
-
-#: lib/dash.js:1057
-msgid "Create Window Thumbnail (PiP)"
-msgstr "Vytvoř okno - Náhled (PiP)"
-
-#: lib/util.js:777
-msgid "Updating V-Shell"
-msgstr "Aktualizace V-Shell"
-
-#: lib/search.js:427
-msgid "Searching…"
-msgstr "Hledání…"
-
-#: lib/search.js:430
-msgid "No results."
-msgstr "Bez výsledku."
-
-#: lib/optionsFactory.js:304
-msgid "GNOME 3 Layout (Vertical WS)"
-msgstr "GNOME 3 (vertikální) rozložení ploch"
-
-#: lib/optionsFactory.js:305
-msgid "GNOME 4x Layout, Bottom Hot Edge (Horizontal WS)"
-msgstr "GNOME 4x (horizontální) rozložení ploch - Spodní roh"
-
-#: lib/optionsFactory.js:306
-msgid "Top Left Hot Corner Centric (Vertical WS)"
-msgstr "Levý horní roh (vertikální plochy)"
-
-#: lib/optionsFactory.js:307
-#, fuzzy
-msgid "Static Overview, Bottom Hot Edge (Horizontal WS)"
-msgstr "Přehled podobný doku, aktivní spodní okraj, horizontální plochy"
-
-#: lib/optionsFactory.js:308
-msgid "GNOME 4x as close to vanilla as currently possible"
-msgstr ""
-
-#: lib/optionsFactory.js:315
-msgid "Reset profile to defaults"
-msgstr "Reset profilů na výchozí hodnoty"
-
-#: lib/optionsFactory.js:331
-msgid "Load profile"
-msgstr "Načti profil"
-
-#: lib/optionsFactory.js:340
-msgid "Save current settings into this profile"
-msgstr "Ulož současné nastavení do tohoto profilu"
+#~ msgid "Enables clicking on an empty space in the overview to close it"
+#~ msgstr "Povolí kliknutí na prázdné místo v přehledu pro jeho zavření"
 
 #~ msgid ""
 #~ "Adjusts spacing in pixels between workspace previews, allowing you to "
