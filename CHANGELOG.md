@@ -2,6 +2,8 @@
 ### v49.12 (not yet released)
 **Fixed**
 - Dash icon click behavior in the *Static Workspace* overview mode when the *First Switch to Workspace* option is enabled: Spread windows if the app has focus, activate the app without closing overview if not
+- Czech translation
+- Search entry styling in the Filtered App Grid Search mode
 
 
 ### v49.11 (2025-12-17)
