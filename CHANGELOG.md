@@ -1,4 +1,9 @@
 ## Changelog:
+### v49.12 (not yet released)
+**Fixed**
+- Dash icon click behavior in the *Static Workspace* overview mode when the *First Switch to Workspace* option is enabled: Spread windows if the app has focus, activate the app without closing overview if not
+
+
 ### v49.11 (2025-12-17)
 **Added**
 - *App Grid Orientation* - an App Grid option that lets you set the app grid orientation independently of the workspace orientation
@@ -7,6 +12,7 @@
 **Fixed**
 - Transition from the *Static Workspace* overview to the full overview after clicking a Dash icon of an app with more than one winow  when *App - Icon Click Behavior* - *First Switch to Workspace* option was enabled
 - Workspace preview could get below Dash when transitioning between HIDDEN and APP_GRID overview states
+
 
 ### v49.10 (2025-12-14)
 **Fixed**
