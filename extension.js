@@ -463,6 +463,10 @@ export default class VShell extends Extension.Extension {
 
         if (this._sessionLockActive)
             Main.layoutManager.panelBox.translation_y = 0;
+
+        // Even if the dash module is disabled, we need to add the top margin for proper spacing
+        if (!reset && !Me.Modules.dashModule.moduleEnabled)
+            Main.overview.dash.add_style_class_name('dash-top-margin');
     }
 
     _onShowingOverview() {
