@@ -12,9 +12,10 @@ UI_FILES       = $(shell find -type f -and \( -name "*.ui" \))
 LOCALES_PO     = $(wildcard po/*.po)
 LOCALES_MO     = $(patsubst po/%.po,locale/%/LC_MESSAGES/$(NAME).mo,$(LOCALES_PO))
 SCHEMA_XML     = $(wildcard schemas/*.xml)
+ICONS          = $(wildcard icons/*)
 
 # These files will be included in the extension zip file.
-ZIP_CONTENT = $(JS_FILES) $(LOCALES_MO) \
+ZIP_CONTENT = $(JS_FILES) $(LOCALES_MO) $(ICONS)\
               $(SCHEMA_XML) schemas/gschemas.compiled metadata.json LICENSE stylesheet.css
 
 # These six recipes can be invoked by the user.
