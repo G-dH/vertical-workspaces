@@ -2132,6 +2132,7 @@ export default class VShell extends ExtensionPreferences {
                     [_("Hide"), 0],
                     [_("Show on Selection"), 1],
                     [_("Show Always"), 2],
+                ],
                 'appDisplayModule'
             )
         );
