@@ -57,6 +57,7 @@ let opt;
 export default class VShell extends Extension.Extension {
     _init() {
         Me = {};
+        Me.path = this.path;
         // Place for runtime variables
         Me.run = {};
 

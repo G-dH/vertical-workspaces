@@ -2122,6 +2122,20 @@ export default class VShell extends ExtensionPreferences {
             )
         );
 
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Show App Source Indicator'),
+                _('Adds a small badge to app icons indicating the source package type for apps installed from Flatpak, Snap and AppImage'),
+                itemFactory.newDropDown(),
+                'appGridShowPackageType',
+                [
+                    [_("Hide"), 0],
+                    [_("Show on Selection"), 1],
+                    [_("Show Always"), 2],
+                'appDisplayModule'
+            )
+        );
+
 
         // --------------------------------------------------------------------------------------
 

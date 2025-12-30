@@ -388,3 +388,14 @@ StButton#vhandle, StWidget .vhandle,
 .ws-switcher-vertical {
 	padding: 18px 12px
 }
+
+.source-badge-selected-only {
+	width: 0px;
+}
+
+.source-badge,
+.overview-tile:hover .source-badge-selected-only,
+.overview-tile:focus .source-badge-selected-only,
+.overview-tile:selected .source-badge-selected-only {
+	width: 16px;
+}

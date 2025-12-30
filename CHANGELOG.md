@@ -2,6 +2,7 @@
 ### v49.12 (not yet released)
 **Added**
 - Middle-clicking the Activities button spreads windows in Static Workspace overview mode
+- App Grid option*Show App Source Indicator* allowing to add a small badge to app icons indicating the source package type for apps installed from Flatpak, Snap and AppImage
 
 **Fixed**
 - Dash icon click behavior in the *Static Workspace* overview mode when the *First Switch to Workspace* option is enabled: Spread windows if the app has focus, activate the app without closing overview if not
