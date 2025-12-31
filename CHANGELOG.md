@@ -5,6 +5,7 @@
 - App Grid option*Show App Source Indicator* allowing to add a small badge to app icons indicating the source package type for apps installed from Flatpak, Snap and AppImage
 
 **Fixed**
+- "JS ERROR: Error: No signal connection 1 found" on GNOME Shell versions older than 49
 - Dash icon click behavior in the *Static Workspace* overview mode when the *First Switch to Workspace* option is enabled: Spread windows if the app has focus, activate the app without closing overview if not
 - Czech translation
 - Search entry styling in the Filtered App Grid Search mode
