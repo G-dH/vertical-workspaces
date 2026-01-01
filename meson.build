@@ -20,6 +20,7 @@ install_data(
 )
 
 install_subdir('lib', install_dir : extension_dir)
+install_subdir('icons', install_dir : extension_dir)
 
 subdir('schemas')
 subdir('po')
