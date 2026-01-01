@@ -1,5 +1,5 @@
 ## Changelog:
-### v49.12 (not yet released)
+### v49.12 (2026-01-01)
 **Added**
 - Middle-clicking the Activities button spreads windows in Static Workspace overview mode
 - App Grid option*Show App Source Indicator* allowing to add a small badge to app icons indicating the source package type for apps installed from Flatpak, Snap and AppImage
