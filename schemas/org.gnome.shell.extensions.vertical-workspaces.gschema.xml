@@ -224,7 +224,7 @@
       <default>false</default>
     </key>
     <key type="i" name="app-grid-show-package-type">
-      <default>0</default>
+      <default>1</default>
     </key>
     <key type="i" name="dash-show-windows-before-activation">
       <default>0</default>
@@ -503,6 +503,7 @@
         'appGridSpacing': '12',
         'appGridFolderSpacing': '12',
         'appGridRememberPage': 'false',
+        'appGridShowPackageType': '1',
         'appFolderRemoveButton': '1',
         'appFolderCloseButton': 'true',
         'appGridShowPageArrows': 'false',
@@ -647,6 +648,7 @@
         'appGridSpacing': '12',
         'appGridFolderSpacing': '12',
         'appGridRememberPage': 'false',
+        'appGridShowPackageType': '1',
         'appFolderRemoveButton': '1',
         'appFolderCloseButton': 'true',
         'appGridShowPageArrows': 'true',
@@ -791,6 +793,7 @@
         'appGridSpacing': '12',
         'appGridFolderSpacing': '12',
         'appGridRememberPage': 'false',
+        'appGridShowPackageType': '1',
         'appFolderRemoveButton': '1',
         'appFolderCloseButton': 'true',
         'appGridShowPageArrows': 'false',
@@ -935,6 +938,7 @@
         'appGridSpacing': '12',
         'appGridFolderSpacing': '12',
         'appGridRememberPage': 'false',
+        'appGridShowPackageType': '1',
         'appFolderRemoveButton': '1',
         'appFolderCloseButton': 'true',
         'appGridShowPageArrows': 'true',
@@ -1079,6 +1083,7 @@
         'appGridSpacing': '12',
         'appGridFolderSpacing': '12',
         'appGridRememberPage': 'false',
+        'appGridShowPackageType': '0',
         'appFolderRemoveButton': '0',
         'appFolderCloseButton': 'false',
         'appGridShowPageArrows': 'true',
