@@ -1,8 +1,8 @@
 ## Changelog:
 ### v49.12 (2026-01-01)
 **Added**
-- Middle-clicking the Activities button spreads windows in Static Workspace overview mode
-- App Grid option*Show App Source Indicator* allowing to add a small badge to app icons indicating the source package type for apps installed from Flatpak, Snap and AppImage
+- Middle-clicking the Activities button spreads windows in *Static Workspace* overview mode
+- App Grid option*Show App Source Indicator* allowing to add a small badge to app icons indicating the source package type for apps installed from Flatpak, Snap and AppImage. You can find it in the *App Grid* tab in the *Content and Behavior* section, and options are *Hide*, *Show on Selection* (default for most profiles), and *Show Always*.
 
 **Fixed**
 - "JS ERROR: Error: No signal connection 1 found" on GNOME Shell versions older than 49
