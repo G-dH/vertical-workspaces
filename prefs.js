@@ -1851,18 +1851,18 @@ export default class VShell extends ExtensionPreferences {
         );
 
         const appGridSpacingAdjustment = new Gtk.Adjustment({
-            upper: 30,
+            upper: 60,
             lower: 5,
             step_increment: 1,
             page_increment: 5,
         });
 
         const appGridSpacingScale = itemFactory.newScale(appGridSpacingAdjustment);
-        appGridSpacingScale.add_mark(12, Gtk.PositionType.TOP, null);
+        appGridSpacingScale.add_mark(30, Gtk.PositionType.TOP, null);
         optionList.push(
             itemFactory.getRowWidget(
-                _('Grid Spacing'),
-                _('V-Shell uses this value to calculate grid dimensions for adaptive options. However, the main grid automatically adjusts the spacing based on the grid and available space'),
+                _('App Grid Spacing'),
+                _('Adjusts the spacing between icons in the app grid'),
                 appGridSpacingScale,
                 'appGridSpacing',
                 null,
@@ -1978,7 +1978,7 @@ export default class VShell extends ExtensionPreferences {
         ));
 
         const appFolderSpacingAdjustment = new Gtk.Adjustment({
-            upper: 30,
+            upper: 50,
             lower: 5,
             step_increment: 1,
             page_increment: 5,

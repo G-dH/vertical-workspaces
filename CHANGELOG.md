@@ -3,6 +3,7 @@
 **Fixed**
 - Workspace thumbnail overlay visible when thumbnails max scale set to 0
 - Wrong search entry position in certain settings configuration ([#289](https://github.com/G-dH/vertical-workspaces/issues/289))
+- App Grid Spacing option not changing the spacing. This fix may affect the current user grid configuration
 
 
 ### v49.12 (2026-01-01)
