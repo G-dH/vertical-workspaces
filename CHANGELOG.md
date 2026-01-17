@@ -7,6 +7,7 @@
 - The option *Initial Window Selection* -> *First* usually selected other than the first window
 - Poor optimizations for slow hardware caused unnecessary delays in the Overview transition when many windows were open
 - Optimized double-press overlay-key (Super) actions
+- Dash icon running-dot position in Ubuntu 25.10
 
 
 ### v49.12 (2026-01-01)

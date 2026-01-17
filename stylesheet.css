@@ -120,11 +120,6 @@
 	height: 2px;
 }
 
-/* compensate dot offset by 1px compared to default 2*$base_padding */
-#dash .app-grid-running-dot-offset {
-	offset-y: -13px;
-}
-
 #dash.vertical .dash-background {
 	padding: 12px;
 	margin: 0;
