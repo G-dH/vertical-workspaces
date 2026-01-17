@@ -5,6 +5,8 @@
 - Wrong search entry position in certain settings configuration ([#289](https://github.com/G-dH/vertical-workspaces/issues/289))
 - App Grid Spacing option not changing the spacing. This fix may affect the current user grid configuration
 - The option *Initial Window Selection* -> *First* usually selected other than the first window
+- Poor optimizations for slow hardware caused unnecessary delays in the Overview transition when many windows were open
+- Optimized double-press overlay-key (Super) actions
 
 
 ### v49.12 (2026-01-01)
