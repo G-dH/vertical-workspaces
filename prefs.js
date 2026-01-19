@@ -2197,7 +2197,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Windows Search Provider - Moved from V-Shell to the standalone "WSP" extension'),
-                _('NOTE: This module has been released as a standalone extension with new features, click to learn more. Related V-Shell options are still available if you install the WSP extension.\n\nWSP adds adds open windows to the search results. You can search app names and window titles. You can also use "wq//" or custom prefix (also by pressing the Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
+                _('This module has been released as a standalone extension with new features - Click to learn more. Related V-Shell options are still available if you install the WSP extension.\n\nWSP adds open windows to the global search results, or lists all of them at once if you use a custom search prefix or press the Space key in the Overview'),
                 itemFactory.newLinkButton('https://github.com/G-dH/windows-search-provider?tab=readme-ov-file#wsp-windows-search-provider')
             )
         );
@@ -2205,22 +2205,22 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Extensions Search Provider - Moved from V-Shell to the standalone "ESP" extension'),
-                _('NOTE: This module has been released as a standalone extension with new features, click to learn more. Related V-Shell options are still available if you install the ESP extension.\n\nESP adds extensions to the search results. You can also use "eq//" or custom prefix (also by pressing the Ctrl + Shift + Space hotkey in the overview, or clicking dash icon) to suppress results from other search providers'),
+                _('This module has been released as a standalone extension with new features - Click to learn more. Related V-Shell options are still available if you install the ESP extension.\n\nESP adds installed extensions to the global search results so you can quickly access their settings, data, and management options. You can also use a custom search preffix or the Ctrl + Space shortcut in the Overview to list all installed extensions at once, sorted the way you prefer'),
                 itemFactory.newLinkButton('https://github.com/G-dH/extensions-search-provider?tab=readme-ov-file#esp-extensions-search-provider')
             )
         );
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Window Thumbnails (PiP) - Moved from V-Shell to the standalone "WTMB" extension'),
-                _('NOTE: This module has been released as a standalone extension with new features, click to learn more. Related V-Shell options are still available if you install the WTMB extension.\n\nWTMB allows the creation of Picture-in-Picture like window thumbnails that you can use for monitoring of windows on another workspace'),
+                _('Window Thumbnails - Moved from V-Shell to the standalone "WTMB" extension'),
+                _('This module has been released as a standalone extension with new features - Click to learn more. Related V-Shell options are still available if you install the WTMB extension.\n\nWTMB allows you to create floating live window thumbnails that you can use to monitor windows on another workspace or those covered by the currently used windows'),
                 itemFactory.newLinkButton('https://github.com/G-dH/window-thumbnails?tab=readme-ov-file#wtmb-window-thumbnails')
             )
         );
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Built-in Modules (allows to disable modules that conflict with another extension)')
+                _('Built-in Modules (allows you to disable modules that conflict with another extension, at the cost of missing features and potential glitches)')
             )
         );
 
