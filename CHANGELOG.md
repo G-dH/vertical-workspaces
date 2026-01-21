@@ -8,7 +8,8 @@
 - Poor optimizations for slow hardware caused unnecessary delays in the Overview transition when many windows were open
 - Optimized double-press overlay-key (Super) actions
 - Dash icon running-dot position in Ubuntu 25.10
-- Initial window preview selection after the transition from the static workspace preview to the spread window preview did not work 
+- Initial window preview selection after the transition from the static workspace preview to the spread window preview did not work
+- The GNOME Settings window may not be focused when it is already open and one of its panels is activated from the Overview search
 
 
 ### v49.12 (2026-01-01)
