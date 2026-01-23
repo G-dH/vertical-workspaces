@@ -10,6 +10,7 @@
 - Dash icon running-dot position in Ubuntu 25.10
 - Initial window preview selection after the transition from the static workspace preview to the spread window preview did not work
 - The GNOME Settings window may not be focused when it is already open and one of its panels is activated from the Overview search
+- The *Hot Corner Action option* didn’t work when the hot corner was disabled by the system
 
 
 ### v49.12 (2026-01-01)
