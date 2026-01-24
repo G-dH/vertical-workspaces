@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vertical-workspaces\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-31 23:32+0100\n"
+"POT-Creation-Date: 2026-01-24 18:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,33 +49,33 @@ msgstr ""
 msgid "Save current settings into this profile"
 msgstr ""
 
-#: lib/util.js:781
+#: lib/search.js:432
+msgid "Searching…"
+msgstr ""
+
+#: lib/search.js:435
+msgid "No results."
+msgstr ""
+
+#: lib/util.js:811
 msgid "Updating V-Shell"
 msgstr ""
 
-#: lib/dash.js:999
+#: lib/dash.js:1002
 msgid "Force Quit"
 msgstr ""
 
-#: lib/dash.js:1008
+#: lib/dash.js:1011
 #, javascript-format
 msgid "Close %d Windows on Current Workspace"
 msgstr ""
 
-#: lib/dash.js:1027
+#: lib/dash.js:1030
 msgid "Move App to Current Workspace [Shift + Click]"
 msgstr ""
 
-#: lib/dash.js:1037
+#: lib/dash.js:1040
 msgid "Create Window Thumbnail (PiP)"
-msgstr ""
-
-#: lib/search.js:426
-msgid "Searching…"
-msgstr ""
-
-#: lib/search.js:429
-msgid "No results."
 msgstr ""
 
 #: extension.js:561
@@ -87,7 +87,7 @@ msgstr ""
 msgid "Profiles"
 msgstr ""
 
-#: prefs.js:34 prefs.js:2256
+#: prefs.js:34 prefs.js:2262
 msgid "Layout"
 msgstr ""
 
@@ -149,7 +149,7 @@ msgstr ""
 msgid "Profile 5"
 msgstr ""
 
-#: prefs.js:156 prefs.js:638 prefs.js:1250 prefs.js:2247
+#: prefs.js:156 prefs.js:638 prefs.js:1250 prefs.js:2253
 msgid "Dash"
 msgstr ""
 
@@ -360,7 +360,7 @@ msgid ""
 "result"
 msgstr ""
 
-#: prefs.js:414 prefs.js:943 prefs.js:2292
+#: prefs.js:414 prefs.js:943 prefs.js:2298
 msgid "Panel"
 msgstr ""
 
@@ -757,7 +757,7 @@ msgstr ""
 msgid "Adjusts the corner radius of the workspace preview in the overview"
 msgstr ""
 
-#: prefs.js:867 prefs.js:1490 prefs.js:2301
+#: prefs.js:867 prefs.js:1490 prefs.js:2307
 msgid "Search"
 msgstr ""
 
@@ -1674,14 +1674,11 @@ msgid "Adjusts maximum app grid page height relative to the available space"
 msgstr ""
 
 #: prefs.js:1864
-msgid "Grid Spacing"
+msgid "App Grid Spacing"
 msgstr ""
 
 #: prefs.js:1865
-msgid ""
-"V-Shell uses this value to calculate grid dimensions for adaptive options. "
-"However, the main grid automatically adjusts the spacing based on the grid "
-"and available space"
+msgid "Adjusts the spacing between icons in the app grid"
 msgstr ""
 
 #: prefs.js:1875
@@ -1996,14 +1993,12 @@ msgstr ""
 
 #: prefs.js:2200
 msgid ""
-"NOTE: This module has been released as a standalone extension with new "
-"features, click to learn more. Related V-Shell options are still available "
-"if you install the WSP extension.\n"
+"This module has been released as a standalone extension with new features - "
+"Click to learn more. Related V-Shell options are still available if you "
+"install the WSP extension.\n"
 "\n"
-"WSP adds adds open windows to the search results. You can search app names "
-"and window titles. You can also use \"wq//\" or custom prefix (also by "
-"pressing the Space hotkey in the overview, or clicking dash icon) to "
-"suppress results from other search providers"
+"WSP adds open windows to the global search results, or lists all of them at "
+"once if you use a custom search prefix or press the Space key in the Overview"
 msgstr ""
 
 #: prefs.js:2207
@@ -2014,188 +2009,199 @@ msgstr ""
 
 #: prefs.js:2208
 msgid ""
-"NOTE: This module has been released as a standalone extension with new "
-"features, click to learn more. Related V-Shell options are still available "
-"if you install the ESP extension.\n"
+"This module has been released as a standalone extension with new features - "
+"Click to learn more. Related V-Shell options are still available if you "
+"install the ESP extension.\n"
 "\n"
-"ESP adds extensions to the search results. You can also use \"eq//\" or "
-"custom prefix (also by pressing the Ctrl + Shift + Space hotkey in the "
-"overview, or clicking dash icon) to suppress results from other search "
-"providers"
+"ESP adds installed extensions to the global search results so you can "
+"quickly access their settings, data, and management options. You can also "
+"use a custom search preffix or the Ctrl + Space shortcut in the Overview to "
+"list all installed extensions at once, sorted the way you prefer"
 msgstr ""
 
 #: prefs.js:2215
 msgid ""
-"Window Thumbnails (PiP) - Moved from V-Shell to the standalone \"WTMB\" "
-"extension"
+"Window Thumbnails - Moved from V-Shell to the standalone \"WTMB\" extension"
 msgstr ""
 
 #: prefs.js:2216
 msgid ""
-"NOTE: This module has been released as a standalone extension with new "
-"features, click to learn more. Related V-Shell options are still available "
-"if you install the WTMB extension.\n"
+"This module has been released as a standalone extension with new features - "
+"Click to learn more. Related V-Shell options are still available if you "
+"install the WTMB extension.\n"
 "\n"
-"WTMB allows the creation of Picture-in-Picture like window thumbnails that "
-"you can use for monitoring of windows on another workspace"
+"WTMB allows you to create floating live window thumbnails that you can use "
+"to monitor windows on another workspace or those covered by the currently "
+"used windows"
 msgstr ""
 
 #: prefs.js:2223
-msgid ""
-"Built-in Modules (allows to disable modules that conflict with another "
-"extension)"
+msgid "Built-in Modules"
+msgstr ""
+
+#: prefs.js:2228
+msgid "You can disable modules that conflict with another extension"
 msgstr ""
 
 #: prefs.js:2229
+msgid ""
+"V-Shell is tuned to work best with all its modules enabled, so it’s "
+"generally better to use its options to disable behavior you don’t need "
+"rather than disabling entire modules.\n"
+"\n"
+"Modules keep the original GNOME Shell module names they modify."
+msgstr ""
+
+#: prefs.js:2235
 msgid "AppDisplay / IconGrid"
 msgstr ""
 
-#: prefs.js:2230
+#: prefs.js:2236
 msgid "App grid customization and options"
 msgstr ""
 
-#: prefs.js:2238
+#: prefs.js:2244
 msgid "AppFavorites"
 msgstr ""
 
-#: prefs.js:2239
+#: prefs.js:2245
 msgid "Pin/unpin app notification options"
 msgstr ""
 
-#: prefs.js:2248
+#: prefs.js:2254
 msgid "Dash customization and options, support for vertical orientation"
 msgstr ""
 
-#: prefs.js:2257
+#: prefs.js:2263
 msgid "Hot corner options"
 msgstr ""
 
-#: prefs.js:2265
+#: prefs.js:2271
 msgid "MessageTray"
 msgstr ""
 
-#: prefs.js:2266
+#: prefs.js:2272
 msgid "Notification position options"
 msgstr ""
 
-#: prefs.js:2274
+#: prefs.js:2280
 msgid "OsdWindow"
 msgstr ""
 
-#: prefs.js:2275
+#: prefs.js:2281
 msgid "OSD position options"
 msgstr ""
 
-#: prefs.js:2283
+#: prefs.js:2289
 msgid "OverlayKey"
 msgstr ""
 
-#: prefs.js:2284
+#: prefs.js:2290
 msgid "Overlay (Super/Window) key options"
 msgstr ""
 
-#: prefs.js:2293
+#: prefs.js:2299
 msgid "Panel options"
 msgstr ""
 
-#: prefs.js:2302
+#: prefs.js:2308
 msgid "Search view and app search provider customization and options"
 msgstr ""
 
-#: prefs.js:2310
+#: prefs.js:2316
 msgid "SearchController"
 msgstr ""
 
-#: prefs.js:2311
+#: prefs.js:2317
 msgid "Escape key behavior options in the overview"
 msgstr ""
 
-#: prefs.js:2319
+#: prefs.js:2325
 msgid "SwipeTracker"
 msgstr ""
 
-#: prefs.js:2320
+#: prefs.js:2326
 msgid "Gestures for vertical workspace orientation"
 msgstr ""
 
-#: prefs.js:2328
+#: prefs.js:2334
 msgid "WindowAttentionHandler"
 msgstr ""
 
-#: prefs.js:2329
+#: prefs.js:2335
 msgid "Window attention handler options"
 msgstr ""
 
-#: prefs.js:2337
+#: prefs.js:2343
 msgid "WindowManager"
 msgstr ""
 
-#: prefs.js:2338
+#: prefs.js:2344
 msgid ""
 "Fixes an upstream bug in the minimization animation of a full-screen window"
 msgstr ""
 
-#: prefs.js:2346
+#: prefs.js:2352
 msgid "WindowPreview"
 msgstr ""
 
-#: prefs.js:2347
+#: prefs.js:2353
 msgid ""
 "Window preview options, fixes an upstream bug that fills the system log with "
 "errors when you close a window from the overview or exit the overview with a "
 "gesture when any window is selected"
 msgstr ""
 
-#: prefs.js:2355
+#: prefs.js:2361
 msgid "Workspace"
 msgstr ""
 
-#: prefs.js:2356
+#: prefs.js:2362
 msgid ""
 "Fixes workspace preview allocations for vertical workspaces orientation and "
 "window scaling in static overview modes"
 msgstr ""
 
-#: prefs.js:2364
+#: prefs.js:2370
 msgid "WorkspaceAnimation"
 msgstr ""
 
-#: prefs.js:2365
+#: prefs.js:2371
 msgid "Static workspace animation option"
 msgstr ""
 
-#: prefs.js:2373
+#: prefs.js:2379
 msgid "WorkspaceSwitcherPopup"
 msgstr ""
 
-#: prefs.js:2374
+#: prefs.js:2380
 msgid "Workspace switcher popup orientation and position options"
 msgstr ""
 
-#: prefs.js:2390
+#: prefs.js:2396
 msgid "Keyboard"
 msgstr ""
 
-#: prefs.js:2396
+#: prefs.js:2402
 msgid "Override Page Up/Down Shortcuts"
 msgstr ""
 
-#: prefs.js:2397
+#: prefs.js:2403
 msgid ""
 "This option automatically overrides the (Shift +) Super + Page Up/Down "
 "keyboard shortcuts for the current workspace orientation. If you encounter "
 "any issues, check the configuration in the dconf editor"
 msgstr ""
 
-#: prefs.js:2405
+#: prefs.js:2411
 msgid "Workarounds / Hacks"
 msgstr ""
 
-#: prefs.js:2411
+#: prefs.js:2417
 msgid "Delay at Startup"
 msgstr ""
 
-#: prefs.js:2412
+#: prefs.js:2418
 msgid ""
 "If you encounter issues during GNOME Shell startup after logging in, which "
 "could be caused by V-Shell's incompatibility with another extension, try "
@@ -2204,21 +2210,21 @@ msgid ""
 "or Dash to Panel extensions are detected."
 msgstr ""
 
-#: prefs.js:2420
+#: prefs.js:2426
 msgid "Fix New Window Not In Focus"
 msgstr ""
 
-#: prefs.js:2421
+#: prefs.js:2427
 msgid ""
 "If you often find that the app window you open from the Activities overview "
 "does not get focus, try enabling this option."
 msgstr ""
 
-#: prefs.js:2429
+#: prefs.js:2435
 msgid "Fix New Window Not On Current Monitor (experimental)"
 msgstr ""
 
-#: prefs.js:2430
+#: prefs.js:2436
 msgid ""
 "If you use multiple monitors, you may encounter the issue of new windows "
 "opening on a different monitor than expected. This option moves those "
@@ -2227,58 +2233,58 @@ msgid ""
 "moving the window back to the previous monitor during initialization"
 msgstr ""
 
-#: prefs.js:2453
+#: prefs.js:2459
 msgid "Version"
 msgstr ""
 
-#: prefs.js:2459
+#: prefs.js:2465
 msgid "Reset all options"
 msgstr ""
 
-#: prefs.js:2460
+#: prefs.js:2466
 msgid "Reset all options to their default values"
 msgstr ""
 
-#: prefs.js:2466
+#: prefs.js:2472
 msgid "Links"
 msgstr ""
 
-#: prefs.js:2470
+#: prefs.js:2476
 msgid "Homepage"
 msgstr ""
 
-#: prefs.js:2471
+#: prefs.js:2477
 msgid "Source code and more info about this extension"
 msgstr ""
 
-#: prefs.js:2476
+#: prefs.js:2482
 msgid "Changelog"
 msgstr ""
 
-#: prefs.js:2477
+#: prefs.js:2483
 msgid "See what's changed."
 msgstr ""
 
-#: prefs.js:2482
+#: prefs.js:2488
 msgid "GNOME Extensions"
 msgstr ""
 
-#: prefs.js:2483
+#: prefs.js:2489
 msgid "Rate and comment V-Shell on the GNOME Extensions site"
 msgstr ""
 
-#: prefs.js:2488
+#: prefs.js:2494
 msgid "Report a bug or suggest new feature"
 msgstr ""
 
-#: prefs.js:2489
+#: prefs.js:2495
 msgid "Help me to help you!"
 msgstr ""
 
-#: prefs.js:2494
+#: prefs.js:2500
 msgid "Buy Me a Coffee"
 msgstr ""
 
-#: prefs.js:2495
+#: prefs.js:2501
 msgid "Enjoying V-Shell? Consider supporting it by buying me a coffee!"
 msgstr ""

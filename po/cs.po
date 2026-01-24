@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vertical-workspaces\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-17 15:46+0100\n"
-"PO-Revision-Date: 2025-12-26 18:45+0100\n"
+"POT-Creation-Date: 2026-01-24 18:28+0100\n"
+"PO-Revision-Date: 2026-01-24 19:05+0100\n"
 "Last-Translator: GdH\n"
 "Language-Team: \n"
 "Language: cs\n"
@@ -49,36 +49,36 @@ msgstr "Načíst profil"
 msgid "Save current settings into this profile"
 msgstr "Uložit současné nastavení do tohoto profilu"
 
-#: lib/search.js:426
+#: lib/search.js:432
 msgid "Searching…"
 msgstr "Hledám…"
 
-#: lib/search.js:429
+#: lib/search.js:435
 msgid "No results."
 msgstr "Žádné výsledky."
 
-#: lib/util.js:781
+#: lib/util.js:811
 msgid "Updating V-Shell"
 msgstr "Aktualizuji V-Shell"
 
-#: lib/dash.js:999
+#: lib/dash.js:1002
 msgid "Force Quit"
 msgstr "Vynutit ukončení"
 
-#: lib/dash.js:1008
+#: lib/dash.js:1011
 #, javascript-format
 msgid "Close %d Windows on Current Workspace"
 msgstr "Zavřít %d oken na aktuální pracovní ploše"
 
-#: lib/dash.js:1027
+#: lib/dash.js:1030
 msgid "Move App to Current Workspace [Shift + Click]"
 msgstr "Přesunout aplikaci na aktuální pracovní plochu [Shift + klik]"
 
-#: lib/dash.js:1037
+#: lib/dash.js:1040
 msgid "Create Window Thumbnail (PiP)"
 msgstr "Vytvořit miniaturu okna (PiP)"
 
-#: extension.js:556
+#: extension.js:561
 #, javascript-format
 msgid "Profile %d has been updated"
 msgstr "Profil %d byl aktualizován"
@@ -87,7 +87,7 @@ msgstr "Profil %d byl aktualizován"
 msgid "Profiles"
 msgstr "Profily"
 
-#: prefs.js:34 prefs.js:2241
+#: prefs.js:34 prefs.js:2262
 msgid "Layout"
 msgstr "Rozvržení"
 
@@ -152,7 +152,7 @@ msgstr "Profil 4"
 msgid "Profile 5"
 msgstr "Profil 5"
 
-#: prefs.js:156 prefs.js:638 prefs.js:1250 prefs.js:2232
+#: prefs.js:156 prefs.js:638 prefs.js:1250 prefs.js:2253
 msgid "Dash"
 msgstr "Panel aplikací (Dash)"
 
@@ -176,7 +176,7 @@ msgstr "Nahoře"
 msgid "Right"
 msgstr "Vpravo"
 
-#: prefs.js:171 prefs.js:214 prefs.js:557 prefs.js:1359
+#: prefs.js:171 prefs.js:214 prefs.js:557 prefs.js:1359 prefs.js:2132
 msgid "Hide"
 msgstr "Skrýt"
 
@@ -287,7 +287,7 @@ msgstr ""
 
 #: prefs.js:284
 msgid "Workspace Thumbnails Max Scale - Window Picker"
-msgstr "Maximální měřítko miniatur pracovních ploch v přehledu aktivit"
+msgstr "Maximální měřítko miniatur pracovních ploch v přehledu činností"
 
 #: prefs.js:285
 msgid ""
@@ -388,7 +388,7 @@ msgstr ""
 "k výchozímu nastavení). To umožní umístit více (či méně) ikon aplikací z "
 "výsledku vyhledávání aplikací"
 
-#: prefs.js:414 prefs.js:943 prefs.js:2277
+#: prefs.js:414 prefs.js:943 prefs.js:2298
 msgid "Panel"
 msgstr "Horní lišta"
 
@@ -815,7 +815,7 @@ msgid "Adjusts the corner radius of the workspace preview in the overview"
 msgstr ""
 "Nastaví poloměr zaoblení rohů náhledu pracovní plochy v přehledu činností"
 
-#: prefs.js:867 prefs.js:1490 prefs.js:2286
+#: prefs.js:867 prefs.js:1490 prefs.js:2307
 msgid "Search"
 msgstr "Vyhledávání"
 
@@ -950,7 +950,7 @@ msgstr "Jas - výběr okna"
 
 #: prefs.js:991
 msgid "Brightness of the background wallpaper in the overview"
-msgstr "Jas tapety na pozadí v přehledu aktivit"
+msgstr "Jas tapety na pozadí v přehledu činností"
 
 #: prefs.js:1009
 msgid "Brightness - App Grid"
@@ -1072,7 +1072,7 @@ msgid ""
 "closing while interacting with icons or page controls"
 msgstr ""
 "Umožňuje zavřít přehled činností kliknutím na prázdné místo v přehledu "
-"aktivit. V přehledu aplikací je třeba použít sekundární (většinou pravé) "
+"činností. V přehledu aplikací je třeba použít sekundární (většinou pravé) "
 "tlačítko myši, aby nedocházelo k nechtěným zavřením při ovládání jeho "
 "tlačítek."
 
@@ -1706,7 +1706,7 @@ msgid ""
 "primary."
 msgstr ""
 "Tento  vyskakovací indikátor se zobrazí, když přepnete pracovní plochu "
-"pomocí klávesové zkratky nebo gesta mimo přehled Aktivit. Indikátor můžete "
+"pomocí klávesové zkratky nebo gesta mimo přehled činností. Indikátor můžete "
 "úplně zakázat nebo jej zobrazit pouze na aktuálním monitoru (na tom s "
 "ukazatelem myši)."
 
@@ -1880,18 +1880,12 @@ msgstr ""
 "Nastaví maximální výšku stránky přehedu aplikací vzhledem k dostupnému místu"
 
 #: prefs.js:1864
-msgid "Grid Spacing"
+msgid "App Grid Spacing"
 msgstr "Rozestupy ikon"
 
 #: prefs.js:1865
-msgid ""
-"V-Shell uses this value to calculate grid dimensions for adaptive options. "
-"However, the main grid automatically adjusts the spacing based on the grid "
-"and available space"
-msgstr ""
-"V-Shell tuto hodnotu používá k výpočtu rozměrů mřížky pro adaptivní "
-"možnosti. Přehled však následně automaticky upravuje rozteč na základě "
-"mřížky a dostupného místa, takže výsledek se může trochu lišit."
+msgid "Adjusts the spacing between icons in the app grid"
+msgstr "Upravuje rozestupy mezi ikonami ve složce aplikací"
 
 #: prefs.js:1875
 msgid "Allow Incomplete Pages"
@@ -2174,15 +2168,35 @@ msgstr ""
 "Zakáže výchozí chování, kdy se přhled aplikací a složky vždy otevírají na "
 "první stránce"
 
-#: prefs.js:2130
+#: prefs.js:2127
+msgid "Show App Source Indicator"
+msgstr "Zobrazit indikátor zdroje aplikace"
+
+#: prefs.js:2128
+msgid ""
+"Adds a small badge to app icons indicating the source package type for apps "
+"installed from Flatpak, Snap and AppImage"
+msgstr ""
+"Přidá malý odznáček k ikonám aplikací, které byly instalovány jako Flatpak, "
+"Snap, či AppImage"
+
+#: prefs.js:2133
+msgid "Show on Selection"
+msgstr "Zobrazit po vybrání"
+
+#: prefs.js:2134
+msgid "Show Always"
+msgstr "Zobrazit vždy"
+
+#: prefs.js:2145
 msgid "Performance"
 msgstr "Výkon"
 
-#: prefs.js:2136
+#: prefs.js:2151
 msgid "Smooth App Grid Animations"
-msgstr "Plynulá animace přehledu aplikací"
+msgstr "Plynulé animace přehledu aplikací"
 
-#: prefs.js:2137
+#: prefs.js:2152
 msgid ""
 "This option allows V-Shell to pre-realize app grid and app folders during "
 "session startup in order to avoid stuttering animations when using them for "
@@ -2194,15 +2208,15 @@ msgstr ""
 "použití. Pokud je tato možnost povolena, spuštění relace potřebuje o něco "
 "více času na dokončení a v této době bude také alokována potřebná paměť"
 
-#: prefs.js:2147
+#: prefs.js:2162
 msgid "Reset"
 msgstr "Reset"
 
-#: prefs.js:2152
+#: prefs.js:2167
 msgid "Reset App Grid Layout"
 msgstr "Obnovit rozvžení v přehledu aplikací"
 
-#: prefs.js:2153
+#: prefs.js:2168
 msgid ""
 "Removes all stored app grid positions, after reset icons will be sorted "
 "alphabetically, except folder contents"
@@ -2210,20 +2224,20 @@ msgstr ""
 "Odebere všechny uložené pozice přehledu aplikací. Po obnovení budou ikony "
 "hlavní mřížky seřazeny podle abecedy, složky zůstanou nedotčeny."
 
-#: prefs.js:2161
+#: prefs.js:2176
 msgid "Remove App Grid Folders"
 msgstr "Odebrat složky přehledu aplikací"
 
-#: prefs.js:2162
+#: prefs.js:2177
 msgid "Removes all folders, folder apps will move to the root grid"
 msgstr ""
 "Odebere všechny složky, aplikace složek se přesunou do hlavního přehledu"
 
-#: prefs.js:2178
+#: prefs.js:2193
 msgid "Optional Modules"
 msgstr "Volitelné moduly"
 
-#: prefs.js:2184
+#: prefs.js:2199
 msgid ""
 "Windows Search Provider - Moved from V-Shell to the standalone \"WSP\" "
 "extension"
@@ -2231,27 +2245,24 @@ msgstr ""
 "Zprostředkovatel vyhledávání oken - přesunut z V-Shell do samostatného "
 "rozšíření \"WSP\""
 
-#: prefs.js:2185
+#: prefs.js:2200
 msgid ""
-"NOTE: This module has been released as a standalone extension with new "
-"features, click to learn more. Related V-Shell options are still available "
-"if you install the WSP extension.\n"
+"This module has been released as a standalone extension with new features - "
+"Click to learn more. Related V-Shell options are still available if you "
+"install the WSP extension.\n"
 "\n"
-"WSP adds adds open windows to the search results. You can search app names "
-"and window titles. You can also use \"wq//\" or custom prefix (also by "
-"pressing the Space hotkey in the overview, or clicking dash icon) to "
-"suppress results from other search providers"
+"WSP adds open windows to the global search results, or lists all of them at "
+"once if you use a custom search prefix or press the Space key in the Overview"
 msgstr ""
-"POZNÁMKA: Tento modul byl vydán jako samostatné rozšíření s novými funkcemi, "
-"kliknutím se dozvíte více. Související možnosti prostředí V-Shell jsou stále "
-"k dispozici, pokud si nainstalujete rozšíření WSP.\n"
+"Tento modul byl vydán jako samostatné rozšíření s novými funkcemi - klikněte "
+"pro více informací. Související volby nastavení V-Shell jsou stále k "
+"dispozici, pokud si rozšíření WSP nainstalujete.\n"
 "\n"
-"WSP přidává do výsledků vyhledávání otevřená okna. Můžete vyhledávat názvy "
-"aplikací a názvy oken. Můžete také použít \"wq//\" nebo vlastní předponu "
-"(také stisknutím klávesové zkratky Space v přehledu nebo kliknutím na ikonu "
-"pomlčky) pro potlačení výsledků od jiných poskytovatelů vyhledávání"
+"WSP přidává otevřená okna do výsledků globálního vyhledávání, nebo umožňuje "
+"vypsat všechna otevřená okna najednou při použití definovatelného prefixu, "
+"či stisknutí mezerníku v přehledu činností"
 
-#: prefs.js:2192
+#: prefs.js:2207
 msgid ""
 "Extensions Search Provider - Moved from V-Shell to the standalone \"ESP\" "
 "extension"
@@ -2259,152 +2270,167 @@ msgstr ""
 "Zprostředkovatel vyhledávání rozšíření - přesunut z V-Shell do samostatného "
 "rozšíření \"ESP\""
 
-#: prefs.js:2193
-msgid ""
-"NOTE: This module has been released as a standalone extension with new "
-"features, click to learn more. Related V-Shell options are still available "
-"if you install the ESP extension.\n"
-"\n"
-"ESP adds extensions to the search results. You can also use \"eq//\" or "
-"custom prefix (also by pressing the Ctrl + Shift + Space hotkey in the "
-"overview, or clicking dash icon) to suppress results from other search "
-"providers"
-msgstr ""
-"POZNÁMKA: Tento modul byl vydán jako samostatné rozšíření s novými funkcemi, "
-"kliknutím se dozvíte více. Související možnosti prostředí V-Shell jsou stále "
-"k dispozici, pokud si nainstalujete rozšíření ESP.\n"
-"\n"
-"ESP přidává rozšíření do výsledků vyhledávání. Můžete také použít \"eq//\" "
-"nebo vlastní předponu (také stisknutím klávesové zkratky Ctrl + Shift + "
-"Mezerník v přehledu nebo kliknutím na ikonu pomlčky) pro potlačení výsledků "
-"od jiných poskytovatelů vyhledávání"
-
-#: prefs.js:2200
-msgid ""
-"Window Thumbnails (PiP) - Moved from V-Shell to the standalone \"WTMB\" "
-"extension"
-msgstr ""
-"Miniatury oken (PiP) - Přesunut z V-Shell do samostatného rozšíření \"WTMB\""
-
-#: prefs.js:2201
-msgid ""
-"NOTE: This module has been released as a standalone extension with new "
-"features, click to learn more. Related V-Shell options are still available "
-"if you install the WTMB extension.\n"
-"\n"
-"WTMB allows the creation of Picture-in-Picture like window thumbnails that "
-"you can use for monitoring of windows on another workspace"
-msgstr ""
-"POZNÁMKA: Tento modul byl vydán jako samostatné rozšíření s novými funkcemi, "
-"kliknutím se dozvíte více. Související možnosti prostředí V-Shell jsou stále "
-"k dispozici, pokud si nainstalujete rozšíření WTMB.\n"
-"\n"
-"WTMB umožňuje vytvářet miniatury oken jako obraz v obraze, které můžete "
-"použít pro sledování oken na jiné pracovní ploše"
-
 #: prefs.js:2208
 msgid ""
-"Built-in Modules (allows to disable modules that conflict with another "
-"extension)"
+"This module has been released as a standalone extension with new features - "
+"Click to learn more. Related V-Shell options are still available if you "
+"install the ESP extension.\n"
+"\n"
+"ESP adds installed extensions to the global search results so you can "
+"quickly access their settings, data, and management options. You can also "
+"use a custom search preffix or the Ctrl + Space shortcut in the Overview to "
+"list all installed extensions at once, sorted the way you prefer"
 msgstr ""
-"Vestavěné moduly (umožňuje zakázat moduly, které jsou v konfliktu s jiným "
-"rozšířením)"
+"Tento modul byl vydán jako samostatné rozšíření s novými funkcemi - klikněte "
+"pro více informací. Související volby nastavení V-Shell jsou stále k "
+"dispozici, pokud si rozšíření ESP nainstalujete.\n"
+"\n"
+"ESP přidává nainstalovaná rozšíření do výsledků vyhledávání, nebo zobrazí "
+"všechna najednou při použití nastavitelného prefixu, nebo stisknutí "
+"klávesové zkratky Ctrl + Mezerník v přehledu činností"
 
-#: prefs.js:2214
+#: prefs.js:2215
+msgid ""
+"Window Thumbnails - Moved from V-Shell to the standalone \"WTMB\" extension"
+msgstr ""
+"Miniatury oken - Přesunuty z V-Shell do samostatného rozšíření \"WTMB\""
+
+#: prefs.js:2216
+msgid ""
+"This module has been released as a standalone extension with new features - "
+"Click to learn more. Related V-Shell options are still available if you "
+"install the WTMB extension.\n"
+"\n"
+"WTMB allows you to create floating live window thumbnails that you can use "
+"to monitor windows on another workspace or those covered by the currently "
+"used windows"
+msgstr ""
+"Tento modul byl vydán jako samostatné rozšíření s novými funkcemi -klikněte "
+"pro více informací. Související volby nastavení V-Shell jsou stále k "
+"dispozici, pokud si rozšíření WTMB nainstalujete.\n"
+"\n"
+"WTMB umožňuje vytvářet živé, plovoucí miniatury oken, které můžete použít "
+"pro monitorování oken na jiné pracovní ploše, nebo oken skrytých okny, která "
+"momentálně používáte"
+
+#: prefs.js:2223
+msgid "Built-in Modules"
+msgstr "Vestavěné moduly"
+
+#: prefs.js:2228
+msgid "You can disable modules that conflict with another extension"
+msgstr "Můžete zakázat moduly, které jsou v konfliktu s jiným rozšířením"
+
+#: prefs.js:2229
+msgid ""
+"V-Shell is tuned to work best with all its modules enabled, so it’s "
+"generally better to use its options to disable behavior you don’t need "
+"rather than disabling entire modules.\n"
+"\n"
+"Modules keep the original GNOME Shell module names they modify."
+msgstr ""
+"V-Shell je laděn, aby fungoval se všemi moduly, je tedy lepší použít jeho "
+"volby pro deaktivaci vlastností, o které nestojíte, než zakazovat celé "
+"moduly.\n"
+"\n"
+"Moduly jsou pojmenovány podle originálních modulů GNOME Shell, které "
+"modifikují."
+
+#: prefs.js:2235
 msgid "AppDisplay / IconGrid"
 msgstr ""
 
-#: prefs.js:2215
+#: prefs.js:2236
 msgid "App grid customization and options"
 msgstr "Přizpůsobení a nastavení přehledu aplikací"
 
-#: prefs.js:2223
+#: prefs.js:2244
 msgid "AppFavorites"
 msgstr ""
 
-#: prefs.js:2224
+#: prefs.js:2245
 msgid "Pin/unpin app notification options"
-msgstr "Nastavení oznámení o připnutí a odepnutí aplikace"
+msgstr "Nastavení oznámení o připnutí a odepnutí aplikace z panelu aplikací"
 
-#: prefs.js:2233
+#: prefs.js:2254
 msgid "Dash customization and options, support for vertical orientation"
 msgstr ""
 "Nastavení konfigurace panelu aplikací (Dash) a podpora vertikální orientace"
 
-#: prefs.js:2242
+#: prefs.js:2263
 msgid "Hot corner options"
 msgstr "Nastavení citlivého rohu"
 
-#: prefs.js:2250
+#: prefs.js:2271
 msgid "MessageTray"
 msgstr ""
 
-#: prefs.js:2251
+#: prefs.js:2272
 msgid "Notification position options"
 msgstr "Nastavení umístění oznámení"
 
-#: prefs.js:2259
+#: prefs.js:2280
 msgid "OsdWindow"
 msgstr ""
 
-#: prefs.js:2260
+#: prefs.js:2281
 msgid "OSD position options"
 msgstr "Nastavení pozice OSD (indikátory událostí typu nastavení hlasitosti)"
 
-#: prefs.js:2268
+#: prefs.js:2289
 msgid "OverlayKey"
 msgstr ""
 
-#: prefs.js:2269
+#: prefs.js:2290
 msgid "Overlay (Super/Window) key options"
 msgstr "Nastavení klávesy přehledu (Super/Windows)"
 
-#: prefs.js:2278
+#: prefs.js:2299
 msgid "Panel options"
 msgstr "Nastavení horní lišty"
 
-#: prefs.js:2287
+#: prefs.js:2308
 msgid "Search view and app search provider customization and options"
 msgstr "Přizpůsobení zobrazení vyhledávání a vyhledávání aplikací"
 
-#: prefs.js:2295
+#: prefs.js:2316
 msgid "SearchController"
 msgstr ""
 
-#: prefs.js:2296
+#: prefs.js:2317
 msgid "Escape key behavior options in the overview"
-msgstr "Chování klávesy Escape v přehledu aktivit"
+msgstr "Chování klávesy Escape v přehledu činností"
 
-#: prefs.js:2304
+#: prefs.js:2325
 msgid "SwipeTracker"
 msgstr ""
 
-#: prefs.js:2305
+#: prefs.js:2326
 msgid "Gestures for vertical workspace orientation"
 msgstr "Gesta pro vertikální orientaci pracovních ploch"
 
-#: prefs.js:2313
+#: prefs.js:2334
 msgid "WindowAttentionHandler"
 msgstr ""
 
-#: prefs.js:2314
+#: prefs.js:2335
 msgid "Window attention handler options"
 msgstr "Nastavení obsluhy oken vyžadujících pozornost"
 
-#: prefs.js:2322
+#: prefs.js:2343
 msgid "WindowManager"
 msgstr ""
 
-#: prefs.js:2323
+#: prefs.js:2344
 msgid ""
 "Fixes an upstream bug in the minimization animation of a full-screen window"
 msgstr "Opravuje chybu v animaci minimalizace okna v režimu celé obrazovky"
 
-#: prefs.js:2331
+#: prefs.js:2352
 msgid "WindowPreview"
 msgstr ""
 
-#: prefs.js:2332
+#: prefs.js:2353
 msgid ""
 "Window preview options, fixes an upstream bug that fills the system log with "
 "errors when you close a window from the overview or exit the overview with a "
@@ -2414,11 +2440,11 @@ msgstr ""
 "chybami, když zavřete okno z přehledu nebo opustíte přehled gestem, je-li "
 "vybráno jakékoli okno"
 
-#: prefs.js:2340
+#: prefs.js:2361
 msgid "Workspace"
 msgstr ""
 
-#: prefs.js:2341
+#: prefs.js:2362
 msgid ""
 "Fixes workspace preview allocations for vertical workspaces orientation and "
 "window scaling in static overview modes"
@@ -2426,31 +2452,31 @@ msgstr ""
 "Opravuje alokace náhledu pracovních ploch pro vertikální orientaci a "
 "škálování náhledů oken v statických režimech přehledu"
 
-#: prefs.js:2349
+#: prefs.js:2370
 msgid "WorkspaceAnimation"
 msgstr ""
 
-#: prefs.js:2350
+#: prefs.js:2371
 msgid "Static workspace animation option"
 msgstr "Volba animace přepínání pracovní plochy se statickým pozadím"
 
-#: prefs.js:2358
+#: prefs.js:2379
 msgid "WorkspaceSwitcherPopup"
 msgstr ""
 
-#: prefs.js:2359
+#: prefs.js:2380
 msgid "Workspace switcher popup orientation and position options"
 msgstr "Nastavení pozice a orientace vyskakovacího indikátoru pracovní plochy"
 
-#: prefs.js:2375
+#: prefs.js:2396
 msgid "Keyboard"
 msgstr "Klávesnice"
 
-#: prefs.js:2381
+#: prefs.js:2402
 msgid "Override Page Up/Down Shortcuts"
 msgstr "Přepsat zkratky Page Up/Down"
 
-#: prefs.js:2382
+#: prefs.js:2403
 msgid ""
 "This option automatically overrides the (Shift +) Super + Page Up/Down "
 "keyboard shortcuts for the current workspace orientation. If you encounter "
@@ -2460,15 +2486,15 @@ msgstr ""
 "Down pro aktuální orientaci pracovních ploch. Pokud narazíte na nějaké "
 "problémy, zkontrolujte konfiguraci v dconf editoru."
 
-#: prefs.js:2390
+#: prefs.js:2411
 msgid "Workarounds / Hacks"
 msgstr "Obcházení problémů"
 
-#: prefs.js:2396
+#: prefs.js:2417
 msgid "Delay at Startup"
 msgstr "Zpozdit při spuštění"
 
-#: prefs.js:2397
+#: prefs.js:2418
 msgid ""
 "If you encounter issues during GNOME Shell startup after logging in, which "
 "could be caused by V-Shell's incompatibility with another extension, try "
@@ -2483,23 +2509,23 @@ msgstr ""
 "při zjištění aktivních rozšíření Dash to Dock, Ubuntu Dock nebo Dash to "
 "Panel."
 
-#: prefs.js:2405
+#: prefs.js:2426
 msgid "Fix New Window Not In Focus"
 msgstr "Opravit nové okno není aktivní"
 
-#: prefs.js:2406
+#: prefs.js:2427
 msgid ""
 "If you often find that the app window you open from the Activities overview "
 "does not get focus, try enabling this option."
 msgstr ""
-"Pokud často zjišťujete, že okno aplikace, které otevřete z přehledu aktivit, "
-"není aktivní, zkuste tuto možnost povolit."
+"Pokud často zjišťujete, že okno aplikace, které otevřete z přehledu "
+"činností, není aktivní, zkuste tuto možnost povolit."
 
-#: prefs.js:2414
+#: prefs.js:2435
 msgid "Fix New Window Not On Current Monitor (experimental)"
 msgstr "Opravit nové okno není na aktuálním monitoru (experimentální)"
 
-#: prefs.js:2415
+#: prefs.js:2436
 msgid ""
 "If you use multiple monitors, you may encounter the issue of new windows "
 "opening on a different monitor than expected. This option moves those "
@@ -2514,61 +2540,81 @@ msgstr ""
 "inicializace přesunou okno zpět na předchozí monitor, nebo dokonce shodí "
 "celou relaci."
 
-#: prefs.js:2438
+#: prefs.js:2459
 msgid "Version"
 msgstr "Verze"
 
-#: prefs.js:2444
+#: prefs.js:2465
 msgid "Reset all options"
 msgstr "Obnovit všechna nastavení"
 
-#: prefs.js:2445
+#: prefs.js:2466
 msgid "Reset all options to their default values"
 msgstr "Nastaví všechny volby na výchozí hodnoty"
 
-#: prefs.js:2451
+#: prefs.js:2472
 msgid "Links"
 msgstr "Odkazy"
 
-#: prefs.js:2455
+#: prefs.js:2476
 msgid "Homepage"
 msgstr "Domovská stránka"
 
-#: prefs.js:2456
+#: prefs.js:2477
 msgid "Source code and more info about this extension"
 msgstr "Zdrojový kód a další informace o tomto rozšíření"
 
-#: prefs.js:2461
+#: prefs.js:2482
 msgid "Changelog"
 msgstr "Seznam změn"
 
-#: prefs.js:2462
+#: prefs.js:2483
 msgid "See what's changed."
 msgstr "Podívejte se, co se změnilo."
 
-#: prefs.js:2467
+#: prefs.js:2488
 msgid "GNOME Extensions"
 msgstr "Rozšíření GNOME"
 
-#: prefs.js:2468
+#: prefs.js:2489
 msgid "Rate and comment V-Shell on the GNOME Extensions site"
 msgstr "Ohodnoťte a okomentujte V-Shell na webu GNOME Extensions"
 
-#: prefs.js:2473
+#: prefs.js:2494
 msgid "Report a bug or suggest new feature"
 msgstr "Nahlaste chybu nebo navrhněte novou funkci"
 
-#: prefs.js:2474
+#: prefs.js:2495
 msgid "Help me to help you!"
 msgstr "Pomozte mi, abych vám pomohl!"
 
-#: prefs.js:2479
+#: prefs.js:2500
 msgid "Buy Me a Coffee"
 msgstr "Kupte mi kávu"
 
-#: prefs.js:2480
+#: prefs.js:2501
 msgid "Enjoying V-Shell? Consider supporting it by buying me a coffee!"
 msgstr "Je pro vás V-Shell užitečný? Podpořte ho tím, že mi koupíte kávu!"
+
+#, fuzzy
+#~| msgid ""
+#~| "Built-in Modules (allows to disable modules that conflict with another "
+#~| "extension)"
+#~ msgid ""
+#~ "Built-in Modules (allows you to disable modules that conflict with "
+#~ "another extension, at the cost of missing features and potential glitches)"
+#~ msgstr ""
+#~ "Vestavěné moduly (umožňuje zakázat moduly, které jsou v konfliktu s jiným "
+#~ "rozšířením)"
+
+#~ msgid ""
+#~ "V-Shell uses this value to calculate grid dimensions for adaptive "
+#~ "options. However, the main grid automatically adjusts the spacing based "
+#~ "on the grid and available space"
+#~ msgstr ""
+#~ "V-Shell tuto hodnotu používá k výpočtu rozměrů mřížky pro adaptivní "
+#~ "možnosti. Přehled však následně automaticky upravuje rozteč na základě "
+#~ "mřížky a dostupného místa, takže výsledek se může trochu lišit."
 
 #~ msgid "Enables clicking on an empty space in the overview to close it"
 #~ msgstr "Povolí kliknutí na prázdné místo v přehledu pro jeho zavření"
