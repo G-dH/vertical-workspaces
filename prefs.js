@@ -2220,9 +2220,15 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Built-in Modules (allows you to disable modules that conflict with another extension, at the cost of missing features and potential glitches)')
+                _('Built-in Modules')
             )
         );
+
+        optionList.push(itemFactory.getRowWidget(
+            _('You can disable modules that conflict with another extension'),
+            _('V-Shell is tuned to work best with all its modules enabled, so it’s generally better to use its options to disable behavior you don’t need rather than disabling entire modules.\n\nModules keep the original GNOME Shell module names they modify.'),
+            itemFactory.newLabel()
+        ));
 
         optionList.push(
             itemFactory.getRowWidget(
