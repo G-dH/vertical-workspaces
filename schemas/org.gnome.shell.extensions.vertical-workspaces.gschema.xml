@@ -427,6 +427,10 @@
       <default>false</default>
     </key>
 
+    <key type="a{ss}" name="profile-data-0">
+      <default>{}</default>
+    </key>
+
     <key type="s" name="profile-name-1">
       <default>""</default>
     </key>
