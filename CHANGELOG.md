@@ -1,4 +1,9 @@
 ## Changelog:
+### v49.14 (not yet released)
+**Added**
+- Support for GNOME 50 Alpha
+
+
 ### v49.13 (2026-01-24)
 **Fixed**
 - Workspace thumbnail overlay visible when thumbnails max scale set to 0
