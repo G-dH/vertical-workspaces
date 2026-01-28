@@ -2,7 +2,7 @@
 <schemalist gettext-domain="vertical-workspaces">
   <schema id="org.gnome.shell.extensions.vertical-workspaces" path="/org/gnome/shell/extensions/vertical-workspaces/">
     <key type="i" name="ws-thumbnails-position">
-      <default>0</default>
+      <default>6</default>
     </key>
     <key type="b" name="ws-thumbnails-full">
       <default>false</default>
@@ -11,7 +11,7 @@
       <default>2</default>
     </key>
     <key type="i" name="ws-max-spacing">
-      <default>350</default>
+      <default>30</default>
     </key>
     <key type="i" name="ws-preview-scale">
       <default>95</default>
@@ -23,22 +23,22 @@
       <default>false</default>
     </key>
     <key type="i" name="dash-position">
-      <default>0</default>
+      <default>2</default>
     </key>
     <key type="i" name="dash-position-adjust">
-      <default>-100</default>
-    </key>
-    <key type="i" name="show-app-icon-position">
       <default>0</default>
     </key>
+    <key type="i" name="show-app-icon-position">
+      <default>1</default>
+    </key>
     <key type="i" name="wst-position-adjust">
-      <default>-100</default>
+      <default>2</default>
     </key>
     <key type="i" name="show-wst-labels">
       <default>3</default>
     </key>
     <key type="b" name="show-wst-labels-on-hover">
-      <default>false</default>
+      <default>true</default>
     </key>
     <key type="i" name="sec-wst-position-adjust">
       <default>0</default>
@@ -59,13 +59,13 @@
       <default>false</default>
     </key>
     <key type="i" name="ws-thumbnail-scale">
-      <default>13</default>
+      <default>10</default>
     </key>
     <key type="i" name="ws-thumbnail-scale-appgrid">
-      <default>13</default>
+      <default>10</default>
     </key>
     <key type="i" name="secondary-ws-thumbnail-scale">
-      <default>13</default>
+      <default>8</default>
     </key>
     <key type="i" name="dash-max-icon-size">
       <default>0</default>
@@ -77,19 +77,19 @@
       <default>1</default>
     </key>
     <key type="i" name="dash-bg-radius">
-      <default>18</default>
+      <default>0</default>
     </key>
     <key type="b" name="dash-bg-gs3-style">
       <default>false</default>
     </key>
     <key type="i" name="running-dot-style">
-      <default>1</default>
+      <default>0</default>
     </key>
     <key type="b" name="enable-page-shortcuts">
       <default>true</default>
     </key>
     <key type="b" name="show-ws-switcher-bg">
-      <default>false</default>
+      <default>true</default>
     </key>
     <key type="b" name="show-ws-preview-bg">
       <default>true</default>
@@ -101,10 +101,10 @@
       <default>1</default>
     </key>
     <key type="i" name="overview-bg-blur-sigma">
-      <default>100</default>
+      <default>300</default>
     </key>
     <key type="i" name="app-grid-bg-blur-sigma">
-      <default>100</default>
+      <default>300</default>
     </key>
     <key type="i" name="overview-bg-brightness">
       <default>50</default>
@@ -113,7 +113,7 @@
       <default>50</default>
     </key>
     <key type="i" name="search-bg-brightness">
-      <default>50</default>
+      <default>40</default>
     </key>
     <key type="i" name="app-grid-animation">
       <default>4</default>
@@ -182,7 +182,7 @@
       <default>0</default>
     </key>
     <key type="i" name="app-grid-spacing">
-      <default>12</default>
+      <default>30</default>
     </key>
     <key type="i" name="app-grid-folder-spacing">
       <default>12</default>
@@ -200,7 +200,7 @@
       <default>false</default>
     </key>
     <key type="b" name="app-grid-folder-center">
-      <default>false</default>
+      <default>true</default>
     </key>
     <key type="i" name="app-folder-remove-button">
       <default>1</default>
@@ -302,7 +302,7 @@
       <default>1</default>
     </key>
     <key type="i" name="notification-position">
-      <default>2</default>
+      <default>1</default>
     </key>
     <key type="i" name="osd-position">
       <default>6</default>
@@ -335,7 +335,7 @@
       <default>1</default>
     </key>
     <key type="i" name="win-preview-height-compensation">
-      <default>50</default>
+      <default>80</default>
     </key>
     <key type="i" name="overlay-key-primary">
       <default>1</default>
@@ -430,7 +430,7 @@
     <key type="a{ss}" name="profile-data-0">
       <default>{}</default>
     </key>
-
+  
     <key type="s" name="profile-name-1">
       <default>""</default>
     </key>
@@ -582,7 +582,7 @@
     <key type="a{ss}" name="profile-data-2">
       <default>{
         'workspaceThumbnailsPosition': '5',
-        'wsMaxSpacing': '20',
+        'wsMaxSpacing': '30',
         'wsPreviewScale': '98',
         'secWsPreviewScale': '98',
         'secWsPreviewShift': 'false',
@@ -872,9 +872,9 @@
     <key type="a{ss}" name="profile-data-4">
       <default>{
         'workspaceThumbnailsPosition': '6',
-        'wsMaxSpacing': '20',
-        'wsPreviewScale': '96',
-        'secWsPreviewScale': '96',
+        'wsMaxSpacing': '30',
+        'wsPreviewScale': '95',
+        'secWsPreviewScale': '95',
         'secWsPreviewShift': 'false',
         'wsThumbnailsFull': 'false',
         'secWsThumbnailsPosition': '2',
@@ -1017,7 +1017,7 @@
     <key type="a{ss}" name="profile-data-5">
       <default>{
         'workspaceThumbnailsPosition': '5',
-        'wsMaxSpacing': '20',
+        'wsMaxSpacing': '30',
         'wsPreviewScale': '95',
         'secWsPreviewScale': '90',
         'secWsPreviewShift': 'false',
@@ -1035,7 +1035,7 @@
         'showAppsIconPosition': '1',
         'wsThumbnailScale': '4',
         'wsThumbnailScaleAppGrid': '14',
-        'secWsThumbnailScale': '4',
+        'secWsThumbnailScale': '5',
         'showSearchEntry': 'true',
         'centerSearch': 'true',
         'centerAppGrid': 'true',
@@ -1072,7 +1072,7 @@
         'appGridColumns': '0',
         'appGridRows': '0',
         'appGridFolderIconSize': '-1',
-        'appGridFolderColumns': '5',
+        'appGridFolderColumns': '3',
         'appGridFolderRows': '0',
         'appGridFolderIconGrid': '2',
         'appGridContent': '2',
