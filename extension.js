@@ -3,7 +3,7 @@
  * extension.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022 - 2025
+ * @copyright  2022 - 2026
  * @license    GPL-3.0
  *
  */
@@ -294,7 +294,7 @@ export default class VShell extends Extension.Extension {
 
     _setInitialWsIndex() {
         if (Main.layoutManager._startingUp) {
-            GLib.idle_add(GLib.PRIORITY_LOW, () => {
+            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
                 Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
             });
         }
@@ -321,7 +321,7 @@ export default class VShell extends Extension.Extension {
             // the panel must be visible when screen is locked
             this._sessionModeConId = Main.sessionMode.connect('updated', session => {
                 if (session.currentMode === 'user' || session.parentMode === 'user') {
-                    this._timeouts.unlock = GLib.idle_add(GLib.PRIORITY_LOW,
+                    this._timeouts.unlock = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE,
                         () => {
                             Me.Modules.panelModule.update();
                             Me.Modules.overviewControlsModule.update();
@@ -383,7 +383,7 @@ export default class VShell extends Extension.Extension {
                     const currentMonitor = global.display.get_current_monitor();
                     if (win.get_monitor() !== currentMonitor) {
                         // some windows ignore this action if executed immediately
-                        GLib.idle_add(GLib.PRIORITY_LOW, () => {
+                        GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
                             win.move_to_monitor(currentMonitor);
                             return GLib.SOURCE_REMOVE;
                         });

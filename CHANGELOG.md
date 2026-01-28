@@ -3,6 +3,9 @@
 **Added**
 - Support for GNOME 50 Alpha
 
+**Fixed**
+- Extreme latency when transitioning to Overview on slow hardware
+
 
 ### v49.13 (2026-01-24)
 **Fixed**
