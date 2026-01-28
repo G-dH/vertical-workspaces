@@ -294,7 +294,7 @@ export default class VShell extends Extension.Extension {
 
     _setInitialWsIndex() {
         if (Main.layoutManager._startingUp) {
-            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            GLib.idle_add(GLib.PRIORITY_LOW, () => {
                 Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
             });
         }
@@ -383,7 +383,7 @@ export default class VShell extends Extension.Extension {
                     const currentMonitor = global.display.get_current_monitor();
                     if (win.get_monitor() !== currentMonitor) {
                         // some windows ignore this action if executed immediately
-                        GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                        GLib.idle_add(GLib.PRIORITY_LOW, () => {
                             win.move_to_monitor(currentMonitor);
                             return GLib.SOURCE_REMOVE;
                         });
