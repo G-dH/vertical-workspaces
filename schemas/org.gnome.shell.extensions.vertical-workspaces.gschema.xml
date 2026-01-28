@@ -209,7 +209,7 @@
       <default>true</default>
     </key>
     <key type="i" name="app-grid-page-width-scale">
-      <default>90</default>
+      <default>85</default>
     </key>
     <key type="i" name="app-grid-page-height-scale">
       <default>90</default>
@@ -1019,7 +1019,7 @@
         'workspaceThumbnailsPosition': '5',
         'wsMaxSpacing': '30',
         'wsPreviewScale': '95',
-        'secWsPreviewScale': '90',
+        'secWsPreviewScale': '95',
         'secWsPreviewShift': 'false',
         'wsThumbnailsFull': 'false',
         'secWsThumbnailsPosition': '2',
