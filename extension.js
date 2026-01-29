@@ -60,6 +60,7 @@ export default class VShell extends Extension.Extension {
         Me.path = this.path;
         // Place for runtime variables
         Me.run = {};
+        Me.run.timeouts = {};
 
         Me.getSettings = this.getSettings.bind(this);
         Me.shellVersion = parseFloat(Config.PACKAGE_VERSION);
@@ -188,7 +189,7 @@ export default class VShell extends Extension.Extension {
             this._originalGetNeighbor = Meta.Workspace.prototype.get_neighbor;
 
         this._removeTimeouts();
-        this._timeouts = {};
+        Me.run.timeouts = {};
 
         if (!Main.layoutManager._startingUp)
             this._ensureOverviewIsHidden();
@@ -279,13 +280,11 @@ export default class VShell extends Extension.Extension {
     }
 
     _removeTimeouts() {
-        if (this._timeouts) {
-            Object.values(this._timeouts).forEach(id => {
-                if (id)
-                    GLib.source_remove(id);
-            });
-        }
-        this._timeouts = null;
+        Object.values(Me.run.timeouts)
+            .filter(Boolean)
+            .forEach(id => GLib.source_remove(id));
+
+        Me.run.timeouts = {};
     }
 
     _storeDashId() {
@@ -294,7 +293,7 @@ export default class VShell extends Extension.Extension {
 
     _setInitialWsIndex() {
         if (Main.layoutManager._startingUp) {
-            GLib.idle_add(GLib.PRIORITY_LOW, () => {
+            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
                 Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
             });
         }
@@ -321,13 +320,13 @@ export default class VShell extends Extension.Extension {
             // the panel must be visible when screen is locked
             this._sessionModeConId = Main.sessionMode.connect('updated', session => {
                 if (session.currentMode === 'user' || session.parentMode === 'user') {
-                    this._timeouts.unlock = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE,
+                    Me.run.timeouts.unlock = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE,
                         () => {
                             Me.Modules.panelModule.update();
                             Me.Modules.overviewControlsModule.update();
                             Me.Modules.messageTrayModule.update();
 
-                            this._timeouts.unlock = 0;
+                            Me.run.timeouts.unlock = 0;
                             return GLib.SOURCE_REMOVE;
                         }
                     );
@@ -487,9 +486,9 @@ export default class VShell extends Extension.Extension {
         if (!this._enabled || Main.layoutManager._startingUp)
             return;
 
-        if (this._timeouts.reset)
-            GLib.source_remove(this._timeouts.reset);
-        this._timeouts.reset = GLib.timeout_add(
+        if (Me.run.timeouts.reset)
+            GLib.source_remove(Me.run.timeouts.reset);
+        Me.run.timeouts.reset = GLib.timeout_add(
             GLib.PRIORITY_DEFAULT,
             timeout,
             () => {
@@ -510,7 +509,7 @@ export default class VShell extends Extension.Extension {
                     this._activateVShell();
                     Me._resetInProgress = false;
                 }
-                this._timeouts.reset = 0;
+                Me.run.timeouts.reset = 0;
                 return GLib.SOURCE_REMOVE;
             }
         );
@@ -532,22 +531,22 @@ export default class VShell extends Extension.Extension {
     _updateSettings(settings, key) {
         // Prevent V-Shell from updating when loading profile
         // or GSettings emits false or redundant events
-        const loadingProfile = !!this._timeouts.loadingProfile;
+        const loadingProfile = !!Me.run.timeouts.loadingProfile;
         const updateNotNeeded  = key && key !== 'aaa-loading-profile' && !opt.valueChanged(key);
         if (loadingProfile || updateNotNeeded)
             return;
 
         // Prevent overload while loading the profile - update only once.
         // Delayed gsettings writes are processed alphabetically,
-        // so the trigger key needs to be named accordingly to be the first.
+        // so the trigger key needs to be named accordingly to be first.
         if (key === 'aaa-loading-profile') {
-            if (this._timeouts.loadingProfile)
-                GLib.source_remove(this._timeouts.loadingProfile);
-            this._timeouts.loadingProfile = GLib.timeout_add(
+            if (Me.run.timeouts.loadingProfile)
+                GLib.source_remove(Me.run.timeouts.loadingProfile);
+            Me.run.timeouts.loadingProfile = GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
                 100, () => {
                     this._activateVShell();
-                    this._timeouts.loadingProfile = 0;
+                    Me.run.timeouts.loadingProfile = 0;
                     return GLib.SOURCE_REMOVE;
                 }
             );
