@@ -5,6 +5,7 @@
 
 **Fixed**
 - Extreme latency when transitioning to Overview on slow hardware
+- Removing app folder in the app grid could crash GNOME Shell
 
 
 ### v49.13 (2026-01-24)
