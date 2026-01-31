@@ -370,6 +370,9 @@
     <key type="b" name="delay-startup">
       <default>false</default>
     </key>
+    <key type="b" name="smooth-overview-animation">
+      <default>true</default>
+    </key>
 
     <key type="b" name="workspace-switcher-popup-module">
       <default>true</default>
@@ -552,8 +555,6 @@
         'overviewSortWindows': '0',
         'overviewSelectWindow': '0',
         'clickEmptyClose': 'true',
-        'newWindowFocusFix': 'false',
-        'newWindowMonitorFix': 'false',
         'highlightingStyle': '1',
 
         'workspaceSwitcherPopupModule': 'true',
@@ -697,8 +698,6 @@
         'overviewSortWindows': '0',
         'overviewSelectWindow': '0',
         'clickEmptyClose': 'false',
-        'newWindowFocusFix': 'false',
-        'newWindowMonitorFix': 'false',
         'highlightingStyle': '1',
 
         'workspaceSwitcherPopupModule': 'true',
@@ -842,8 +841,6 @@
         'overviewSortWindows': '0',
         'overviewSelectWindow': '0',
         'clickEmptyClose': 'false',
-        'newWindowFocusFix': 'false',
-        'newWindowMonitorFix': 'false',
         'highlightingStyle': '1',
 
         'workspaceSwitcherPopupModule': 'true',
@@ -987,8 +984,6 @@
         'overviewSortWindows': '1',
         'overviewSelectWindow': '2',
         'clickEmptyClose': 'false',
-        'newWindowFocusFix': 'false',
-        'newWindowMonitorFix': 'false',
         'highlightingStyle': '1',
 
         'workspaceSwitcherPopupModule': 'true',
@@ -1132,8 +1127,6 @@
         'overviewSortWindows': '0',
         'overviewSelectWindow': '0',
         'clickEmptyClose': 'false',
-        'newWindowFocusFix': 'false',
-        'newWindowMonitorFix': 'false',
         'highlightingStyle': '0',
 
         'workspaceSwitcherPopupModule': 'true',

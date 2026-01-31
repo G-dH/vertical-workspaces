@@ -2137,24 +2137,6 @@ export default class VShell extends ExtensionPreferences {
             )
         );
 
-
-        // --------------------------------------------------------------------------------------
-
-        optionList.push(
-            itemFactory.getRowWidget(
-                _('Performance')
-            )
-        );
-
-        optionList.push(
-            itemFactory.getRowWidget(
-                _('Smooth App Grid Animations'),
-                _('This option allows V-Shell to pre-realize app grid and app folders during session startup in order to avoid stuttering animations when using them for the first time. If enabled, the session startup needs a little bit more time to finish and necessary memory will be allocated at this time'),
-                itemFactory.newSwitch(),
-                'appGridPerformance'
-            )
-        );
-
         // --------------------------------------------------------------------------------------
 
         optionList.push(
@@ -2403,6 +2385,30 @@ export default class VShell extends ExtensionPreferences {
                 _('This option automatically overrides the (Shift +) Super + Page Up/Down keyboard shortcuts for the current workspace orientation. If you encounter any issues, check the configuration in the dconf editor'),
                 itemFactory.newSwitch(),
                 'enablePageShortcuts'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Performance')
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Smooth Overview Animation'),
+                _('When many windows are open, the transition animation to the Activities overview may skip its initial frames or be skipped entirely because it starts before the overview is ready. With this option enabled, V-Shell waits until the overview is ready before starting the animation'),
+                itemFactory.newSwitch(),
+                'smoothOverviewAnimation'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Smooth App Grid Animations'),
+                _('This option allows V-Shell to pre-realize app grid and app folders during session startup in order to avoid stuttering animations when using them for the first time. If enabled, the session startup needs a little bit more time to finish and necessary memory will be allocated at this time'),
+                itemFactory.newSwitch(),
+                'appGridPerformance'
             )
         );
 

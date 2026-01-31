@@ -2,10 +2,14 @@
 ### v49.14 (not yet released)
 **Added**
 - Support for GNOME 50 Alpha
+- *Smooth Overview Aimation* option, which lets you disable V-Shell’s optimization of the transition animation to the Activities overview
 
 **Fixed**
 - Extreme latency when transitioning to Overview on slow hardware
 - Removing app folder in the app grid could crash GNOME Shell
+
+**Other changes**
+- Option *Smooth App Grid Animations* has been moved to the *Misc* tab
 
 
 ### v49.13 (2026-01-24)
