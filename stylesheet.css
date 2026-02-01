@@ -394,3 +394,7 @@ StButton#vhandle, StWidget .vhandle,
 .overview-tile:selected .source-badge-selected-only {
 	width: 16px;
 }
+
+.panel-menu {
+	margin: 0;
+}
