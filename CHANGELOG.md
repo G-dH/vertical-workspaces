@@ -7,9 +7,12 @@
 **Fixed**
 - Extreme latency when transitioning to Overview on slow hardware
 - Removing app folder in the app grid could crash GNOME Shell
+- Excessive spacing between top panel menus and the panel after moving the panel to the bottom
 
 **Other changes**
-- Option *Smooth App Grid Animations* has been moved to the *Misc* tab
+- Option *Smooth App Grid Animations* has been moved to the *Performance* section in the *Misc* tab ([#293](https://github.com/G-dH/vertical-workspaces/pull/293))
+- Default V-Shell configuration has been changed. This will affect only new users
+- Profiles presets have been adjusted
 
 
 ### v49.13 (2026-01-24)
