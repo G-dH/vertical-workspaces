@@ -3,7 +3,7 @@
  * prefs.js
  *
  * @author     GdH <G-dH@github.com>
- * @copyright  2022 - 2025
+ * @copyright  2022 - 2026
  * @license    GPL-3.0
  */
 
@@ -1534,11 +1534,11 @@ export default class VShell extends ExtensionPreferences {
                 itemFactory.newDropDown(),
                 'activateSettingsWindow',
                 [
-                    [_('Follow Window Attention Handler (Default)'), 0],
+                    [_('Default'), 0],
                     [_('Switch to Window'), 1],
                     [_('Move Window to Current Workspace'), 2],
                 ],
-                'windowAttentionHandlerModule'
+                'searchModule'
             )
         );
 
