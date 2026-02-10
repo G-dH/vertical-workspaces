@@ -1529,6 +1529,21 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
+                _('GNOME Settings Window Behavior'),
+                _('When the GNOME Settings window is open but unfocused, activating one of its panels via search results in a notification rather than window activation in the default GNOME Shell. V-Shell allows you to fix this issue so the Settings window is immediately activated, or moved to the current workspace and then activated'),
+                itemFactory.newDropDown(),
+                'activateSettingsWindow',
+                [
+                    [_('Follow Window Attention Handler (Default)'), 0],
+                    [_('Switch to Window'), 1],
+                    [_('Move Window to Current Workspace'), 2],
+                ],
+                'windowAttentionHandlerModule'
+            )
+        );
+
+        optionList.push(
+            itemFactory.getRowWidget(
                 _('Animations')
             )
         );

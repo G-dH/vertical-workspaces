@@ -268,6 +268,9 @@
     <key type="b" name="search-include-settings">
       <default>true</default>
     </key>
+    <key type="i" name="activate-settings-window">
+      <default>2</default>
+    </key>
     <key type="i" name="search-results-bg-style">
       <default>0</default>
     </key>
@@ -519,6 +522,7 @@
         'searchMaxResultsRows': '5',
         'searchAppGridMode': '1',
         'searchIncludeSettings': 'true',
+        'activateSettingsWindow': '2',
         'dashShowWindowsBeforeActivation': '0',
         'dashIconScroll': '2',
         'dashIsolateWorkspaces': 'false',
@@ -662,6 +666,7 @@
         'searchMaxResultsRows': '5',
         'searchAppGridMode': '1',
         'searchIncludeSettings': 'true',
+        'activateSettingsWindow': '2',
         'dashShowWindowsBeforeActivation': '0',
         'dashIconScroll': '2',
         'dashIsolateWorkspaces': 'false',
@@ -805,6 +810,7 @@
         'searchMaxResultsRows': '5',
         'searchAppGridMode': '1',
         'searchIncludeSettings': 'true',
+        'activateSettingsWindow': '2',
         'dashShowWindowsBeforeActivation': '0',
         'dashIconScroll': '2',
         'dashIsolateWorkspaces': 'false',
@@ -948,6 +954,7 @@
         'searchMaxResultsRows': '5',
         'searchAppGridMode': '1',
         'searchIncludeSettings': 'true',
+        'activateSettingsWindow': '2',
         'dashShowWindowsBeforeActivation': '0',
         'dashIconScroll': '2',
         'dashIsolateWorkspaces': 'false',
@@ -1091,6 +1098,7 @@
         'searchMaxResultsRows': '5',
         'searchAppGridMode': '0',
         'searchIncludeSettings': 'false',
+        'activateSettingsWindow': '0',
         'dashShowWindowsBeforeActivation': '0',
         'dashIconScroll': '0',
         'dashIsolateWorkspaces': 'false',

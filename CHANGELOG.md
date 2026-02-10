@@ -3,6 +3,7 @@
 **Added**
 - Support for GNOME 50 Alpha
 - *Smooth Overview Aimation* option, which lets you disable V-Shell’s optimization of the transition animation to the Activities overview
+- *GNOME Settings Window Behavior* option in the *Search* section of the *Behavior* tab lets you control how an already open *GNOME Settings* window behaves when activating a search result from the *GNOME Settings* search provider
 
 **Fixed**
 - Extreme latency when transitioning to Overview on slow hardware
