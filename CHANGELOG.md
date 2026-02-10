@@ -9,6 +9,7 @@
 - Extreme latency when transitioning to Overview on slow hardware
 - Removing app folder in the app grid could crash GNOME Shell
 - Excessive spacing between top panel menus and the panel after moving the panel to the bottom
+- Workspace switcher popup not visible in GNOME 45-48
 
 **Other changes**
 - Option *Smooth App Grid Animations* has been moved to the *Performance* section in the *Misc* tab ([#293](https://github.com/G-dH/vertical-workspaces/pull/293))
