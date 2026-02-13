@@ -51,14 +51,14 @@ export default class VShell extends ExtensionPreferences {
                 optionList: this._getAppGridOptionList(itemFactory),
             },
             {
-                title: _('Modules'),
-                iconName: 'application-x-addon-symbolic',
-                optionList: this._getModulesOptionList(itemFactory),
-            },
-            {
                 title: _('Misc'),
                 iconName: 'preferences-other-symbolic',
                 optionList: this._getMiscOptionList(itemFactory),
+            },
+            {
+                title: _('Modules'),
+                iconName: 'application-x-addon-symbolic',
+                optionList: this._getModulesOptionList(itemFactory),
             },
             {
                 title: _('About'),
