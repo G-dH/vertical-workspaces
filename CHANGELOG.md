@@ -6,13 +6,15 @@
 - *GNOME Settings Window Behavior* option in the *Search* section of the *Behavior* tab lets you control how an already open *GNOME Settings* window behaves when activating a search result from the *GNOME Settings* search provider
 
 **Fixed**
-- Extreme latency when transitioning to Overview on slow hardware
 - Removing app folder in the app grid could crash GNOME Shell
-- Excessive spacing between top panel menus and the panel after moving the panel to the bottom
+- Excessive spacing between top panel menus and the panel after moving the panel to the bottom ([#293](https://github.com/G-dH/vertical-workspaces/pull/293))
 - Workspace switcher popup not visible in GNOME 45-48
+- Glitching when launching application ([#297](https://github.com/G-dH/vertical-workspaces/issues/297))
+- Search entry focused automaticaly after entering app grid view
+
 
 **Other changes**
-- Option *Smooth App Grid Animations* has been moved to the *Performance* section in the *Misc* tab ([#293](https://github.com/G-dH/vertical-workspaces/pull/293))
+- Option *Smooth App Grid Animations* has been moved to the *Performance* section in the *Misc* tab
 - Default V-Shell configuration has been changed. This will affect only new users
 - Profiles presets have been adjusted
 
