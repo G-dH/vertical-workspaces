@@ -517,6 +517,9 @@ export default class VShell extends Extension.Extension {
 
     // Modules possibly affected by supported but incompatible extensions
     _repairOverrides() {
+        if (Main.sessionMode.isLocked)
+            return;
+
         this._updateSettings();
         Me.Modules.overviewModule.update();
         Me.Modules.overviewControlsModule.update();
