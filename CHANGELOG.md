@@ -6,6 +6,7 @@
 - *GNOME Settings Window Behavior* option in the *Search* section of the *Behavior* tab lets you control how an already open *GNOME Settings* window behaves when activating a search result from the *GNOME Settings* search provider
 
 **Fixed**
+- Overview stoped working in certain conditions ([#292](https://github.com/G-dH/vertical-workspaces/issues/292), [#298](https://github.com/G-dH/vertical-workspaces/issues/298))
 - Excessive spacing between top panel menus and the panel after moving the panel to the bottom ([#293](https://github.com/G-dH/vertical-workspaces/pull/293))
 - Workspace switcher popup not visible in GNOME 45-48
 - Glitching when launching application ([#297](https://github.com/G-dH/vertical-workspaces/issues/297))
