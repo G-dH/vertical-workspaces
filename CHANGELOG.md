@@ -1,5 +1,5 @@
 ## Changelog:
-### v49.14 (not yet released)
+### v50.0 (49.14) (not yet released)
 **Added**
 - Support for GNOME 50 Alpha
 - *Smooth Overview Aimation* option, which lets you disable V-Shell’s optimization of the transition animation to the Activities overview
