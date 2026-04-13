@@ -1,7 +1,7 @@
 ## Changelog:
-### v50.0 (49.14) (not yet released)
+### v50.0 (2025-04-13)
 **Added**
-- Support for GNOME 50 Alpha
+- Support for GNOME 50
 - *Smooth Overview Aimation* option, which lets you disable V-Shell’s optimization of the transition animation to the Activities overview
 - *GNOME Settings Window Behavior* option in the *Search* section of the *Behavior* tab lets you control how an already open *GNOME Settings* window behaves when activating a search result from the *GNOME Settings* search provider
 
