@@ -1,4 +1,9 @@
 ## Changelog:
+### v50.0 (not yet released)
+**Fixed**
+- Ubuntu's App Grid patch crashes overview - Ubuntu decided to tweak their app grid icon size, which is not compatible with V-Shell
+
+
 ### v50.0 (2025-04-13)
 **Added**
 - Support for GNOME 50
