@@ -1,7 +1,8 @@
 ## Changelog:
-### v50.0 (not yet released)
+### v50.1 (not yet released)
 **Fixed**
 - Ubuntu's App Grid patch crashes overview - Ubuntu decided to tweak their app grid icon size, which is not compatible with V-Shell
+- Messed up initial overview and app grid in GNOME 50 - temporary workaround: use the _Delay at Startup_ option. GNOME 50, in most cases, enables extensions after the original startup animation begins, so V-Shell is not properly initialized.
 
 
 ### v50.0 (2025-04-13)

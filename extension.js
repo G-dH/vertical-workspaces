@@ -99,7 +99,9 @@ export default class VShell extends Extension.Extension {
                 Me.Util.getEnabledExtensions('ubuntu-dock').length ||
                 Me.Util.getEnabledExtensions('dash-to-dock').length ||
                 Me.Util.getEnabledExtensions('dash2dock').length ||
-                Me.Util.getEnabledExtensions('dash-to-panel').length;
+                Me.Util.getEnabledExtensions('dash-to-panel').length ||
+                // Temporary workaround – GNOME 50 enables extensions after the startup animation begins
+                Me.shellVersion >= 50;
         if (skipStartup && Main.layoutManager._startingUp) {
             this._startupConId = Main.layoutManager.connect('startup-complete', () => {
                 this._delayedStartup = true;
