@@ -95,12 +95,13 @@ export default class VShell extends Extension.Extension {
         this._initModules();
 
         // prevent conflicts during startup
+        // GNOME 50 enables extensions after the startup animation begins,
+        // so we need to delay activation until the startup animation completes
         let skipStartup = Me.gSettings.get_boolean('delay-startup') ||
                 Me.Util.getEnabledExtensions('ubuntu-dock').length ||
                 Me.Util.getEnabledExtensions('dash-to-dock').length ||
                 Me.Util.getEnabledExtensions('dash2dock').length ||
                 Me.Util.getEnabledExtensions('dash-to-panel').length ||
-                // Temporary workaround – GNOME 50 enables extensions after the startup animation begins
                 Me.shellVersion >= 50;
         if (skipStartup && Main.layoutManager._startingUp) {
             this._startupConId = Main.layoutManager.connect('startup-complete', () => {
