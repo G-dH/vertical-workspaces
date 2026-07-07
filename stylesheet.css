@@ -212,6 +212,10 @@
 	background-color: rgba(200, 200, 200, 0.16);
 }
 
+.ws-tmb-shadow {
+	box-shadow: 0 4px 16px 4px rgba(0, 0, 0, 0.15);
+}
+
 .window-caption-top{
 	border-radius: 10px 10px 0px 0px;
 	background-color: rgb(20,20,20);;
@@ -246,6 +250,7 @@
 	background-color: rgba(200, 200, 200, 0.1);
 	color: white;
 	border-color: rgba(160, 160, 160, 0.4);
+	transition-duration: 250ms;
 }
 
 .search-entry-mod StLabel.hint-text {
@@ -273,6 +278,16 @@
 }
 
 /* for static ws mode */
+.search-results-bg-transparent {
+	border-radius: 30px;
+	border: 1px, rgb(60, 60, 60);
+	padding-top: 68px;
+	padding-left: 6px;
+	padding-right: 6px;
+	background-color: transparent;
+}
+
+
 .search-results-bg-dark {
 	border-radius: 30px;
 	border: 1px, rgb(60, 60, 60);
@@ -280,6 +295,25 @@
 	padding-left: 6px;
 	padding-right: 6px;
 	background-color: rgb(13, 13, 13);
+}
+
+.search-results-bg-dark-glass {
+	border-radius: 30px;
+	border: 1px, rgb(60, 60, 60);
+	padding-top: 62px;
+	padding-left: 6px;
+	padding-right: 6px;
+	background-color: rgba(0, 0, 0, 0.85);
+}
+
+.search-results-bg-light-glass {
+	border-radius: 30px;
+	border: 1px, rgb(60, 60, 60);
+	padding-top: 62px;
+	padding-left: 6px;
+	padding-right: 6px;
+	background-color: rgba(120, 120, 120, 0.5);
+	color: rgb(0, 0, 0)
 }
 
 .search-statusbox {
