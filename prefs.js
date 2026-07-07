@@ -164,9 +164,9 @@ export default class VShell extends ExtensionPreferences {
                 itemFactory.newDropDown(),
                 'dashPosition',
                 [
+                    [_('Top'), 0],
                     [_('Bottom'), 2],
                     [_('Left'), 3],
-                    [_('Top'), 0],
                     [_('Right'), 1],
                     [_('Hide'), 4],
                 ],
@@ -233,12 +233,12 @@ export default class VShell extends ExtensionPreferences {
                 'workspaceThumbnailsPosition',
                 // this mess is just because of backward compatibility
                 [
-                    [_('Left        \t Vertical Orientation'), 0],
-                    [_('Right       \t Vertical Orientation'), 1],
-                    [_('Hide        \t Vertical Orientation'), 4],
                     [_('Top         \t Horizontal Orientation'), 5],
                     [_('Bottom     \t Horizontal Orientation'), 6],
                     [_('Hide        \t Horizontal Orientation'), 9],
+                    [_('Left         \t Vertical Orientation'), 0],
+                    [_('Right       \t Vertical Orientation'), 1],
+                    [_('Hide        \t Vertical Orientation'), 4],
                 ]
             )
         );
@@ -299,10 +299,28 @@ export default class VShell extends ExtensionPreferences {
         wsThumbnailAppScale.add_mark(13, Gtk.PositionType.TOP, null);
         optionList.push(
             itemFactory.getRowWidget(
-                _('Workspace Thumbnails Max Scale - App View'),
-                _('Allows you to set different thumbnails scale for the Applications view'),
+                _('Workspace Thumbnails Max Scale - App Grid'),
+                _('Allows you to set different thumbnails scale when the App Grid view is active'),
                 wsThumbnailAppScale,
                 'wsThumbnailScaleAppGrid'
+            )
+        );
+
+        const wsThumbnailSearchScaleAdjustment = new Gtk.Adjustment({
+            upper: 30,
+            lower: 0,
+            step_increment: 1,
+            page_increment: 1,
+        });
+
+        const wsThumbnailSearchScale = itemFactory.newScale(wsThumbnailSearchScaleAdjustment);
+        wsThumbnailSearchScale.add_mark(13, Gtk.PositionType.TOP, null);
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Workspace Thumbnails Max Scale - Search'),
+                _('Allows you to set different thumbnails scale when the Search view is active'),
+                wsThumbnailSearchScale,
+                'wsThumbnailScaleSearch'
             )
         );
 
@@ -324,7 +342,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Workspaces Scale'),
-                _('Allows to shrink workspace previews to adjust spacing or fit more of the adjacent workspaces on the screen. Default size is calculated to use all available space with minimal spacing'),
+                _('Allows you to shrink workspace previews to adjust spacing or fit more of the adjacent workspaces on the screen. Default size is calculated to use all available space with minimal spacing'),
                 wsScaleScale,
                 'wsPreviewScale'
             )
@@ -367,14 +385,14 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Search View')
+                _('Search Results')
             )
         );
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Center Search View'),
-                _('Centers the search view relative to the display instead of available space'),
+                _('Center Search Results'),
+                _('Centers search results relative to the display instead of available space'),
                 itemFactory.newSwitch(),
                 'centerSearch'
             )
@@ -411,14 +429,14 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Panel')
+                _('Top Bar')
             )
         );
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Main Panel Position'),
-                _('Allows to place the main panel at the bottom of the primary display'),
+                _('Top Bar Position'),
+                _('Allows you to place the top bar at the bottom of the primary display'),
                 itemFactory.newDropDown(),
                 'panelPosition',
                 [
@@ -431,15 +449,14 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Main Panel Visibility'),
-                _('Allows to hide main panel when not needed'),
+                _('Top Bar Visibility'),
+                _('Allows you to hide the top bar when not needed'),
                 itemFactory.newDropDown(),
                 'panelVisibility',
                 [
                     [_('Always Visible (Default)'), 0],
                     [_('Overview Only'), 1],
                     [_('Always Hidden'), 2],
-                // [_('Desktop View Only'), 3],
                 ],
                 'panelModule'
             )
@@ -547,7 +564,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Workspace Thumbnails Position'),
-                _('Allows to place workspace thumbnails of secondary monitors on the opposite side than on the primary monitor'),
+                _('Allows you to place workspace thumbnails of secondary monitors on the opposite side than on the primary monitor'),
                 itemFactory.newDropDown(),
                 'secWsThumbnailsPosition',
                 [
@@ -607,7 +624,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Workspace Preview Scale'),
-                _('Allows to scale down workspace previews on secondary monitors'),
+                _('Allows you to scale down workspace previews on secondary monitors'),
                 wsSecScaleScale,
                 'secWsPreviewScale'
             )
@@ -615,7 +632,7 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Shift Overview by Panel Height'),
+                _('Shift Overview by Top Bar Height'),
                 _('This option can help align the overview of the secondary monitor with the primary one'),
                 itemFactory.newSwitch(),
                 'secWsPreviewShift'
@@ -820,14 +837,17 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Show Close Window Button'),
-                _('Allows you to hide close window button'),
-                itemFactory.newSwitch(),
-                'winPreviewShowCloseButton',
-                null,
+                _('Allows you to hide the close window button or show it for all windows which is useful on touch-screen devices'),
+                itemFactory.newDropDown(),
+                'winPreviewCloseButton',
+                [
+                    [_('Selected Window (Default)'), 0],
+                    [_('All Windows'), 1],
+                    [_('Hide'), 2],
+                ],
                 'windowPreviewModule'
             )
         );
-
 
         optionList.push(
             itemFactory.getRowWidget(
@@ -838,7 +858,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Show Workspace Preview Background'),
-                _('Allows to hide the background of the workspace preview'),
+                _('Allows you to hide the background of the workspace preview'),
                 itemFactory.newSwitch(),
                 'showWsPreviewBg'
             )
@@ -864,7 +884,7 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Search')
+                _('Search Results')
             )
         );
 
@@ -914,12 +934,14 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Search Results Style'),
-                _('Sets style of the search results background. When the Static Workspace Overview Mode is active, the Dark style is used despite this option. The Dark style also ignores the overview background blur and brightness configured for the search view'),
+                _('Sets style of the search results background. When the Static Workspace Overview Mode is active, the Dark style is used despite this option. The Dark style also ignores the overview background blur and brightness configured for the search results'),
                 itemFactory.newDropDown(),
                 'searchResultsBgStyle',
                 [
                     [_('Transparent (Default)'), 0],
                     [_('Dark'), 1],
+                    [_('Dark Glass'), 2],
+                    [_('Light Glass'), 3],
                 ]
             )
         );
@@ -940,19 +962,19 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Panel')
+                _('Top Bar')
             )
         );
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Overview Panel Style'),
-                _('Panel background style in overview'),
+                _('Top Bar Style in Overview'),
+                _('Background style of the top bar in the Activities Overview'),
                 itemFactory.newDropDown(),
                 'panelOverviewStyle',
                 [
-                    [_('Same as Desktop'), 0],
                     [_('Transparent (Default)'), 1],
+                    [_('Same as Desktop'), 0],
                 ]
             )
         );
@@ -1007,7 +1029,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Brightness - App Grid'),
-                _('Brightness of the background wallpaper in the application menu'),
+                _('Brightness of the background wallpaper in the app grid view'),
                 appGridBrightnessScale,
                 'appGridBgBrightness',
                 null,
@@ -1025,8 +1047,8 @@ export default class VShell extends ExtensionPreferences {
         const searchBgBrightnessScale = itemFactory.newScale(searchBrightnessBgAdjustment);
         optionList.push(
             itemFactory.getRowWidget(
-                _('Brightness - Search View'),
-                _('Allows you to set a lower background brightness for search view where text visibility is more important'),
+                _('Brightness - Search Results'),
+                _('Allows you to set a lower background brightness for search results where text visibility is more important'),
                 searchBgBrightnessScale,
                 'searchBgBrightness',
                 null,
@@ -1063,7 +1085,7 @@ export default class VShell extends ExtensionPreferences {
         const bgAppBlurScale = itemFactory.newScale(blurAppBgAdjustment);
         optionList.push(
             itemFactory.getRowWidget(
-                _('Blur App Grid/Search View Background'),
+                _('Blur App Grid/Search Results Background'),
                 _('Sets the amount of background blur in the app grid and search results views'),
                 bgAppBlurScale,
                 'appGridBgBlurSigma',
@@ -1088,12 +1110,12 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Overview Mode'),
-                _('The Expose Windows on Hover mode does not expose the workspace preview windows until the mouse pointer enters any window\nThe Static Workspace mode keeps the workspace static when you activate the overview, it only shows Dash, workspace thumbnails and search entry over the workspace and only clicking on an active workspace thumbnail activates the default overview'),
+                _('The "Static Workspace Preview" mode does not spread the workspace preview windows in overview until the mouse pointer enters any window\nThe "Static Workspace" mode keeps the entire workspace static when you activate the overview, it only shows Dash, workspace thumbnails and search entry over the workspace and only clicking on an active workspace thumbnail, or pressing the Tab or Arrow keys activate the default overview and spread widows'),
                 itemFactory.newDropDown(),
                 'overviewMode',
                 [
                     [_('Default'), 0],
-                    [_('Expose Windows on Hover'), 1],
+                    [_('Static Workspace Preview'), 1],
                     [_('Static Workspace'), 2],
                 ]
             )
@@ -1102,13 +1124,13 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Startup State'),
-                _('Allows to change the state in which GNOME Shell starts a session'),
+                _('Allows you to change the state in which GNOME Shell starts a session'),
                 itemFactory.newDropDown(),
                 'startupState',
                 [
                     [_('Overview (Default)'), 0],
                     [_('Desktop'), 1],
-                    [_('Applications'), 2],
+                    [_('App Grid'), 2],
                 ]
             )
         );
@@ -1130,7 +1152,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Click Empty Space To Close'),
-                _('Enables closing the overview by clicking on an empty area. In the app grid, only the secondary (right) mouse button can be used to prevent accidental closing while interacting with icons or page controls'),
+                _('Enables closing the overview by clicking on an empty area. In the app grid view, only the secondary (right) mouse button can be used to prevent accidental closing while interacting with icons or page controls'),
                 itemFactory.newSwitch(),
                 'clickEmptyClose',
                 null
@@ -1146,18 +1168,17 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Single-Press Action'),
-                _('Disable or change behavior when you press and release the Super key. The "Search Windows" options requires the "WSP (Window Search Provider)" extension installed and enabled. Link is available on the Modules tab in Settings. If you want another extension (like AATWS) to handle the overlay key, set this option to "Overview - Window Picker (Default)" and the "Double-Press Action" option to "Applications (Default)"'),
+                _('Disable or change behavior when you press and release the Super key. The "Search Windows" options requires the "WSP (Window Search Provider)" extension installed and enabled. Link is available on the Modules tab in Settings'),
                 itemFactory.newDropDown(),
                 'overlayKeyPrimary',
                 [
                     [_('Disable'), 0],
                     [_('Follow Global Overview Mode'), 1],
                     [_('Overview - Window Picker (Default)'), 2],
-                    [_('Applications'), 3],
-                    [_('Overview - Static WS Preview'), 4],
+                    [_('Overview - App Grid'), 3],
+                    [_('Overview - Spread Windows on Hover'), 4],
                     [_('Overview - Static Workspace'), 5],
                     [_('Search Windows (requires WSP extension)'), 6],
-                // [_('Search Recent Files'), 7],
                 ],
                 'overlayKeyModule'
             )
@@ -1166,14 +1187,15 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Double-Press Action'),
-                _('Disable or change behavior when you double-press the Super key. The "Search Windows" option requires the "WSP (Window Search Provider)" extension installed and enabled. The "Static WS Overview - Expose Windows" option allows you to switch to default Activities Overview window picker view if you set static workspace (preview) for the single press/release Super key action'),
+                _('Disable or change behavior when you double-press the Super key. The "Search Windows" option requires the "WSP (Window Search Provider)" extension installed and enabled. The "Spread Windows" option allows you to switch to default Activities Overview window picker view if you set static workspace (preview) for the single press/release Super key action'),
                 itemFactory.newDropDown(),
                 'overlayKeySecondary',
                 [
                     [_('Disable'), 0],
-                    [_('Applications (Default)'), 1],
+                    [_('Overview - App Grid (Default)'), 1],
                     [_('Search Windows (requires WSP extension)'), 2],
                     [_('Overview - Window Picker'), 3],
+                    [_('Overview - Spread Windows'), 4],
                 ],
                 'overlayKeyModule'
             )
@@ -1188,14 +1210,14 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Hot Corner Action'),
-                _('Disable or change behavior of the hot corner. Holding down the Ctrl key while hitting the hot corner switches between Overview/Applications actions. The "Search Windows" option requires the "WSP (Window Search Provider)" extension installed and enabled'),
+                _('Disable or change behavior of the hot corner. Holding down the Ctrl key while hitting the hot corner switches between Overview/App Grid actions. The "Search Windows" option requires the "WSP (Window Search Provider)" extension installed and enabled'),
                 itemFactory.newDropDown(),
                 'hotCornerAction',
                 [
-                    [_('Disable'), 0],
+                    [_('None'), 0],
                     [_('Follow Global Overview Mode'), 1],
                     [_('Overview - Window Picker (Default)'), 2],
-                    [_('Applications'), 3],
+                    [_('Overview - App Grid'), 3],
                     [_('Overview - Static WS Preview'), 4],
                     [_('Overview - Static Workspace'), 5],
                     [_('Search Windows (requires WSP extension)'), 6],
@@ -1485,21 +1507,42 @@ export default class VShell extends ExtensionPreferences {
             )
         );
 
+        const searchDelayAdjustment = new Gtk.Adjustment({
+            upper: 500,
+            lower: 0,
+            step_increment: 10,
+            page_increment: 100,
+        });
+
+
         optionList.push(
             itemFactory.getRowWidget(
                 _('Search')
             )
         );
 
+        const searchDelayScale = itemFactory.newScale(searchDelayAdjustment);
+        searchDelayScale.add_mark(150, Gtk.PositionType.TOP, null);
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Search Delay'),
+                _('Delay after typing a search character before the search is performed. GNOME Shell default is 150 ms'),
+                searchDelayScale,
+                'searchDelay',
+                null,
+                'searchModule'
+            )
+        );
+
         optionList.push(
             itemFactory.getRowWidget(
                 _('App Grid Search Mode'),
-                _('Select how the search should behave when initiated from the app grid view. The "Filtered App Grid View" option shows all resulting app icons sorted by usage in the app grid view instead of switching to the default search view'),
+                _('Select how the search should behave when initiated from the app grid view. The "Filtered App Grid" option shows all resulting app icons sorted by usage in the app grid view instead of switching to the default search results view'),
                 itemFactory.newDropDown(),
                 'searchAppGridMode',
                 [
-                    [_('Search View (Default)'), 0],
-                    [_('Filtered App Grid View'), 1],
+                    [_('Search Results View (Default)'), 0],
+                    [_('Filter App Grid'), 1],
                 ],
                 'searchModule'
             )
@@ -1549,7 +1592,7 @@ export default class VShell extends ExtensionPreferences {
         );
 
         const animationSpeedAdjustment = new Gtk.Adjustment({
-            upper: 500,
+            upper: 1000,
             lower: 1,
             step_increment: 10,
             page_increment: 100,
@@ -1585,8 +1628,8 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Search View Animation'),
-                _('When search is activated the search view with search results can animate from the edge of the screen. You can choose the direction, keep the Default (currently Bottom to Top) or disable the animation if you don\'t like it.'),
+                _('Search Results Animation'),
+                _('When search is activated the search results can animate from the edge of the screen. You can choose the direction, keep the Default (currently Bottom to Top) or disable the animation if you don\'t like it.'),
                 itemFactory.newDropDown(),
                 'searchViewAnimation',
                 [
@@ -1604,7 +1647,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Workspace Preview Animation'),
-                _('When entering or leaving the App Grid, the workspace preview can animate to/from workspace thumbnails'),
+                _('When entering or leaving the App Grid view, the workspace preview can animate to/from workspace thumbnails'),
                 itemFactory.newDropDown(),
                 'workspaceAnimation',
                 [
@@ -1754,7 +1797,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Icon Size'),
-                _('Allows to set a fixed app grid icon size and bypass the default adaptive algorithm'),
+                _('Allows you to set a fixed app grid icon size and bypass the default adaptive algorithm'),
                 itemFactory.newDropDown(),
                 'appGridIconSize',
                 [
@@ -1949,7 +1992,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Folder Icon Size'),
-                _('Allows to set a fixed icon size and bypass the default adaptive algorithm in the open folder dialog'),
+                _('Allows you to set a fixed icon size and bypass the default adaptive algorithm in the open folder dialog'),
                 itemFactory.newDropDown(),
                 'appGridFolderIconSize',
                 [
@@ -2075,7 +2118,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('App Grid Content'),
-                _('The default Shell removes favorite apps, this option allows to duplicate them in the grid or remove also running applications. Option "Favorites and Running First" only works with the Alphabet and Usage sorting'),
+                _('The default Shell removes favorite apps, this option allows you to duplicate them in the grid or remove also running applications. Option "Favorites and Running First" only works with the Alphabet and Usage sorting'),
                 itemFactory.newDropDown(),
                 'appGridContent',
                 [
@@ -2140,13 +2183,13 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Show App Source Indicator'),
-                _('Adds a small badge to app icons indicating the source package type for apps installed from Flatpak, Snap and AppImage'),
+                _('Adds a small badge next to app icons indicating the source package type for apps installed from Flatpak, Snap and AppImage'),
                 itemFactory.newDropDown(),
                 'appGridShowPackageType',
                 [
-                    [_("Hide"), 0],
-                    [_("Show on Selection"), 1],
-                    [_("Show Always"), 2],
+                    [_('Hide'), 0],
+                    [_('Show on Selection'), 1],
+                    [_('Show Always'), 2],
                 ],
                 'appDisplayModule'
             )
@@ -2215,6 +2258,8 @@ export default class VShell extends ExtensionPreferences {
             )
         );
 
+        // -------------------------------------------------------------------------------------
+
         optionList.push(
             itemFactory.getRowWidget(
                 _('Built-in Modules')
@@ -2230,7 +2275,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('AppDisplay / IconGrid'),
-                _('App grid customization and options'),
+                _('- App Grid improvements and customization'),
                 itemFactory.newSwitch(),
                 'appDisplayModule'
             )
@@ -2239,7 +2284,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('AppFavorites'),
-                _('Pin/unpin app notification options'),
+                _('- Disable notifications when apps are pinned or unpinned from the Dash'),
                 itemFactory.newSwitch(),
                 'appFavoritesModule'
             )
@@ -2248,7 +2293,8 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Dash'),
-                _('Dash customization and options, support for vertical orientation'),
+                _('- Custom Dash behavior and style\n\
+- Support for vertical orientation'),
                 itemFactory.newSwitch(),
                 'dashModule'
             )
@@ -2257,7 +2303,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Layout'),
-                _('Hot corner options'),
+                _('- Custom Hot Corner/Edge behavior and position'),
                 itemFactory.newSwitch(),
                 'layoutModule'
             )
@@ -2266,7 +2312,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('MessageTray'),
-                _('Notification position options'),
+                _('- Custom position of notification banners'),
                 itemFactory.newSwitch(),
                 'messageTrayModule'
             )
@@ -2275,7 +2321,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('OsdWindow'),
-                _('OSD position options'),
+                _('- Custom On-Screen Display indicator position'),
                 itemFactory.newSwitch(),
                 'osdWindowModule'
             )
@@ -2284,7 +2330,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('OverlayKey'),
-                _('Overlay (Super/Window) key options'),
+                _('- Custom behavior of the Overlay (Super/Window) key'),
                 itemFactory.newSwitch(),
                 'overlayKeyModule'
             )
@@ -2293,7 +2339,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Panel'),
-                _('Panel options'),
+                _('- Top bar position, style and behavior'),
                 itemFactory.newSwitch(),
                 'panelModule'
             )
@@ -2302,7 +2348,8 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Search'),
-                _('Search view and app search provider customization and options'),
+                _('- Customization of search results view\n\
+- Improvements of app search provider'),
                 itemFactory.newSwitch(),
                 'searchModule'
             )
@@ -2311,7 +2358,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('SearchController'),
-                _('Escape key behavior options in the overview'),
+                _('- Escape key behavior in the overview'),
                 itemFactory.newSwitch(),
                 'searchControllerModule'
             )
@@ -2320,7 +2367,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('SwipeTracker'),
-                _('Gestures for vertical workspace orientation'),
+                _('- Adapts trackpad gestures for vertical workspace orientation'),
                 itemFactory.newSwitch(),
                 'swipeTrackerModule'
             )
@@ -2329,7 +2376,7 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('WindowAttentionHandler'),
-                _('Window attention handler options'),
+                _('- Customize how the Shell responds when a window demands attention'),
                 itemFactory.newSwitch(),
                 'windowAttentionHandlerModule'
             )
@@ -2338,7 +2385,9 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('WindowManager'),
-                _('Fixes an upstream bug in the minimization animation of a full-screen window'),
+                _('- Part of the overview keyboard navigation implementation\n\
+- Adds support for "independent" workspace switching on secondary monitors\n\
+- Fixes an upstream bug in the minimization animation of a full-screen window'),
                 itemFactory.newSwitch(),
                 'windowManagerModule'
             )
@@ -2347,7 +2396,8 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('WindowPreview'),
-                _('Window preview options, fixes an upstream bug that fills the system log with errors when you close a window from the overview or exit the overview with a gesture when any window is selected'),
+                _('- Custom window previews behavior\n\
+- Part of the implementation of the overview keyboard navigation'),
                 itemFactory.newSwitch(),
                 'windowPreviewModule'
             )
@@ -2356,7 +2406,9 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Workspace'),
-                _('Fixes workspace preview allocations for vertical workspaces orientation and window scaling in static overview modes'),
+                _('- Custom workspace preview\n\
+- Fixes workspace preview when workspaces are set to vertical orientation\n\
+- Fixes window scaling for static overview modes'),
                 itemFactory.newSwitch(),
                 'workspaceModule'
             )
@@ -2365,7 +2417,8 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('WorkspaceAnimation'),
-                _('Static workspace animation option'),
+                _('- Support for static switch workspace animation\n\
+- Adds support for showing the workspace switcher popup indicator when using gestures'),
                 itemFactory.newSwitch(),
                 'workspaceAnimationModule'
             )
@@ -2374,7 +2427,8 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('WorkspaceSwitcherPopup'),
-                _('Workspace switcher popup orientation and position options'),
+                _('- Custom position of the workspace switcher popup indicator\n\
+- Support for vertical orientation of the workspace switcher popup indicator'),
                 itemFactory.newSwitch(),
                 'workspaceSwitcherPopupModule'
             )
@@ -2382,6 +2436,8 @@ export default class VShell extends ExtensionPreferences {
 
         return optionList;
     }
+
+    // -------------------------------------------------------------------------------------
 
     _getMiscOptionList(itemFactory) {
         const optionList = [];
@@ -2402,6 +2458,8 @@ export default class VShell extends ExtensionPreferences {
                 'enablePageShortcuts'
             )
         );
+
+        // --------------------------------------------------------------------------------------
 
         optionList.push(
             itemFactory.getRowWidget(
@@ -2430,15 +2488,6 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Workarounds / Hacks')
-            )
-        );
-
-        optionList.push(
-            itemFactory.getRowWidget(
-                _('Delay at Startup'),
-                _("If you encounter issues during GNOME Shell startup after logging in, which could be caused by V-Shell's incompatibility with another extension, try enabling this option. When enabled, V-Shell is activated after the startup is complete. It will activate automatically when Dash to Dock, Ubuntu Dock or Dash to Panel extensions are detected."),
-                itemFactory.newSwitch(),
-                'delayStartup'
             )
         );
 

@@ -64,6 +64,9 @@
     <key type="i" name="ws-thumbnail-scale-appgrid">
       <default>10</default>
     </key>
+    <key type="i" name="ws-thumbnail-scale-search">
+      <default>10</default>
+    </key>
     <key type="i" name="secondary-ws-thumbnail-scale">
       <default>8</default>
     </key>
@@ -256,6 +259,9 @@
     <key type="i" name="search-windows-order">
       <default>1</default>
     </key>
+    <key type="i" name="search-delay">
+      <default>0</default>
+    </key>
     <key type="b" name="search-fuzzy">
       <default>false</default>
     </key>
@@ -331,8 +337,8 @@
     <key type="i" name="win-preview-mid-mouse-btn-action">
       <default>0</default>
     </key>
-    <key type="b" name="win-preview-show-close-button">
-      <default>true</default>
+    <key type="i" name="win-preview-close-button">
+      <default>1</default>
     </key>
     <key type="i" name="window-icon-click-action">
       <default>1</default>
@@ -369,9 +375,6 @@
     </key>
     <key name='highlighting-style' type='i'>
       <default>1</default>
-    </key>
-    <key type="b" name="delay-startup">
-      <default>false</default>
     </key>
     <key type="b" name="smooth-overview-animation">
       <default>true</default>
@@ -461,6 +464,7 @@
         'showAppsIconPosition': '1',
         'wsThumbnailScale': '13',
         'wsThumbnailScaleAppGrid': '13',
+        'wsThumbnailScaleSearch': '13',
         'secWsThumbnailScale': '13',
         'showSearchEntry': 'true',
         'centerSearch': 'true',
@@ -550,7 +554,7 @@
         'alwaysActivateSelectedWindow': 'false',
         'winPreviewSecBtnAction': '0',
         'winPreviewMidBtnAction': '0',
-        'winPreviewShowCloseButton': 'true',
+        'winPreviewCloseButton': '0',
         'windowIconClickAction': '1',
         'winPreviewHeightCompensation': '80',
         'overlayKeyPrimary': '1',
@@ -605,6 +609,7 @@
         'showAppsIconPosition': '1',
         'wsThumbnailScale': '5',
         'wsThumbnailScaleAppGrid': '14',
+        'wsThumbnailScaleSearch': '5',
         'secWsThumbnailScale': '5',
         'showSearchEntry': 'false',
         'centerSearch': 'true',
@@ -694,7 +699,7 @@
         'alwaysActivateSelectedWindow': 'false',
         'winPreviewSecBtnAction': '0',
         'winPreviewMidBtnAction': '0',
-        'winPreviewShowCloseButton': 'true',
+        'winPreviewCloseButton': '0',
         'windowIconClickAction': '1',
         'winPreviewHeightCompensation': '80',
         'overlayKeyPrimary': '1',
@@ -749,6 +754,7 @@
         'showAppsIconPosition': '0',
         'wsThumbnailScale': '13',
         'wsThumbnailScaleAppGrid': '13',
+        'wsThumbnailScaleSearch': '13',
         'secWsThumbnailScale': '13',
         'showSearchEntry': 'false',
         'centerSearch': 'false',
@@ -838,7 +844,7 @@
         'alwaysActivateSelectedWindow': 'false',
         'winPreviewSecBtnAction': '0',
         'winPreviewMidBtnAction': '0',
-        'winPreviewShowCloseButton': 'true',
+        'winPreviewCloseButton': '0',
         'windowIconClickAction': '1',
         'winPreviewHeightCompensation': '80',
         'overlayKeyPrimary': '1',
@@ -893,6 +899,7 @@
         'showAppsIconPosition': '1',
         'wsThumbnailScale': '10',
         'wsThumbnailScaleAppGrid': '10',
+        'wsThumbnailScaleSearch': '10',
         'secWsThumbnailScale': '10',
         'showSearchEntry': 'false',
         'centerSearch': 'true',
@@ -982,7 +989,7 @@
         'alwaysActivateSelectedWindow': 'false',
         'winPreviewSecBtnAction': '0',
         'winPreviewMidBtnAction': '0',
-        'winPreviewShowCloseButton': 'true',
+        'winPreviewCloseButton': '0',
         'windowIconClickAction': '1',
         'winPreviewHeightCompensation': '80',
         'overlayKeyPrimary': '1',
@@ -1037,6 +1044,7 @@
         'showAppsIconPosition': '1',
         'wsThumbnailScale': '4',
         'wsThumbnailScaleAppGrid': '14',
+        'wsThumbnailScaleSearch': '0',
         'secWsThumbnailScale': '5',
         'showSearchEntry': 'true',
         'centerSearch': 'true',
