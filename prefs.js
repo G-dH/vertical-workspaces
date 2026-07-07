@@ -841,9 +841,9 @@ export default class VShell extends ExtensionPreferences {
                 itemFactory.newDropDown(),
                 'winPreviewCloseButton',
                 [
-                    [_('Selected Window (Default)'), 0],
-                    [_('All Windows'), 1],
-                    [_('Hide'), 2],
+                    [_('Selected Window (Default)'), 1],
+                    [_('All Windows'), 2],
+                    [_('Hide'), 0],
                 ],
                 'windowPreviewModule'
             )
