@@ -10,10 +10,11 @@
 
 'use strict';
 
+import Clutter from 'gi://Clutter';
+import Cogl from 'gi://Cogl';
 import GLib from 'gi://GLib';
 import Meta from 'gi://Meta';
 import St from 'gi://St';
-import Cogl from 'gi://Cogl';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
@@ -102,7 +103,8 @@ export default class VShell extends Extension.Extension {
             if (!Main.layoutManager._coverPane)
                 await Main.overview._overview.controls.layout_manager.ensureAllocation();
             const coverPane = Main.layoutManager._coverPane;
-            const coverPaneColor = new Cogl.Color({ red: 34, green: 34, blue: 38, alpha: 255 });
+            const Color = Clutter.Color ?? Cogl.Color;
+            const coverPaneColor = new Color({ red: 34, green: 34, blue: 38, alpha: 255 });
             coverPane.set_background_color(coverPaneColor);
             coverPane.opacity = 255;
 
