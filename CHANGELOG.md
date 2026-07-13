@@ -1,4 +1,9 @@
 ## Changelog:
+### v50.1 (not yet released)
+**Fixed**
+- Startup animation and the *Startup State* option
+
+
 ### v50.1 (2026-05-04)
 **Fixed**
 - Ubuntu's App Grid patch crashes overview - Ubuntu decided to tweak their app grid icon size, which is not compatible with V-Shell
