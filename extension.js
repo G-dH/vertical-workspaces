@@ -10,6 +10,8 @@
 
 'use strict';
 
+import Clutter from 'gi://Clutter';
+import Cogl from 'gi://Cogl';
 import GLib from 'gi://GLib';
 import Meta from 'gi://Meta';
 import St from 'gi://St';
@@ -90,28 +92,35 @@ export default class VShell extends Extension.Extension {
         _ = null;
     }
 
-    enable() {
+    async enable() {
         this._init();
         this._initModules();
 
-        // prevent conflicts during startup
-        let skipStartup = Me.gSettings.get_boolean('delay-startup') ||
-                Me.Util.getEnabledExtensions('ubuntu-dock').length ||
-                Me.Util.getEnabledExtensions('dash-to-dock').length ||
-                Me.Util.getEnabledExtensions('dash2dock').length ||
-                Me.Util.getEnabledExtensions('dash-to-panel').length ||
-                // Temporary workaround – GNOME 50 enables extensions after the startup animation begins
-                Me.shellVersion >= 50;
-        if (skipStartup && Main.layoutManager._startingUp) {
+        // Since GNOME 50 we cannot rely on patching the controls.runStartupAnimation()
+        // The workaround here is hiding the original startup animation and activate V-Shell when it's finished
+        if (Main.layoutManager._startingUp && !this._startupConId) {
+            // Wait until coverPane is created
+            if (!Main.layoutManager._coverPane)
+                await Main.overview._overview.controls.layout_manager.ensureAllocation();
+            const coverPane = Main.layoutManager._coverPane;
+            const Color = Clutter.Color ?? Cogl.Color;
+            const coverPaneColor = new Color({ red: 34, green: 34, blue: 38, alpha: 255 });
+            coverPane.set_background_color(coverPaneColor);
+            coverPane.opacity = 255;
+
             this._startupConId = Main.layoutManager.connect('startup-complete', () => {
-                this._delayedStartup = true;
+                Me.run.delayedStartup = true;
                 this._activateVShell();
                 // Since VShell has been activated with a delay, move it in extensionOrder
                 let extensionOrder = Main.extensionManager._extensionOrder;
                 const idx = extensionOrder.indexOf(this.metadata.uuid);
                 extensionOrder.push(extensionOrder.splice(idx, 1)[0]);
                 Main.layoutManager.disconnect(this._startupConId);
-                this._startupConId = 0;
+                this._startupConId = null;
+                Me.run.delayedStartup = false;
+                Me.run.timeouts.startupAnimation = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                    Main.overview._overview.controls.realizeAppDisplayAndFinishStartup();
+                });
             });
         } else {
             this._activateVShell();
@@ -125,6 +134,7 @@ export default class VShell extends Extension.Extension {
     disable() {
         if (this._startupConId)
             Main.layoutManager.disconnect(this._startupConId);
+        this._startupConId = null;
         this.removeVShell();
         this._disposeModules();
 
@@ -182,10 +192,8 @@ export default class VShell extends Extension.Extension {
     _activateVShell() {
         this._enabled = true;
 
-        if (!this._delayedStartup && !Main.sessionMode.isLocked) {
+        if (!Me.run.delayedStartup && !Main.sessionMode.isLocked)
             Me.updateMessageDialog.showMessage();
-            this._delayedStartup = false;
-        }
 
         if (!this._originalGetNeighbor)
             this._originalGetNeighbor = Meta.Workspace.prototype.get_neighbor;
@@ -294,11 +302,7 @@ export default class VShell extends Extension.Extension {
     }
 
     _setInitialWsIndex() {
-        if (Main.layoutManager._startingUp) {
-            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-                Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
-            });
-        }
+        Main.overview._overview.controls._workspaceAdjustment.set_value(global.workspace_manager.get_active_workspace_index());
     }
 
     _updateSettingsConnection() {
@@ -595,7 +599,7 @@ export default class VShell extends Extension.Extension {
         // Options for workspace switcher
         Meta.Workspace.prototype.get_neighbor = this._getNeighbor;
 
-        // Delay search so it doesn't make the search view transition stuttering
+         // Delay search so it doesn't make the search view transition stuttering
         // 150 is the default value in GNOME Shell, but the search feels laggy
         // Of course there is some overload for fast keyboard typist
         if (opt.SEARCH_VIEW_ANIMATION)
