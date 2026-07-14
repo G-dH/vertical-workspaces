@@ -1,7 +1,11 @@
 ## Changelog:
-### v50.1 (not yet released)
+### v50.2 (2026-07-13)
 **Fixed**
-- Startup animation and the *Startup State* option
+- Broken startup animation in GNOME 50
+- The *Startup State* option doesn't work in GNOME 50
+
+**Changed**
+- The *Delay at Startup* option is now default (can't be changed) and will be removed in the next release
 
 
 ### v50.1 (2026-05-04)
