@@ -2435,15 +2435,6 @@ export default class VShell extends ExtensionPreferences {
 
         optionList.push(
             itemFactory.getRowWidget(
-                _('Delay at Startup'),
-                _("If you encounter issues during GNOME Shell startup after logging in, which could be caused by V-Shell's incompatibility with another extension, try enabling this option. When enabled, V-Shell is activated after the startup is complete. It will activate automatically when Dash to Dock, Ubuntu Dock or Dash to Panel extensions are detected."),
-                itemFactory.newSwitch(),
-                'delayStartup'
-            )
-        );
-
-        optionList.push(
-            itemFactory.getRowWidget(
                 _('Fix New Window Not In Focus'),
                 _('If you often find that the app window you open from the Activities overview does not get focus, try enabling this option.'),
                 itemFactory.newSwitch(),

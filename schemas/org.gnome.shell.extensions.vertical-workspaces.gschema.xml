@@ -370,9 +370,6 @@
     <key name='highlighting-style' type='i'>
       <default>1</default>
     </key>
-    <key type="b" name="delay-startup">
-      <default>false</default>
-    </key>
     <key type="b" name="smooth-overview-animation">
       <default>true</default>
     </key>
