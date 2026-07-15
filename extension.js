@@ -99,12 +99,14 @@ export default class VShell extends Extension.Extension {
         // Since GNOME 50 we cannot rely on patching the controls.runStartupAnimation()
         // The workaround here is hiding the original startup animation and activate V-Shell when it's finished
         if (Main.layoutManager._startingUp && !this._startupConId) {
+            // Skip default startup animation
+            St.Settings.get().slow_down_factor = 0;
             // Wait until coverPane is created
             if (!Main.layoutManager._coverPane)
                 await Main.overview._overview.controls.layout_manager.ensureAllocation();
             const coverPane = Main.layoutManager._coverPane;
             const Color = Clutter.Color ?? Cogl.Color;
-            const coverPaneColor = new Color({ red: 34, green: 34, blue: 38, alpha: 255 });
+            const coverPaneColor = new Color({ red: 0, green: 0, blue: 0, alpha: 255 });
             coverPane.set_background_color(coverPaneColor);
             coverPane.opacity = 255;
 
