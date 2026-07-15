@@ -306,6 +306,24 @@ export default class VShell extends ExtensionPreferences {
             )
         );
 
+        const wsThumbnailSearchScaleAdjustment = new Gtk.Adjustment({
+            upper: 30,
+            lower: 0,
+            step_increment: 1,
+            page_increment: 1,
+        });
+
+        const wsThumbnailSearchScale = itemFactory.newScale(wsThumbnailSearchScaleAdjustment);
+        wsThumbnailSearchScale.add_mark(13, Gtk.PositionType.TOP, null);
+        optionList.push(
+            itemFactory.getRowWidget(
+                _('Workspace Thumbnails Max Scale - Search'),
+                _('Allows you to set different thumbnails scale when the Search view is active'),
+                wsThumbnailSearchScale,
+                'wsThumbnailScaleSearch'
+            )
+        );
+
         optionList.push(
             itemFactory.getRowWidget(
                 _('Workspace Preview')
