@@ -1,5 +1,5 @@
 ## Changelog:
-### v50.3 (not yet released)
+### v50.3 (2026-07-16)
 **Added**
 - *Workspace Thumbnails Max Scale - Search* option now allows you to control ws thumbnails size when overview search is active
 
