@@ -1,4 +1,14 @@
 ## Changelog:
+### v50.3 (not yet released)
+**Added**
+- *Workspace Thumbnails Max Scale - Search* option now allows you to control ws thumbnails size when overview search is active
+
+**Fixed**
+- Search results animation didn't work
+- Unnecessary long session startup time
+- Removed *Delay at Startup* option from settings since it's no longer needed
+
+
 ### v50.2 (2026-07-13)
 **Fixed**
 - Broken startup animation in GNOME 50
