@@ -838,14 +838,17 @@ export default class VShell extends ExtensionPreferences {
         optionList.push(
             itemFactory.getRowWidget(
                 _('Show Close Window Button'),
-                _('Allows you to hide close window button'),
-                itemFactory.newSwitch(),
-                'winPreviewShowCloseButton',
-                null,
+                _('Allows you to hide close window button or show it for all windows which is useful on touch-screen devices'),
+                itemFactory.newDropDown(),
+                'winPreviewCloseButton',
+                [
+                    [_('Selected Window (Default)'), 1],
+                    [_('All Windows'), 2],
+                    [_('Hide'), 0],
+                ],
                 'windowPreviewModule'
             )
         );
-
 
         optionList.push(
             itemFactory.getRowWidget(

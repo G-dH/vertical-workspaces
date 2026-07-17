@@ -1,11 +1,16 @@
 ## Changelog:
+### v50.4 (2026-07-??)
+**Added**
+- New option *Show Close Window Button* -> *All Windows* which is useful on touch-screen devices
+
+
 ### v50.3 (2026-07-16)
 **Added**
-- *Workspace Thumbnails Max Scale - Search* option now allows you to control ws thumbnails size when overview search is active
+- *Workspace Thumbnails Max Scale - Search* option to control workspace thumbnails size when Overview Search is active
 
 **Fixed**
 - Search results animation didn't work
-- Unnecessary long session startup time
+- Unnecessary long session startup time (#316)
 - Removed *Delay at Startup* option from settings since it's no longer needed
 
 
@@ -13,6 +18,7 @@
 **Fixed**
 - Broken startup animation in GNOME 50
 - The *Startup State* option doesn't work in GNOME 50
+- Missing first character when overwriting text in the search entry after selecting all with Ctrl+A ([#304](https://github.com/G-dH/vertical-workspaces/issues/304))
 
 **Changed**
 - The *Delay at Startup* option is now default (can't be changed) and will be removed in the next release

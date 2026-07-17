@@ -334,8 +334,8 @@
     <key type="i" name="win-preview-mid-mouse-btn-action">
       <default>0</default>
     </key>
-    <key type="b" name="win-preview-show-close-button">
-      <default>true</default>
+    <key type="i" name="win-preview-close-button">
+      <default>1</default>
     </key>
     <key type="i" name="window-icon-click-action">
       <default>1</default>
