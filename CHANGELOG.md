@@ -1,7 +1,7 @@
 ## Changelog:
 ### v50.4 (2026-07-??)
 **Added**
-- New option *Show Close Window Button* -> *All Windows* which is useful on touch-screen devices
+- New option *Show Close Window Button* -> *All Windows* which is useful on touch-screen devices ([#277](https://github.com/G-dH/vertical-workspaces/issues/277))
 
 
 ### v50.3 (2026-07-16)
