@@ -1,5 +1,8 @@
 ## Changelog:
 ### v50.4 (2026-07-??)
+**Fixed**
+- Broken *Workspace Preview Animation* when workspace thumbnails are disabled in App Grid
+
 **Added**
 - New option *Show Close Window Button* -> *All Windows* which is useful on touch-screen devices ([#277](https://github.com/G-dH/vertical-workspaces/issues/277))
 
