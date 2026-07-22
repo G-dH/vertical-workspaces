@@ -1,5 +1,5 @@
 ## Changelog:
-### v50.4 (2026-07-??)
+### v50.4 (2026-07-22)
 **Fixed**
 - Broken *Workspace Preview Animation* when workspace thumbnails are disabled in App Grid
 
