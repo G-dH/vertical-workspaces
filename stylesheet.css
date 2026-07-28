@@ -3,6 +3,10 @@
 * stylesheet.css
 */
 
+#dash {
+	padding: 0px;
+}
+
 /* GS 46 changes the default bg color from transparent
    to the solid color blending with widget background */
 #dash .show-apps,
