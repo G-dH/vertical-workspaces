@@ -273,7 +273,7 @@ export default class VShell extends Extension.Extension {
             Main.overview.dash.showAppsButton.checked = false;
         }
     }
-
+    
     _resetShellProperties() {
         const controlsManager = Main.overview._overview.controls;
         // layoutManager._dash retains reference to the default dash even when DtD is enabled
@@ -283,16 +283,17 @@ export default class VShell extends Extension.Extension {
         controlsManager._workspacesDisplay.scale_x = 1;
         controlsManager.set_child_above_sibling(controlsManager._workspacesDisplay, null);
         delete controlsManager._dashIsAbove;
-
+        
         // following properties may be reduced if extensions are rebased while the overview is open
         controlsManager._thumbnailsBox.remove_all_transitions();
         controlsManager._thumbnailsBox.scale_x = 1;
         controlsManager._thumbnailsBox.scale_y = 1;
         controlsManager._thumbnailsBox.opacity = 255;
         controlsManager._thumbnailsBox.translation_y = 0;
-
+        
         controlsManager._searchEntryBin.visible = true;
         controlsManager._searchController._searchResults.opacity = 255;
+        controlsManager._workspacesDisplay.opacity = 255;
         Main.layoutManager.panelBox.translation_y = 0;
     }
 
