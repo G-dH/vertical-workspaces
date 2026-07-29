@@ -97,18 +97,19 @@ export default class VShell extends Extension.Extension {
         this._initModules();
 
         // Since GNOME 50 we cannot rely on patching the controls.runStartupAnimation()
-        // The workaround here is hiding the original startup animation and activate V-Shell when it's finished
+        // The workaround here is hiding the default startup animation and activate V-Shell when it's finished
         if (Main.layoutManager._startingUp && !this._startupConId) {
-            // Skip default startup animation
+            // Minimize default animation duration
             St.Settings.get().slow_down_factor = 0;
-            // Wait until coverPane is created
-            if (!Main.layoutManager._coverPane)
-                await Main.overview._overview.controls.layout_manager.ensureAllocation();
-            const coverPane = Main.layoutManager._coverPane;
+            await Main.layoutManager._ensurePrimaryMonitor();
+            // Hide screen content until V-Shell is ready
             const Color = Clutter.Color ?? Cogl.Color;
-            const coverPaneColor = new Color({ red: 0, green: 0, blue: 0, alpha: 255 });
-            coverPane.set_background_color(coverPaneColor);
-            coverPane.opacity = 255;
+            this._cover = new Clutter.Actor({
+                background_color: new Color({ red: 0, green: 0, blue: 0, alpha: 255 }),
+                width: global.screen_width,
+                height: global.screen_height,
+            });
+            Main.layoutManager.addChrome(this._cover);
 
             this._startupConId = Main.layoutManager.connect('startup-complete', () => {
                 Me.run.delayedStartup = true;
@@ -121,6 +122,8 @@ export default class VShell extends Extension.Extension {
                 this._startupConId = null;
                 Me.run.delayedStartup = false;
                 Me.run.timeouts.startupAnimation = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                    this._cover.destroy();
+                    this._cover = null;
                     Main.overview._overview.controls.realizeAppDisplayAndFinishStartup();
                 });
             });
@@ -145,6 +148,8 @@ export default class VShell extends Extension.Extension {
         Me.updateMessageDialog.destroy();
         Me.updateMessageDialog = null;
         Me.run = null;
+        this._cover?.destroy();
+        this._cover = null;
         this._cleanGlobals();
     }
 
