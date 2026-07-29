@@ -1,9 +1,10 @@
 ## Changelog:
-### v50.4 (2026-07-29)
+### v50.5 (2026-07-29)
 **Fixed**
 - V-Shell can crash after log-in ([#319](https://github.com/G-dH/vertical-workspaces/issues/319))
 - Left and right horizontal Dash spacing
 - Invisible workspace after disabling V-Shell while Overview is open
+
 
 ### v50.4 (2026-07-22)
 **Fixed**
