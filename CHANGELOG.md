@@ -1,4 +1,11 @@
 ## Changelog:
+### v50.4 (2026-07-??)
+**Fixed**
+- V-Shell can crash after log-in ([#319](https://github.com/G-dH/vertical-workspaces/issues/319))
+- Left and right horizontal Dash spacing
+- Invisible workspace after V-Shell is disabled while Overview is open
+
+
 ### v50.4 (2026-07-22)
 **Fixed**
 - Broken *Workspace Preview Animation* when workspace thumbnails are disabled in App Grid
