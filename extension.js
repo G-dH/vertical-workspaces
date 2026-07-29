@@ -92,7 +92,7 @@ export default class VShell extends Extension.Extension {
         _ = null;
     }
 
-    async enable() {
+    enable() {
         this._init();
         this._initModules();
 
@@ -101,7 +101,6 @@ export default class VShell extends Extension.Extension {
         if (Main.layoutManager._startingUp && !this._startupConId) {
             // Minimize default animation duration
             St.Settings.get().slow_down_factor = 0;
-            await Main.layoutManager._ensurePrimaryMonitor();
             // Hide screen content until V-Shell is ready
             const Color = Clutter.Color ?? Cogl.Color;
             this._cover = new Clutter.Actor({
