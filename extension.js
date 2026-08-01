@@ -100,15 +100,15 @@ export default class VShell extends Extension.Extension {
         // The workaround here is hiding the default startup animation and activate V-Shell when it's finished
         if (Main.layoutManager._startingUp && !this._startupConId) {
             // Minimize default animation duration
-            St.Settings.get().slow_down_factor = 0;
+            St.Settings.get().slow_down_factor = 0.1;
             // Hide screen content until V-Shell is ready
             const Color = Clutter.Color ?? Cogl.Color;
-            this._cover = new Clutter.Actor({
+            this._screenCover = new Clutter.Actor({
                 background_color: new Color({ red: 0, green: 0, blue: 0, alpha: 255 }),
                 width: global.screen_width,
                 height: global.screen_height,
             });
-            Main.layoutManager.addChrome(this._cover);
+            Main.layoutManager.addChrome(this._screenCover);
 
             this._startupConId = Main.layoutManager.connect('startup-complete', () => {
                 Me.run.delayedStartup = true;
@@ -120,10 +120,12 @@ export default class VShell extends Extension.Extension {
                 Main.layoutManager.disconnect(this._startupConId);
                 this._startupConId = null;
                 Me.run.delayedStartup = false;
-                Me.run.timeouts.startupAnimation = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-                    this._cover.destroy();
-                    this._cover = null;
+                this._startupAnimationTimeout = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
                     Main.overview._overview.controls.realizeAppDisplayAndFinishStartup();
+                    this._screenCover.destroy();
+                    this._screenCover = null;
+                    this._startupAnimationTimeout = 0;
+                    return GLib.SOURCE_REMOVE;
                 });
             });
         } else {
@@ -139,6 +141,9 @@ export default class VShell extends Extension.Extension {
         if (this._startupConId)
             Main.layoutManager.disconnect(this._startupConId);
         this._startupConId = null;
+        if (this._startupAnimationTimeout)
+            GLib.source_remove(this._startupAnimationTimeout);
+        this._startupAnimationTimeout = null;
         this.removeVShell();
         this._disposeModules();
 
@@ -147,8 +152,8 @@ export default class VShell extends Extension.Extension {
         Me.updateMessageDialog.destroy();
         Me.updateMessageDialog = null;
         Me.run = null;
-        this._cover?.destroy();
-        this._cover = null;
+        this._screenCover?.destroy();
+        this._screenCover = null;
         this._cleanGlobals();
     }
 
@@ -496,7 +501,7 @@ export default class VShell extends Extension.Extension {
     }
 
     _adaptToSystemChange(timeout = 200, full = false) {
-        if (!this._enabled || Main.layoutManager._startingUp)
+        if (!this._enabled || Main.layoutManager._startingUp || this._screenCover)
             return;
 
         if (Me.run.timeouts.reset)
