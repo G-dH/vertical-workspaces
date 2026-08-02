@@ -1,4 +1,10 @@
 ## Changelog:
+### v50.6 (2026-08-??)
+**Fixed**
+- Workspace thumbnails animation on secondary monitors
+- Black screen after login when *Dash to Dock* is enabled ([#322](https://github.com/G-dH/vertical-workspaces/issues/322))
+
+
 ### v50.5 (2026-07-29)
 **Fixed**
 - V-Shell can crash after log-in ([#319](https://github.com/G-dH/vertical-workspaces/issues/319))
