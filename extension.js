@@ -147,14 +147,14 @@ export default class VShell extends Extension.Extension {
         this.removeVShell();
         this._disposeModules();
 
-        console.debug(`${Me.metadata.name}: disabled`);
-
         Me.updateMessageDialog.destroy();
         Me.updateMessageDialog = null;
         Me.run = null;
         this._screenCover?.destroy();
         this._screenCover = null;
         this._cleanGlobals();
+
+        console.debug(`${Me.metadata.name}: disabled`);
     }
 
     _getModuleList() {
