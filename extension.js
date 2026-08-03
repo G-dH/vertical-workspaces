@@ -182,6 +182,8 @@ export default class VShell extends Extension.Extension {
         Main.layoutManager.addChrome(this._screenCover);
 
         this._startupConId = Main.layoutManager.connect('startup-complete', () => {
+            // Move the screen cover above all other actors
+            Main.layoutManager.uiGroup.set_child_above_sibling(this._screenCover, null);
             Me.run.timeouts.startupAnimation = GLib.idle_add(GLib.PRIORITY_LOW, () => {
                 this._screenCover.destroy();
                 this._screenCover = null;
