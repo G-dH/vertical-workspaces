@@ -210,7 +210,8 @@ export default class VShell extends Extension.Extension {
     _activateVShell() {
         this._enabled = true;
 
-        this._removeTimeouts();
+        if (!Me.run.delayedStartup)
+            this._removeTimeouts();
 
         if (!Me.run.delayedStartup && !Main.sessionMode.isLocked)
             Me.updateMessageDialog.showMessage();
@@ -311,9 +312,6 @@ export default class VShell extends Extension.Extension {
     }
 
     _removeTimeouts() {
-        if (Me.run.delayedStartup)
-            return;
-
         Object.values(Me.run.timeouts)
             .filter(Boolean)
             .forEach(id => GLib.source_remove(id));
@@ -392,7 +390,7 @@ export default class VShell extends Extension.Extension {
                     const dashReplacement = uuid.includes('dash-to-dock') || uuid.includes('ubuntu-dock') || uuid.includes('dash-to-panel');
                     if (dashReplacement && reset)
                         this._watchDashToDock = true;
-                    if (!Main.layoutManager._startingUp && reset && dashReplacement)
+                    if (!Me.run.delayedStartup && reset && dashReplacement)
                         this._adaptToSystemChange(2000);
                 }
             );
