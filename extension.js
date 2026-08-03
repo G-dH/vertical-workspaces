@@ -100,7 +100,7 @@ export default class VShell extends Extension.Extension {
         // The workaround here is hiding the default startup animation and activate V-Shell when it's finished
         if (Main.layoutManager._startingUp && !this._startupConId) {
             // Minimize default animation duration
-            St.Settings.get().slow_down_factor = 0.1;
+            St.Settings.get().slow_down_factor = 0;
             // Hide screen content until V-Shell is ready
             const Color = Clutter.Color ?? Cogl.Color;
             this._screenCover = new Clutter.Actor({
@@ -111,6 +111,13 @@ export default class VShell extends Extension.Extension {
             Main.layoutManager.addChrome(this._screenCover);
 
             this._startupConId = Main.layoutManager.connect('startup-complete', () => {
+                this._startupAnimationTimeout = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                    this._screenCover.destroy();
+                    this._screenCover = null;
+                    this._startupAnimationTimeout = 0;
+                    Main.overview._overview.controls.realizeAppDisplayAndFinishStartup();
+                    return GLib.SOURCE_REMOVE;
+                });
                 Me.run.delayedStartup = true;
                 this._activateVShell();
                 // Since VShell has been activated with a delay, move it in extensionOrder
@@ -120,13 +127,6 @@ export default class VShell extends Extension.Extension {
                 Main.layoutManager.disconnect(this._startupConId);
                 this._startupConId = null;
                 Me.run.delayedStartup = false;
-                this._startupAnimationTimeout = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-                    Main.overview._overview.controls.realizeAppDisplayAndFinishStartup();
-                    this._screenCover.destroy();
-                    this._screenCover = null;
-                    this._startupAnimationTimeout = 0;
-                    return GLib.SOURCE_REMOVE;
-                });
             });
         } else {
             this._activateVShell();
