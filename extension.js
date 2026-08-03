@@ -188,8 +188,8 @@ export default class VShell extends Extension.Extension {
                 this._screenCover.destroy();
                 this._screenCover = null;
                 Me.run.timeouts.startupAnimation1 = GLib.idle_add(GLib.PRIORITY_LOW, () => {
-                    Main.overview._overview.controls.realizeAppDisplayAndFinishStartup();
                     Me.run.delayedStartup = false;
+                    Main.overview._overview.controls.realizeAppDisplayAndFinishStartup();
                     Me.run.timeouts.startupAnimation1 = null;
                     return GLib.SOURCE_REMOVE;
                 });
