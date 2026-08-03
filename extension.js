@@ -152,9 +152,10 @@ export default class VShell extends Extension.Extension {
         Me.run = null;
         this._screenCover?.destroy();
         this._screenCover = null;
-        this._cleanGlobals();
 
         console.debug(`${Me.metadata.name}: disabled`);
+
+        this._cleanGlobals();
     }
 
     _getModuleList() {
