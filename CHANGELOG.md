@@ -1,4 +1,9 @@
 ## Changelog:
+### v50.8 (2026-08-??)
+**Fixed**
+- Removed gaps between workspaces during the workspace switcher animation ([#323](https://github.com/G-dH/vertical-workspaces/issues/323))
+
+
 ### v50.7 (2026-08-03)
 **Fixed**
 - Black screen after login when *Dash to Dock* is enabled ([#322](https://github.com/G-dH/vertical-workspaces/issues/322))
