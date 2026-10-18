@@ -1,5 +1,5 @@
 ## Changelog:
-### v51.1 (not yet released)
+### v51.1 (2026-10-18)
 **Fixed:**
 - App Grid compatibility with Ubuntu 26.04
 - Monitor cycling when moving selected windows with (Ctrl+)Shift+Enter
