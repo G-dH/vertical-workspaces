@@ -1,4 +1,11 @@
 ## Changelog:
+### 51.2 (2026-10-21)
+**Fixed**:
+- Missing current workspace thumbnail indicator
+- Missing checkmark next to the active item in a drop-down menu in Settings
+- Minor glitches
+
+
 ### v51.1 (2026-10-18)
 **Fixed:**
 - App Grid compatibility with Ubuntu 26.04
