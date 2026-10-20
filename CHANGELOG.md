@@ -1,7 +1,7 @@
 ## Changelog:
 ### 51.2 (2026-10-21)
 **Fixed**:
-- Missing current workspace thumbnail indicator
+- Missing current workspace thumbnail indicator after update to GNOME 50.6 and 51.1
 - Missing checkmark next to the active item in a drop-down menu in Settings
 - Minor glitches
 
