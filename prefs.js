@@ -233,12 +233,12 @@ export default class VShell extends ExtensionPreferences {
                 'workspaceThumbnailsPosition',
                 // this mess is just because of backward compatibility
                 [
-                    [_('Left        \t Vertical Orientation'), 0],
-                    [_('Right       \t Vertical Orientation'), 1],
-                    [_('Hide        \t Vertical Orientation'), 4],
-                    [_('Top         \t Horizontal Orientation'), 5],
-                    [_('Bottom     \t Horizontal Orientation'), 6],
-                    [_('Hide        \t Horizontal Orientation'), 9],
+                    [_('Left         \t Vertical Orientation'), 0],
+                    [_('Right        \t Vertical Orientation'), 1],
+                    [_('Hide         \t Vertical Orientation'), 4],
+                    [_('Top          \t Horizontal Orientation'), 5],
+                    [_('Bottom       \t Horizontal Orientation'), 6],
+                    [_('Hide         \t Horizontal Orientation'), 9],
                 ]
             )
         );
