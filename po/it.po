@@ -2358,7 +2358,7 @@ msgstr ""
 msgid ""
 "Window Thumbnails - Moved from V-Shell to the standalone \"WTMB\" extension"
 msgstr ""
-"Miniature delle finestre - Spostato da V-Shell all'estensione autonoma "\"WTMB\""
+"Miniature delle finestre - Spostato da V-Shell all'estensione autonoma \"WTMB\""
 
 #: prefs.js:2234
 msgid ""
