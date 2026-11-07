@@ -1,4 +1,16 @@
 ## Changelog:
+### v51.4 (2026-11-07)
+**Fixed:**
+- _Remove Folder_ button in folder dialog window didn't work on GNOME 51
+- _Close Workspace_ button in workspace thumbnail didn't work on GNOME 51
+- Errors in the log when reordering workspaces with hidden workspace thumbnails
+
+
+**Other changes:**
+- Click on the top bar _Activities_ button to spread windows in static Overview
+- Updated italian translation
+
+
 ### v51.3 (2026-10-25)
 **Fixed:**
 - Overview keyboard navigation in GNOME 51.1
