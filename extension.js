@@ -17,6 +17,7 @@ import Meta from 'gi://Meta';
 import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as OverviewControls from 'resource:///org/gnome/shell/ui/overviewControls.js';
 
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 
@@ -285,6 +286,14 @@ export default class VShell extends Extension.Extension {
             Main.overview._changeShownState('HIDING');
             Main.overview._hideDone();
             Main.overview.dash.showAppsButton.checked = false;
+
+            // The overview was hidden without the exit transition,
+            // so the state adjustment still holds the last overview state.
+            // Reset it, otherwise the next gesture starts from WINDOW_PICKER
+            // and skips prepareToEnterOverview()
+            const stateAdjustment = Main.overview._overview.controls._stateAdjustment;
+            stateAdjustment.remove_transition('value');
+            stateAdjustment.value = OverviewControls.ControlsState.HIDDEN;
         }
     }
     
