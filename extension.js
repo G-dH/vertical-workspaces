@@ -283,6 +283,7 @@ export default class VShell extends Extension.Extension {
             Main.overview._visibleTarget = false;
             Main.overview._overview.prepareToLeaveOverview();
             Main.overview._changeShownState('HIDING');
+            Main.overview._overview.controls._stateAdjustment.value = 0;
             Main.overview._hideDone();
             Main.overview.dash.showAppsButton.checked = false;
         }
